@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - OAG - OpenBSD Administrator's Guide / Common errors - Boot errors</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Boot errors</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#f69d838482b685939f90849f9392d8998491"><span class="__cf_email__" data-cfemail="6d06181f192d1e08040b1f04080943021f0a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>There are a number of common errors at boot time you may see,
+some of theem are quite serious, some are not. </p>
+<p>&nbsp;</p>
+<h2>open(hd0a:/etc/boot.conf): Unknown error: code 20</h2>
+<p>This means that your &quot;/etc/boot.conf&quot; file is not
+within the first 1024 cylinders on the harddrive. The most common
+reason for this error is that your &quot;/&quot; partition is
+larger then 1024 cylinders on the the harddrive, the BIOS on i386
+systems cannot read above the 1024th cylinder, thus it cannot
+access the &quot;/etc/boot.conf&quot; file. The solution is to
+have a &quot;/&quot; partition that begins and ends within the
+first 1024 cylinders, and to ensure that &quot;/etc&quot; is also
+within it. This may require repartitioning however it is
+worthwhile as you will not be able to reliably use boot.conf
+otherwise. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 24/3/2002</p>
+<p>Copyright Kurt Seifried 2002 <a href="/cdn-cgi/l/email-protection#442f3136300437212d22362d21206a2b3623"><span class="__cf_email__" data-cfemail="ef849a9d9baf9c8a86899d868a8bc1809d88">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

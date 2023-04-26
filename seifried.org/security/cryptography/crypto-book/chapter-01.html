@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 1 - Why use cryptographic software?</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 1 - Why use cryptographic software?</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#7f140a0d0b3f0c1a16190d161a1b51100d18"><span class="__cf_email__" data-cfemail="7e150b0c0a3e0d1b17180c171b1a50110c19">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<p>Anything you do or say on the Internet (or even a corporate
+LAN or university LAN) can end up as front page news. Nowadays
+with everyone's computer connected to a multitude of other
+computers (and usually to the Internet as well) the chances of
+someone else being able to monitor and / or copy the information
+you interact with are quite high. In addition to this many
+corporations and other organizations have policies that result in
+email, and other forms of network traffic being logged, and
+sometimes the actual content stored. A good example of this is
+the embarrassing email that Microsoft sent internally that was
+later used during the trial against them. Also without
+cryptography anyone can easily impersonate you, how do you think
+co-workers (or your mom) would react if they received an email
+from you that was asking for the location of child pornography
+sites. Even if it was later proven that you had not sent it you
+would still have suffered because of it. </p>
+<p>Even more scary then this is the potential for data stored on
+your personal computer to be exposed to a court of law. In
+February of 2000 Northwest Airlines succesfully got a warrant to
+search the home computers of employees for evidence of a planned
+&quot;sick-out&quot; (a type of strike). These are machines that
+are the personal property of people and not corporate machines.
+If this trend continues then anyone that works for a company may
+have their personal privacy invaded when a court ordered search
+takes place and data is taken into evidence. Cryptography,
+properly installed and used would render the information stored
+completely inaccesible. </p>
+<p>Cryptography allows you to communicate securely with other
+parties. This not only includes the ability to encrypt a message
+so that only the person the data is meant for can read it, but
+also the ability to prove you sent a message, and that the
+message wasn't tampered with and so on. The Internet, and the
+services it offers (especially Email) have become ubiquitous.
+Sensitive information is routinely sent via email, with little or
+no protection used to verify who sent it, that it wasn't modified
+while in transit, or that only the recipient can actually read
+it. Historically cryptography has been very difficult for end
+users, with little or no integration into existing programs and
+operating systems, fortunately this has changed in the last few
+years, and now anyone can easily get, install, configure and use
+strong cryptographic software.</p>
+<p>Another area where cryptography shines is in providing an
+additional, strong layer of security to networks. Most current
+services on the Internet send data in unprotected forms (called
+&quot;clear text&quot; hyperlink to glossary), that anyone can
+read. Many network services (such as email) require a username
+and password to access, an attacker can easily pick that data off
+of the network and then use it (to access your email, impersonate
+you, or for other actions). By encrypting your network data
+(using a Virtual Private Network, such as IPSec hyperlink to
+glossary) you can virtually eliminate this threat. As
+corporations allow wider access to their networks (for example
+home users with ADSL or cablemodems), protecting the data moving
+across public networks becomes a serious issue. Again
+historically this type of protection was ridiculously expensive,
+or simply unobtainable, however in the last few years there has
+been an explosion of software to make this possible.</p>
+<p>Consider every single email message you have ever sent or
+received falling in to the hands of your competitor.</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-02.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

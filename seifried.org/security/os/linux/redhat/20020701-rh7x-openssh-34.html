@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="CREATED" content="20011030;16061786">
+<meta name="CHANGEDBY" content="Kurt Seifried">
+<meta name="CHANGED" content="20011030;16075371">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Linux / Red Hat Linux 7.x OpenSSH 3.4 installation and spec file</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Red Hat Linux 7.x OpenSSH 3.4 installation and spec file</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#f69d838482b685939f90849f9392d8998491"><span class="__cf_email__" data-cfemail="1e756b6c6a5e6d7b77786c777b7a30716c79">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Red Hat will not be issuing OpenSSH 3.4 packages for Red Hat
+7.x (can't say that I blame them, customer support would be a
+nightmare). Unfortunately I really wanted OpenSSH 3.4 on my
+server systems (privsep, all the bug fixes, etc.). I modifed the
+Red Hat spec file slightly, you will need that, the source RPM
+from Red hat, and the source code for OpenSSH 3.4 portable.
+&nbsp;I have disabled askpass/gnome stuff, this is aimed at
+servers, not clients. &nbsp;</p>
+<p>&nbsp;</p>
+<h2>Downloading the neccesary files:</h2>
+<p>You will need the following three files to build the rpms:</p>
+<blockquote>
+<pre>wget <a href="http://seifried.org/security/os/linux/redhat/seifried-redhat-openssh.spec">http://seifried.org/security/os/linux/redhat/seifried-redhat-openssh.spec </a>
+wget <a href="ftp://updates.redhat.com/7.3/en/os/SRPMS/openssh-3.1p1-6.src.rpm">ftp://updates.redhat.com/7.3/en/os/SRPMS/<font color="#0000FF"><u>openssh-3.1p1-6.src.rpm</u></font></a> 
+<font color="#0000FF"><u>wget </u></font><a href="ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-3.4p1.tar.gz"><font color="#0000FF"><u>ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-3.4p1.tar.gz</u></font></a> &nbsp; </pre>
+</blockquote>
+<p>The spec file is available <a href="seifried-redhat-openssh.spec">here</a>.</p>
+<h2>Building the RPM's:</h2>
+<p>Install the source rpm, source code and spec file to
+/usr/src/redhat/*:</p>
+<blockquote>
+<pre>rpm -Uvh openssh-3.1p1-6.src.rpm cp openssh-3.4p1.tar.gz /usr/src/redhat/SOURCES/
+cp seifried-redhat-openssh.spec /usr/src/redhat/SPECS/ &nbsp; 
+cd /usr/src/redhat/SPECS/ </pre>
+</blockquote>
+<p>Then simply use &quot;rpm -ba&quot; to build the source file
+and binary files:</p>
+<blockquote>
+<pre>rpm -ba seifried-redhat-openssh.spec</pre>
+</blockquote>
+<p>After it has compiled you should have the following four
+files:</p>
+<blockquote>
+<pre>/usr/src/redhat/RPMS/i386/openssh-3.4p1-1.i386.rpm
+/usr/src/redhat/RPMS/i386/openssh-clients-3.4p1-1.i386.rpm
+/usr/src/redhat/RPMS/i386/openssh-server-3.4p1-1.i386.rpm 
+/usr/src/redhat/SRPMS/openssh-3.4p1-1.src.rpm &nbsp; </pre>
+</blockquote>
+<p>&nbsp;</p>
+<p>Installaing the new RPM's:</p>
+<p>Copy them to the system you wish to update and issue the
+&quot;rpm -F&quot; command:</p>
+<blockquote>
+<pre>rpm -Fvh *ssh*3.4* &nbsp; </pre>
+</blockquote>
+<p>It will not overwrite sshd_config or ssh_config, you will
+probably need to edit and copy the .rpmnew ones if you've done
+any tweaking. Please for the love of all that is holy DO NOT
+DEPLOY ON REMOTE PRODUCTION SERVERS UNTIL YOU HAVE TESTED IT ON A
+LOCAL MACHINE. I cannot stress this enough. If it breaks I'll let
+you keep&nbsp;all the&nbsp;pieces. &nbsp; Enjoy. &nbsp;</p>
+<p>&nbsp;</p>
+<p>This has got to be one of the worst and best features about
+Red Hat Linux 7.2. My first major complaint would be the lack of
+Postfix. Not only did they fail to ship it on the CD, they failed
+to include it in anything like powertools online. To make matters
+worse the Postfix RPM from 7.1 does not work properly as it
+expects older libraries, although you should be able to get it
+working with some effort. But instead of doing all that I thought
+I would give Sendmail a chance, I haven't used it in
+approximately 2-3 years, and it has been audited (very few remote
+root hacks in the last few months, although there were some local
+root hacks). There are several significant problems with the
+default sendmail configuration and scripts that manage it. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 1/7/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

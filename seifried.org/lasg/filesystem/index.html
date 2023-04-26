@@ -1,0 +1,708 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Filesystem</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Filesystem security</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#97fce2e5e3d7e4f2fef1e5fef2f3b9f8e5f0"><span class="__cf_email__" data-cfemail="e18a949395a19284888793888485cf8e9386">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>A solid house needs a solid foundation, otherwise it will
+collapse. In Linux's case this is the ext2 (EXTended, version 2)
+filesystem. Pretty much your everyday standard UNIX-like
+filesystem. It supports file permissions (read, write, execute,
+sticky bit, suid, sgid and so on), file ownership (user, group,
+other), and other standard things. Some of its drawbacks are: no
+journaling, and especially no Access Control Lists, which are
+rumored to be in the upcoming ext3. On the plus side, Linux has
+excellent software RAID, supporting Level 0, 1 and 5 very well
+(RAID isn't security related, but it certainly is
+safety/stability related). There is an excellent HOWTO on file
+systems in regards to Linux <a href="http://www.penguin.cz/~mhi/fs/Filesystems-HOWTO/Filesystems-HOWTO.html">http://www.penguin.cz/~mhi/fs/Filesystems-HOWTO/Filesystems-HOWTO.html</a>.</p>
+<p>So the attacker somehow manages to circumvent the physical
+security and console security you put in place and now has a root
+prompt. What can you do to protect sensitive files, and prevent
+the attacker from accessing or copying them? Keeping data on a
+server can help, even with local root access an attacker will
+still have to steal credentials to access the fileserver
+(assuming you use root_squash under NFS or have similarly secured
+your file sharing configuration). Of course there is still
+sensitive local information, and the solution to this is disk
+encryption. There are several disk encryption packages for Linux,
+most will let you create an encrypted volume and access it. The
+usual method is to create an encrypted file and mount it using a
+loopback mount so it appears as a disk to the system. There is
+then usually a kernel interface, or userland program that allows
+you to access it. These systems are good and will protect
+sensitive information, however for an additional level of
+security you should encrypt everything, data partitions, system
+partitions, and swap partitions. An attacker can usually find
+interesting bits of data in the swap partition, and if they can
+access system files they can replace your favorite text editor
+with one that creates unencrypted backup copies of the file in
+/tmp for later retrieval. </p>
+<p>&nbsp;</p>
+<h2>Basic file commands</h2>
+<p>The basic utilities to interact with files are:
+&#147;ls&#148;, &#147;chown&#148;, &#147;chmod&#148; and
+&#147;find&#148;. Others include &quot;ln&quot; (for creating
+links), &quot;stat&quot; (tells you about a file) and many more.
+As for creating and maintaining the file systems themselves, we
+have &#147;fdisk&#148; (good old fdisk), &#147;mkfs&#148; (MaKe
+FileSystem, which formats partitions), and &#147;fsck&#148;
+(FileSystem ChecK, which will usually fix problems). So, what is
+it we are trying to prevent hostile people (usually users, and or
+network daemons fed bad info) from doing? A Linux system can be
+easily compromised if access to certain files is gained, for
+example the ability to read a non-shadowed password file results
+in the ability to run the encrypted passwords against crack,
+easily finding weak password. This is a common goal of attackers
+coming in over the network (poorly written CGI scripts seem to be
+a favorite). Alternatively, if an attacker can write to the
+password file, he or she can seriously disrupt the system, or
+(arguably worse) get whatever level of access they want. These
+conditions are commonly caused by &quot;tmp races&quot;, where a
+setuid program (one running with root privileges) writes
+temporary files, typically in /tmp, however far to many do not
+check for the existence of a file, thus allowing an attacker to
+make a hard link in /tmp pointing to the password file, and when
+the setuid program is run, kaboom, /etc/passwd is wiped out or
+possibly appended to. There are many more attacks similar to
+this, so how can we prevent them?</p>
+<p>Simple: set the file system up correctly when you install. The
+two common directories that users have write access to are /tmp
+and /home, splitting these off onto separate partitions also
+prevents users from filling up any critical filesystem (a full /
+is very bad indeed). A full /home could result in users not being
+able to log in at all (this is why root&#146;s home directory is
+in /root). Putting /tmp and /home on separate partitions is
+pretty much mandatory if users have shell access to the server,
+putting /etc, /var, and /usr on separate partitions is also a
+very good idea.</p>
+<p>The primary tools for getting information about files and file
+systems are all relatively simple and easy to use. &#147;df&#148;
+(shows disk usage) will also show inode usage, &#147;df
+&#150;i&#148; (inodes contain information about files such as
+their location on the disk drive, and you can run out of these
+before you run out of disk space if you have many small files.
+This results in error messages of &quot;disk full&quot; when in
+fact &#147;df&#148; will show there is free space (&#147;df
+&#150;i&#148; however would show the inodes are all used). This
+is similar to file allocation entries in Windows, with vfat it
+actually stores names in 8.3 format, using multiple entries for
+long filenames, with a max of 512 entries per directory, to many
+long filenames, and the directory is 'full'. The &#147;du&#148;
+utility will tell you the size of directories, which is very
+useful for finding out where all that disk space has disappeared
+to, usage is &#147;du&#148; (lists everything in the current
+directory and below it that you have access to) or &#147;du
+/dir/name&#148;, optionally using &#147;-s&#148; for a summary
+which is useful for directories like /usr/src/linux. To gain
+information about specific files the primary tool is ls (similar
+to DOS's &#147;dir&#148; command), &#147;ls&#148; shows just
+file/dir names, &#147;ls &#150;l&#148; shows information such as
+file perms, size and so on, and 'ls -la' shows directories and
+files beginning in &#147;.&#148;'s, typical for config files and
+directories (.bash_history, .bash_logout, etc.). The
+&#147;ls&#148; utility has a few dozen options for sorting based
+on size, date, in reverse order and so forth; &#147;man ls&#148;
+for all the details. For details on a particular file (creation
+date, last access, inode, etc) there is &#147;stat&#148;, which
+simply tells all the vital statistics on a given file(s), and is
+very useful to see if a file is in use/etc.</p>
+<p>To manipulate files and folders we have the typical utilities
+like cp, mv, rm (CoPy, MoVe and ReMove), as well as tools for
+manipulating security information. chown is responsible for
+CHanging OWNership of files the user and group a given file
+belongs to (the group other is always other, similar to Novell or
+NT's 'everyone' group). chmod (CHange MODe) changes a files
+attributes, the basic ones being read, write and execute, as well
+there is setuid, setguid (set user and group id the program is
+run as to the ones that own it, often times root), sticky bit and
+so forth. With proper use of assigning users to groups, chmod and
+chown you can emulate ACL's to a degree, but it is far less
+flexible then Sun/AIX/NT's file permissions (although this is
+rumored for ext3). Please be especially careful with
+setuid/setguid as any problems in that program/script can be
+magnified greatly.</p>
+<p>I thought I should also mention &#147;find&#148;. It find's
+files (essentially it will list files), and can also filter based
+on permissions/ownership (also on size, date, and several other
+criterion). A couple of quick examples for hunting down
+setuid/guid programs:</p>
+<p>to find all setuid programs:</p>
+<blockquote>
+<pre>find / -perm +4000</pre>
+</blockquote>
+<p>to find all setgid programs:</p>
+<blockquote>
+<pre>find / -perm +2000</pre>
+</blockquote>
+<p>The biggest part of file security however is user permissions.
+In Linux a file is 'owned' by 3 separate entities, a User, a
+Group, and Other (which is everyone else). You can set which user
+owns a file and which group it belongs to by:</p>
+<blockquote>
+<pre>chown user:group object</pre>
+</blockquote>
+<p>where object is a file, directory, etc. If you want to deny
+execute access to all of the 3 owners simply:&nbsp;</p>
+<blockquote>
+<pre>chmod x=&quot;&quot; object</pre>
+</blockquote>
+<p>where x is a|g|u|o (All/Group/User/Other), force the
+permissions to be equal to &quot;&quot; (null, nothing, no access
+at all) and object is a file, directory, etc. This is by far the
+quickest and most effective way to rip out permissions and
+totally deny access to users/etc (=&quot;&quot; forces it to
+clear it). Remember that root can ALWAYS change file perms and
+view/edit/run the file, Linux does not yet provide safety to
+users from root (which many would argue is a good thing). Also
+whoever owns the directory the object is in (be they a
+user/group/other with appropriate perms on the parent directory)
+can also potentially edit permissions (and since root owns / it
+can make changes that can traverse down the filesystem to any
+location).</p>
+<p>&nbsp;</p>
+<h2>Secure file deletion</h2>
+<p>One thing many of us forget is that when you delete a file, it
+is not actually gone. Even if you overwrite it, reformat the
+drive, or otherwise attempt to destroy it, chances are it can be
+recovered, and typically data recovery services only cost a few
+thousand dollars, so it might well be worth an attackers time and
+money to have it done. The trick is to scramble the data by
+repeatedly flipping the magnetic bits (a.k.a. the 1&#146;s and
+0&#146;s) so that when finished no traces of the original data
+remain (i.e. magnetic bits still charged the same way they
+originally were). Two programs (both called wipe) have been
+written to do just this. An ideal solution for long term security
+is to encrypt data where possible, if keys are protected properly
+then an attacker will have a very difficult time recovering any
+data. This combined with good deletion techniques makes
+recovering data very difficult, of course there are still
+possibilities for data leakage (i.e. temporary files on
+unencrypted swap partitions). </p>
+<p>&nbsp;</p>
+<h3>wipe </h3>
+<p>Wipe is available <a href="http://wipe.sourceforge.net/">http://wipe.sourceforge.net/</a>.</p>
+<h3>fwipe</h3>
+<p>fwip is available <a href="http://www.nb.net/~lbudney/linux/software/fwipe.html">http://www.nb.net/~lbudney/linux/software/fwipe.html</a>.</p>
+<p>&nbsp;</p>
+<h2>Access control lists (ACL&#146;s)</h2>
+<p>One major missing component in Linux is a filesystem with
+Access Control Lists (ACL&#146;s) instead of the standard User,
+Group, Other with it&#146;s dozen or so permissions. ACL&#146;s
+enable you to control access to the filesystem in a much more
+fine grained fashion, for example on a file you may want to grant
+the user &#147;bob&#148; full access, &#147;mary&#148; read, the
+groups sales &#147;change&#148;, the accounting group
+&#147;read&#148;, and nothing for everyone else . Under existing
+Linux permissions you could not do this. Hence the need for
+ACL&#146;s. The ACL stuff is currently under kernel patches.</p>
+<p>&nbsp;</p>
+<h3>NSA SELinux</h3>
+<p>NSA SELinux is now based on the Linux Security Module (LSM)
+kernel patches and provides (among other things) access control
+lists. </p>
+<p>&nbsp;</p>
+<h3>RSBAC</h3>
+<p><a href="../kernel/index.html">Information is available here.</a></p>
+<p>&nbsp;</p>
+<h2>Critical system configuration files</h2>
+<p>Like any operating system Linux has a number of configuration
+files. Some of these are extremely critical, for example the
+password file. This section covers several of the more critical
+files, explains their layout, how they interact with the system,
+and so on. For example it is counter-intuitive that while the
+password file is probably the most critical file on the system,
+it must be readable by everyone, and there are several good
+reasons for this.</p>
+<p>&nbsp;</p>
+<h3>/etc/ directory</h3>
+<p>Typically the /etc/ directory contains the majority of the
+system and application configuration files and many critical
+startup scripts. Some applications when installed to the
+/usr/local/ directory will place their files in /usr/local/etc/
+(or other locations), this directory should largely be treated in
+the same way as /etc/. If an attacker is able to change files
+chances are they will be able to elevate their privileges and
+ultimately gain root access since many startup scripts are run
+with root privileges.</p>
+<p>&nbsp;</p>
+<p>/etc/passwd</p>
+<p>The password file is arguably the most critical system file in
+Linux (and most other UNIX's). It contains the mappings of
+username, user ID and the primary group ID that person belongs
+to. It may also contain the actual password however it is more
+likely (and much more secure) to use shadow passwords to keep the
+passwords in /etc/shadow. This file MUST be world readable,
+otherwise commands even as simple as ls will fail to work
+properly. The GECOS field can contain such data as the real name,
+phone number and the like for the user, the home directory is the
+default directory the user gets placed in if they log in
+interactively, and the login shell must be an interactive shell
+(such as bash, or a menu program) and listed in /etc/shells for
+the user to log in. The format is:</p>
+<blockquote>
+<pre>username:encrypted_password:UID:GID:GECOS_field:home_directory:login_shell</pre>
+</blockquote>
+<p>Passwords are stored utilizing a one way hash (the default
+hash used is crypt, newer distributions support MD5 which is
+significantly stronger). Passwords cannot be recovered from the
+encrypted result, however you can attempt to find a password by
+using brute force to hash strings of text and compare them, once
+you find a match you know you have the password. This in itself
+is generally not a problem, the problem occurs when users choose
+easily guessed passwords. The most recent survey results showed
+that %25 of passwords could be broken in under an hour, and what
+is even worse is that %4 of users choose their own name as the
+password. Blank fields in the password field are left empty, so
+you would see &#147;::&#148;, this is something that is critical
+for the first four fields (name, password, uid and gid).</p>
+<p>&nbsp;</p>
+<p>/etc/shadow</p>
+<p>The shadow file holes the username and password pairs, as well
+as account information such as expiry date, and any other special
+fields. This file should be protected at all costs and only the
+root user should have read permission to it.&nbsp;</p>
+<p>&nbsp;</p>
+<p>/etc/groups</p>
+<p>The groups file contains all the group membership information,
+and optional items such as group password (typically stored in
+gshadow on current systems), this file to must be world readable
+for the system to behave correctly. The format is:</p>
+<blockquote>
+<pre>groupname:encrypted_password:GID:member1,member2,member3</pre>
+</blockquote>
+<p>A group may contain no members (i.e. it is unused), a single
+member or multiple members, and the password is optional (and
+typically not used).</p>
+<p>&nbsp;</p>
+<p>/etc/gshadow</p>
+<p>Similar to the password shadow file, this file contains the
+groups, password and members. Again, this file should be
+protected at all costs and only the root user should have read
+permission to it.</p>
+<p>&nbsp;</p>
+<p>/etc/login.defs</p>
+<p>This file (/etc/login.defs) allows you to define some useful
+default values for various programs such as useradd and password
+expiry. It tends to vary slightly across distributions and even
+versions, but typically is well commented and tends to contain
+sane default values.</p>
+<p>&nbsp;</p>
+<p>/etc/shells</p>
+<p>The shells file contains a list of valid shells, if a
+user&#146;s default shell is not listed here they may not log in
+interactively. See the section on telnetd for more information.</p>
+<p>&nbsp;</p>
+<p>/etc/securetty</p>
+<p>This file contains a list of tty&#146;s that root can log in
+from. Console tty&#146;s are usually /dev/tty1 through /dev/tty6.
+Serial ports (if you want to log in as root over a modem say) are
+/dev/ttyS0 and up typically. If you want to allow root to login
+via the network (a very bad idea, use sudo) then add /dev/ttyp1
+and up (if 30 users login and root tries to login root will be
+coming from /dev/ttyp31). Generally you should only allow root to
+login from /dev/tty1, and it is advisable to disable the root
+account altogether, before doing this however please install sudo
+or program that allows root access to commands.&nbsp;</p>
+<p>&nbsp;</p>
+<h2>File encryption</h2>
+<p>Do you have files on your computer that you wouldn't want your
+spouse to read, or perhaps your main competitor. Chances are if
+you use your computer for work or general usage the answer is
+yes. Also what happens if you want to send a file to someone, or
+let them download it from you, but you only have access to a
+public site (like a free web hosting company). The answer is to
+encrypt the file, and fire it off. </p>
+<p>&nbsp;</p>
+<h3>PGP</h3>
+<p>Pretty Good Privacy is available as a command line driven
+program for most UNIX platforms, and there are a variety of front
+end GUI programs for it. I would not recommend using PGP on a
+UNIX platform since a completely OpenSource, and compatible
+replacement is now available, in the form of GnuPG.</p>
+<p>&nbsp;</p>
+<h3>GnuPG</h3>
+<p>GnuPG is a GPL licensed (a.k.a. completely free in every
+respect), written in Germany (a very pro-crypto and pro-privacy
+country). Since it is available in full source code chances are
+it has been ported to your UNIX platform (and if not try
+compiling it, it might work). You can download <a href="http://www.gnupg.org/">GnuPG</a>
+as a compressed tarball of source code, and there are links to a
+number of source and binary packages for various UNIX platforms.
+Once installed GnuPG behaves very similarly to PGP. The first
+thing you'll probably want to do is generate a new keypair,
+simply use the command &quot;gpg --gen-key&quot;, it will create
+a &quot;.gnupg&quot; directory in which to store your keys,
+option files and so on and exit, you then run it again and it
+will lead you through the key creation process. Choosing the
+defaults during key generation is a pretty safe bet, although you
+may want to use a 2048 bit keysize (realistically if someone
+manages to crack 1024 bit keys, chances are they can get at your
+2048 bit key, however if they are only trying to brute force it a
+longer key is a good way to reduce the chances of that). For
+personal keys the expiry is typically set to &quot;0&quot; (that
+is to say they do not expire), however if these keys are for
+corporate use, or for really sensitive information it is a good
+idea to expire keys and rotate them (every month, year, decade,
+whatever your security policy dictates). The most important thing
+when generating a key (in my opinion) is the passphrase. This is
+a string of characters which should consist of letters (upper and
+lower case) numbers and punctuation marks, the longer the better
+(I'd say the bare minimum is 10 characters). This controls access
+to the private key, which is used to sign items (and if
+compromised means an attacker could easily impersonate you), and
+to decrypt data (meaning an attacker could access all your data).
+Keep your private key secure! If an attacker gains access to this
+key they only have to brute force the passphrase, which is
+typically a lot weaker then a random 1024 bit (or longer) key.
+Worse yet they may steal your passphrase, with a keyboard sniffer
+or similar attack, resulting in a compromise of your key. If the
+attacker does not have access to your private key they will be
+forced to guess it, which takes a brutally long time (on average
+however, there is a chance they may guess the key correctly on
+their first try). </p>
+<p>Signing files is useful if you want to distribute a file to
+someone, and be able to prove that you sent it, and it was not
+tampered with. Internally GnuPG takes a hash sum (such as MD5 or
+SHA1) of the file (basically it reduces the file to a shorter,
+unique string of data) which it then encrypts with your private
+key, generating a signature. This signature can then be decrypted
+with your public key, resulting in possession of the hash sum of
+the file, simply take the hash sum of the file in question, and
+if the they match, then obviously the file is what it claims to
+be. This signature file can be a binary file, or converted into
+text (for example signing email, or distributing file signatures
+via email). To sign a file with gpg simply use :</p>
+<blockquote>
+<pre>$ gpg -b file</pre>
+</blockquote>
+<p>which will create a detached signature of the file.</p>
+<p>To verify the signature use &quot;gpg --verify file.sig
+file&quot;. If all is well you should see something like:</p>
+<blockquote>
+<pre>$ gpg --verify file.sig file
+gpg: Signature made Sat 15 Jan 2000 05:23:31 AM MST using DSA key ID 47D0D9A8
+gpg: Good signature from &quot;Kurt Seifried &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="0f647a7d7b4f7c6a66697d666a6b21607d68">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;&quot;</pre>
+</blockquote>
+<p>If someone has fiddled with the file or signature you will see
+something like:</p>
+<blockquote>
+<pre>$ gpg --verify file.sig file
+gpg: Signature made Sat 15 Jan 2000 05:23:31 AM MST using DSA key ID 47D0D9A8
+gpg: BAD signature from &quot;Kurt Seifried &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="d2b9a7a0a692a1b7bbb4a0bbb7b6fcbda0b5">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;&quot;</pre>
+</blockquote>
+<p>Encrypting files is also relatively simple, a person uses your
+public key to run the data through a one way algorithm which
+results in a seemingly random mishmash of data, you can then use
+your private key to recover what the original data was, thus
+decrypting it. To encrypt a file to someone you first need their
+public key, you can download it from their homepage (if they have
+it online of course), or you can go to a public key server, of
+which there are many:</p>
+<blockquote>
+<pre><a href="http://pgp.ai.mit.edu/">http://pgp.ai.mit.edu/</a> - PGP key server
+<a href="http://www.keyserver.net/">http://www.keyserver.net/</a> - OpenPGP key server</pre>
+</blockquote>
+<p>Once you have their key it is simply a matter of signing and
+encrypting the file (just encrypting the file is rare as there is
+no proof of who the data is from, unless you use some other
+method, like physically handing them a floppy disk with the
+encrypted file). The following is an example of me signing a file
+and encrypting it with my public key:</p>
+<blockquote>
+<pre>$ gpg -s -e file
+
+You need a passphrase to unlock the secret key for
+user: &quot;Kurt Seifried &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="2c47595e586c5f49454a5e45494802435e4b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;&quot;
+1024-bit DSA key, ID 47D0D9A8, created 2000-01-15
+
+You did not specify a user ID. (you may use &quot;-r&quot;)
+
+Enter the user ID: <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="157e6067615566707c73677c70713b7a6772">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></pre>
+</blockquote>
+<p>The user ID can either be the key ID (such as: 47D0D9A8), the
+email address associated with the key (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="147f6166605467717d72667d71703a7b6673">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>) or the
+name (not recommended as these are not unique, there are many
+John Smith's). You will end up with a &quot;file.gpg&quot; that
+is binary, if you wish to send the file via email it is advisable
+to use the &quot;-a&quot; (&quot;--armor&quot;) option which will
+result in &quot;file.asc&quot; and is ASCII text, so you can read
+it straight into an email, or print it out, mail it, and let them
+OCR and decrypt it at their end. To decrypt a file sent to you
+simply:</p>
+<blockquote>
+<pre>$ gpg --decrypt file.asc
+
+You need a passphrase to unlock the secret key for
+user: &quot;Kurt Seifried &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1c77696e685c6f79757a6e75797832736e7b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;&quot;
+1024-bit ELG-E key, ID 47D0D9A8, created 2000-01-15 (main key ID 39B0D9A8)</pre>
+</blockquote>
+<p>and it will display the file (hopefully a text file) to your
+screen, followed by the veracity of the signature (if you have
+the persons public key):</p>
+<blockquote>
+<pre>gpg: Signature made Sat 15 Jan 2000 06:06:19 AM MST using DSA key ID 47D0D9A8
+gpg: Good signature from &quot;Kurt Seifried &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="345f4146407447515d52465d51501a5b4653">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;&quot;</pre>
+</blockquote>
+<p>if you want to save the decrypted file simply use
+&quot;--output filename&quot; and it will dump the content to
+&quot;filename&quot;. You can also use shell commands such as
+&quot;|&quot; or &quot;&gt;&quot; to further mangle the output
+(this is useful if you have automated systems such as a reporting
+mechanism which sends encrypted emails to a central repository). </p>
+<p>&nbsp;</p>
+<h2>Filesystem encryption</h2>
+<p>Filesystem encryption is an important security consideration
+if the data stored on the machine is of sufficient value or
+sensitivity. No matter how well you secure a system and tightly
+control file permissions if someone steals the machine or boots
+it into single user mode or from a floppy disk they can trivially
+bypass most protection methods, except for file encryption.
+Unfortunately most encrypted file systems will &quot;leak&quot;
+information, temporary files, swap partitions and so on can all
+end up with clear text copies of the files you want to protect
+with encryption. The best solution to deal with this problem is
+of course to encrypt everything, unfortunately this is very
+difficult and results in a lot of over head. Another solution
+(although less optimal) is to periodically wipe the clear space
+on your harddrive (i.e. the space where deleted files remain), as
+well as cleaning out temporary files and swap partitions, of
+course finding all of these is never simple. </p>
+<p>&nbsp;</p>
+<h3>TCFS</h3>
+<p>TCFS is a kernel level data encryption utility, similar to
+CFS. It however has several advantages over CFS; as it is
+implemented at the kernel level it is significantly faster. It is
+tightly integrated with NFS meaning you can server data securely
+on a local machine, or across the network. It decrypts data on
+the client machine, so when used over a network the password/etc
+is never passed over the network. The only catch is that it has
+not yet been ported to the latest 2.2 kernels (2.2.16 and 2.2.17
+only). You can get TCFS <a href="http://tcfs.dia.unisa.it/">http://tcfs.dia.unisa.it/</a>.</p>
+<p>&nbsp;</p>
+<h3>BestCrypt</h3>
+<p>BestCrypt is a disk encryption program available for Windows
+and Linux. The nice thing is you can create an encrypted
+container (a file that is then mounted as a filesystem), and use
+it in Windows or in Linux (as long as it resides on a partition
+accessible to both, so putting it on your Windows partition is
+fine since Linux reads almost all Windows partition types).
+BestCrypt consists of some kernel modules (so your kernel will
+need to support loadable kernel modules obviously, and it helps
+if you are using tools like depmod, modprobe and the kernel
+module loader), and a userspace utility called
+&quot;bctool&quot;. This program is however officially in
+&quot;beta testing&quot; for Linux, and probably should not be
+used for critical data (if it is, make sure you have backups).
+After testing BestCrypt for Linux I am satisfied that even though
+the software is officially beta, it is probably stable enough for
+most users, however your mileage may vary, all sales final, and
+don't blame me for any lost data. The only real problem with
+BestCrypt is a severe lack of documentation, while there is a man
+page that explains basic options, there is not a single example
+of how to create and mount a container (I suspect the release
+will have documentation, their Windows version documentation is
+quite good, a half meg helpfile). You need to download the
+software first, available as a source tarball, and source rpm
+(very easy to install on an RPM based system). Simply download
+either one, I would recommend the source rpm if you can. You can
+get it <a href="http://www.jetico.com/">http://www.jetico.com/</a>.</p>
+<blockquote>
+<pre># rpm -Uvh BestCrypt-0.3b-1.src.rpm 
+BestCrypt ##################################################
+# cd /usr/src/redhat/SPECS
+# rpm -ba bcrypt.spec </pre>
+</blockquote>
+<p>followed by a lot of text while it unpacks, compiles and
+assembles the source RPM and binary RPM. You should then have a:</p>
+<blockquote>
+<pre>/usr/src/redhat/RPMS/i386/BestCrypt-0.3b-1.i386.rpm 
+/usr/src/redhat/SRPMS/BestCrypt-0.3b-1.src.rpm</pre>
+</blockquote>
+<p>Simply install the binary RPM with a:</p>
+<blockquote>
+<pre># rpm -Uvh /usr/src/redhat/RPMS/i386/BestCrypt-0.3b-1.i386.rpm 
+BestCrypt ##################################################</pre>
+</blockquote>
+<p>If you do not have an RPM based system, or the source RPM
+doesn't work for you, compiling the source code directly from
+it's tarball should be possible. Simply download the file, unpack
+it to an appropriate place (such as /usr/local/src) and issue the
+commands:</p>
+<blockquote>
+<pre># make
+# make install</pre>
+</blockquote>
+<p>And you should be up and running. The first step is to create
+a container (a file that is encrypted and mounted as a
+partition):</p>
+<blockquote>
+<pre># bctool new -a blowfish -s 10M file
+Enter password:
+Verify password: </pre>
+</blockquote>
+<p>You can of course use the &quot;gost&quot; or &quot;des&quot;
+algorithms, I would not recommend them as gost is less tested
+then the &quot;twofish&quot; and &quot;blowfish&quot; algorithms
+that BestCrypt supports, and single des is to easy to brute
+force. The next step is to format the container, you'll probably
+want to use MS-DOS if sharing with Windows (i.e. a dual boot
+Linux and Windows machine), or if just Linux then ext2 is a good
+bet. You can also specify the size, if you make it so small this
+can be a problem, but because it is a file and not a true
+partition you can easily create a new, larger file, move all the
+data to it and use it instead of the older smaller one.</p>
+<blockquote>
+<pre># bctool format -t ext2 file
+Enter password:
+mke2fs 1.15, 18-Jul-1999 for EXT2 FS 0.5b, 95/08/09
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+2560 inodes, 10238 blocks
+511 blocks (4.99%) reserved for the super user
+First data block=1
+2 block groups
+8192 blocks per group, 8192 fragments per group
+1280 inodes per group
+Superblock backups stored on blocks: 
+8193
+
+Writing inode tables: done 
+Writing superblocks and filesystem accounting information: done</pre>
+</blockquote>
+<p>Once the file is formatted you should be able to mount it:</p>
+<blockquote>
+<pre># bctool mount file /root/crypt/
+Enter password:
+# df
+Filesystem	1k-blocks      Used Available Use% Mounted on
+/dev/hda1         3122956     70596   2893720   2% /
+/dev/hda2         2917360     24224   2744940   1% /crypto
+/root/file	     9909        13      9385   0% /root/crypt</pre>
+</blockquote>
+<p>As you can see it is mounted as a part of the filesystem, just
+like a floppy disk would be for example. Remember to control
+access to the directory hosting the encrypted files carefully, no
+matter how good the encryption, if you have it set world readable
+you won't have gained any security. Also remember that as a user,
+root owns the / and can take ownership of any file or directory
+and see what's in it. Alternatively if an attacker gains root
+access they can log your keystrokes (or terminal traffic) and
+gain your password (and access to your files). As always your
+security is only as good as the weakest link. </p>
+<p>&nbsp;</p>
+<h3>PPDD</h3>
+<p>PPDD is similar to BestCrypt, but instead of creating a file,
+encrypting that and mounting it, it actually uses a partition
+which is encrypted and mounted using the PPDD driver, because of
+this it can do a few additional things BestCrypt can't. If you
+only want to encrypt a few directories then I advise compiling
+PPDD as a kernel module, but if you want to encrypt the entire
+file system (including what you boot from) you will need to
+compile PPDD directly into the kernel (although as of 1.0 it's
+not to hard). Unless you have a GPL only policy I would recommend
+using BestCrypt if you are new to this (it is easier to install
+and use, and you can buy support). PPDD does have one enormous
+advantage over BestCrypt however, you can encrypt all of the
+system, including the boot drive and swap partition, making it
+ideal for situations such as laptops with sensitive data and
+minimizing the risk (to zero if need be) of accidentally leaving
+sensitive data in an unencrypted location (such as the swap file,
+/tmp, and so on) so if you need a higher security level I would
+recommend PPDD over BestCrypt (simply because you can encrypt
+everything). Another advantage of PPDD is that is uses two
+passwords instead of just one for each encrypted filesystem, so
+you can give one administrator one password, and another
+administrator the other password, meaning no single person can
+gain access to the data. Unfortunately as of the writing of this
+chapter PPDD is not available for kernel 2.2.13 or 2.2.14, so you
+will have to run the older 2.2.12 kernel (which is the stock
+kernel on many distributions in any case). You can get PPDD <a href="http://linux01.gwdg.de/~alatham/">http://linux01.gwdg.de/~alatham/</a>.</p>
+<p>Download PPDD, and unpack it in a suitable location, such as
+/usr/local/src/, there are several files you should read, most
+notable the README file, and once done install I would recommend
+reading the PPDDHow.txt file. Installation is rather simply with:</p>
+<pre>#make check_linux
+#make trial_patch
+#make apply_patch
+#make devices</pre>
+<p>This will first test the kernel source to make sure it's the
+right version and so on, then it will test the patches, then
+apply the patches proper, and then create the devices needed
+(similar to what BestCrypt does). At this point you need to
+recompile your kernel, first make sure you go into the
+configuration (via make config or make menuconfig or make
+xconfig), and enable the PPDD driver (in the Block devices
+section). Then save the config file and recompile the kernel as
+your normally would. Once that is done you will have to install
+the new kernel (copy it to /boot typically, edit lilo.conf and
+rerun lilo). Once you have rebooted you will want to build the
+tools for PPDD and install them with:</p>
+<pre>#make
+#make install</pre>
+<p>At this point you should be ready to use it, however I would
+recommend running the tests with:</p>
+<pre>#make test</pre>
+<p>They take a while to run, but it will save frustration later
+on if something is broken. Using PPDD is relatively simple, there
+are a number of utilities for creating, managing, encrypting file
+systems, and so on. You will also want to set the permissions and
+ownership on the /dev/xxxx that contains your encrypted data so
+that only root has access to it, PPDD will complain otherwise</p>
+<pre>#chown root:root /dev/hda3
+#chmod ugo-a /dev/hda3
+#ppddinit /dev/ppdd0 /dev/hda3
+#ppddsetup -s /dev/ppdd0 /dev/hda3
+#mke2fs -b 1024 /dev/ppdd0
+#mount /dev/ppdd0 /crypt</pre>
+<p>At this point you should have a directory called /crypt which
+is /dev/hda3 (although on df and the like it will show up as
+/dev/ppddx). I will cover how to encrypt you entire filesystem
+with PPDD, at a later date however (it is extensively documented
+though). </p>
+<p>&nbsp;</p>
+<h2>Hiding data</h2>
+<p>One issue many people forget that is the very act of
+encrypting data can draw attention. For example if a corporate
+administrator scanned workstations for files ending in .pgp, and
+you were the only one with files such as that.... Unfortunately
+most of these programs leave traces and are detectable. </p>
+<p>&nbsp;</p>
+<h3>StegHide</h3>
+<p>StegHide hides data in files such as sound and picture files
+where not all of the bits in a byte are used. Since the data is
+encrypted it will appear random, and proving that the data is
+actually there is difficult. The only downside is to store a one
+megabyte file you need a sound/picture file of several megabytes,
+which can be cumbersome (but hard drives and high speed access
+are becoming cheap so it's a moot point). You can get StegHide <a href="http://www.stego.com/">http://www.stego.com/</a>.</p>
+<p>&nbsp;</p>
+<h3>StegFS</h3>
+<p>Steganographic File System actually hides data on your
+harddrive, making it difficult to prove that it even exists. This
+can be very useful as the attacker first has to find the data,
+let alone break the strong encryption used to protect it. You can
+get StegFS <a href="http://ban.joh.cam.ac.uk/~adm36/StegFS/">http://ban.joh.cam.ac.uk/~adm36/StegFS/</a>.</p>
+<p>&nbsp;</p>
+<h3>OutGuess</h3>
+<p>OutGuess hides data in image files, meaning you can send files
+in a way that won't attract to much attention (and can't really
+be proved either). You can get it <a href="http://www.outguess.org/">http://www.outguess.org/</a>.</p>
+<p>&nbsp;</p>
+<h3>RubberHose</h3>
+<p>RubberHose is available <a href="http://www.rubberhose.org/">http://www.rubberhose.org/</a>.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 3/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#056e7077714576606c63776c60612b6a7762"><span class="__cf_email__" data-cfemail="701b0502043003151916021915145e1f0217">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

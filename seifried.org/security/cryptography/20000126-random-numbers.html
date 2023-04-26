@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Cryptography / Why Random Numbers Are Important For Security</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Why Random Numbers Are Important For Security</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#97fce2e5e3d7e4f2fef1e5fef2f3b9f8e5f0"><span class="__cf_email__" data-cfemail="6a011f181e2a190f030c18030f0e4405180d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2000</p>
+<hr>
+<p>January 26, 2000 - Modern computer security requires some
+level of encryption to be applied to various kinds of data, for
+example secure web transactions, or SSH. But something that often
+goes ignored is the fact that all good crypto relies on some
+degree of randomness, which if not fulfilled properly can lead to
+a significant loss in the strength of encryption. </p>
+<p>Most encryption algorithms require a source of random data,
+even some symmetric ciphers (where the secret is shared), either
+to generate new private/public keypairs, for session keys, for
+padding, or for other reasons. Most computers do not have a
+hardware based random number generator (RNG) available, so
+programmers have had to resort to software based techniques, to
+generate random numbers as best they can. Because these random
+numbers are generated in software, they are very rarely truly
+random, they are typically pseudo random (that is they appear
+random, but are not totally random). To generate random data you
+need a source of entropy, or random input. Some software RNG's
+will ask you to move the mouse, or type on the keyboard as a
+source of that entropy, others will take events such as hard
+drive activity, or network activity for their source of entropy.
+This typically works quite well for end user workstations (for
+example generating keypairs in PGP for Windows, or /dev/random in
+UNIX), but can be a problem in some cases, such as diskless
+network appliances with a network card, some flash ram, and a
+CPU. A network appliance that performs encryption (increasingly
+popular as VPN's grow) has no good sources of entropy, apart from
+network based events, which an attacker could manipulate to their
+advantage. Hardware RNG's produce truly random data (well close
+enough that analysis can't prove it otherwise), and software
+RNG's do not.</p>
+<p>So why is this important? Well your 168 bit 3DES encryption of
+network packets might not be working as advertised if the random
+data it uses to perform the encryption isn't truly random. If you
+are moving sensitive corporate data over the VPN, a good hardware
+based RNG is worth the money as compared to your R&amp;D plans
+being snagged by a competitor. Additionally most software based
+RNG's cannot create a lot of good data (most hardware based RNG's
+as well have limits), so if the machine is carrying a heavy
+crypto workload (say multiple tunnels, or many SSL based
+connections for an e-commerce site) you might need to purchase
+one of the higher end (and consequently more expensive) hardware
+based RNG's. While expensive, a good hardware RNG can result in a
+lower insurance rate for e-commerce sites and similar endeavors
+(generally speaking the more money you spend making something
+safer the likelier an insurance company is to insure it at a
+reasonable rate). Please note however that while a hardware based
+RNG will increase security, it can be rendered useless if there
+are other flaws in the system (say storing credit card numbers in
+a text file). Properly deployed a hardware RNG is a good security
+enhancement.</p>
+<p>So just how does a hardware RNG work? I'm glad you asked (or
+this article would be too short to post). Generally speaking
+there are a few things that generate random events that you can
+measure and are truly random. One of the best sources of random
+events is radioactive decay, however there are some major
+problems with this, such as getting radioactive material, storing
+it safely, and getting your boss to sign the PO. There are also
+numerous laws regarding the purchase, transport, and so on of
+radioactive material, so generally speaking unless you are a
+government or major corporation this is out of reach. A good
+alternative that is popular with some manufacturers (due to it's
+minimal power requirements) is to measure the thermal noise of a
+resistor. One example of this is Intel, whose 810 chipset (and
+future 8xx chipset) has a built in hardware RNG, which can be
+accessed via software such as RSA's BSAFE Crypto-C and Crypto-J
+products (essentially RSA components for software like secure web
+servers that use SSL). There are several problems with the Intel
+hardware RNG, the primary one being that you must access the RNG
+through a software component that Intel charges a licensing fee
+for (I assume if you have to ask what it costs you are to poor to
+pay for it), so chances are it will not be available for Linux,
+*BSD and other OpenSource operating systems. A similar device is
+the ComScire QNG hardware RNG, which uses the same technique
+(measures thermal noise in a resistor) and connects to the
+computer via a parallel port, it generates 10 to 20 kilobits per
+second, which would be suitable for a medium sized secure web
+server or similar. The main advantage of this product however is
+the ease of use, plug it into the parallel port, install some
+drivers and off you go (drivers are only available for DOS and NT
+from the company, however there are independently written Linux
+drivers available and they will give you the necessary technical
+specifications to write drivers if you ask), so you can use it on
+an existing system (for example as an upgrade to an existing
+e-commerce server), this device is also relatively inexpensive,
+at $295 USD. The next major family is based on an electrical
+circuit consisting of several transistors or diodes that are
+wired up in such a way that they generate random electrical
+noise. This can then be fed straight into an serial port with a
+good UART, or some additional hardware can translate it into a
+string of bits and feed it to a serial or parallel port. The
+advantage of these is they are ridiculously easy to design and
+manufacture, using commodity parts (you can build your own with
+minimal effort), and the simpler something is, the easier it is
+to audit and protect. There are a variety of these on the market,
+the SG100 being a good example, it produces a stream of noise
+which is fed directly to the serial port, the UART converts it
+into digital form and then software can make use of the
+bitstream. This product is extremely cheap (at $140 USD), and
+software examples are available (so it's the only hardware RNG
+that will support UNIX easily I believe, the rest only seem to
+support MS products).</p>
+<h2>Summary</h2>
+<p>Most people don't need a hardware based random number
+generator, but the need is growing. As e-commerce grows in
+popularity and consumers start pounding on your site, chances are
+the random data used to establish session keys and the like will
+be of reduced quality (especially at peak times). However the
+real area where hardware RNG's will be needed is for IPSec (IP
+Security, encrypted TCP-IP networks), especially for high
+security environments where connections are rekeyed often and
+there are many connections (like 300 remote users telecommuting
+to work). While the chances of an attacker intercepting the data
+stream and decrypting it - as opposed to just breaking in to your
+server, are slim, the possibility exists (and will grow in
+future). <br>
+Kurt Seifried (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="acdfc9c5cadec5c9c8ecdfc9cfd9dec5d8d5dcc3ded8cdc082cfc3c1">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>) is a security analyst
+and the author of the &quot;Linux Administrators Security
+Guide&quot;, a source of natural fiber and Linux security, part
+of a complete breakfast.</p>
+<p>&nbsp;</p>
+<p><a href="http://www.protego.se/sg100_en.htm">http://www.protego.se/sg100_en.htm</a>
+- SG100 random number generator<br>
+<a href="http://home.rmi.net/~comscire/">http://home.rmi.net/~comscire/</a>
+- ComScire QNG random number generator<br>
+<a href="http://bukharin.hiof.no/~hnh/qng/qng.c">http://bukharin.hiof.no/~hnh/qng/qng.c</a>
+- ComScire QNG source code for Linux<br>
+<a href="http://valley.interact.nl/av/com/orion/home.html">http://valley.interact.nl/av/com/orion/home.html</a>
+- ORION random number generator<br>
+<a href="http://www.fringeware.com/AtomAge/">http://www.fringeware.com/AtomAge/</a>
+- Atom-Age random number generator<br>
+<a href="http://www.tundra.com/index_prod.cfm?tree_id=100385">http://www.tundra.com/index_prod.cfm?tree_id=100385</a>
+- Random bit generator in a chip<br>
+<a href="http://www.intel.com.ec/design/chipsets/rng/faq.htm">http://www.intel.com.ec/design/chipsets/rng/faq.htm</a>
+- General Intel documentation on their hardware RNG<br>
+<a href="http://www.rsasecurity.com/products/bsafe/intel/">http://www.rsasecurity.com/products/bsafe/intel/</a>
+- Press release on the RSA software that can use the Intel RNG<br>
+<a href="http://world.std.com/~wware/hw-rng.html">http://world.std.com/~wware/hw-rng.html</a>
+- Random noise generator information<br>
+<a href="http://webnz.com/robert/true_rng.html">http://webnz.com/robert/true_rng.html</a>
+- Random number generators information</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 6/24/2002</p>
+<p>Copyright Kurt Seifried 2000</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

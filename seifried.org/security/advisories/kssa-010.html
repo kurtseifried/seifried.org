@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried - Security / Security Advisories / KSSA-010 MS-DOS Reserved Device Name Vulnerability In Symantec Norton Anti-Virus</TITLE>
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
+<H1><STRONG>Kurt Seifried Security Advisory 010 (KSSA-010)</STRONG></H1>
+<P>Created by Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#ea819f989eaa998f838c98838f8ec485988d"><span class="__cf_email__" data-cfemail="3d56484f497d4e58545b4f54585913524f5a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>
+</P>
+<P><A HREF="http://seifried.org/security/advisories/kssa-010.html">http://seifried.org/security/advisories/kssa-010.html</A>,
+<A HREF="/cdn-cgi/l/email-protection#701b0502043003151916021915145e1f0217"><span class="__cf_email__" data-cfemail="3d56484f497d4e58545b4f54585913524f5a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<P>Version 1.0 &ndash; 01/10/2004</P>
+<HR>
+<P><STRONG>Title: MS-DOS Reserved Device Name Vulnerability In Symantec Norton Anti-Virus </STRONG>
+</P>
+<P>Multiple antivirus products, such as Symantec Norton AntiVirus
+9.05.15 fail to properly access and scan files and directories that
+use reserved MS-DOS device names.
+</P>
+<P><B>CVE / CERT / BID / Other identifiers:</B></P>
+<P>CVE: CAN-2004-0920</P>
+<P><STRONG>Issue date:</STRONG></P>
+<P>1/10/2004</P>
+<P><STRONG>Who should read this advisory:</STRONG></P>
+<P>Anyone using Symantec Norton AntiVirus, or other antivirus
+products that may be affected. Please note that not all antivirus
+products are vulnerable, however extensive testing has not yet been
+conducted against all available antivirus products (as there are
+several dozen).</P>
+<P><STRONG>Author and contact info:</STRONG></P>
+<P>This advisory is copyright 2004, Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#48233d3a3c083b2d212e3a212d2c66273a2f"><span class="__cf_email__" data-cfemail="3a514f484e7a495f535c48535f5e1455485d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+<A HREF="http://www.seifried.org/">http://www.seifried.org/</A>
+</P>
+<P><STRONG>Overview:</STRONG></P>
+<P>MS-DOS reserved device names are a hold over from the original
+days of Microsoft DOS. The reserved MS-DOS device names represent
+devices, such as &ldquo;lpt1&rdquo; (the first printer port), &ldquo;com1&rdquo;
+(the first serial communication port) and so on. These names are
+reserved for devices, and normally files and directories cannot be
+named with these reserved names. Many products such as backup
+software and antivirus software do not deal properly with reserved
+MS-DOS device names. Please note that these reserved names can also
+have extensions such as &ldquo;.exe&rdquo;, with such extensions the
+same problems occur in most cases.
+</P>
+<P><STRONG>Affected software:</STRONG></P>
+<P>Symantec Norton AntiVirus 2003 and 2004 are confirmed vulnerable,
+other Symantec products are affected as well.
+</P>
+<P><STRONG>Impact:</STRONG></P>
+<P>A virus/trojan/malcode can avoid detection on a system normally
+protected by Symantec Norton AntiVirus. Back doors and other spyware
+can avoid detection by using reserved MS-DOS device names. During
+full system scans Symantec Norton AntiVirus will not detect known
+viruses, informing the user that no viruses are present.
+</P>
+<P><STRONG><FONT COLOR="#000000">Details:</FONT></STRONG></P>
+<P STYLE="margin-bottom: 0in">On Windows 2000 and XP for example if
+you execute the command:</P>
+<PRE STYLE="margin-left: 0.79in; margin-bottom: 0.2in">C:\&gt; mkdir prn</PRE><P>
+You will receive the error message:</P>
+<PRE STYLE="margin-left: 0.79in; margin-bottom: 0.2in">The directory name is invalid</PRE><P>
+However if you use a Universal Naming Convention (UNC) path name to
+create the directory Windows will allow it:</P>
+<PRE STYLE="margin-left: 0.79in; margin-bottom: 0.2in">C:\&gt; mkdir \\.\C:\prn</PRE><P>
+This also applies to copying and moving files that use reserved
+MS-DOS device names.</P>
+<P>By placing the virus in a file that uses a reserved MS-DOS device
+name, or by placing the virus in a file that uses a reserved MS-DOS
+device name it is possible to avoid detection by Symantec Norton
+AntiVirus (and other products).
+</P>
+<P>Take a copy of the eicar.com file (or another virus) and copy it
+into a reserved MS-DOS device name:</P>
+<PRE STYLE="margin-left: 0.79in; margin-bottom: 0.2in">copy eicar.com \\.\C:\prn</PRE><P>
+Then attempt to scan the file, normally antivirus software would
+detect it immediately, however in this case it will not be detected.
+</P>
+<P>If you right click on a file that uses a reserved MS-DOS device
+name that contains a virus and choose &ldquo;Scan with Norton
+AntiVirus&rdquo; it will fail, possibly with the error message
+</P>
+<P STYLE="margin-left: 0.79in">&quot;Unable to open the file &lt;file
+name&gt;. The file is in use by another application or you don't have
+permission to open the file.&quot; (3019,2)
+</P>
+<P>Symantec Norton AntiVirus appears to have particular problems with
+&ldquo;prn&rdquo; and &ldquo;lpt1&rdquo;, in some cases the scanner
+will detect and remove other filenames such as &ldquo;lpt2&rdquo;,
+&ldquo;lpt3&rdquo; and &ldquo;com1&rdquo;.
+</P>
+<P>Symantec Norton AntiVirus appears to be most vulnerable to this
+problem during a full system scan, on demand scanning appears the
+least vulnerable (once the file is accessed it is usually detected)
+and right clicking on a directory has varrying degrees of success,
+from no detection to successful detection and removal. Symantec
+Norton AntiVirus appears vulnerable to reserved device names with and
+without extensions such as &ldquo;.exe&rdquo;.
+</P>
+<P><BR><BR>
+</P>
+<DIV ALIGN=RIGHT>
+<TABLE WIDTH=957 BORDER=1 CELLPADDING=4 CELLSPACING=3>
+<COL WIDTH=226>
+<COL WIDTH=229>
+<COL WIDTH=228>
+<COL WIDTH=225>
+<THEAD>
+<TR VALIGN=TOP>
+<TH WIDTH=226>
+<P>File name / Action</P>
+</TH>
+<TH WIDTH=229>
+<P>System scan</P>
+</TH>
+<TH WIDTH=228>
+<P>Scan directory</P>
+</TH>
+<TH WIDTH=225>
+<P>File Access / On demand</P>
+</TH>
+</TR>
+</THEAD>
+<TBODY>
+<TR VALIGN=TOP>
+<TD WIDTH=226>
+<P>D:\eicar.com</P>
+</TD>
+<TD WIDTH=229>
+<P>Yes</P>
+</TD>
+<TD WIDTH=228>
+<P>Yes</P>
+</TD>
+<TD WIDTH=225>
+<P>Yes</P>
+</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH=226>
+<P>D:\prn</P>
+</TD>
+<TD WIDTH=229>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=228>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=225>
+<P>Yes</P>
+</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH=226>
+<P>D:\prn.exe</P>
+</TD>
+<TD WIDTH=229>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=228>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=225>
+<P>Yes</P>
+</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH=226>
+<P>D:\prn\eicar.com</P>
+</TD>
+<TD WIDTH=229>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=228>
+<P>No</P>
+</TD>
+<TD WIDTH=225>
+<P>Yes</P>
+</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH=226>
+<P>D:\prn\prn</P>
+</TD>
+<TD WIDTH=229>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=228>
+<P>No</P>
+</TD>
+<TD WIDTH=225>
+<P>Yes</P>
+</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD WIDTH=226>
+<P>D:\prn\prn.exe</P>
+</TD>
+<TD WIDTH=229>
+<P><BR>
+</P>
+</TD>
+<TD WIDTH=228>
+<P>No</P>
+</TD>
+<TD WIDTH=225>
+<P>Yes</P>
+</TD>
+</TR>
+</TBODY>
+</TABLE>
+</DIV>
+<P><BR><BR>
+</P>
+<P><STRONG>Some examples of MS-DOS reserved device names include: </STRONG>
+</P>
+<UL>
+<LI><P><STRONG>aux</STRONG></P>
+<LI><P><STRONG>com1</STRONG></P>
+<LI><P><STRONG>com2</STRONG></P>
+<LI><P><STRONG>com3</STRONG></P>
+<LI><P><STRONG>com4</STRONG></P>
+<LI><P><STRONG>com5</STRONG></P>
+<LI><P><STRONG>com6</STRONG></P>
+<LI><P><STRONG>com7</STRONG></P>
+<LI><P><STRONG>com8</STRONG></P>
+<LI><P><STRONG>com9</STRONG></P>
+<LI><P><STRONG>con</STRONG></P>
+<LI><P><STRONG>lpt1</STRONG></P>
+<LI><P><STRONG>lpt2</STRONG></P>
+<LI><P><STRONG>lpt3</STRONG></P>
+<LI><P><STRONG>lpt4</STRONG></P>
+<LI><P><STRONG>lpt5</STRONG></P>
+<LI><P><STRONG>lpt6</STRONG></P>
+<LI><P><STRONG>lpt7</STRONG></P>
+<LI><P><STRONG>lpt8</STRONG></P>
+<LI><P><STRONG>lpt9</STRONG></P>
+<LI><P><STRONG>prn</STRONG></P>
+</UL>
+<P><STRONG>Testing was done on both Windows 2000 and XP with
+essentially the same results in all cases. </STRONG>
+</P>
+<P><STRONG>Solutions and workarounds:</STRONG></P>
+<P>Ensure that no directories or files using reserved MS-DOS device
+names are in use.
+</P>
+<P><STRONG>Additional information:</STRONG></P>
+<P>This vulnerability eixsts in a number of products, and more
+generic MS-DOS reserved device name issues exist in other software,
+ranging from the Apache HTTPD server on Windows to email clients and
+backup software.
+</P>
+<P><STRONG>References:</STRONG></P>
+<P>None</P>
+<P><A HREF="http://support.microsoft.com/default.aspx?scid=kb;en-us;103168">http://support.microsoft.com/default.aspx?scid=kb;en-us;103168</A></P>
+<P><A HREF="http://service1.symantec.com/SUPPORT/nav.nsf/docid/2003061214465806?OpenDocument&amp;src=_mi">http://service1.symantec.com/SUPPORT/nav.nsf/docid/2003061214465806?OpenDocument&amp;src=_mi</A></P>
+<P><STRONG>A note on eicar.com</STRONG></P>
+<P>Please note that although many people consider the &ldquo;legitimate&rdquo;
+eicar.com test virus should only be detected when it is in a file
+names eicar.com Norton AntiVirus will detect it regardless of the
+filename and extension.
+</P>
+<P><B>History:</B></P>
+<P>June 2004 &ndash; Vendor notified via iDEFENSE</P>
+<P><STRONG>Other acknowledgements / thanks / greetings / information:</STRONG></P>
+<P>None</P>
+<P><STRONG>URL for advisory, signature and keys:</STRONG></P>
+<P><A HREF="http://seifried.org/security/advisories/kssa-010.html">http://seifried.org/security/advisories/kssa-010.html</A>
+</P>
+<P><A HREF="http://seifried.org/security/advisories/kssa-010.html.asc">http://seifried.org/security/advisories/kssa-010.html.asc</A></P>
+<P><BR><BR>
+</P>
+<HR>
+<P>Permission is granted for copying and circulating this Bulletin to
+the Internet community for the purpose of alerting them to problems,
+if and only if, the bulletin is not edited or changed in any way, is
+attributed to Kurt Seifried <A HREF="/cdn-cgi/l/email-protection#5b302e292f1b283e323d29323e3f7534293c"><span class="__cf_email__" data-cfemail="9bf0eee9efdbe8fef2fde9f2feffb5f4e9fc">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+and provided such reproduction and/or distribution is performed for
+non-commercial purposes.</P>
+<P>Any other use of this information is prohibited. Kurt Seifried
+<A HREF="/cdn-cgi/l/email-protection#cfa4babdbb8fbcaaa6a9bda6aaabe1a0bda8"><span class="__cf_email__" data-cfemail="42293730360231272b24302b27266c2d3025">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A> is not
+liable for any misuse of this information by any third party.</P>
+<HR>
+<P>Last updated 1/10/2004</P>
+<P>Copyright Kurt Seifried 2004</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

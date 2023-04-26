@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Articles / Devil in the details - why package signing matters</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Devil in the details - why package signing matters</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#90fbe5e2e4d0e3f5f9f6e2f9f5f4beffe2f7"><span class="__cf_email__" data-cfemail="b5dec0c7c1f5c6d0dcd3c7dcd0d19bdac7d2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>This article has been updated on October 24th. I love it when
+I get to write a happy ending. See section marked
+&quot;Update&quot;.</p>
+<p>&nbsp;</p>
+<p>On October 23rd as I was downloading Red Hat 7.2 release I
+noticed something strange. While idly checking the package
+signatures on the files I had two of them weren't signed
+correctly. At first I thought it might be an issue in GnuPG or
+rpm, so I ran all the Red Hat 7.1 files through an &quot;rpm
+-K&quot; and examined the output. Everything there worked fine
+(as it always has). But when I tried it on the 7.2 files the same
+error came up (edited for brevity):</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="3447515d52465d515074425b595d40">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> RPMS]$ rpm -K *.rpm
+pam-0.75-14.i386.rpm: md5 gpg OK
+pam-devel-0.75-14.i386.rpm: md5 gpg OK
+redhat-release-7.2-1.noarch.rpm: md5 OK
+rmt-0.4b22-6.i386.rpm: md5 gpg OK
+rpmdb-redhat-7.2-0.20010924.i386.rpm: md5 OK
+ttfonts-ko-1.0-10.noarch.rpm: md5 gpg OK</pre>
+</blockquote>
+<p>Huh. redhat-release and rpmdb-redhat are not signed correctly?
+Has distro.ibiblio.org been broken into? So I downloaded those
+files from another server. Same result. </p>
+<p>No I start to seriously wonder what is going. Have several ftp
+servers been broken into, and the files replaced? This seems
+rather unlikely since every server I checked it was the same,
+only rpmdb-redhat and redhat-release were not properly signed.
+This leaves three other possible causes, both undesirable. The
+first is that someone managed to subvert the process by which
+mirror sites get files from Red Hat. Via DNS poisoning perhaps,
+or breaking into the Red Hat distribution server. This is exactly
+the kind of attack that proper cryptographic signing of packages
+will defeat however. Even if the attacker pulls of a perfect
+attack, switches the packages around, and leaves without a trace
+any end users that tries to verify the package signatures will
+very quickly find out these are not the original packages that
+were issued by the vendor. The other option is that Red Hat had a
+failure in it's security process somewhere, and the packages were
+not signed, managed to slip through quality control, and were
+released to the public. Both would indicate a major failure in
+the security process and practices of Red Hat as a company and be
+cause for concern by any customer. To make a bad analogy: would
+you buy a new car if you noticed pieces were missing? </p>
+<p>The third option is what worries me the most. Red Hat made a
+conscious decision not to sign these packages. The actual reason
+for this escapes me. These packages were signed in the Red Hat
+7.1 file distribution (contrary to what Marty Wesley Red Hat OS
+Product Manager is quoted as saying in an email forwarded to me
+by Brian McWilliams, a reporter for NewsBytes) [minor spell check
+fixes]:</p>
+<blockquote>
+<pre>While security should always be an important concern, this is not a
+security problem. These two packages are not signed and have not been
+signed since they existed. Contrary to the report, these
+packages were not signed for RHL7.1 either.
+
+rpmdb-redhat = This is a database listing of files included with the Red
+Hat distribution. Think of it like an index. It is simply an
+informational database, thus the worst any attacker could do is change
+the information in the database so that every time a customer performed
+an inquiry it replied with an erroneous message.
+
+redhat-release = This is the package that identifies the system as Red
+Hat Linux 7.2 (Enigma) when you login. The worst case for us is if this
+package is changed, it break Red Hat Network as it uses this file to
+determine what version of Red Hat they are using.
+
+As far as the part of the report that addresses exploits when running as
+root,
+You have to be root to install packages, so this isn't an exploit.
+If someone wants to modify software on a machine and they have root
+access, there
+are far easier ways to cause damage (like deleting every file on
+the machine). Why bother installing a bogus rpm?
+
+Marty</pre>
+</blockquote>
+<p>There are several significant problems and completely
+incorrect statements in this message. The first of course is that
+the packages have never been signed since they existed (perhaps
+he means Red Hat 7.2 betas and not 7.1 and before). The second
+major problem is the statement &quot;thus the worst any attacker
+could do is change the information in the database so that every
+time a customer performed an inquiry it replied with an erroneous
+message.&quot;. This is completely untrue. An attacker could
+easily add a file to the rpm package that creates a backdoor,
+installs Trojan software, adds user accounts, or any other number
+of possibilities. The other attack would be to add a script to
+the package, this script could add users and groups, create
+backdoors using installed software like telnet, ssh, bash or
+login, or could even call rpm to install packages from remote
+sites. The same goes for the statement about redhat-release. The
+last section is completely wrong as Marty misses the point of the
+advisory entirely. The attacker doesn't need root access on your
+system. He simply needs the subvert the files you are installing
+from, for example by breaking into an ftp server, or poisoning
+your DNS cache so that you are redirected to the attackers site
+instead of a legitimate site. Even if you take the time and care
+to verify the files signatures you are left with two unsigned
+packages that cannot be verified. The MD5 sums of the packages
+are not available in any trusted locations (i.e. Red Hat
+website), so they cannot be easily used to verify integrity. So
+what is the user to do? Modify the default install so they do not
+install these packages (redhat-release is most often installed by
+default). </p>
+<p>Ultimately this practice is extremely dangerous for one simple
+reason. Cryptographic signing of rpm packages is the primary
+defense against attackers modifying these packages before you
+install them. By not signing some packages Red Hat has started
+the training process that will result in people routinely
+installing RPM packages that are not correctly signed, such as
+security updates. This is completely unacceptable. This problem
+will continue until Red Hat (like most other vendors) religiously
+signs all packages and encourages end users to check these
+signatures. Several vendors have already taken this step, making
+the default in update software to check the signature and reject
+the upgrade package if it is not signed properly. </p>
+<p>&nbsp;</p>
+<p><strong>Reference links:</strong></p>
+<p>Seifried.org - <a href="http://seifried.org/security/advisories/kssa-002.html">http://seifried.org/security/advisories/kssa-002.html</a>
+</p>
+<p>NewsBytes - <a href="http://www.newsbytes.com/news/01/171419.html">Beware
+New Red Hat Linux Release, Expert Warns</a> </p>
+<p>NewsBytes - <a href="http://www.newsbytes.com/news/01/171431.html">Red
+Hat Denies Security Flaw in `Enigma'</a></p>
+<p>&nbsp;</p>
+<p><strong>Update</strong></p>
+<p>Well Red Hat has emailed me, and to quote Preston Borwn in two
+seperate emails:</p>
+<blockquote>
+<pre>We have now signed them.&nbsp; Our MD5SUM files for the ISO images are now
+signed as well with our GPG key, to allay any potential fears of mischief.</pre>
+</blockquote>
+<p>And:</p>
+<blockquote>
+<pre>We will sign these packages going forward.</pre>
+</blockquote>
+<p>This makes me very happy and is the right thing to do.
+Hopefully other vendors will learn from this and not repeat the
+mistakes made by Red Hat, but if they do hoepfully they will
+respond as quickly, and ultimately as correctly as Red Hat has. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 24/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

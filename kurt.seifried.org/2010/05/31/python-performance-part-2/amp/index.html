@@ -1,0 +1,168 @@
+<!doctype html>
+<html amp lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Python Performance Part 2"/>
+<meta property="og:url" content="http://kurt.seifried.org/2010/05/31/python-performance-part-2/"/>
+<meta property="og:description" content="Python Performance Part 1 Python Performance Part 3 Python Performance Part 4 In part one I covered a basic introduction to threads and the producer-consumer pattern. Now in part two I&#8217;m goin…"/>
+<meta property="article:published_time" content="2010-05-31T08:28:47+00:00"/>
+<meta property="article:modified_time" content="2010-05-31T19:24:34+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<title>Python Performance Part 2 &#8211; Kurt Seifried</title>
+<link rel="canonical" href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/"/>
+<script src="https://cdn.ampproject.org/v0.js" async></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic,700,700italic">
+<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"BlogPosting","mainEntityOfPage":"http:\/\/kurt.seifried.org\/2010\/05\/31\/python-performance-part-2\/","publisher":{"@type":"Organization","name":"Kurt Seifried","logo":{"@type":"ImageObject","url":"https:\/\/s2.wp.com\/i\/favicons\/apple-touch-icon-60x60.png","width":60,"height":60}},"headline":"Python Performance Part 2","datePublished":"2010-05-31T02:28:47+00:00","dateModified":"2010-05-31T13:24:34+00:00","author":{"@type":"Person","name":"kurtseifried"},"image":{"@type":"ImageObject","url":"http:\/\/2.gravatar.com\/avatar\/8b588344181b6098f508e9741ac36e0e?s=200&amp;d=identicon&amp;r=G","width":200,"height":200}}</script>
+<style amp-custom>.alignright{float:right;}.alignleft{float:left;}.aligncenter{display:block;margin-left:auto;margin-right:auto;}.amp-wp-enforced-sizes{max-width:100%;margin:0 auto;}.amp-wp-unknown-size img{object-fit:contain;}.amp-wp-content,.amp-wp-title-bar div{margin:0 auto;max-width:450px;}html{background:#0a89c0;}body{background:#fff;color:#353535;font-family:'Merriweather','Times New Roman',Times,Serif;font-weight:300;line-height:1.75em;}p,ol,ul,figure{margin:0 0 1em;padding:0;}a,a:visited{color:#0a89c0;}a:hover,a:active,a:focus{color:#353535;}blockquote{color:#353535;background:rgba(127,127,127,.125);border-left:2px solid #0a89c0;margin:8px 0 24px 0;padding:16px;}blockquote p:last-child{margin-bottom:0;}.amp-wp-meta,.amp-wp-header div,.amp-wp-title,.wp-caption-text,.amp-wp-tax-category,.amp-wp-tax-tag,.amp-wp-comments-link,.amp-wp-footer p,.back-to-top{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen-Sans","Ubuntu","Cantarell","Helvetica Neue",sans-serif;}.amp-wp-header{background-color:#0a89c0;}.amp-wp-header div{color:#fff;font-size:1em;font-weight:400;margin:0 auto;max-width:calc(840px - 32px);padding:.875em 16px;position:relative;}.amp-wp-header a{color:#fff;text-decoration:none;}.amp-wp-header .amp-wp-site-icon{background-color:#fff;border:1px solid #fff;border-radius:50%;position:absolute;right:18px;top:10px;}.amp-wp-article{color:#353535;font-weight:400;margin:1.5em auto;max-width:840px;overflow-wrap:break-word;word-wrap:break-word;}.amp-wp-article-header{align-items:center;align-content:stretch;display:flex;flex-wrap:wrap;justify-content:space-between;margin:1.5em 16px 1.5em;}.amp-wp-title{color:#353535;display:block;flex:1 0 100%;font-weight:900;margin:0 0 .625em;width:100%;}.amp-wp-meta{color:#696969;display:inline-block;flex:2 1 50%;font-size:.875em;line-height:1.5em;margin:0;padding:0;}.amp-wp-article-header .amp-wp-meta:last-of-type{text-align:right;}.amp-wp-article-header .amp-wp-meta:first-of-type{text-align:left;}.amp-wp-byline amp-img,.amp-wp-byline .amp-wp-author{display:inline-block;vertical-align:middle;}.amp-wp-byline amp-img{border:1px solid #0a89c0;border-radius:50%;position:relative;margin-right:6px;}.amp-wp-posted-on{text-align:right;}.amp-wp-article-featured-image{margin:0 0 1em;}.amp-wp-article-featured-image amp-img{margin:0 auto;}.amp-wp-article-featured-image.wp-caption .wp-caption-text{margin:0 18px;}.amp-wp-article-content{margin:0 16px;}.amp-wp-article-content ul,.amp-wp-article-content ol{margin-left:1em;}.amp-wp-article-content amp-img{margin:0 auto;}.amp-wp-article-content amp-img.alignright{margin:0 0 1em 16px;}.amp-wp-article-content amp-img.alignleft{margin:0 16px 1em 0;}.wp-caption{padding:0;}.wp-caption.alignleft{margin-right:16px;}.wp-caption.alignright{margin-left:16px;}.wp-caption .wp-caption-text{border-bottom:1px solid #c2c2c2;color:#696969;font-size:.875em;line-height:1.5em;margin:0;padding:.66em 10px .75em;}amp-carousel{background:#c2c2c2;margin:0 -16px 1.5em;}amp-iframe,amp-youtube,amp-instagram,amp-vine{background:#c2c2c2;margin:0 -16px 1.5em;}.amp-wp-article-content amp-carousel amp-img{border:none;}amp-carousel>amp-img>img{object-fit:contain;}.amp-wp-iframe-placeholder{background:#c2c2c2 url(http://s2.wp.com/wp-content/plugins/amp/assets/images/placeholder-icon.png) no-repeat center 40%;background-size:48px 48px;min-height:48px;}.amp-wp-article-footer .amp-wp-meta{display:block;}.amp-wp-tax-category,.amp-wp-tax-tag{color:#696969;font-size:.875em;line-height:1.5em;margin:1.5em 16px;}.amp-wp-comments-link{color:#696969;font-size:.875em;line-height:1.5em;text-align:center;margin:2.25em 0 1.5em;}.amp-wp-comments-link a{border-style:solid;border-color:#c2c2c2;border-width:1px 1px 2px;border-radius:4px;background-color:transparent;color:#0a89c0;cursor:pointer;display:block;font-size:14px;font-weight:600;line-height:18px;margin:0 auto;max-width:200px;padding:11px 16px;text-decoration:none;width:50%;-webkit-transition:background-color 0.2s ease;transition:background-color 0.2s ease;}.amp-wp-footer{border-top:1px solid #c2c2c2;margin:calc(1.5em - 1px) 0 0;}.amp-wp-footer div{margin:0 auto;max-width:calc(840px - 32px);padding:1.25em 16px 1.25em;position:relative;}.amp-wp-footer h2{font-size:1em;line-height:1.375em;margin:0 0 .5em;}.amp-wp-footer p{color:#696969;font-size:.8em;line-height:1.5em;margin:0 85px 0 0;}.amp-wp-footer a{text-decoration:none;}.back-to-top{bottom:1.275em;font-size:.8em;font-weight:600;line-height:2em;position:absolute;right:16px;}.amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de{text-decoration:underline;}</style>
+</head>
+<body class="">
+<header id="#top" class="amp-wp-header">
+<div>
+<a href="http://kurt.seifried.org">
+Kurt Seifried </a>
+</div>
+</header>
+<article class="amp-wp-article">
+<header class="amp-wp-article-header">
+<h1 class="amp-wp-title">Python Performance Part 2</h1>
+<div class="amp-wp-meta amp-wp-byline">
+<amp-img src="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=24&#038;d=identicon&#038;r=g" width="24" height="24" layout="fixed"></amp-img>
+<span class="amp-wp-author author vcard">kurtseifried</span>
+</div>
+<div class="amp-wp-meta amp-wp-posted-on">
+<time datetime="2010-05-31T02:28:47+00:00">
+7 years ago </time>
+</div>
+</header>
+<div class="amp-wp-article-content">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/">Python Performance Part 1</a><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/"></a><br/><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/">Python Performance Part 3</a><br/><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/">Python Performance Part 4</a></p>
+<p>In part one I covered a basic introduction to threads and the producer-consumer pattern. Now in part two I’m going to cover some (unfortunately common) pathological cases where threading in Python can make things much worse.</p>
+<p><strong>An example of when threading makes things worse</strong></p>
+<p>So last week we covered basic Python threading strategies and work queues, so if you have a program and want to speed it up simply thread it and it’ll run faster, right? Wrong. For certain types of workloads and computation using threading in Python will make things worse (in some cases much worse).</p>
+<p>Take for example a simplified program (courtesy of David Beazley[David Beazley]) that does some number crunching (e.g. counting from a large number down to zero) several times. This eliminates a lot of variables (memory, disk IO, network IO, etc.) and should run very quickly on any modern CPU. If we want to count down from the large number twice it should take about as long to do it sequentially as in parallel since our problem is CPU bound right?</p>
+<p>Let’s try it:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680"><col width="325"/><col width="325"/><tbody><tr><td width="325">count_sequential.py</td>
+<td width="325"></td>
+</tr><tr><td width="325">
+<pre>#!/usr/bin/env python&#13;
+import time&#13;
+&#13;
+def count(n):&#13;
+ while n &gt; 0:&#13;
+ n -= 1&#13;
+&#13;
+start_time = time.time()&#13;
+count(100000000)&#13;
+count(100000000)&#13;
+stop_time = time.time()&#13;
+elapsed_time = stop_time - start_time&#13;
+print elapsed_time&#13;
+</pre>
+</td>
+<td width="325"># a very simple count down function# start time
+<p># stop time</p>
+<p># elapsed time (roughly)</p></td>
+</tr></tbody></table><p>On my machine with three runs I got run times of 17.37, 17.10 and 17.34 seconds which is pretty consistent.</p>
+<p>And the threaded version:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680"><col width="325"/><col width="325"/><tbody><tr><td width="325">count_threaded.py</td>
+<td width="325"></td>
+</tr><tr><td width="325">
+<pre>#!/usr/bin/env python&#13;
+import time&#13;
+from threading import Thread&#13;
+&#13;
+def count(n):&#13;
+ while n &gt; 0:&#13;
+ n -= 1&#13;
+&#13;
+start_time = time.time()&#13;
+t1 = Thread(target=count,args=(100000000,))&#13;
+t1.start()&#13;
+t2 = Thread(target=count,args=(100000000,))&#13;
+t2.start()&#13;
+t1.join(); t2.join() &#13;
+stop_time = time.time()&#13;
+elapsed_time = stop_time - start_time&#13;
+print elapsed_time&#13;
+</pre>
+</td>
+<td width="325"></td>
+</tr></tbody></table><p>On my machine with three runs I got run times of 23.14, 23.11 and 23.51 seconds which is pretty consistent as well. It is also quite a bit slower than the sequential version of this program (roughly 33% slower than the sequential version!). In the case of David Beazley he reports the threaded version almost taking twice as long on his system. Much like David Beazley I also tried running the threaded version of the Python code on a single CPU, in the case of Linux you can use the “taskset” command to bind a program to a particular CPU. I also got the same results he did (roughly speaking), one a single CPU the threaded version of the counting program took only 19.15, 19.38 and 19.29 seconds.</p>
+<p>So we have two rather interesting questions: Why does the sequential version of the program take so much less time, and why does the threaded version run faster on a single CPU then when it runs across multiple CPU cores?</p>
+<p><strong>Why threading doesn’t always work as expected – the GIL</strong></p>
+<p>This unexpected behavior is caused by the Global Interpreter Lock (GIL):</p>
+<blockquote><p><em>A </em><em><strong>Global Interpreter Lock</strong></em><em> (</em><em><strong>GIL</strong></em><em>) is a </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Mutual_exclusion"><em>mutual exclusion</em></a></span><em> </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Lock_%28computer_science%29"><em>lock</em></a></span><em> held by a </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Programming_language"><em>programming language</em></a></span><em> </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Interpreter_%28computing%29"><em>interpreter</em></a></span><em> </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Thread_%28computer_science%29"><em>thread</em></a></span><em> to avoid sharing code that is not </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Thread-safe"><em>thread-safe</em></a></span><em> with other threads. There is always one GIL for one interpreter </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Process_%28computing%29"><em>process</em></a></span><em>.</em></p>
+<p><em>Usage of a Global Interpreter Lock in a language effectively limits </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Concurrency_%28computer_science%29"><em>concurrency</em></a></span><em> of a single interpreter process with multiple threads — there is no or very little increase in speed when running the process on a </em><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://en.wikipedia.org/wiki/Multiprocessor"><em>multiprocessor</em></a></span><em> machine. Due to signaling with a CPU-bound thread, it can cause a significant slowdown, even on single processors.</em></p></blockquote>
+<p>This is largely what makes threaded programming in Python easy (you have no real worries about concurrency since only one thread at a time runs), and also what can make it challenging for performance (since only one thread at a time runs). The last sentence also offers an explanation as to why out sequential code is running faster than the threaded code: “<em>Due to signaling with a CPU-bound thread, it can cause a significant slowdown</em>” or in English: the time needed to constantly swap between the threads (even on an efficient system like Linux) is noticeable (and only gets worse with larger numbers of threads). But why does Python swap CPU intensive tasks so much?</p>
+<p>When running a thread the Python GIL is held until one of several things happens: the thread completes running, the thread goes into an IO operation or 100 ticks are reached. The first case is simple, a thread can call sys.exit() and kill itself off, this of course is the end of things and the GIL is yielded back. The second case is also simple, if a thread blocks for an IO bound operation (disk, network, etc.) and it is put to sleep (chances are the IO will take time anyways so no point waiting idly by), it yields the GIL and another thread is given a chance to run. The third case is a little more nuanced. For starters what exactly is a tick? A tick is basically an interpreter instruction. By limiting the number of ticks a thread can run a CPU bound task that doesn’t want to exit or isn’t going to do IO won’t end up hogging the CPU. The number of ticks a thread is allowed to use before being stopped can be controlled by the sys.setcheckinterval() parameter which can be set on the fly. The most important thing to remember is that ticks are NOT time constrained.</p>
+<p>If all of the above seems rather complicated there is a good reason for it. Python internally doesn’t really handle the specific scheduling of threads; it leaves this up to the operating system. The rational for this is simple: the Python developers feel that reinventing the wheel (handling thread scheduling) is probably not the best way to go since modern operating systems have spent a significant amount of time and energy on getting threads to run efficiently and quickly (especially Linux). So internally Python essentially uses a form of cooperative multi tasking (the thread yields the CPU when it exits, blocks on IO or hits the tick limit).</p>
+<p><strong>The trouble with ticks</strong></p>
+<p>So if a tick isn’t time constrained what’s the worst that can happen? Some CPU instructions take very little time to run, and conversely some take a very long time to run. The following program is very simple:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680"><col width="325"/><col width="325"/><tbody><tr><td width="325">
+<pre>#!/usr/bin/env python&#13;
+&#13;
+def bigtick():&#13;
+ nums = xrange(100000000)&#13;
+ -1 in nums</pre>
+</td>
+<td width="325"></td>
+</tr></tbody></table><p>Which when disassembled (more on this later) it turns out to consist of:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680"><col width="374"/><col width="275"/><tbody><tr><td width="374">
+<pre>&gt;&gt;&gt; dis.dis(bigtick)&#13;
+ 2           0 LOAD_GLOBAL              0 (xrange)&#13;
+ 3 LOAD_CONST               1 (100000000)&#13;
+ 6 CALL_FUNCTION            1&#13;
+ 9 STORE_FAST               0 (nums)&#13;
+&#13;
+ 3          12 LOAD_CONST               2 (-1)&#13;
+ 15 LOAD_FAST                0 (nums)&#13;
+ 18 COMPARE_OP               6 (in)&#13;
+ 21 POP_TOP             &#13;
+ 22 LOAD_CONST               0 (None)&#13;
+ 25 RETURN_VALUE        &#13;
+</pre>
+</td>
+<td width="275"></td>
+</tr></tbody></table><p>As you can see it’s about 25 instructions, much less than the 100 limit imposed by default. So what happens when we run this? Well not much of anything, but it does take a while (about 4 seconds on my machine). Much to slow, let’s hit ctrl-c and get out of it.</p>
+<p>As you may have noticed hitting ctrl-c doesn’t work, the program runs till it’s done, taking it’s own sweet time. Why is this? While the child thread is running it basically blocks on signals sent to it. Just imagine what happens if you have 10 children threads running code like this (now we’re deep into pathological behavior-land).</p>
+<p><strong>Working with the GIL</strong></p>
+<p>So how can we deal with some of this odd and downright bad behavior by the GIL? The first trick is to minimize the number of threads you are using. Because the operating system controls which thread is executed it may execute a thread that has nothing to do (i.e. is still blocking on IO), meaning you pay (computationally speaking) for a thread swap, the (short) execution time of a thread that doesn’t do anything and then the task swap to another thread (hopefully one that does some actual work). Or worse you have a thread holding a shared lock, but it is waiting on something (e.g. a database write to complete) before it yields the lock. You can end up with threads being run that can’t do anything, leaving your computer spinning until the thread holding the lock is run and eventually completes, freeing the lock. Having threads sitting idly by will generally reduce performance (but of course if you get surges or spikes in work having a spare pool of threads can be a very good thing.</p>
+<p>As for a way of dealing with the signal handling problem the best advice I can find is to have the main thread handle signals and spawn of child threads that do the actual work (in other words have the main program run threads and then passively loop while the children threads work). This way the main thread won’t be working on something when a signal arrives resulting in the signal being ignored.</p>
+<p>Like any performance advice I suggest you take it with a grain of salt and first measure your performance, identify any issues and then fix them (which is covered in the third article).</p>
+<p><strong>Appendix</strong></p>
+<p>[David Beazley]</p>
+<p><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://www.dabeaz.com/python/GIL.pdf">http://www.dabeaz.com/python/GIL.pdf</a></span></p>
+</div>
+<footer class="amp-wp-article-footer">
+<div class="amp-wp-meta amp-wp-tax-category">
+Categories: <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a> </div>
+<div class="amp-wp-meta amp-wp-tax-tag">
+Tags: <a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/python-2/" rel="tag">python</a> </div>
+<div class="amp-wp-meta amp-wp-comments-link">
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/#respond">
+Leave a Comment </a>
+</div>
+</footer>
+</article>
+<footer class="amp-wp-footer">
+<div>
+<h2>Kurt Seifried</h2>
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+</p>
+<a href="#top" class="back-to-top">Back to top</a>
+</div>
+</footer>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;host=kurt.seifried.org&#038;ref=DOCUMENT_REFERRER&#038;amp=1&#038;blog=86342&#038;v=wpcom&#038;tz=-7&#038;user_id=0&#038;post=57&#038;subd=kurtseifried"></amp-pixel>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;v=wpcom-no-pv&#038;crypt=UE40eW5QN0p8M2Y%2FRE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V%2BZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVBTVNFNTEsLUxWcnhSW09KQzA2eHlZSm1pb1k1Lz9Ublp1ZlhtS3ElZHlmckcwSzhOSGZremtKcVByTUI2ai9CZ0JyZmRDRURFWjNXM29aZXRNZk5lU21FL2ExfFRiUTdlUzdZ"></amp-pixel>
+</body>
+</html>

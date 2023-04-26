@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Microsoft Security Whitepaper - Windows NT</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#d2b9a7a0a692a1b7bbb4a0bbb7b6fcbda0b5"><span class="__cf_email__" data-cfemail="c1aab4b3b581b2a4a8a7b3a8a4a5efaeb3a6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2>Introduction</h2>
+<p>Windows NT was Microsoft's first attempt at an industrial
+strength business oriented operating system, and by the time NT
+4.0 rolled around they had done quite a good job. NT supports
+advanced file permissions in the form of Access Control Lists,
+users and groups, and other needed security features. The problem
+is however that in an effort to make NT usable the default
+permissions on files are registry entries are extremely
+permissive (everybody has full control). </p>
+<h4>Best Defenses</h4>
+<p>Your best defenses in Windows NT are:</p>
+<ul type="disc">
+<li>Remove unneeded network services </li>
+<li>Update software regularly </li>
+<li>Tighten file permissions</li>
+<li>Tighten registry permissions</li>
+<li>Install an Anti-Virus scanner </li>
+<li>Install a firewall </li>
+</ul>
+<h2><strong>Remove unneeded network services </strong></h2>
+<p>Unfortunately there are not many services you can disable if
+you are using it for file and print sharing and authentication.
+Fortunately most of these machines are on LANs and access from
+the Internet is restricted, so chances are if someone attacks it
+it will be from an internal source. This is why keeping the
+software up to date is so critical. However for publicly
+accessible machines such as web servers you should not rely on
+Windows file sharing, unless you have some sort of VPN and
+firewall to protect it. Also for gateway servers, proxy servers
+and other machine with connections to public and internal
+networks you can easily disable file and print sharing on the
+external adapter only, leaving it enable don the internal one.
+Although Windows NT does have built in packet filtering, it does
+not work properly and I would not recommend using it.</p>
+<p>First open up network settings, &quot;Start&quot;,
+&quot;Settings&quot;, &quot;Network&quot;, and choose the
+&quot;Bindings&quot; tab:</p>
+<p><img src="images/windowsnt/network-bindings.jpg" width="369" height="454"></p>
+<p>Choose &quot;Show Bindings for&quot; and select &quot;all
+adapters&quot;, then expand the tree view:</p>
+<p><img src="images/windowsnt/network-bindings-adapter.jpg" width="367" height="454"></p>
+<p>Assuming the Interl 10/100 card is your internal interface,
+and the Acer PCI card is your external interface you would want
+to disable the WINS Client on it, to be on the safe side you
+should disable all the services, simply highlight them and click
+&quot;Disable&quot;:</p>
+<p><img src="images/windowsnt/network-bindings-adapter-disabled.jpg" width="369" height="454"></p>
+<p>You can now click on &quot;OK&quot; and then you will have to
+reboot the computer. </p>
+<p>The Server service is the actuall file and printer sharing.
+The Workstation service allows you to connect to other servers,
+this is dangerous because it potentially allows a remote attacker
+to connect to a remote site and retrieve data (such as a trojan
+horse they want to load on your machine), and in some cases
+passwords can be found be having the target computer connect out
+and try to access resources on an attackers machine. </p>
+<h2><strong>Update software regularly </strong></h2>
+<p>There are two sets of fixes for NT and related products, the
+first are hotfixes, these are solutions to (usually) individual
+problems, released several days or weeks after the problem is
+found. These hotfixes are tested, however they are not completely
+regression tested, so on occasion they may break some feature or
+misbehave. Every once in a while all the current fixes are rolled
+up into one big package, called a service pack. These service
+packs are extensively tested and include hundreds of fixes
+(calc.exe is replaced for example), they rarely break things (but
+it has been known to happen). The following URL's have links to
+download the various fixes needed for NT:</p>
+<p><a href="http://www.microsoft.com/NTServer/all/downloads.asp">http://www.microsoft.com/NTServer/all/downloads.asp</a>
+</p>
+<p><a href="http://v4.windowsupdate.microsoft.com/en/default.asp">http://v4.windowsupdate.microsoft.com/en/default.asp</a>
+</p>
+<p>This is probably the first thing you should do after
+installing an NT server, you will need to apply the latest
+service pack, and numerous hotfixes, which can take a while since
+you MUST reboot in between them (do not try to install multiple
+hotfixes without rebooting, you will likely damage your software
+installation). </p>
+<h2><strong>Tighten file permissions</strong></h2>
+<p>Although NT supports file ACL's (Access Control Lists) the
+default permissions are that the group everybody has &quot;full
+control&quot;, meaning anyone that can log in locally, or access
+files via a fileshare can create, delete, modify or otherwise
+manipulate files and directories. This is especially critical on
+machines that are part of a domain since backups of the SAM
+(Security Account Manager) are stored in:</p>
+<pre>C:\Winnt\repair\sam._</pre>
+<p>Or wherever your NT installation directory is. Once an
+attacker has this file they can run it through a password
+cracking program such as L0phtcrack, since NT uses less then
+optimal password storage techniques, combined with the speed of
+password cracking programs it is pretty much guaranteed that an
+attacker will glean some passwords. The repair directory should
+be protected, open up &quot;Windows NT Explorer&quot; and go into
+your NT installation directory, then right click on the
+&quot;repair&quot; directory, choose &quot;Security&quot; and
+remove the group &quot;everyone&quot; from the listing. This is
+just one example of literally hundreds of bad file permissions.</p>
+<p>Unfortunately if you try to protect the C:\Winnt\System and
+C:\Winnt\System32 chances are you will break many common
+applications since they want to be able to access files in these
+directories and in some cases write to them. A partial solution
+is to use system policies and restrict the applications people
+can run, i.e. restrict a user to:</p>
+<pre>C:\Program Files\Officesuite\office.exe
+C:\Winnt\Notepad.exe</pre>
+<p>There is also a product from SecureWave called SecureExe who's
+primary purpose is to prevent trojan software from being
+executed, but can also prevent users from say copying
+regedt32.exe over notepad.exe and running is (since it not only
+check the file name, but a cryptographically secure hash of it
+[SHA1]). These two topics are discussed in more depth later on.</p>
+<h2><strong>Tighten registry permissions</strong></h2>
+<p>The same problem that affects file security exists for
+registry permissions, they default is extremely promiscuous. NT
+ships with two registry editing programs, one has the ability to
+manipulate security permissions and is extremely functional
+(regedt32.exe), the other has a search function, but you cannot
+modify permissions and so on (regedit.exe), which makes securing
+the registry a very tedious process. </p>
+<p>Using regedt32.exe simply open up the registry on the
+appropriate computer (the default is the local computer), find
+the key or keys you wish to secure and choose
+&quot;Security&quot; and then &quot;Permissions&quot; and you can
+easily modify who is able to manipulate the key. </p>
+<p>A freeware/commercial solution is RegDACL from Heysoft, the
+freeware version is slightly stripped down but still very
+functional. You can easily script modifications and it makes
+modifying registry security permissions much faster (since
+chances are you want to do the same thing on many computers). You
+can download it from:</p>
+<p><a href="http://www.heysoft.de/index.htm">http://www.heysoft.de/index.htm</a></p>
+<h2><strong>Install an Anti-Virus scanner </strong></h2>
+<p>Even with all these precautions it is still possible for a
+virus to slip in and do something malicious. Best case scenario
+it infects some data which you need only disinfect or restore
+from backup, worst case it replicates itself via email and takes
+out your entire network. As well many trojan programs for NT are
+detected by the majority of anti-virus scanners, they are an
+integral part of any security policy.</p>
+<p><a href="http://www.antivirus.com/">http://www.antivirus.com/</a>
+- TrendMicro (PC-cillin)</p>
+<p><a href="http://www.norton.com/">http://www.norton.com/</a> -
+Norton (Anti-Virus)</p>
+<p><a href="http://www.mcafee.com/">http://www.mcafee.com/</a> -
+McAfee (Virus Clinic)</p>
+<h2><strong>Install a firewall </strong></h2>
+<p>If your machine is attached directly to the Internet you
+should definetely install a firewall product, if it is on an
+internal network it is also a good idea (since many attacks come
+from internal sources). </p>
+<p><a href="http://www.networkice.com/html/small_home_office.html">http://www.networkice.com/html/small_home_office.html</a>
+- Network ICE (BlackICE Defender, about $40USD for single
+license)</p>
+<h2>Additional Defences</h2>
+<ul type="disc">
+<li>Auditing events</li>
+<li>Implementing system policies</li>
+<li>Preventing trojan binaries</li>
+<li>Restricting access to removable devices</li>
+<li>Host based intrusion detection</li>
+<li>Basic security auditing</li>
+</ul>
+<h3><strong>Auditing events</strong></h3>
+<p>The Windows NT event logger is extremely useful for detecting
+suspicious activity and nefarious user actions. Like most Windows
+NT security features it is not turned on by default. The first
+step is to increase the log size, as the default is to only keep
+512 kilobytes of logs and overwrite events older then 7 days old.
+I would reccomend setting the log size to several hundred
+megabytes, or gigabytes if you want to do extensive logging (disk
+space is cheap). Setting the log file to &quot;Overwrite Events
+as Needed&quot; will result in the log &quot;wrapping&quot;, as
+space is needed the oldest event will be blown away, this is
+somewhat better then &quot;Do Not Overwrite Events (Clear Log
+Manually)&quot; which once full will stop recording logging
+events. However the danger in overwriting log events is that an
+attacker may try to cover their tracks by flooding the log files
+and overwriting the events that could help reconstruct what
+happened. In any event a tool is now available:
+&quot;WinZapper&quot; which can be used to delete log entries.</p>
+<p><a href="http://ntsecurity.nu/toolbox/winzapper/">http://ntsecurity.nu/toolbox/winzapper/</a>
+- WinZapper</p>
+<p>The good news however is that WinZapper cannot be used
+remotely, so the user must install a trojan such as BackOrifice
+2000 to use it (unless of course someone modifies WinZapper for
+remote usage, which is far from impossible). You can also not run
+Event Viewer after using WinZapper, you must reboot, so two
+indications that WinZapper has been used would be if the server
+is unexpectedly rebooted or if you cannot run Event Viewer. As
+well a file called &quot;dummy.dat&quot; is left, this is a copy
+of the original log file, so without modifications the tool is
+easily detected (again, this modification will happen, so don't
+depend on being able to find a dummy.dat file). It is primarily a
+proof of concept that once administrative access is gained you
+can no longer trust the event logs (this is true of most
+operating systems unless you use some type of secure off system
+logging). </p>
+<p>To enable logging you must first go to &quot;Start&quot;,
+&quot;Programs&quot;, &quot;Administrative Tools (Common)&quot;,
+and select &quot;User Manage for Domains&quot;. Then click on
+&quot;Policies&quot; and choose &quot;Audit&quot;. You can
+selectively audit events like user logins/logoffs, file and
+object access (warning, this will generate a lot of log entries),
+user and group management and so on. You can also audit successes
+and/or failures, unless you are extremely concerned about
+security auditing failed events only is probably sufficient.
+However for some sensitive environments you may wish to know
+exactly when users are accessing certain files. Once you have
+enabled auditing on &quot;File and bject Access&quot; you will
+need to enable auditing in the filesystem, this is good news
+because you can extremely selective on which files and
+directories you audit (otherwise there would be a huge amount of
+&quot;noise&quot; for normal system activity). Open up the
+&quot;Windows NT Explorer&quot; and select the directory or files
+you wish to enable auditing on, then right click, choose
+&quot;Security&quot; and &quot;Auditing&quot;. You can audit
+access by certain users and groups (for example accounts
+belonging to temp workers might be included in the audit, but not
+fulltime workers), and you can audit the events selectively
+(Read, Write, Execute, Delete, Change Permission and Take
+Ownership) and whether they succeed or fail. Use the
+&quot;Everone&quot; group if you wish to record anyone accessing
+files. </p>
+<p>One problem with all of this is that you can enable/disable
+logging on the fly without requiring a reboot, while convinient
+it does allow an attacker to disable auditing before they attempt
+to access something, and they can then turn the auditing back on,
+or leave it disabled (chances are most administrators will not
+notice). You should periodically check to make sure auditing is
+enabled properly, or have a test account to access objects so you
+can verify that the access is logged.</p>
+<h3><strong>Implementing system policies</strong></h3>
+<p>System policies will be covered later as they are a reasonably
+complex topic.</p>
+<h3><strong>Preventing trojan binaries</strong></h3>
+<p>Even with System policies installed and enforced it is
+possible for an attacker to circumvent them. Let's say for
+example you have restricted the programs a user can run, even
+with the full patchname specified it is possible for someone to
+run arbitrary programs if they can overwrite one of the programs
+they have access to. For example if you let UserA run
+C:\Winnt\notepad.exe, and you have not tightened up permissions
+they can simply copy regedt32.exe overtop of it and run it. </p>
+<p>One solution is to use SecureExe from SecureWave:</p>
+<p><a href="http://www.securewave.com/html/secure_exe.html">http://www.securewave.com/html/secure_exe.html</a></p>
+<p>This program uses the SHA1 signature algorithm, in addition to
+the program's name/path, if the stored signature for calc.exe
+doesn't match the one in the database you cannot run calc.exe. An
+attacker can copy over a file, but the signature will not match,
+and it will not be run. No pricing or availability yet, however
+they do have an online demo using Microsoft's Terminal Server.</p>
+<h3><strong>Restricting access to removable devices</strong></h3>
+<p>For a variety of reasons it is desirable to restrict user
+access to removable devices such as floppy disks, cdrom drives,
+printer ports and communication ports. Unfortunately NT does not
+have any facilities to control access to these ports selectively.
+Disabling them in the BIOS is possible but then you must reboot
+and enter a password at the BIOS prompt to reenable them, not a
+workable solution by any means. The good news is that there is a
+nice commercial product from SecureWave, called SecureNT (it also
+supports Win9x). This loads a VXD at startup which controls
+access to any removable media, and the com and printer ports.
+This allows you to easily prevent the user from plugging a modem
+in and setting up dial-in access, or plugging a parallel port
+cd-burner in and stealing corporate data. </p>
+<p><a href="http://www.securewave.com/html/secure_nt.html">http://www.securewave.com/html/secure_nt.html</a></p>
+<h3><strong>Host based intrusion detection</strong></h3>
+<p>Manually checking to make sure no-one has breached your
+security and reveiwing log files is an extremely time intensive
+and tedious process. Luckily there exist many software packages
+that will do it for you, filter the results and alert you to
+suspicious activity. </p>
+<p><a href="http://www.ntobjectives.com/">http://www.ntobjectives.com/</a>
+- Activity log scanners</p>
+<p><a href="http://www.bluelance.com/ltauditor/default.html">http://www.bluelance.com/ltauditor/default.html</a>
+- Intrusion detection / audit trail </p>
+<h3><strong>Basic security auditing</strong></h3>
+<p><a href="http://www.cerberus-infosec.co.uk/cis.shtml">http://www.cerberus-infosec.co.uk/cis.shtml</a></p>
+<p>&nbsp;</p>
+<h2>Extended Defences</h2>
+<ul type="disc">
+<li>Advanced administration tools</li>
+<li>Advanced security auditing </li>
+</ul>
+<h3><strong>Advanced administration tools</strong></h3>
+<p>Most of the built in Windows NT tools (like User Manager for
+Domains) leave a lot to be desired and are usually unusable in
+extremely large and complex environments.</p>
+<p><a href="http://bindview.com/products/bv-Control/Windows2000/index.html">http://bindview.com/products/bv-Control/Windows2000/index.html</a></p>
+<h3><strong>Advanced security auditing </strong></h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 10/4/2002</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Cryptography</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Cryptography</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#2d46585f596d5e48444b5f44484903425f4a"><span class="__cf_email__" data-cfemail="167d6364625665737f70647f737238796471">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p><a href="crypto-book/">Basic cryptography book - by Kurt
+Seifried</a></p>
+<blockquote>
+<p><font size="2">This book is intended as a basic primer for
+people that do not know a lot (or anything as the case may
+be) about cryptography but are interested or concerned about
+it (in an actual &quot;should I be using it, and if yes, what
+should I use, and how?&quot;). The book starts with a brief
+set of explanations of why you might want to use
+cryptographic software, and how cryptography works. This is
+followed by chapters on the various tasks or problems you
+wish to solve using cryptography and which packages might be
+useful. The bulk of the book is practical explanations of how
+to install, configure and use various software packages for
+various situations (such as encrypting email in Windows). </font></p>
+</blockquote>
+<p><a href="20011009-storing-cc.html">Storing credit card numbers
+securely</a></p>
+<blockquote>
+<p><font size="2">This question came up recently on a mailing
+list and at first glance I thought &quot;no problem&quot; but
+upon further reflection it turned out to be a lot harder then
+expected. The first assumption to be made is that the
+Database you are storing the numbers in will not be 100%
+secure, outside attacker, inside attacker, data entry people
+jotting down numbers, and so forth. The obvious solution is
+to encrypt the data, use a strong one way hash like SHA1 and
+be done with it. This problem is very difficult especially if
+you plan to store the data for a long time and use it to run
+statistical programs to help predict fraud rates and so on
+since you must be sure that whatever encrypted string of data
+that represents the card is the same in all cases (meaning
+you cannot use random salt values to help hash it).</font></p>
+</blockquote>
+<p><a href="20011108-breaking-trust-in-certs.html">Breaking trust
+in certificates</a></p>
+<blockquote>
+<p><font size="2">For a while now I've been writing articles
+about SSL, outlining various problems, and why SSL in general
+is a poor solution that should be improved (before we start
+doing things like online voting, yikes). The whole premise of
+certificates is that multiple parties trust a central
+certificate authority (CA), so when Alice wants to talk to
+Bob they can verify each others certificates through the CA,
+in theory proving that they are actually taking to the person
+that they claim to be. This CA has a very important job,
+especially so with the use of X.509 certificates (currently
+the most common for SSL, smartcards and so on). Unlike PGP or
+GnuPG for example where you can have multiple entities sign a
+certificate (such as your mother, your boss, the post office,
+etc.) with X.509 you are limited to one only. Because X.509
+certificates can only be signed by one entity you ultimately
+have to place all your trust in the entity that signed it. </font></p>
+</blockquote>
+<p><a href="20011108-end-of-ssl-ssh.html">End of SSL and SSH?</a></p>
+<blockquote>
+<p><font size="2">Today [Yesterday if this is posted on the
+18th] dsniff 2.3 was released, why is this important you ask?
+dsniff 2.3 allows you to exploit several fundamental flaws in
+two extremely popular encryption protocols, SSL and SSH. SSL
+and SSH are used to protect a large amount of network
+traffic, from financial transactions with online banks and
+stock trading sites to network administrator access to
+secured hosts holding extremely sensitive data. Both SSH and
+SSL use &quot;public key encryption&quot;, wherein their
+vulnerabilities lay. They also rely heavily on the user to
+make the right decisions when faced with an attack, and most
+users are not educated enough to know what exactly they are
+dealing with and usually make the wrong decision (how many
+times have we told users not to open up executables emailed
+to t</font>hem?). </p>
+</blockquote>
+<p><a href="20011108-sslssh-followup.html">End of SSL and SSH -
+Follow-up. </a></p>
+<blockquote>
+<p><font size="2">Well, I certainly managed to kick over a
+hornet's next with my article &quot;The End of SSL and
+SSH?&quot;. There were quite a few points I did not cover in
+the article, many I did not think of, and some I trimmed.
+This article will cover the reaction to SSL and SSH being
+&quot;dead&quot;, as well as numerous implementation issues I
+did not cover. The real issue is that technology cannot solve
+problems completely. Anytime you put a new solution in you
+breed new problems. This of course assumes you installed and
+are maintaining the new solution correctly in the first
+place. Vendors ships SSL and SSH, you turn it on, it works.
+Unfortunately most people feel that they are then done and
+move on to other problems, this is far from the truth. Both
+SSL and SSH have numerous avenues an attacker can take, many
+of these rely on the end user to make the right decision or
+have a secure system, meaning a user can shoot themselves in
+the foot with incredible ease. Pretty much any cryptographic
+&quot;solution&quot; requires a degree of maintenance and
+continued attention.</font></p>
+</blockquote>
+<p><a href="keys/">Encryption keys</a></p>
+<blockquote>
+<p><font size="2">A variety of encryption keys, from vendors
+to professionals and other interesting people. </font></p>
+</blockquote>
+<p><a href="20000126-random-numbers.html">Why Random Numbers Are
+Important For Security</a></p>
+<blockquote>
+<p><font size="2">January 26, 2000 - Modern computer security
+requires some level of encryption to be applied to various
+kinds of data, for example secure web transactions, or SSH.
+But something that often goes ignored is the fact that all
+good crypto relies on some degree of randomness, which if not
+fulfilled properly can lead to a significant loss in the
+strength of encryption. </font></p>
+</blockquote>
+<p><a href="19990922-gnupg-freedom.html">GnuPG and freedom</a></p>
+<blockquote>
+<p><font size="2">Well last week caused a bit of a stir,
+which is good. Hopefully this week will really get people
+thinking. As you may or may not have heard, GnuPG 1.0 has
+been released. If you haven't heard, GnuPG is a GPL'ed
+cryptographic program that uses no patented algorithms, and
+happens to be perfectly compatible with PGP. I interviewed
+Werner Koch (via email), the heart and soul of the GnuPG
+project.&nbsp;</font></p>
+</blockquote>
+<p><a href="20001002-aes.html">Advanced Encryption Standard
+released today</a></p>
+<blockquote>
+<p><font size="2">About 25 years ago the US NBS (National
+Board of Standards, renamed to NIST) put out a call for an
+encryption algorithm, unfortunately back then there wasn't a
+whole lot of public cryptography going on (they mostly worked
+for the NSA). Another call was put out in the federal
+register to which IBM responded with a algorithm called
+&quot;Lucifer&quot;. This is where things get interesting.
+Originally Lucifer used a 128 bit key, however after the NSA
+got involved the key length was reduced to 56 bits, making it
+4,722,366,482,869,645,213,696 times easier to brute force the
+key (2^72). This is rather interesting because it made it
+possible for the EFF to design and build a custom chip that
+had one purpose, to brute force DES keys. For less then
+$250,000 they engineered, and manufactured a machine that
+could run through the entire 56 bit key space in a matter of
+days (less then 5 days on average). This was accomplished by
+a small public effort and completed in January of 1999. This
+is especially interesting since the NSA is many years ahead
+of public cryptographic efforts (the NSA is the worlds
+largest employer of mathematicians). People realized that DES
+on it's own was secure against casual attackers, but not
+against a reasonably determined attacker, so 3DES was
+created, basically 2 56 bit keys are used to encrypt the
+data, first the A key, then the B key, then the A key again.
+This makes the resulting effort required to brute force it
+exponentially higher, unless there is some fundamental flaw
+in DES it probably isn't possible to brute force it. This of
+course creates a new problem, the resulting encryption and
+decryption is extremely slow and computationally expensive.
+NIST responded to this several years ago by calling for a
+replacement for DES, the AES (Advanced Encryption Standard),
+which has now been chosen and announced.</font></p>
+</blockquote>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

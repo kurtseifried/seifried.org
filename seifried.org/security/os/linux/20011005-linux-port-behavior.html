@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Linux / firewalling and port behavior</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Linux Firewalling and Port Behavior</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#09627c7b7d497a6c606f7b606c6d27667b6e"><span class="__cf_email__" data-cfemail="bdd6c8cfc9fdced8d4dbcfd4d8d993d2cfda">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>I'm feeling clever today. I rebuilt my gateway server, and
+decided to go gung-ho when it came to firewalling - a default
+deny policy for input, output and forward chains. Needless to
+say, this breaks a lot of things. Well, it breaks basically
+everything, until you start putting in rules to allow packets
+through. Using a default deny policy in Linux is tricky because
+the firewall in kernel 2.2 is not stateful. (It is stateful in
+2.4, but that is still in a test series and several months off
+from release.) With a stateful firewall you can make simple
+rules: &quot;If you see an outgoing connection, let the incoming
+packets associated with it through.&quot; If your firewall is not
+stateful, you will have to create many rules to allow services to
+work for clients. This can be annoying if you really want to lock
+your firewall down. Here's what it comes down to: Creating a
+really tight firewall in Linux is a pain. </p>
+<p>But all is not lost. Several tips and tricks can aid you in
+creating a tight firewall. The first trick looks at the local
+port numbers that the system uses for outgoing connections. All
+TCP connections have a source port and address, and a destination
+port and address. If you want to control which ports connections
+are allowed to go out on - and thus the incoming packets you will
+need to allow in - you must know the port range. Otherwise, to
+let connections out and the reply data back in, you'll need to
+allow all the ports in, 65,535 of them.</p>
+<p>Luckily, this is configurable in Linux. You can set it in the
+kernel:</p>
+<blockquote>
+<pre>/usr/src/linux/net/ipv4/tcp_ipv4.c</pre>
+<pre>/*
+* This array holds the first and last local port number.
+* For high-usage systems, use sysctl to change this to
+* 32768-61000
+*/
+int sysctl_local_port_range[2] = { 1024, 4999 };</pre>
+</blockquote>
+<p>Or via the proc interface at any time (i.e. in the network
+startup script):</p>
+<blockquote>
+<pre>/proc/sys/net/ipv4/ip_local_port_range </pre>
+</blockquote>
+<p>Basically, any outgoing connection will originate from that
+port range, allowing you tight control over outgoing and incoming
+rules. </p>
+<p>But there arises another problem. IP-MASQ'ed connections do
+not originate from these defined local source ports, meaning
+services will not work properly unless you use some type of proxy
+or have permissive rules to allow client connections. The good
+news is that most of the IP-MASQ connections appear to originate
+from ports in the 61000-65095 range - at least they do on my
+server - and this doesn't change between reboots. (Look in
+ip_masq.c.)</p>
+<p>So if your IP-MASQ'ed connections are originating from ports
+61000-65095, and connections from the server itself from
+1024-4999, then you need two sets of rules for each thing you
+want to allow. Alternatively, you could use it to allow
+connections from the IP-MASQ'ed client but not from the server
+itself. Using it in this capacity would be pointless, however,
+since that can be accomplished in incoming firewall rules for the
+IP-MASQ clients, and output rules for the server itself. </p>
+<p>So, what good is any of this? Well, if you set the local port
+range on your IP-MASQ server to 61000-65095 (assuming you don't
+need more than 4000 simultaneous connections - if you do, use a
+larger range), it's easy to set via proc:</p>
+<blockquote>
+<pre>echo 61000 65095 &gt; /proc/sys/net/ipv4/ip_local_port_range </pre>
+</blockquote>
+<p>Or if you want it to be permanent, you can set it in the
+kernel, though I recommend avoiding kernel hacks if possible. So
+with almost all (more on this later) of your connections
+originating from ports 61000-65095 on your server, it is very
+easy to use a default deny policy and allow selected services.
+For example, Web browsing:</p>
+<blockquote>
+<pre>ipchains -A output -s 0.0.0.0/0.0.0.0 61000:65095 -d 0.0.0.0/0.0.0.0
+ 80:80 -i eth0 -p 6 -j ACCEPT
+ipchains -A input -s 0.0.0.0/0.0.0.0 80:80 -d 0.0.0.0/0.0.0.0 61000:65095
+ ! -y -i eth0 -p 6 -j ACCEPT</pre>
+</blockquote>
+<p>The &quot;! -y&quot; means no packets with the SYN bit set
+(used to initiate connections), since there should only be
+packets from established connections coming in. This works well
+for most common services; however, there are two that get quite
+messy. FTP requires the remote FTP server to establish inbound
+connections with the server, and depending on whether the server
+uses passive or active FTP, the ports these connections occur
+from can vary significantly.</p>
+<p>DNS also requires some messy fiddling, since it relies heavily
+on UDP packets. Depending on whether the request is simply
+forwarded by the server, generated by the server, or actually
+handled by name server software running on the server, can affect
+behavior significantly. Generally speaking, the best way to deal
+with these is to have some catch-all rules at the end to log all
+denied packets, for example:</p>
+<blockquote>
+<pre>ipchains -A input -l -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -j DENY
+ipchains -A output -l -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -j DENY
+ipchains -A forward -l -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -j DENY</pre>
+</blockquote>
+<p>You can then &quot;tail -f /var/log/messages&quot; and watch
+as packets are denied. You will then be able to determine what
+needs to be allowed through. The following is an entry from
+/var/log/messages while using an FTP client on the server:</p>
+<blockquote>
+<pre>Oct 17 00:32:46 server kernel: Packet log: input DENY eth0 
+PROTO=6 1.2.3.4:20 5.6.7.8:61394
+L=44 S=0x00 I=61949 F=0x4000 T=250 SYN (#28)</pre>
+</blockquote>
+<p>Now, this is extremely verbose. First off is the time,
+followed by the chain (input) and the action taken (DENY). The
+protocol is 6 (which according to /etc/protocols is TCP); the
+source is 1.2.3.4, port 20 (according to /etc/services this is
+ftp-data); and the destination was 5.6.7.8, port 61394, which was
+blocked by rule #28 in the input chain. Armed with this
+information, and the result of &quot;remote directory listing not
+available&quot; in your FTP client, it is a safe bet that you
+need to allow connections from port 20 to 61000-65095 if you want
+FTP to work properly.</p>
+<p>I spent about three days doing this off-and-on fine-tuning of
+my firewall. It's also a good way to refresh your memory on
+exactly how various strange protocols like FTP work. (OK, I admit
+that this kind of thing amuses me, which is probably why I am
+currently single.)</p>
+<p>Another problem can be setuid or programs run as root that use
+&quot;strange&quot; ports as the source port. For example, when
+root runs the SSH client to connect outwards, it might use port
+1000 or similar, even with the local ports specified. You can
+largely avoid this by not running things as root - a good idea in
+any case. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 9/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

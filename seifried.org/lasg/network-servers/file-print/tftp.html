@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;Tftp</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#442f3136300437212d22362d21206a2b3623"><span class="__cf_email__" data-cfemail="402b3532340033252926322925246e2f3227">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>tftp (Trivial File Transfer Protocol) is used for devices that
+require information from a network server, typically at boot
+time. It is an extremely simple form of ftp, with most of the
+security and advanced commands stripped off, it basically allows
+a device to retrieve (and upload) files from a server in a very
+simple manner. tftp is almost exclusively used for diskless
+workstations, router configuration data, and any device that
+boots up, and requires information it cannot store permanently.
+As such it presents a rather large security hole, just imagine if
+someone were to connect to your tftp server and grab the boot
+file for your main Cisco router.&nbsp;</p>
+<h2>tftp</h2>
+<p>The stock tftp can be locked down, it accepts a directory name
+that it is essentially limited to (very similar to chroot), and
+TCP_WRAPPERS can be used to limit access to certain hosts only,
+but if you want access control to files you will need to run
+utftp. By default tftp (at least for Red Hat) defaults to giving
+access only to the /tftpboot directory (which usually doesn't
+exist, so create it if you need it). It is a very good idea to
+keep the tftp directory as separate from the system as possible.
+This is done by specifying the directory or directories you want
+tftp to have access to after the tftp command in inetd.conf. The
+following example starts tftp normally and grants it access to
+the /tftpboot directory and the /kickstart directory.</p>
+<pre>tftp dgram udp wait root /usr/sbin/tcpd in.tftpd /tftpboot /kickstart</pre>
+<p>Also remember tftp uses UDP, so a 'ps xau' won't necessarily
+show who is logged in or what they are doing (as opposed to ftp
+which shows up) unless they are currently downloading a file
+(since most tftp applications revolve around small files it is
+unlikely you will catch someone in the act). The best place to
+monitor tftp is from syslog, but even then tftp doesn't log IP
+addresses or anything truly useful. The following is some ps
+output, and some syslog output of an active tftp session.</p>
+<pre>nobody 744 0.0 0.6 780 412 ? R 14:31 0:00 in.tftpd /tftpboot</pre>
+<pre>Apr 21 14:31:15 hostname tftpd[744]: tftpd: trying to get file: testfile&nbsp;
+Apr 21 14:31:15 hostname tftpd[744]: tftpd: serving file from /tftpboot&nbsp;</pre>
+<p>TFTP can be easily restricted using TCP_WRAPPERS and
+firewalling, tftp runs on port 69, UDP so simply restrict access
+to that needed by your various diskless workstations, routers and
+the like. It is also a good idea to block all tftp traffic at
+your network borders, as there is no need for a machine to remote
+boot using tftp across the Internet/etc. Also tftp runs as the
+user nobody. But since no authentication is done, and all devices
+accessing the tftp server are doing so as 'nobody', file level
+security is pretty well useless. All in all a very, insecure
+server. TFTP runs on port 69, udp.</p>
+<pre>ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 69
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 69
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 69</pre>
+<p>or</p>
+<pre>ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 69
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 69
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 69</pre>
+<h2>utftpd</h2>
+<p>utftpd is a secure replace for the stock tftpd, it provides
+much finer access control and support for some other interesting
+features (such as revision control). You can also base access on
+the clients IP address, meaning your router configurations and
+diskless workstation configurations can be kept separate and
+discrete from each other. utftpd is GPL licensed and available
+at: <a href="http://www.ohse.de/uwe/software/utftpd.html">http://www.ohse.de/uwe/software/utftpd.html</a>
+</p>
+<p><a href="index.html">Back</a></p>
+<p>Last updated on 31/8/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#84eff1f6f0c4f7e1ede2f6ede1e0aaebf6e3"><span class="__cf_email__" data-cfemail="4b203e393f0b382e222d39222e2f6524392c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>ebs &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/ebs/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:41 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>ebs &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Converting an AMI to an AMI that boots off of EBS</title>
+		<link>http://kurt.seifried.org/2010/12/08/converting-an-ami-to-an-ebs-that-boots-off-of-ebs/</link>
+		<comments>http://kurt.seifried.org/2010/12/08/converting-an-ami-to-an-ebs-that-boots-off-of-ebs/#comments</comments>
+		<pubDate>Wed, 08 Dec 2010 13:19:33 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[ami]]></category>
+		<category><![CDATA[aws]]></category>
+		<category><![CDATA[ebs]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=85</guid>
+		<description><![CDATA[So I wanted to create an AMI that had some permanency (e.g. if I run &#8220;yum -y update&#8221; the system actually is updated when I reboot it next). Specifically I wanted to take the Fedora 14 AMI from https://fedoraproject.org/wiki/Cloud_SIG/EC2_Images, install some software on it and make it semi permanent (so I could use it as [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=85&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So I wanted to create an AMI that had some permanency (e.g. if I run &#8220;yum -y update&#8221; the system actually is updated when I reboot it next). Specifically I wanted to take the Fedora 14 AMI from <a href="https://fedoraproject.org/wiki/Cloud_SIG/EC2_Images">https://fedoraproject.org/wiki/Cloud_SIG/EC2_Images</a>, install some software on it and make it semi permanent (so I could use it as needed).</p>
+<p>To do this you will need an EBS backed AMI. There are two ways to store an AMI image, in S3 or in EBS. S3 is a simple bit bucket and the AMI storage protocol basically boils down to &#8220;compress the disk image and cut it up into chunks, store the chunks and a manifest file in S3&#8221; so when you start an AMI it gets the manifest then downloads the appropriate chunks of data from S3, creates a disk image and fires it up. EBS actually presents like a normal disk, and changes made to an EBS volume actually change the EBS volume, so you get some permanency.</p>
+<p>However if you terminate the instance it will still go bye-bye and any changes you made since you initially loaded it from the EBS volume it was originally created from will be gone. In order to update the AMI you will simply need to halt the running instance and take a snapshot of it, and then convert that snapshot into an AMI instance (and ideally include a version number in the name or description):</p>
+<blockquote><p>ec2-register -snapshot snap-SOMESNAP -description &#8220;A description&#8221; -name &#8220;A name 1.0&#8221; [-kernel aki-something] [-ramdisk ari-something]</p></blockquote>
+<p>For complete instructions on turning a running AMI into an EBS backed AMI please see:</p>
+<p><a href="http://webkist.wordpress.com/2010/03/16/creating-an-amazon-ec2-ebs-ami-from-a-running-instance/">http://webkist.wordpress.com/2010/03/16/creating-an-amazon-ec2-ebs-ami-from-a-running-instance/</a></p>
+<p>But the synopsis is: run a AMI instance, create and mount an EBS volume on it, format the EBS as EXT3/EXT4, mount it and then rsync (use -a and -x) / to the mount point, create some devices like console so you can login:</p>
+<blockquote><p># MAKEDEV -d /mnt/ebs/dev -x console<br />
+# MAKEDEV -d /mnt/ebs/dev -x zero<br />
+# MAKEDEV -d /mnt/ebs/dev -x null</p></blockquote>
+<p>and make sure you disable /dev/sda2 and whatnot in /etc/fstab (since your image may not have it setup and it will go sideways).</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/85/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/85/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=85&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/12/08/converting-an-ami-to-an-ebs-that-boots-off-of-ebs/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

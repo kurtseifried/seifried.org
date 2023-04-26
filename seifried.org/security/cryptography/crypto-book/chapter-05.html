@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 5 - Using cryptogrpahic software properly</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 5 - Using cryptographic software properly</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a6cdd3d4d2e6d5c3cfc0d4cfc3c288c9d4c1"><span class="__cf_email__" data-cfemail="a4cfd1d6d0e4d7c1cdc2d6cdc1c08acbd6c3">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>Of course like any security measures cryptographic software is
+only effective if used properly, on a secure system. If you have
+been infected with Back orifice, and someone has copied all your
+public and private keys, as well as logged your keystrokes and
+found the passphrases to access these keys, no matter how strong
+the encryption is it'll be useless. On a UNIX system things are
+difficult if you are a user since the super user (root) has full
+access and can easily access your keys/log keystrokes (this goes
+for an attacker that gains super user access to). Securing UNIX
+is a very large topic, there is a wealth of information available
+however, but it revolves around the same principles of any
+operating system. </p>
+<ul type="disc">
+<li>Keep software up to date, this is how most remote attacks
+succeed</li>
+<li>Use an anti-virus scanner, and keep it up to date</li>
+<li>Do not run mystery attachments, especially executable
+ones or data formats that can contain executable code
+(VBScript, Word documents, Excel files, executables,
+etc.)</li>
+<li>Run as little software as possible, if you don't need
+something to get your job done, remove it, it won't be a
+problem that way</li>
+<li>Run software with as little privilege as possible, for
+example instead of Sendmail (which runs all as root)
+consider Postfix or Qmail (which run most of their
+processes as user accounts)</li>
+<li>Keep the machine physically secure if possible, use BIOS
+passwords and so on to secure access to the machine </li>
+</ul>
+<p>Most modern encryption systems use pretty solid cryptography,
+most of the failings are in management of encryption keys,
+sessions, or other related tasks. Many users will store their
+encryption keys in accessible areas, with poor passphrases. When
+protected by a good passphrase (&quot;L3t's g0 t0 7he b3ach and
+have some sandy good hotdogs with pumpkins and
+9868lovermonkey&quot;) they are very hard to recover, however if
+protected by a poor passphrase (&quot;sekret&quot;) they are
+easily recovered. Of course very few people will use long
+passphrases since they are difficult to remember and type in. One
+of the most effective methods for protecting encryption keys/etc
+is to use an offline system (i.e. no network/modem/etc) and
+transfer data to it via floppy/zip/jaz/tape drive, then
+encrypt/decrypt/etc as necessary and move the finished form to a
+networked machine to send it. This is how root level keys are
+generally protected (requiring physical access to the machine
+makes security significantly simpler).</p>
+<p>Another consideration is Open verses Closed source crypto.
+OpenSource crypto programs can (and are) reviewed by
+knowledgeable people that are paranoid and want to make sure they
+work as advertised. Closed source programs have a higher
+probability of containing back doors or other problems
+(intentional or otherwise), although rare it has occurred. </p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-04.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-06.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

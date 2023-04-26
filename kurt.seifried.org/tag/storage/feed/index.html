@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>storage &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/storage/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:50 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>storage &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Linux iSCSI server (target)</title>
+		<link>http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/</link>
+		<comments>http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/#comments</comments>
+		<pubDate>Mon, 24 May 2010 06:09:36 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Linux]]></category>
+		<category><![CDATA[iscsi]]></category>
+		<category><![CDATA[iscsi target]]></category>
+		<category><![CDATA[storage]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=51</guid>
+		<description><![CDATA[So basically all the articles I could find on setting up Linux as an iSCSI server (aka iSCSI target) were out of date and useless. Here&#8217;s the current info: You have two current choices: Linux SCSI target framework (also current as of April 2010) &#8211; http://stgt.sourceforge.net/ iSCSI Enterprise Target (currently maintained as of late April [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=51&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So basically all the articles I could find on setting up Linux as an iSCSI server (aka iSCSI target) were out of date and useless. Here&#8217;s the current info:</p>
+<p>You have two current choices:</p>
+<p>Linux SCSI target framework (also current as of April 2010) &#8211; <a href="http://stgt.sourceforge.net/">http://stgt.sourceforge.net/</a></p>
+<p>iSCSI Enterprise Target (currently maintained as of late April 2010) &#8211; <a href="http://iscsitarget.sourceforge.net/">http://iscsitarget.sourceforge.net/</a></p>
+<p>The first one, Linux SCSI target framework (tgt) is shipped by Red Hat (5 and 6 beta, Fedora), Debian, SuSE and several other vendors which is good, but most of the vendors ship older versions (like 0.4, 0.6, 0.9) rather than the current 1.0 which is not so great (but upgrading is easy). Judging by the widespread vendor support I&#8217;m going to pick tgt over the iSCSI Enterprise Target for the simple and pragmatic reason that more people are using it and thus bugs and support are probably easier to deal with.</p>
+<p>The Fedora Project Wiki has a quick start guide for setting up tgt at <a href="https://fedoraproject.org/wiki/Scsi-target-utils_Quickstart_Guide">https://fedoraproject.org/wiki/Scsi-target-utils_Quickstart_Guide</a> that covers creating target devices/etc.</p>
+<p>The good news is that iSCSI initiators (aka clients) are reasonably mature and included in the installation support for most modern Linux systems.VMware also supports iSCSI out of the box with pretty much no hassle.</p>
+<p>Now to find an affordable 16 port SATA RAID controller and case.</p>
+<p>Obsolete iSCSI target software for Linux:</p>
+<p><a href="http://www.open-iscsi.org/">http://www.open-iscsi.org/</a> &#8211; Not maintained since May 2009</p>
+<p><a href="http://linux-iscsi.sourceforge.net/">http://linux-iscsi.sourceforge.net/</a>&#8211; Not maintained since 2005</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/51/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/51/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=51&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

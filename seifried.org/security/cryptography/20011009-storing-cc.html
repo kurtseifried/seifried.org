@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Cryptography</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Storing credit card numbers securely</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#96fde3e4e2d6e5f3fff0e4fff3f2b8f9e4f1"><span class="__cf_email__" data-cfemail="dab1afa8ae9aa9bfb3bca8b3bfbef4b5a8bd">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>This question came up recently on a mailing list and at first
+glance I thought &quot;no problem&quot; but upon further
+reflection it turned out to be a lot harder then expected. The
+first assumption to be made is that the Database you are storing
+the numbers in will not be 100% secure, outside attacker, inside
+attacker, data entry people jotting down numbers, and so forth.
+The obvious solution is to encrypt the data, use a strong one way
+hash like SHA1 and be done with it. This problem is very
+difficult especially if you plan to store the data for a long
+time and use it to run statistical programs to help predict fraud
+rates and so on since you must be sure that whatever encrypted
+string of data that represents the card is the same in all cases
+(meaning you cannot use random salt values to help hash it).</p>
+<p>So what's wrong with this rosy picture? Several things. The
+amount of actual data on a credit card is very limited, you have
+a number, valid from date, expiry date, and a name. In many cases
+the name on the card will be different, on my 3 Visa's the name
+is different on each one (MR or no MR, middle initial or no
+middle initial). People's names also change, they get married and
+so forth. If we are interested in only tracking the individual
+cards then we could use the name in the hash, however if the name
+changes on the credit card it would break.</p>
+<p>The primary problem is that credit card numbers are not very
+long, and are quite predictable. VISA for example uses a 16 digit
+number for the card, and a 4 digit expiry date, so that's 10^20
+(or about 2^66) right? Wrong. The first 4 digit block is a bank
+identifier, I have 3 Visa's from the same bank, the id code is
+(for argument's sake) 1234. It is easy to collect the codes for
+major banks (In Canada there are about 4, in the US around 100)
+so instead of 10,000 combinations it's more like 200-300 (which
+would cover most credit cards). The next 12 digits are
+pseudo-random, they do conform to a variety of algorithms used to
+generate the card numbers. These card number generating
+algorithms can be found online, using these would great reduce
+the search space again from 10^12, for arguments sake we'll say
+10, so that's 10^11 possibilities. The last 4 digits, the expiry
+date would indicate a possibility of 10,000 values, except the
+first two digits will usually be 00 to 04 (most cards expire in 3
+years or so, and we're not really interested in expired ones),
+the next 2 digits are always 01 to 12, so that's around 48
+possibilities, quite a bit less then 10,000. So for a total we
+have 300 times 10^11 times 48, for around 1,440,000,000,000,000
+possibilities, or slightly less then 2^50. If we include the name
+then there is the prefix (MR, MRS, MS or none), a first name, a
+middle initial, and a last name (although the middle initial
+seems optional). Using the name as well we can assume about 5,000
+popular first names, 27 possible middle initials (a to z, and
+none), and 5,000 popular last names, which increases the search
+space and memory requirements and attacker would need to brute
+force the problem. </p>
+<p>When hashing data for storage you want data with as much
+entropy and randomness as possible, something credit cards lack.
+Unfortunately if you want to store them you probably want to
+store the bank prefix, definitely the number, and NOT the expiry
+date (the expiry date is so predictable it would actually help
+attackers more then it would hinder them). It would be a good
+idea to also use the name on the card, but of course if the
+person changes their name a new hash for the card will be
+computed and you will not be able to link it against their past
+history. There are also methods to further obfuscate the data,
+you could use SHA1 to hash the data, and then blowfish for
+example, and while it would make life a little more difficult for
+an attacker chances are because of the extreme simplicity of the
+data it might weaken the process. When storing data, especially a
+lot of entries like the hash value of the card you probably want
+to use a fixed length data, algorithms like SHA1 will produce
+this for you. </p>
+<h2><strong>Summary</strong></h2>
+<p>There is no easy solution. However with companies like
+American express rolling out smartcards (American Express
+&quot;Blue&quot;) the storage of this data will become much
+simpler. The fundamental flaw in credit cards is that the
+identifier, the piece of data used to authorize a transaction,
+and the data used to verify that transaction are all the same!
+With smartcards based on public/private key encryption you can
+safely store the person's public key, use it to verify
+transactions they have authorized, and use it to identify the
+person/card (since the chances of two people having the same
+public key are remote). So keep in mind when companies claim to
+be storing your credit card numbers securely, it's a lot harder
+then it looks (i.e. it is easy to screw up).</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 9/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

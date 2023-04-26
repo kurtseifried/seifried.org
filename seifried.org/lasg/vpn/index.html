@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Virtual Private Networking</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Virtual private networks</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#c1aab4b3b581b2a4a8a7b3a8a4a5efaeb3a6"><span class="__cf_email__" data-cfemail="f49f818680b487919d92869d9190da9b8693">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>There are a variety of VPN solutions for Linux. I would
+strongly advise using IPSec if possible since it is the emerging
+standard for VPN's on the Internet, and will be incorporated with
+IPv6. On the other hand if you are behind a firewall and want to
+tunnel out the SSH based solution and so on will do the trick,
+whereas IPSec will typically fail (since the packet headers are
+being rewritten).</p>
+<p>&nbsp;</p>
+<h2><a href="ipsec.html">IP Security (IPSec)</a></h2>
+<p>If possible use IPSec. It's available on almost all modern
+operating systems, supports host to host, host to network and
+network to network configurations as well as a wide variety of
+authentication options.</p>
+<p>&nbsp;</p>
+<h2>PPTP (Point to Point Tunneling Protocol)</h2>
+<p>PPTP is a proprietary protocol created by Microsoft for VPN
+solutions. To date it has been shown to contain numerous serious
+flaws. However if you need to integrate Linux into a PPTP
+environment all is not lost, <a href="http://www.moretonbay.com/vpn/pptp.html">http://www.moretonbay.com/vpn/pptp.html</a>
+contains a Linux implementation of PPTP.&nbsp;Fortunately
+Microsoft is moving away from PPTP towards IPSec.</p>
+<p>&nbsp;</p>
+<h2>CIPE (Crypto IP Encapsulation)</h2>
+<p>CIPE is a free IP level encryption scheme, meant for use
+between routers. It is appropriate for 'bridging' networks
+securely together over insecure networks (like the Internet). The
+official cite for CIPE is at: <a href="http://sites.inka.de/~W1011/devel/cipe.html">http://sites.inka.de/~W1011/devel/cipe.html</a>.
+I would however recommend FreeS/WAN as a better long term
+solution. CIPE is very easy to setup for two servers but anything
+more then two servers becomes a configuration nightmare.</p>
+<p>&nbsp;</p>
+<h2>Zebedee</h2>
+<p>Zebedee provides encryption of TCP traffic between hosts and
+is available for UNIX and windows. You can get it from: <a href="http://www.winton.org.uk/zebedee/">http://www.winton.org.uk/zebedee/</a>.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#abc0ded9dfebd8cec2cdd9c2cecf85c4d9cc"><span class="__cf_email__" data-cfemail="ec87999e98ac9f89858a9e858988c2839e8b">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

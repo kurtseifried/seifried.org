@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - Advanced Encryption Standard released today</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Advanced Encryption Standard released today</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#68031d1a1c281b0d010e1a010d0c46071a0f"><span class="__cf_email__" data-cfemail="fe958b8c8abe8d9b97988c979b9ad0918c99">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>About 25 years ago the US NBS (National Board of Standards,
+renamed to NIST) put out a call for an encryption algorithm,
+unfortunately back then there wasn't a whole lot of public
+cryptography going on (they mostly worked for the NSA). Another
+call was put out in the federal register to which IBM responded
+with a algorithm called &quot;Lucifer&quot;. This is where things
+get interesting. Originally Lucifer used a 128 bit key, however
+after the NSA got involved the key length was reduced to 56 bits,
+making it 4,722,366,482,869,645,213,696 times easier to brute
+force the key (2^72). This is rather interesting because it made
+it possible for the EFF to design and build a custom chip that
+had one purpose, to brute force DES keys. For less then $250,000
+they engineered, and manufactured a machine that could run
+through the entire 56 bit key space in a matter of days (less
+then 5 days on average). This was accomplished by a small public
+effort and completed in January of 1999. This is especially
+interesting since the NSA is many years ahead of public
+cryptographic efforts (the NSA is the worlds largest employer of
+mathematicians). People realized that DES on it's own was secure
+against casual attackers, but not against a reasonably determined
+attacker, so 3DES was created, basically 2 56 bit keys are used
+to encrypt the data, first the A key, then the B key, then the A
+key again. This makes the resulting effort required to brute
+force it exponentially higher, unless there is some fundamental
+flaw in DES it probably isn't possible to brute force it. This of
+course creates a new problem, the resulting encryption and
+decryption is extremely slow and computationally expensive. NIST
+responded to this several years ago by calling for a replacement
+for DES, the AES (Advanced Encryption Standard), which has now
+been chosen and announced.</p>
+<p><strong>AES</strong></p>
+<p>AES must be faster, stronger and cheaper to implement then
+DES. It had to be fast when implemented in software, and small so
+it could be implemented in hardware (token cards/etc). It has to
+be highly resistant to attack since like DES it will be in
+service for a long time (to put it in perspective UNIX measures
+time in seconds since 1970, the &quot;epoch&quot;). After a
+lengthy process of many submissions it was whittled down to 5
+finalists. At this point these algorithms are reasonably safe,
+they have been analyzed in great detail, and while some concerns
+have been found in most cases they are minor or easily solved
+(i.e. using more rounds). The algorithm chosen was Rijndael.</p>
+<p>So what exactly are the differences between these various
+algorithms? In general they are all capable algorithms, however
+various trade offs are required. If you want the algorithm to be
+fast and secure it'll be more expensive to implement in low end
+hardware. MARS is extremely fast on high end hardware and most
+computers, but requires a much higher gate count then the other
+algorithms being considered for use on smartcards. The cost of
+implementation on smartcards and so forth is an important factor
+in choosing the AES finalist since the number of smartcards and
+other small devices that will be deployed using AES is
+significant (tens of millions over the next decade or two). At
+the same time the algorithm must be able to encrypt and decrypt
+many gigabits/second (imagine several thousand clients or sites
+connecting to a large site such as a central office). As network
+encryption becomes increasingly common (IPSec is just starting to
+take off) the need for an algorithm that can be implemented in
+hardware and is extremely fast is critical, especially since this
+algorithm will be in use for a long time.</p>
+<p><strong>MARS</strong></p>
+<p>MARS is from IBM, and surprisingly enough is not the one most
+similar to the original DES. MARS is designed with reasonably
+high end hardware in mind and is extremely fast. This means that
+for implementation on smart cards it will require about 70,000
+gates, quite a bit more then the other candidates. On a 200mhz
+Intel Pentium Pro IBM claims that MARS can handle 65
+megabits/sec, and with a custom hardware chip containing ~393,000
+gates it will be able to handle 8 gigabits per second. MARS also
+supports keys from 128 to 448 bits, larger then some of the other
+candidates. </p>
+<p><strong>Serpent</strong></p>
+<p>Serpent is an international effort between Cambridge
+University, Haifa Israel and University of Bergen, Norway.
+Serpent is basically an improved version of DES, while not as
+sexy as other algorithms it is based on extremely well understood
+principles and has withstood a lot of analysis (20+ years).
+Serpent supports key sizes from 40 bits to 256 (I'm not sure if
+it supports larger keys but the documentation I have read does
+not seem to indicate it). Compared to other AES candidates
+Serpent is relatively &quot;slow&quot;, they estimate 14.7
+megabits/sec on a Pentium 200, significantly slower then MARS.
+However with dedicated hardware requiring around 100,000 gates,
+unfortunately no numbers on speed were given.</p>
+<p><strong>RC6</strong></p>
+<p>RC6 is from RSA laboratories, one major difference between it
+and other AES candidates is that it does not use look up tables,
+significantly reducing it's size (an important factor for
+smartcards). Unfortunately RC6 appears extremely slow when
+compared to others, an implementation written in assembly
+language on a Pentium 200 it would encrypt and decrypt at just
+over 12 megabits/sec, even slower then Serpent. However because
+of it's use of simple operations a hardware based implementation
+should be capable of over a gigabit per second, while this is
+more then sufficient for most current applications it could prove
+to be a problem in 10 years. RC6 also supports keysizes larger
+then 256 bits.</p>
+<p><strong>Rijndael</strong></p>
+<p>Rijndael was designed by a Dutch bank that handles a lot of
+ATMs, and it shows a lot of bias in this regard. Rijndael's size
+on 8 bit processors is quite impressive, code length is just over
+1k, and ram requirements are 52 bytes when using a 256 bit key
+(less for smaller keys). The numbers they provide for speed on a
+Pentium 200 are rather odd, with ANSI C they claim 27
+megabits/sec with a 128 bit key, and 19.8 megabits/sec with a 256
+bit key. Using Visual C++ however the numbers increase by about
+250%, 70.5 megabits/sec with a 128 bit key, and 51.2 megabits/sec
+with a 256 bit key. Unfortunately I have not been able to find
+any information on the number of gates needed to implement this
+algorithm in hardware, nor any performance figures, but from the
+general design and speeds on a Pentium it sounds like it would
+compare favorably to the other candidates. </p>
+<p><strong>Twofish</strong></p>
+<p>Twofish is an American effort, primarily by Counterpane
+Systems (Bruce Schneiers company, currently moving into managed
+security services). Twofish supports key sizes over 256 bits, and
+is extremely fast, producing 90 megabits/sec on a Pentium 200
+(although the keysize associated with this is not mentioned). On
+smart cards it requires just over 2k and can be implemented in as
+little as 14,000 gates, larger implementations of up to 80,000
+gates being faster. The numbers for a dedicated piece of hardware
+with 30,000 gates running at 150 MHz claim 1.2 gigabits/sec,
+using more gates and high clock speeds faster speeds can be
+achieved. Like most of Bruce Schneiers work it is
+&quot;clean&quot;, they did not try to &quot;push the
+envelope&quot;, sticking to reasonably tried and true methods,
+and allowing for various safety margins. </p>
+<p>As far as speed goes it looks like MARS and Twofish are well
+ahead of the rest, and MARS appears to be the only one with
+support for keys larger then 256 bits (which counts in it's favor
+for &quot;future proofing&quot; in my opinion). Serpent is
+enviable because of it's basic design, using DES as it's base it
+uses extremely well prooven techniques. Rijndael and RC6 both
+look very attractive for smart cards, however they may not scale
+to well to high throughput situations, especially using 256 bit
+keys. The choice of Rijndael is reasonable given that none of
+these algorithms are &quot;perfect&quot; (to gain speed you trade
+off size, and so on). Hopefully no-one will find any significant
+problems in it since it looks like we'll be using this for the
+next few decades.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://csrc.nist.gov/encryption/aes/">http://csrc.nist.gov/encryption/aes/</a></p>
+<p><a href="http://www.tml.hut.fi/~helger/aes/kenneth.txt">http://www.tml.hut.fi/~helger/aes/kenneth.txt</a>
+- aes test results</p>
+<p><a href="http://csrc.nist.gov/encryption/aes/round2/NSA-AESfinalreport.pdf">http://csrc.nist.gov/encryption/aes/round2/NSA-AESfinalreport.pdf</a>
+- hardware encryption test results</p>
+<p><a href="http://www.eff.org/descracker/">http://www.eff.org/descracker/</a>
+- Deep Crack</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 7/7/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,2143 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Linux</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1 align="left">Securing Linux, Step by Step</h1>
+<p align="left">Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a5ced0d7d1e5d6c0ccc3d7ccc0c18bcad7c2"><span class="__cf_email__" data-cfemail="711a0403053102141817031814155f1e0316">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p align="left">This was a presentation I used to do on securing
+Linux, takes about a day to go through. The formatting got a bit
+mangled (lost some indentation, oh well) but it should make
+sense. </p>
+<p align="left">&nbsp;</p>
+<h2 align="left">Securing Linux, Step By Step</h2>
+<p align="left">By Kurt Seifried</p>
+<p align="left"><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="28435d5a5c685b4d414e5a414d4c06475a4f">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></p>
+<p align="left">http://seifried.org/security/</p>
+<p align="left">&nbsp;</p>
+<p align="left">Copyright / Trademarks</p>
+<ul>
+<li><p align="left">Copyright Kurt Seifried 2002, all rights
+reserved.</p>
+</li>
+<li><p align="left">All trademarks (Red Hat, etc) are
+property of their respective owner</p>
+</li>
+<li><p align="left">Kurt Seifried accepts no liabilities
+whatsoever for this documentation</p>
+</li>
+</ul>
+<p align="left">Overview</p>
+<ul>
+<li><p align="left">Introduction</p>
+</li>
+<li><p align="left">Basic security </p>
+</li>
+<li><p align="left">Basic software and network security</p>
+</li>
+<li><p align="left">Remote and local administration tools</p>
+</li>
+<li><p align="left">Specific service security</p>
+</li>
+<li><p align="left">Firewalls and VPN&#146;s</p>
+</li>
+<li><p align="left">Hardening scripts and other resources</p>
+</li>
+<li><p align="left">Limiting users</p>
+</li>
+<li><p align="left">Advanced security</p>
+</li>
+</ul>
+<p align="left">Introduction overview</p>
+<ul>
+<li><p align="left">What is Linux?</p>
+</li>
+<li><p align="left">Swiss army knife analogy</p>
+</li>
+</ul>
+<p align="left">What is Linux?</p>
+<ul>
+<li><p align="left">Linux is a UNIX like operating system</p>
+</li>
+<li><p align="left">Linux can do many things - SMTP, POP,
+IMAP, DNS, NNTP, LDAP, SSH, HTTP, HTTPS, FTP, X, etc.</p>
+</li>
+<li><p align="left">Linux is the kernel, surrounding this is
+software like command shells, server software, etc. The
+complete package is called a distribution.</p>
+</li>
+</ul>
+<p align="left">Swiss Army knife analogy</p>
+<ul>
+<li><p align="left">Use the right tool for the job</p>
+</li>
+<li><p align="left">If you need a can opener, buy one</p>
+</li>
+<li><p align="left">If you need a cork screw, don&#146;t buy
+a Swiss army knife</p>
+</li>
+</ul>
+<p align="left">Basic security overview</p>
+<ul>
+<li><p align="left">Physical</p>
+</li>
+<li><p align="left">Boot time</p>
+</li>
+<li><p align="left">Console issues</p>
+</li>
+<li><p align="left">Filesystem</p>
+</li>
+</ul>
+<p align="left">Basic security - Physical overview</p>
+<ul>
+<li><p align="left">Potential attacks</p>
+</li>
+<li><p align="left">Local security</p>
+</li>
+</ul>
+<p align="left">Potential attacks</p>
+<ul>
+<li><p align="left">Unplug, or simply steal the machine</p>
+</li>
+<li><p align="left">Pour a can of soda into the machine</p>
+</li>
+<li><p align="left">Remove battery, flush the BIOS</p>
+</li>
+<li><p align="left">Copy harddrives with special tools (well
+not really special)</p>
+</li>
+<li><p align="left">Console access (more later)</p>
+</li>
+</ul>
+<p align="left">Local security</p>
+<ul>
+<li><p align="left">Place the machine in a locked room or
+cage</p>
+</li>
+<li><p align="left">Control physical access to the room with
+the server</p>
+</li>
+<li><p align="left">Beware of hung ceilings</p>
+</li>
+<li><p align="left">Beware of raised floors</p>
+</li>
+<li><p align="left">Beware of large ventilation ducts</p>
+</li>
+<li><p align="left">Consider CCTV</p>
+</li>
+</ul>
+<p align="left">Basic security - Boot time overview</p>
+<ul>
+<li><p align="left">BIOS / OpenBoot security </p>
+</li>
+<li><p align="left">Master Boot Record</p>
+</li>
+<li><p align="left">Lilo security</p>
+</li>
+<li><p align="left">Boot up programs</p>
+</li>
+</ul>
+<p align="left">BIOS Security</p>
+<ul>
+<li><p align="left">Enable the BIOS password for modifying
+the BIOS settings</p>
+</li>
+<li><p align="left">Consider enabling the BIOS boot up
+password if it has one</p>
+</li>
+<li><p align="left">Do not allow boots from removable media
+(floppy, CD-ROM, etc.)</p>
+</li>
+<li><p align="left">Boot from the harddrive only</p>
+</li>
+<li><p align="left">When booting from SCSI use an internal
+disk if possible</p>
+</li>
+</ul>
+<p align="left">OpenBoot Security</p>
+<ul>
+<li><p align="left">Sparc</p>
+</li>
+<li><p align="left">password S0m3password</p>
+</li>
+<li><p align="left">setenv security-mode none|command|full</p>
+</li>
+<li><p align="left">Apple</p>
+</li>
+<li><p align="left">command-option-O-F to access</p>
+</li>
+<li><p align="left">command-option-P-R to wipe</p>
+</li>
+<li><p align="left">setenv auto-boot? false</p>
+</li>
+<li><p align="left">no way to truly secure boot process</p>
+</li>
+</ul>
+<p align="left">Master Boot Record</p>
+<ul>
+<li><p align="left">Some distributions offer interactive
+boots via the MBR</p>
+</li>
+<li><p align="left">Debian for example: </p>
+</li>
+<li><p align="left">&quot;install-mbr&quot; should be run
+with &quot;--interrupt n&quot; to prevent interruption of
+the boot sequence</p>
+</li>
+</ul>
+<p align="left">Lilo security</p>
+<ul>
+<li><p align="left">use the &quot;restricted&quot; and
+&quot;password&quot; settings on lilo and all images</p>
+</li>
+<li><p align="left">have a minimum of bootable kernels set up</p>
+</li>
+<li><p align="left">make labels clear, use
+&quot;message&quot; if needed</p>
+</li>
+<li><p align="left">consider disabling unattended booting</p>
+</li>
+<li><p align="left">single and init=/bin/sh</p>
+</li>
+</ul>
+<p align="left">Boot up programs</p>
+<ul>
+<li><p align="left">Remove or disable any software that allow
+an interactive boot</p>
+</li>
+<li><p align="left">Red Hat for example:</p>
+</li>
+<li><p align="left">&quot;kudzu&quot; should be removed or
+disabled</p>
+</li>
+<li><p align="left">Consider disabling network services, and
+instead bringing them up manually</p>
+</li>
+<li><p align="left">Bring up firewalling before network
+services</p>
+</li>
+</ul>
+<p align="left">Basic security - Console issues</p>
+<ul>
+<li><p align="left">Prevent reboots by disabling ctrl-alt-del
+in /etc/inittab, and possibly point it to a script that
+generates an alert via pager/etc.</p>
+</li>
+<li><p align="left">Consider using serial console with a
+terminal server and disabling the keyboard / monitor
+completely</p>
+</li>
+<li><p align="left">Use case locking mechanisms</p>
+</li>
+<li><p align="left">Login screens </p>
+</li>
+</ul>
+<p align="left">Login screens</p>
+<ul>
+<li><p align="left">Warn against unauthorized use, do not use
+the word welcome</p>
+</li>
+<li><p align="left">Try to give as little information as
+possible</p>
+</li>
+<li><p align="left">Do not put OS type or version</p>
+</li>
+<li><p align="left">Consider putting enough line feeds in so
+that it clears the screen from previous use</p>
+</li>
+</ul>
+<p align="left">Basic security - filesystem overview</p>
+<ul>
+<li><p align="left">Filesystem layout</p>
+</li>
+<li><p align="left">Filesystem links</p>
+</li>
+<li><p align="left">Finding world writeable files and
+directories</p>
+</li>
+<li><p align="left">Permissions of files / directories</p>
+</li>
+<li><p align="left">Ownership of files / directories</p>
+</li>
+<li><p align="left">Special attributes for files</p>
+</li>
+<li><p align="left">Ensuring file integrity</p>
+</li>
+<li><p align="left">Backups</p>
+</li>
+</ul>
+<p align="left">Filesystem - layout overview </p>
+<ul>
+<li><p align="left">User writeable directories</p>
+</li>
+<li><p align="left">/tmp and /var/tmp directory</p>
+</li>
+</ul>
+<p align="left">User writeable directories</p>
+<ul>
+<li><p align="left">/tmp</p>
+</li>
+<li><p align="left">/var/tmp </p>
+</li>
+<li><p align="left">/home (user home directories)</p>
+</li>
+<li><p align="left">/var (email, print queues, squid cache,
+etc.)</p>
+</li>
+</ul>
+<p align="left">/tmp and /var/tmp directory</p>
+<ul>
+<li><p align="left">Anyone and everyone can write to them
+completely</p>
+</li>
+<li><p align="left">Race conditions can occur when tmp files
+are created incorrectly (especially by privileged
+programs)</p>
+</li>
+<li><p align="left">You might want to monitor the directories
+with l0pht-watch</p>
+</li>
+</ul>
+<p align="left">/tmp and /var/tmp directory (cont.)</p>
+<ul>
+<li><p align="left">Mount with restrictive options:</p>
+</li>
+<li><p align="left">&quot;nosuid&quot; - no setuid or setgid
+files </p>
+</li>
+<li><p align="left">&quot;noexec&quot; - files cannot be
+executed</p>
+</li>
+<li><p align="left">&quot;nodev&quot; - no device files</p>
+</li>
+<li><p align="left">Use software like tmpwatch to keep it
+relatively clean</p>
+</li>
+</ul>
+<p align="left">Filesystem - links overview</p>
+<ul>
+<li><p align="left">Notes on hardlinks</p>
+</li>
+<li><p align="left">Notes on symbolic links</p>
+</li>
+</ul>
+<p align="left">Notes on hardlinks</p>
+<ul>
+<li><p align="left">hardlinks points directly to the inode of
+the file</p>
+</li>
+<li><p align="left">directory permissions on directories
+&quot;below&quot; the target file will not stop a user
+that has already linked to a file, so create the
+directory, protect it, and then create the files in it</p>
+</li>
+<li><p align="left">this is one reason why user writeable
+file systems should be on separate partitions</p>
+</li>
+</ul>
+<p align="left">Notes on symbolic links</p>
+<ul>
+<li><p align="left">symbolic links point to a file or
+directory, file permissions on the target apply AND</p>
+</li>
+<li><p align="left">directory permissions on directories
+&quot;below&quot; the target will stop a user that has
+linked to a file already</p>
+</li>
+</ul>
+<p align="left">Finding world writeable files and directories</p>
+<ul>
+<li><p align="left">&quot;find / -perm -002 -type d&quot; (or
+&quot;-type f&quot; for files)</p>
+</li>
+<li><p align="left">there will be many world writeable files
+such as symbolic links which can be mostly ignored</p>
+</li>
+<li><p align="left">the /dev directory will have many world
+writeable devices, create a file listing after install
+and use it to find any future problems (permissions
+should not change much)</p>
+</li>
+</ul>
+<p align="left">File permissions</p>
+<ul>
+<li><p align="left">&quot;ls&quot; tells all</p>
+</li>
+<li><p align="left">&quot;chmod&quot; to change permissions</p>
+</li>
+<li><p align="left">Generally &quot;other&quot; is the
+biggest concern &quot;chmod o-a&quot; will block all
+access</p>
+</li>
+<li><p align="left">There are ACL projects for Linux, but
+most are quite simplistic and limited (SGI is working on
+a more complete implementation)</p>
+</li>
+</ul>
+<p align="left">File ownership</p>
+<ul>
+<li><p align="left">&quot;ls&quot; tells all</p>
+</li>
+<li><p align="left">&quot;chown&quot; to change the owner
+(user and group)</p>
+</li>
+<li><p align="left">Watch out for files owned by numbers,
+this indicates the group or user account was deleted</p>
+</li>
+</ul>
+<p align="left">Special attributes</p>
+<ul>
+<li><p align="left">&quot;lsattr&quot; tells all</p>
+</li>
+<li><p align="left">&quot;chattr&quot; to modify them</p>
+</li>
+<li><p align="left">-a append only, useful for log files and
+preventing accidental deletion</p>
+</li>
+<li><p align="left">-i immutable, good for preventing
+accidental damage to files</p>
+</li>
+<li><p align="left">it won&#146;t keep out attackers with
+root access from modifying files/etc</p>
+</li>
+</ul>
+<p align="left">Ensuring file integrity</p>
+<ul>
+<li><p align="left">Attackers will modify files, so to detect
+attacks, and clean up the mess you need to know which
+files were modified</p>
+</li>
+<li><p align="left">Attackers can easily reset the last
+accessed times on files, and using size as a check is not
+secure</p>
+</li>
+<li><p align="left">File integrity software is needed</p>
+</li>
+</ul>
+<p align="left">File Integrity software</p>
+<ul>
+<li><p align="left">Use cryptographic signature algorithms
+(such as MD5 or SHA1) </p>
+</li>
+<li><p align="left">Ability to store the database elsewhere
+(removable media such as a floppy)</p>
+</li>
+<li><p align="left">To truly check the integrity you should
+boot off of read only removable media and run the tool
+from the same media against a known good database of file
+information</p>
+</li>
+</ul>
+<p align="left">File integrity software (cont.) </p>
+<ul>
+<li><p align="left">Commercial packages such as Tripwire run
+on many platforms, good speed, ease of use and good
+reports, included with some Linux distributions. </p>
+</li>
+<li><p align="left">Many good free packages such as SuSE
+auditdisk</p>
+</li>
+<li><p align="left">http://www.tripwire.com/ </p>
+</li>
+<li><p align="left">http://www.tripwire.org/</p>
+</li>
+</ul>
+<p align="left">Backups</p>
+<ul>
+<li><p align="left">Always have backups, scheduling will
+depend on how often the data changes and how critical it
+is (I backup my working data once an hour, I don&#146;t
+backup the OS at all)</p>
+</li>
+<li><p align="left">Offsite backups in a secured facility
+(bank deposit box) are critical</p>
+</li>
+<li><p align="left">Verify that backups work, preferably on
+another machine</p>
+</li>
+</ul>
+<p align="left">Backups (cont.)</p>
+<ul>
+<li><p align="left">There are many commercial and free backup
+programs for Linux that work on multiple platforms (see
+resource list)</p>
+</li>
+<li><p align="left">My personal favorite for quick,
+automated, backups is tar, gzip and rsync (see resource
+section for code examples). </p>
+</li>
+</ul>
+<p align="left">Basic software security overview</p>
+<ul>
+<li><p align="left">Using package managers</p>
+</li>
+<li><p align="left">Updating software</p>
+</li>
+</ul>
+<p align="left">Basic software - using package managers overview</p>
+<ul>
+<li><p align="left">RPM - Red Hat Package Manager</p>
+</li>
+<li><p align="left">dpkg - Debian Package</p>
+</li>
+<li><p align="left">apt - front end for dpkg and now RPM</p>
+</li>
+<li><p align="left">alien - conversion utility</p>
+</li>
+</ul>
+<p align="left">Using Package managers - RPM overview</p>
+<ul>
+<li><p align="left">Querying packages</p>
+</li>
+<li><p align="left">Installing packages</p>
+</li>
+<li><p align="left">Updating packages</p>
+</li>
+<li><p align="left">Removing packages</p>
+</li>
+<li><p align="left">Building RPMS</p>
+</li>
+</ul>
+<p align="left">Querying packages (RPM)</p>
+<ul>
+<li><p align="left">&quot;-q package&quot; to query the
+database of installed software</p>
+</li>
+<li><p align="left">&quot;-qp package.rpm&quot; to query a
+package</p>
+</li>
+<li><p align="left">&quot;-qf /path/to/some/file&quot; to
+query a file</p>
+</li>
+</ul>
+<p align="left">Installing packages (RPM)</p>
+<ul>
+<li><p align="left">&quot;-i package.rpm&quot; to install</p>
+</li>
+<li><p align="left">&quot;--nodeps&quot; to ignore
+dependencies</p>
+</li>
+<li><p align="left">&quot;--force&quot; to force it</p>
+</li>
+<li><p align="left">&quot;--replacepkgs&quot; install package
+even if already installed</p>
+</li>
+<li><p align="left">&quot;--oldpackage&quot; install an older
+package over a new one (when upgrades go wrong for
+example)</p>
+</li>
+</ul>
+<p align="left">Updating packages (RPM)</p>
+<ul>
+<li><p align="left">&quot;-U&quot; to update the package
+(will install new packages as well)</p>
+</li>
+<li><p align="left">&quot;-F&quot; to freshen the packages
+(will not install new packages)</p>
+</li>
+<li><p align="left">For example download all the updates and
+then run &quot;rpm -F *.rpm&quot; and wait.</p>
+</li>
+</ul>
+<p align="left">Removing packages (RPM)</p>
+<ul>
+<li><p align="left">&quot;-e&quot; to extract the package</p>
+</li>
+<li><p align="left">&quot;--nodeps&quot; to ignore the
+breaking of dependencies</p>
+</li>
+<li><p align="left">Some packages have circular dependencies
+(like ghostscript and ghostscript-fonts), simply use
+&quot;--nodeps&quot;</p>
+</li>
+</ul>
+<p align="left">Building packages (RPM)</p>
+<ul>
+<li><p align="left">get the source rpm (.src.rpm)</p>
+</li>
+<li><p align="left">install the source rpm</p>
+</li>
+<li><p align="left">&quot;cd /usr/src/redhat/SPECS&quot; and
+&quot;rpm -ba packagename.spec&quot;</p>
+</li>
+<li><p align="left">To update the source code in the package
+simply drop a new tarball into /usr/src/redhat/SOURCE and
+tweak the spec file</p>
+</li>
+</ul>
+<p align="left">Software - dpkg overview</p>
+<ul>
+<li><p align="left">Querying, installing and removing
+packages</p>
+</li>
+<li><p align="left">Using dselect</p>
+</li>
+<li><p align="left">Using apt-get</p>
+</li>
+<li><p align="left">Building packages</p>
+</li>
+</ul>
+<p align="left">Querying, installing and removing packages (dpkg)</p>
+<ul>
+<li><p align="left">&quot;dpkg -i package.deb&quot; - Install
+package.deb</p>
+</li>
+<li><p align="left">&quot;dpkg -I package.deb&quot; - Lists
+info about package.deb (rpm -qpi)</p>
+</li>
+<li><p align="left">&quot;dpkg -c package.deb&quot; - Lists
+all files in package.deb (rpm -qpl)</p>
+</li>
+<li><p align="left">&quot;dpkg -l&quot; - Shows all installed
+packages</p>
+</li>
+<li><p align="left">&quot;dpkg -r package-name&quot; -
+Removes 'package-name' from the system (as listed by dpkg
+-l)</p>
+</li>
+</ul>
+<p align="left">Using dselect</p>
+<ul>
+<li><p align="left">text based front end, uses arrow keys to
+move</p>
+</li>
+<li><p align="left">+/- to add or remove packages</p>
+</li>
+<li><p align="left">handles dependencies, uses apt to install</p>
+</li>
+<li><p align="left">interface takes a bit getting used to
+(demo)</p>
+</li>
+</ul>
+<p align="left">Using apt-get </p>
+<ul>
+<li><p align="left">apt-get install package-name</p>
+</li>
+<li><p align="left">apt-get dist-upgrade]</p>
+</li>
+<li><p align="left">apt-get update</p>
+</li>
+<li><p align="left">apt-get upgrade</p>
+</li>
+</ul>
+<p align="left">Building packages (dpkg)</p>
+<ul>
+<li><p align="left">http://www.debian.org/doc/packaging-manuals/packaging.html/index.html</p>
+</li>
+<li><p align="left">files needed to build a package usually:</p>
+</li>
+<li><p align="left">foo.diff.gz</p>
+</li>
+<li><p align="left">foo.dsc</p>
+</li>
+<li><p align="left">foo.orig.tar.gz</p>
+</li>
+<li><p align="left">dpkg-repack will rebuild a debian package
+you have installed, including any changes (config files,
+patched binaries, etc.). Useful for creating updates and
+roll outs.</p>
+</li>
+</ul>
+<p align="left">alien</p>
+<ul>
+<li><p align="left">converts package formats, not always
+correctly but is quite good, useful for getting at
+documentation in a package.</p>
+</li>
+<li><p align="left">&quot;-d file&quot; convert the file to a
+debian package </p>
+</li>
+<li><p align="left">&quot;-r file&quot; convert the file to
+an RPM package</p>
+</li>
+<li><p align="left">&quot;-t file&quot; convert the file to a
+tarball</p>
+</li>
+<li><p align="left">files stored in /var/cache/apt/archives</p>
+</li>
+</ul>
+<p align="left">Basic software - updating software</p>
+<ul>
+<li><p align="left">Software updates should be automated as
+much as possible</p>
+</li>
+<li><p align="left">Most network intrusions occur through old
+software with known holes (the DDoS attacks of February
+2000 on major sites for example)</p>
+</li>
+<li><p align="left">Updating RPM&#146;s</p>
+</li>
+<li><p align="left">Updating debian packages</p>
+</li>
+</ul>
+<p align="left">Software - vendor tools</p>
+<ul>
+<li><p align="left">Red Hat update agent - up2date, Red Hat
+network</p>
+</li>
+<li><p align="left">http://www.redhat.com/support/manuals/RHNetwork/ref-guide/</p>
+</li>
+<li><p align="left">Caldera Volution</p>
+</li>
+<li><p align="left">Mandrake</p>
+</li>
+<li><p align="left">SuSE </p>
+</li>
+</ul>
+<p align="left">Software - updating RPM&#146;s</p>
+<ul>
+<li><p align="left">AutoRPM and Rhlupdate require Perl and
+the Net::FTP module, best to use with an internal FTP
+server (quicker to)</p>
+</li>
+<li><p align="left">On internal networks you might also
+choose to &quot;push&quot; updates by executing commands
+remotely (via SSH or NSH) for &quot;rpm -Uvh
+ftp://you.server/package.rpm&quot; or via nfs mounts</p>
+</li>
+</ul>
+<p align="left">Software - updating debian packages </p>
+<ul>
+<li><p align="left">with dpkg and apt simply have a script
+runs that executes:</p>
+</li>
+<li><p align="left">&quot;apt-get update&quot;</p>
+</li>
+<li><p align="left">&quot;apt-get upgrade&quot;</p>
+</li>
+<li><p align="left">On internal networks you might also
+choose to &quot;push&quot; updates by executing commands
+remotely (via SSH or NSH) and provide the files via nfs
+mounts</p>
+</li>
+</ul>
+<p align="left">Basic network security</p>
+<ul>
+<li><p align="left">Minimize privilege and access</p>
+</li>
+<li><p align="left">Network services</p>
+</li>
+</ul>
+<p align="left">Minimize privilege and access</p>
+<ul>
+<li><p align="left">Most network daemons will run as a non
+root user</p>
+</li>
+<li><p align="left">Most network daemons can run in a
+chroot&#146;ed environment</p>
+</li>
+<li><p align="left">Tools like subdomain will allow for fine
+grained access control.</p>
+</li>
+</ul>
+<p align="left">Basic network security - services overview</p>
+<ul>
+<li><p align="left">Find out what is installed with rpm or
+dpkg and remove unnecessary components</p>
+</li>
+<li><p align="left">Find out what is running</p>
+</li>
+<li><p align="left">Disabling services in inetd</p>
+</li>
+<li><p align="left">Disabling services in xinetd</p>
+</li>
+<li><p align="left">Disabling stand alone daemons</p>
+</li>
+</ul>
+<p align="left">Find out what is running</p>
+<ul>
+<li><p align="left">&quot;ps -xau&quot; will list all
+processes, look for names of network services like
+&quot;named&quot; or &quot;dhcpd&quot;</p>
+</li>
+<li><p align="left">&quot;netstat -at&quot; gives a nice
+listing of all tcp services running (run with -n to get
+numbers instead of names)</p>
+</li>
+<li><p align="left">&quot;netstat -a&quot; lists everything,
+including udp services</p>
+</li>
+<li><p align="left">&quot;lsof&quot; lists all open files,
+use &quot;lsof | egrep &#145;(tcp|udp)&#146; &quot;
+(depending on lsof version tcp and udp may be
+capitalized)</p>
+</li>
+</ul>
+<p align="left">Disabling services in inetd</p>
+<ul>
+<li><p align="left">/etc/inetd.conf controls services run via
+inetd (the superserver)</p>
+</li>
+<li><p align="left">Simply comment out lines to disable the
+service</p>
+</li>
+<li><p align="left">restart inetd with a &quot;killall -HUP
+inetd&quot; to make it reread it&#146;s config file or
+the appropriate rc script</p>
+</li>
+</ul>
+<p align="left">Disabling services in xinetd</p>
+<ul>
+<li><p align="left">typically /etc/xinetd.d/ holds service
+files</p>
+</li>
+<li><p align="left">delete file, or use keyword
+&quot;DISABLED&quot; and set to &quot;yes&quot;</p>
+</li>
+<li><p align="left">restart xinetd with a &quot;killall -HUP
+xinetd&quot; to make it reread it&#146;s config file or
+the appropriate rc script</p>
+</li>
+</ul>
+<p align="left">Disabling stand alone daemons</p>
+<ul>
+<li><p align="left">stand alone daemons are run from
+/etc/rc.d/ typically</p>
+</li>
+<li><p align="left">in Red Hat you can use chkconfig to stop
+and start services at boot time, or you can manually edit
+the symbolic links that control things</p>
+</li>
+<li><p align="left">Other hiding places might be in rc.local,
+or exist as cron entries</p>
+</li>
+</ul>
+<p align="left">Remote and local administration tools</p>
+<ul>
+<li><p align="left">Local administrative tools</p>
+</li>
+<li><p align="left">Remote administrative tools</p>
+</li>
+<li><p align="left">Remote shell access</p>
+</li>
+<li><p align="left">Secure root access</p>
+</li>
+<li><p align="left">Secure root access - sudo</p>
+</li>
+</ul>
+<p align="left">Administration - local tools</p>
+<ul>
+<li><p align="left">These are useful for small environments,
+larger environments tend to need network based tools</p>
+</li>
+<li><p align="left">YaST for SuSE, text based, relatively
+friendly, has a GUI</p>
+</li>
+<li><p align="left">Linuxconf, text and X interfaces</p>
+</li>
+</ul>
+<p align="left">Administration - remote tools</p>
+<ul>
+<li><p align="left">Linuxconf, has a web based interface but
+this must be configured from the GUI, ships with most
+distributions - http://www.solucorp.qc.ca/linuxconf/</p>
+</li>
+<li><p align="left">Webmin, supports SSL easily, many modules
+available - http://www.webmin.org/</p>
+</li>
+<li><p align="left">Pikt is a network based administrative
+tool with it&#146;s own control language -
+http://pikt.uchicago.edu/pikt/</p>
+</li>
+</ul>
+<p align="left">Administration - remote shell access</p>
+<ul>
+<li><p align="left">OpenSSH is free and easy to use, ships
+with most distributions now - http://www.openssh.com/</p>
+</li>
+<li><p align="left">NSH is a commercial product, runs on UNIX
+and NT, very easy to use, has a Perl module to make
+scripting easy. Authentication and sessions are
+encrypted, authentication can be done via keys (to help
+automate things).</p>
+</li>
+</ul>
+<p align="left">Secure root access </p>
+<ul>
+<li><p align="left">su is a bad idea since you need to give
+out root&#146;s password</p>
+</li>
+<li><p align="left">sudo allows for control of who can access
+it, what they can access, and from where, ships with most
+distributions</p>
+</li>
+<li><p align="left">super also allows for easy control of
+access and ships with Debian</p>
+</li>
+<li><p align="left">runas supports a nice logging feature and
+you can disable command line options</p>
+</li>
+</ul>
+<p align="left">Secure root access - sudo</p>
+<ul>
+<li><p align="left">/etc/sudoers should be mode 440</p>
+</li>
+</ul>
+<blockquote>
+<p align="left">bob ALL=(ALL) ALL</p>
+<p align="left">Host_Alias STATIONS=localhost, station1,
+station2 </p>
+<p align="left">User_Alias HALTUSERS=bob, mary, jane </p>
+<p align="left">Cmnd_Alias HALT=halt, reboot, sync</p>
+<p align="left">Runas_Alias RBTUSER=admin </p>
+<p align="left">HALTUSERS STATIONS=(RBTUSER) HALT</p>
+</blockquote>
+<p align="left"><b>Break for questions</b></p>
+<p align="left">Specific protocol security</p>
+<ul>
+<li><p align="left">DNS</p>
+</li>
+<li><p align="left">DHCP</p>
+</li>
+<li><p align="left">SMTP</p>
+</li>
+<li><p align="left">POP/IMAP</p>
+</li>
+<li><p align="left">SSL</p>
+</li>
+<li><p align="left">HTTP/HTTPS</p>
+</li>
+<li><p align="left">FTP</p>
+</li>
+</ul>
+<p align="left">Protocols - DNS overview</p>
+<ul>
+<li><p align="left">Basics</p>
+</li>
+<li><p align="left">Server types</p>
+</li>
+<li><p align="left">Data</p>
+</li>
+<li><p align="left">names to numbers - public / internal</p>
+</li>
+<li><p align="left">numbers to name - public / internal</p>
+</li>
+<li><p align="left">Bind</p>
+</li>
+</ul>
+<p align="left">DNS basics</p>
+<ul>
+<li><p align="left">Domain name system, critical part of
+Internet infrastructure</p>
+</li>
+<li><p align="left">If compromised you can reroute e-mail,
+and most services to hosts under your control</p>
+</li>
+<li><p align="left">DNS also serves as a phone directory of
+your hosts and is useful for initial security probes</p>
+</li>
+<li><p align="left">DNS servers are critical and should run
+no other services</p>
+</li>
+</ul>
+<p align="left">DNS server types</p>
+<ul>
+<li><p align="left">Two main server types:</p>
+</li>
+<li><p align="left">servers that provide DNS information to
+the Internet</p>
+</li>
+<li><p align="left">servers that provide DNS lookups for
+internal hosts</p>
+</li>
+<li><p align="left">You can easily have a server do both, but
+this makes it more vulnerable to attacks</p>
+</li>
+<li><p align="left">Majority of DNS servers run BIND</p>
+</li>
+</ul>
+<p align="left">DNS data</p>
+<ul>
+<li><p align="left">Names to numbers</p>
+</li>
+<li><p align="left">&quot;Public&quot; zones such as
+*.seifried.org</p>
+</li>
+<li><p align="left">&quot;Internal&quot; zones such as
+*.secret.seifried.org</p>
+</li>
+<li><p align="left">Numbers to names</p>
+</li>
+<li><p align="left">&quot;Public&quot; zones such as 1.2.3.*</p>
+</li>
+<li><p align="left">&quot;Internal&quot; zones such as
+10.0.0.*</p>
+</li>
+</ul>
+<p align="left">DNS names to numbers - public zones</p>
+<ul>
+<li><p align="left">Anyone can query usually</p>
+</li>
+<li><p align="left">Restricted access to zone transfers</p>
+</li>
+<li><p align="left">Updates (I.e. dynamic DNS) usually not
+allowed</p>
+</li>
+<li><p align="left">Attackers will try to transfer the zone,
+log this action, and attackers may try brute force
+queries, if you have sufficient disk space consider
+logging all queries</p>
+</li>
+</ul>
+<p align="left">DNS names to numbers - internal zones</p>
+<ul>
+<li><p align="left">Restricted to internal hosts for querying</p>
+</li>
+<li><p align="left">Heavily restricted zone transfers</p>
+</li>
+<li><p align="left">Updates (I.e. dynamic DNS) might be
+allowed</p>
+</li>
+<li><p align="left">Attackers will definitely try to transfer
+or query these, log all failed attempts</p>
+</li>
+</ul>
+<p align="left">DNS numbers to names - public zones</p>
+<ul>
+<li><p align="left">Anyone can query usually</p>
+</li>
+<li><p align="left">Restricted access to zone transfers</p>
+</li>
+<li><p align="left">Updates (I.e. dynamic DNS) usually not
+allowed</p>
+</li>
+<li><p align="left">Attackers will try to transfer the zone,
+log this action, and attackers may try brute force
+queries, if you have sufficient disk space consider
+logging all queries</p>
+</li>
+</ul>
+<p align="left">DNS numbers to names - internal zones</p>
+<ul>
+<li><p align="left">Restricted to internal hosts for querying</p>
+</li>
+<li><p align="left">Heavily restricted zone transfers</p>
+</li>
+<li><p align="left">Updates (I.e. dynamic DNS) might be
+allowed</p>
+</li>
+<li><p align="left">Attackers will definitely try to transfer
+or query these, log all failed attempts</p>
+</li>
+</ul>
+<p align="left">DNS - Bind overview</p>
+<ul>
+<li><p align="left">Software security</p>
+</li>
+<li><p align="left">Server version</p>
+</li>
+<li><p align="left">named.conf - intro / ACL&#146;s / views</p>
+</li>
+<li><p align="left">Bind 9 - DNSSEC</p>
+</li>
+</ul>
+<p align="left">BIND software security</p>
+<ul>
+<li><p align="left">Run the latest Bind software</p>
+</li>
+<li><p align="left">Run as a non root user / group</p>
+</li>
+<li><p align="left">&quot;-u username&quot;</p>
+</li>
+<li><p align="left">&quot;-g groupname&quot;</p>
+</li>
+<li><p align="left">Run chrooted &quot;-t
+/directory/to/chroot/to&quot;</p>
+</li>
+<li><p align="left">Modify the named start script to add
+these options (/etc/rc.d/init.d/named)</p>
+</li>
+</ul>
+<p align="left">Bind server version</p>
+<ul>
+<li><p align="left">Clients can query Bind software version
+remotely, as there are several holes in older version of
+Bind that allow root access.</p>
+</li>
+<li><p align="left">Create a chaos zone called bind, restrict
+access to it to the local machine and log all attempts to
+query it or use the &quot;version&quot; statement:</p>
+</li>
+<li><p align="left">&quot;version 0.0.1;</p>
+</li>
+</ul>
+<p align="left">Bind named.conf - intro</p>
+<ul>
+<li><p align="left">Configuration file for Bind version 8</p>
+</li>
+<li><p align="left">You control all aspects of Bind from this
+file (memory usage, file placement, etc.)</p>
+</li>
+<li><p align="left">Each domain can be handled separately </p>
+</li>
+<li><p align="left">You can use include statements (handy if
+you have multiple admins)</p>
+</li>
+<li><p align="left">/usr/doc/bind-8.x.x/html/config.html</p>
+</li>
+</ul>
+<p align="left">Bind named.conf - ACL's</p>
+<ul>
+<li><p align="left">You can create one or multiple ACL lists,
+they must go at the top of the file (otherwise Bind might
+complain that they do not exist)</p>
+</li>
+<li><p align="left">You can apply ACL&#146;s to all types of
+access:</p>
+</li>
+<li><p align="left">allow-query (ask for specific records)</p>
+</li>
+<li><p align="left">allow-update (actually modify zone data)</p>
+</li>
+<li><p align="left">allow-transfer (ask for the entire zone)</p>
+</li>
+</ul>
+<p align="left">Bind named.conf - ACL's (cont.)</p>
+<ul>
+<li><p align="left">ACL&#146;s can be applied on a server
+wide basis by putting them in the &quot;options&quot;
+declaration</p>
+</li>
+<li><p align="left">ACL&#146;s can be applied to specific
+zones and override the server wide ones</p>
+</li>
+<li><p align="left">ACL&#146;s can have hostnames, IP&#146;s,
+network addresses, and there are several built in ones
+(localhost, localnets, etc.)</p>
+</li>
+</ul>
+<p align="left">Bind 9 - DNSSEC</p>
+<ul>
+<li><p align="left">flaws: CPU overhead, space requirements
+rise enormously, all servers must be secure</p>
+</li>
+<li><p align="left">generate keys with dnssec-keygen</p>
+</li>
+<li><p align="left">generate request with dnssec-makekeyset</p>
+</li>
+<li><p align="left">sign keys with dnssec-signkey</p>
+</li>
+<li><p align="left">sign zones with dnssec-signzone</p>
+</li>
+<li><p align="left">ultimately used to secure DNS and provide
+public key infrastructure, please store signing keys
+offline!</p>
+</li>
+</ul>
+<p align="left">Protocols - DHCP overview</p>
+<ul>
+<li><p align="left">Allows for easy control of client
+machines</p>
+</li>
+<li><p align="left">Client issues</p>
+</li>
+<li><p align="left">Server issues</p>
+</li>
+</ul>
+<p align="left">DHCP client</p>
+<ul>
+<li><p align="left">Client runs as root, no easy way to
+change, it must modify network settings,
+/etc/resolv.conf, etc.</p>
+</li>
+<li><p align="left">Can be a choke-point, consider having
+multiple servers in case one fails</p>
+</li>
+<li><p align="left">No authentication of server data
+currently</p>
+</li>
+<li><p align="left">Rogue servers can also be a problem,
+imagine if one set the DNS servers to those controlled by
+an attacker and rerouted email for example, check log
+files on clients and servers</p>
+</li>
+<li><p align="left">ISC dhcpcd and pump are your main choices</p>
+</li>
+</ul>
+<p align="left">DHCP server </p>
+<ul>
+<li><p align="left">Firewall at all network access points
+(forwarding DHCP requests across the Internet would be
+slow and unreliable in any case)</p>
+</li>
+<li><p align="left">Rogue clients can exhaust the address
+pool space (sometimes unintentionally, such as NT RAS
+server), consider using static mappings for clients
+instead of pools</p>
+</li>
+<li><p align="left">dhcp+paranoia patch
+http://users.phri.nyu.edu/~edelkind/custom/public/patches/dhcp-2.0+paranoia.patch</p>
+</li>
+</ul>
+<p align="left">Protocols - SMTP overview</p>
+<ul>
+<li><p align="left">Basics</p>
+</li>
+<li><p align="left">Server design</p>
+</li>
+<li><p align="left">Sendmail</p>
+</li>
+<li><p align="left">Postfix</p>
+</li>
+</ul>
+<p align="left">SMTP basics</p>
+<ul>
+<li><p align="left">Transfers mail from client to server and
+server to other servers</p>
+</li>
+<li><p align="left">No authentication or encryption by
+default on most systems</p>
+</li>
+<li><p align="left">Most common problem is other people using
+your mail server to relay email (typically bulk SPAM)</p>
+</li>
+<li><p align="left">Sendmail is the most popular MTA, Postfix
+is growing</p>
+</li>
+</ul>
+<p align="left">Server design</p>
+<ul>
+<li><p align="left">Users deliver mail to server via SMTP</p>
+</li>
+<li><p align="left">Servers can accept mail for local
+delivery (users access via POP/IMAP) or deliver to other
+servers via SMTP</p>
+</li>
+<li><p align="left">You may want to have a separate server(s)
+for each function, you can tighten the configuration
+significantly</p>
+</li>
+</ul>
+<p align="left">SMTP - Sendmail overview</p>
+<ul>
+<li><p align="left">basics</p>
+</li>
+<li><p align="left">new security</p>
+</li>
+<li><p align="left">relaying</p>
+</li>
+<li><p align="left">access</p>
+</li>
+<li><p align="left">http://www.sendmail.org/</p>
+</li>
+<li><p align="left">http://www.sendmail.net/</p>
+</li>
+<li><p align="left">http://www.sendmail.com/</p>
+</li>
+</ul>
+<p align="left">Sendmail basics</p>
+<ul>
+<li><p align="left">Current release is 8.11.x</p>
+</li>
+<li><p align="left">Commercial versions available from
+sendmail.com with support and a GUI</p>
+</li>
+<li><p align="left">Default MTA (Mail Transfer Agent) for
+many Linux distributions</p>
+</li>
+<li><p align="left">Runs as root, and is difficult to chroot
+and run as a non root user</p>
+</li>
+<li><p align="left">Pre-compiled packages have most needed
+features</p>
+</li>
+</ul>
+<p align="left">Sendmail - new security</p>
+<ul>
+<li><p align="left">Allows users to authenticate to the
+server securely and then use it to send email</p>
+</li>
+<li><p align="left">Uses Cyrus SASL, most mail clients
+supported</p>
+</li>
+<li><p align="left">content management API</p>
+</li>
+<li><p align="left">interact with data, virus scanners, block
+objectionable content, encrypt outgoing mail, etc.</p>
+</li>
+</ul>
+<p align="left">Sendmail - relaying</p>
+<ul>
+<li><p align="left">You can control the domains you will
+relay email to, and the hosts that can connect and relay
+email through your server</p>
+</li>
+<li><p align="left">To control access for relaying to domains
+fine the line starting with &quot;FR-o&quot; in
+/etc/sendmail.cf, followed by a blank or a filename:</p>
+</li>
+<li><p align="left">&quot;FR-o /etc/mail/relay-domains&quot;</p>
+</li>
+<li><p align="left">put domains you wish to relay to in this
+file</p>
+</li>
+</ul>
+<p align="left">Sendmail - access</p>
+<ul>
+<li><p align="left">This function is useful for stopping
+spammers </p>
+</li>
+<li><p align="left">You can control access to the mail server
+based on hostnames, IP addresses, domains and email
+addresses (README.cf):</p>
+</li>
+<li><p align="left">10.0.0 RELAY</p>
+</li>
+<li><p align="left">10.2.0.1 OK</p>
+</li>
+<li><p align="left"><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="d6b4b7b2a3a5b3a496b3aeb7bba6bab3f8b9a4b1">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> REJECT</p>
+</li>
+<li><p align="left">mail.example.org DISCARD</p>
+</li>
+</ul>
+<p align="left">Sendmail - access (cont.)</p>
+<ul>
+<li><p align="left">Look for a line in sendmail.cf starting
+with Kaccess</p>
+</li>
+<li><p align="left">Kaccess hash -o /etc/mail/access</p>
+</li>
+<li><p align="left">Then create a text file with your rules
+and turn it into a db file (of the hash type):</p>
+</li>
+<li><p align="left">&quot;makemap hash access.db &lt;
+access&quot;</p>
+</li>
+<li><p align="left">restart sendmail</p>
+</li>
+</ul>
+<p align="left">SMTP - Postfix overview</p>
+<ul>
+<li><p align="left">basics</p>
+</li>
+<li><p align="left">relaying</p>
+</li>
+<li><p align="left">access</p>
+</li>
+<li><p align="left">http://www.postfix.org/</p>
+</li>
+</ul>
+<p align="left">Postfix basics</p>
+<ul>
+<li><p align="left">Written by Wietse Venema (author of
+TCP_WRAPPERS)</p>
+</li>
+<li><p align="left">Designed to be secure and fast</p>
+</li>
+<li><p align="left">Supports databases for configuration
+files</p>
+</li>
+<li><p align="left">Runs mostly as a non root user, easy to
+chroot</p>
+</li>
+<li><p align="left">Primary configuration file about 20-26
+lines</p>
+</li>
+</ul>
+<p align="left">Postfix relaying</p>
+<ul>
+<li><p align="left">You can control the domains you will
+relay email to, and the hosts that can connect and relay
+email through your server</p>
+</li>
+<li><p align="left">in /etc/postfix/master.cf look for the
+line starting with &quot;relay_domains&quot;</p>
+</li>
+<li><p align="left">&quot;relay_domains =
+/etc/postfix/relaydomains&quot;</p>
+</li>
+<li><p align="left">put domains you wish to relay to in this
+file</p>
+</li>
+</ul>
+<p align="left">Postfix access</p>
+<ul>
+<li><p align="left">This function is useful for stopping
+spammers </p>
+</li>
+<li><p align="left">You can control access to the mail server
+based on hostnames, IP addresses, domains and email
+addresses (access.5.html):</p>
+</li>
+<li><p align="left">10.0.0 OK</p>
+</li>
+<li><p align="left">10.2.0.1 OK</p>
+</li>
+<li><p align="left">baduser@ REJECT</p>
+</li>
+<li><p align="left">mail.example.org REJECT</p>
+</li>
+</ul>
+<p align="left">Postfix access (cont.)</p>
+<ul>
+<li><p align="left">The access table can be used for several
+checks (and you can use multiple access tables)</p>
+</li>
+<li><p align="left">smtpd_recipient_restrictions =
+check_client_access hash:/etc/postfix/access</p>
+</li>
+<li><p align="left">smtpd_recipient_restrictions =
+check_recipient_access hash:/etc/postfix/access</p>
+</li>
+<li><p align="left">You can also chain the checks (separate
+with commas)</p>
+</li>
+</ul>
+<p align="left">Protocols - POP/IMAP overview</p>
+<ul>
+<li><p align="left">basics</p>
+</li>
+<li><p align="left">POP</p>
+</li>
+<li><p align="left">IMAP</p>
+</li>
+<li><p align="left">security</p>
+</li>
+<li><p align="left">SSL wrapping</p>
+</li>
+</ul>
+<p align="left">POP/IMAP basics</p>
+<ul>
+<li><p align="left">Post Office Protocol (relatively simple)</p>
+</li>
+<li><p align="left">good for a single user and easier on the
+server</p>
+</li>
+<li><p align="left">Internet Mail Application Protocol
+(relatively complicated)</p>
+</li>
+<li><p align="left">good for users checking email from
+multiple locations, stores mail on server</p>
+</li>
+<li><p align="left">Both allow users to retrieve email
+messages, delete them, and manage their mailboxes under
+IMAP</p>
+</li>
+</ul>
+<p align="left">POP</p>
+<ul>
+<li><p align="left">You can login, LIST, RETR and DELE
+messages (basically). </p>
+</li>
+<li><p align="left">Inbox is stored on server, all other mail
+is stored on the client&#146;s machine</p>
+</li>
+<li><p align="left">User does not require a directory or
+write access to any directories on the server</p>
+</li>
+</ul>
+<p align="left">IMAP</p>
+<ul>
+<li><p align="left">You can login, list messages, retrieve
+the headers, retrieve the bodies, delete them, move them
+to folders, upload messages to folders, and more</p>
+</li>
+<li><p align="left">Inbox and other folders are stored on
+server</p>
+</li>
+<li><p align="left">User requires a directory with write
+access on the server (some IMAP servers store it in a
+database)</p>
+</li>
+</ul>
+<p align="left">POP/IMAP - security</p>
+<ul>
+<li><p align="left">POP/IMAP generally start as root and then
+switch to the user id logging in</p>
+</li>
+<li><p align="left">POP/IMAP are generally difficult to
+chroot</p>
+</li>
+<li><p align="left">By default usernames and passwords are
+passed in cleartext</p>
+</li>
+<li><p align="left">By default email is passed around in
+cleartext</p>
+</li>
+</ul>
+<p align="left">POP/IMAP - SSL wrapping</p>
+<ul>
+<li><p align="left">Install OpenSSL</p>
+</li>
+<li><p align="left">Install stunnel, create certificate,
+reconfigure inetd.conf and restart inetd</p>
+</li>
+<li><p align="left">On the client end choose &quot;requires
+an SSL connection&quot; (note: Netscape does not support
+SSL POP, only IMAP)</p>
+</li>
+<li><p align="left">Consider disabling normal POP/IMAP</p>
+</li>
+<li><p align="left">Server CPU usage will rise dramatically</p>
+</li>
+</ul>
+<p align="left">Protocols - SSL overview</p>
+<ul>
+<li><p align="left">Installing OpenSSL</p>
+</li>
+<li><p align="left">Install stunnel</p>
+</li>
+<li><p align="left">Caveats</p>
+</li>
+</ul>
+<p align="left">SSL - Installing OpenSSL</p>
+<ul>
+<li><p align="left">Source code available, and precompiled
+packages.</p>
+</li>
+<li><p align="left">Use RSAREF in the US, however you cannot
+use it for any revenue generating activities
+(Universities charge, indirectly, for network access
+which restricts them for example).</p>
+</li>
+<li><p align="left">RSAREF is slow and key size is limited</p>
+</li>
+<li><p align="left">http://www.openssl.org/</p>
+</li>
+</ul>
+<p align="left">SSL - Installing stunnel</p>
+<ul>
+<li><p align="left">Source code available, and precompiled
+packages</p>
+</li>
+<li><p align="left">Create a server certificate</p>
+</li>
+<li><p align="left">create a working stunnel.cnf</p>
+</li>
+<li><p align="left">create a self signed certificate as
+/usr/certs/stunnel.pem</p>
+</li>
+<li><p align="left">edit inetd.conf and restart it</p>
+</li>
+<li><p align="left">http://www.stunnel.org/</p>
+</li>
+</ul>
+<p align="left">SSL - Caveats</p>
+<ul>
+<li><p align="left">All connections will appear from
+localhost since stunnel handles the actual connection and
+acts as a tunnel</p>
+</li>
+<li><p align="left">stunnel will log the connection, however
+the associated login to IMAP will have to be inferred by
+time, process number, etc.</p>
+</li>
+<li><p align="left">CPU usage will increase a lot (you may
+want to restrict access to remote users/etc)</p>
+</li>
+</ul>
+<p align="left">Protocols - HTTP/HTTPS overview</p>
+<ul>
+<li><p align="left">basics</p>
+</li>
+<li><p align="left">Apache</p>
+</li>
+<li><p align="left">Not Apache</p>
+</li>
+<li><p align="left">HTTPS considerations</p>
+</li>
+<li><p align="left">CGI considerations</p>
+</li>
+</ul>
+<p align="left">HTTP/HTTPS basics</p>
+<ul>
+<li><p align="left">Two main families of HTTP/HTTPS servers:</p>
+</li>
+<li><p align="left">Apache based</p>
+</li>
+<li><p align="left">Not Apache based (I.e. Roxen, Zeus,
+Netscape)</p>
+</li>
+<li><p align="left">Most security problems are not with the
+www server software, but usually with CGI scripts and
+user supplied data</p>
+</li>
+<li><p align="left">Most www servers run as a non root user,
+and can be chrooted easily</p>
+</li>
+</ul>
+<p align="left">Apache</p>
+<ul>
+<li><p align="left">Runs as user &quot;nobody&quot; by
+default</p>
+</li>
+<li><p align="left">Several Apache-SSL servers available, and
+several add on SSL packages</p>
+</li>
+<li><p align="left">CGI&#146;s can be run as an arbitrary
+user (suEXEC)</p>
+</li>
+<li><p align="left">Precompiled packages ship with almost all
+distributions</p>
+</li>
+<li><p align="left">http://www.apache.org/</p>
+</li>
+</ul>
+<p align="left">Not Apache</p>
+<ul>
+<li><p align="left">Zeus - many security features, not free</p>
+</li>
+<li><p align="left">Roxen - OpenSource and free, feature
+complete</p>
+</li>
+<li><p align="left">Netscape - ease of use, very fine
+control, not free</p>
+</li>
+<li><p align="left">Zeus and Roxen both respond quickly to
+problems</p>
+</li>
+</ul>
+<p align="left">HTTPS considerations</p>
+<ul>
+<li><p align="left">SSL allows the server to prove it&#146;s
+identity to the client, and optionally the client can
+prove it&#146;s identity to the server</p>
+</li>
+<li><p align="left">Server key is stored in memory, and it is
+possible for an attacker with local administrative access
+to extract it</p>
+</li>
+<li><p align="left">Attackers can register a similar domain
+name and easily trick users into using it</p>
+</li>
+<li><p align="left">One IP per SSL site required</p>
+</li>
+<li><p align="left">http://www.apache-ssl.org/</p>
+</li>
+</ul>
+<p align="left">CGI considerations</p>
+<ul>
+<li><p align="left">Don&#146;t trust input, sanitize and
+validate it</p>
+</li>
+<li><p align="left">Give CGI&#146;s minimal permissions and
+access (see SubDomain and chroot)</p>
+</li>
+<li><p align="left">Audit CGI scripts for problems and holes</p>
+</li>
+<li><p align="left">Use Perl taint and strict </p>
+</li>
+<li><p align="left">Use access controls on your database,
+many recent exploits involved improper database
+permissions</p>
+</li>
+</ul>
+<p align="left">Protocols - FTP overview</p>
+<ul>
+<li><p align="left">basics</p>
+</li>
+<li><p align="left">Wu-FTPD</p>
+</li>
+<li><p align="left">ProFTPD</p>
+</li>
+</ul>
+<p align="left">FTP basics</p>
+<ul>
+<li><p align="left">difficult to firewall properly</p>
+</li>
+<li><p align="left">cleartext authentication usually</p>
+</li>
+<li><p align="left">SSL versions of FTP and services
+available, but few clients support them</p>
+</li>
+<li><p align="left">Rsync recommended over ftp for
+synchronizing servers</p>
+</li>
+<li><p align="left">SCP (from SSH) recommended for user
+access</p>
+</li>
+</ul>
+<p align="left">Wu-FTPD</p>
+<ul>
+<li><p align="left">Numerous security flaws, not recommended </p>
+</li>
+<li><p align="left">Relatively easy to configure for simple
+setups, complicated setups are difficult (if not
+impossible)</p>
+</li>
+<li><p align="left">Security is achieved by chrooting,
+previous versions had numerous problems, make sure you
+are up to date</p>
+</li>
+</ul>
+<p align="left">Pro-FTPD</p>
+<ul>
+<li><p align="left">Slightly more resource intensive then
+Wu-FTPD, but used by many large sites (Debian,
+SourceForge, etc.)</p>
+</li>
+<li><p align="left">Easier configuration then Wu-FTPD, uses
+an Apache style configuration file</p>
+</li>
+<li><p align="left">Supports virtual ftp servers </p>
+</li>
+<li><p align="left">Easy to chroot users, does not require
+/etc, /lib, /bin directories replicated into each sub
+area</p>
+</li>
+</ul>
+<p align="left">Pro-FTPD (cont.)</p>
+<ul>
+<li><p align="left">Allows controlled access to directories:</p>
+</li>
+<li><p align="left">AllowOverwrite</p>
+</li>
+<li><p align="left">Read, Write, etc</p>
+</li>
+<li><p align="left">You do not need to rely on file
+permissions to secure directories</p>
+</li>
+<li><p align="left">Users can have their own configuration
+files in directories</p>
+</li>
+<li><p align="left">Numerous security related configuration
+directives</p>
+</li>
+</ul>
+<p align="left">Firewalls and VPN&#146;s overview</p>
+<ul>
+<li><p align="left">IPCHAINS</p>
+</li>
+<li><p align="left">Netfilter</p>
+</li>
+<li><p align="left">Firewall-1</p>
+</li>
+<li><p align="left">IPSec</p>
+</li>
+<li><p align="left">SSH + PPP</p>
+</li>
+</ul>
+<p align="left">Firewalling - IPCHAINS</p>
+<ul>
+<li><p align="left">Currently in kernel release 2.2.x</p>
+</li>
+<li><p align="left">Not stateful, firewalling protocols like
+DNS and FTP can be tricky</p>
+</li>
+<li><p align="left">Supports NAT, IPSec</p>
+</li>
+<li><p align="left">Upgrade to 2.4 and NETFILTER if possible</p>
+</li>
+</ul>
+<p align="left">Firewalling - Netfilter</p>
+<ul>
+<li><p align="left">Currently in kernel release 2.4.x</p>
+</li>
+<li><p align="left">Stateful, easier to firewall protocols
+like DNS and FTP</p>
+</li>
+<li><p align="left">Supports NAT, IPSec, MAC filtering,
+limiting</p>
+</li>
+<li><p align="left">http://netfilter.kernelnotes.org/</p>
+</li>
+<li><p align="left">logging</p>
+</li>
+<li><p align="left">interesting options</p>
+</li>
+</ul>
+<p align="left">Logging</p>
+<ul>
+<li><p align="left">--log-level</p>
+</li>
+<li><p align="left">--log-prefix</p>
+</li>
+<li><p align="left">--log-tcp-sequence [caution]</p>
+</li>
+<li><p align="left">--log-tcp-options</p>
+</li>
+<li><p align="left">--log-ip-options</p>
+</li>
+</ul>
+<p align="left">Interesting options</p>
+<ul>
+<li><p align="left">-i (in interface)</p>
+</li>
+<li><p align="left">-o (out interface)</p>
+</li>
+<li><p align="left">--mac-source 00:00:00:00:00:00</p>
+</li>
+<li><p align="left">-limit 5/hour (limit 5 per hour)</p>
+</li>
+<li><p align="left">-m state -state NEW</p>
+</li>
+<li><p align="left">-f (packet fragments)</p>
+</li>
+<li><p align="left">unclean (mangled packets)</p>
+</li>
+<li><p align="left">--set-tos (set type of service)</p>
+</li>
+</ul>
+<p align="left">Firewalling FW-1</p>
+<ul>
+<li><p align="left">Stateful filtering, good anti-attack
+features</p>
+</li>
+<li><p align="left">Has add-on VPN software</p>
+</li>
+<li><p align="left">Configuration tool only available for
+Windows currently</p>
+</li>
+<li><p align="left">Good authentication mechanism</p>
+</li>
+<li><p align="left">Supports NAT, IPSec</p>
+</li>
+<li><p align="left">http://checkpoint.com/products/firewall-1/</p>
+</li>
+</ul>
+<p align="left">VPN - FreeS/WAN IPSec</p>
+<ul>
+<li><p align="left">Supports 3DES, does not officially
+support DES</p>
+</li>
+<li><p align="left">Interoperability with most other IPSec
+products (Cisco, PGP, etc.)</p>
+</li>
+<li><p align="left">GPL licensed (free as in free beer and
+free speech)</p>
+</li>
+<li><p align="left">Still in development, suitable for static
+networks, has management issues</p>
+</li>
+<li><p align="left">Linux does not support many crypto
+accelerators (unlike OpenBSD)</p>
+</li>
+<li><p align="left">http://freeswan.org/</p>
+</li>
+</ul>
+<p align="left">VPN - SSH + PPP</p>
+<ul>
+<li><p align="left">OpenSSH, PPP tools are all free</p>
+</li>
+<li><p align="left">Useful for tunneling through firewalls</p>
+</li>
+<li><p align="left">Relatively system independent</p>
+</li>
+<li><p align="left">Tools to ease setup and maintenance exist</p>
+</li>
+<li><p align="left">Not recommended for heavy VPN
+requirements / usage</p>
+</li>
+<li><p align="left">http://linuxdoc.org/HOWTO/VPN-HOWTO.html</p>
+</li>
+</ul>
+<p align="left">Hardening scripts overview</p>
+<ul>
+<li><p align="left">Vendor specific scripts</p>
+</li>
+<li><p align="left">SuSE&#146;s &quot;harden SuSE&quot;</p>
+</li>
+<li><p align="left">Bastille Linux</p>
+</li>
+<li><p align="left">Supports Red Hat, several other RM based
+distributions</p>
+</li>
+<li><p align="left">Provides quick fixes for some common
+problems, but is not a solution</p>
+</li>
+<li><p align="left">Be careful, check that the system is
+hardened</p>
+</li>
+<li><p align="left">http://bastille-linux.org/ </p>
+</li>
+</ul>
+<p align="left">Limiting users overview</p>
+<ul>
+<li><p align="left">General notes</p>
+</li>
+<li><p align="left">PAM</p>
+</li>
+<li><p align="left">Bash</p>
+</li>
+<li><p align="left">Tcsh</p>
+</li>
+<li><p align="left">Pdksh</p>
+</li>
+<li><p align="left">Zsh</p>
+</li>
+</ul>
+<p align="left">General notes</p>
+<ul>
+<li><p align="left">Make sure you do not limit the root
+account accidentally, or other administrative and system
+accounts to heavily (you may end up &quot;locked
+out&quot;)</p>
+</li>
+<li><p align="left">Most limits can be abused by a savvy
+attacker, they will prevent normal / honest users from
+making mistakes</p>
+</li>
+</ul>
+<p align="left">PAM</p>
+<ul>
+<li><p align="left">Typically most effective way of limiting
+user login sessions</p>
+</li>
+<li><p align="left">require &quot;pam_limits.so&quot; for
+sshd, etc.</p>
+</li>
+<li><p align="left">edit /etc/security/limits.conf</p>
+</li>
+<li><p align="left">define by user, group, or default</p>
+</li>
+<li><p align="left">soft and hard limits</p>
+</li>
+<li><p align="left">core files, memory usage, stack size, cpu
+usage, maximum number of logins, etc.</p>
+</li>
+<li><p align="left">sysadminmag.com/archive/0909/feature.shtml</p>
+</li>
+</ul>
+<p align="left">BASH</p>
+<ul>
+<li><p align="left">Only effective if user cannot change
+login shell</p>
+</li>
+<li><p align="left">use ulimit, typically in /etc/profile to
+apply to all users</p>
+</li>
+<li><p align="left">soft and hard limits</p>
+</li>
+<li><p align="left">core files, files, cpu usage, memory
+usage, etc.</p>
+</li>
+<li><p align="left">use ulimit in ~/.bash_profile and set the
+file immutable (chattr +i) as root</p>
+</li>
+</ul>
+<p align="left">Tcsh</p>
+<ul>
+<li><p align="left">Only effective if user cannot change
+login shell</p>
+</li>
+<li><p align="left">use limit, typically in /etc/csh.login</p>
+</li>
+<li><p align="left">hard limits</p>
+</li>
+<li><p align="left">core files, memory usage, cpu usage, etc.</p>
+</li>
+<li><p align="left">use limit in ~/.tcshrc and set the file
+immutable (chattr +I) as root</p>
+</li>
+</ul>
+<p align="left">Pdksh</p>
+<ul>
+<li><p align="left">Only effective if user cannot change
+login shell</p>
+</li>
+<li><p align="left">use ulimit, typically in /etc/profile to
+apply to all users</p>
+</li>
+<li><p align="left">soft and hard limits</p>
+</li>
+<li><p align="left">core files, files, cpu usage, memory
+usage, etc.</p>
+</li>
+<li><p align="left">use ulimit in ~/.profile and set the file
+immutable (chattr +i) as root</p>
+</li>
+</ul>
+<p align="left">Zsh</p>
+<ul>
+<li><p align="left">Only effective if user cannot change
+login shell</p>
+</li>
+<li><p align="left">use limit, typically in /etc/zprofile</p>
+</li>
+<li><p align="left">soft and hard limits</p>
+</li>
+<li><p align="left">core files, memory usage, cpu usage, etc.</p>
+</li>
+<li><p align="left">use limit in ~/.zprofile and set the file
+immutable (chattr +I) as root</p>
+</li>
+</ul>
+<p align="left">Advanced security overview</p>
+<ul>
+<li><p align="left">Openwall kernel patch (Solar
+Designer&#146;s patch) </p>
+</li>
+<li><p align="left">StackGuard</p>
+</li>
+<li><p align="left">FormatGuard</p>
+</li>
+<li><p align="left">SubDomain</p>
+</li>
+<li><p align="left">Chroot techniques / tools</p>
+</li>
+<li><p align="left">Fuzz</p>
+</li>
+<li><p align="left">ITS4</p>
+</li>
+</ul>
+<p align="left">Openwall kernel patch (Solar Designer&#146;s
+patch) </p>
+<ul>
+<li><p align="left">Non-executable user stack area </p>
+</li>
+<li><p align="left">Restricted links and FIFO&#146;s in /tmp</p>
+</li>
+<li><p align="left">Restricted /proc</p>
+</li>
+<li><p align="left">Special handling of fd 0, 1, and 2 </p>
+</li>
+<li><p align="left">http://www.openwall.com/linux/</p>
+</li>
+</ul>
+<p align="left">StackGuard </p>
+<ul>
+<li><p align="left">Compiler patch to create
+libraries/programs that are resistant (or immune) to
+buffer overflow attacks</p>
+</li>
+<li><p align="left">Available for most version of gcc</p>
+</li>
+<li><p align="left">Most useful for programs invoked by
+untrusted entities (users, web based applications, etc.)</p>
+</li>
+<li><p align="left">http://immunix.org/stackguard.html</p>
+</li>
+</ul>
+<p align="left">FormatGuard </p>
+<ul>
+<li><p align="left">Patches library for certain system calls</p>
+</li>
+<li><p align="left">Prevents format string attacks
+(discovered last summer, Wu-FTPD, syslog, etc.)</p>
+</li>
+<li><p align="left">Publically available</p>
+</li>
+<li><p align="left">http://immunix.org/formatguard.html</p>
+</li>
+</ul>
+<p align="left">SubDomain </p>
+<ul>
+<li><p align="left">Let&#146;s you restrict access to files
+on a process by process basis</p>
+</li>
+<li><p align="left">Check signatures of files and can be used
+to minimize the chances of trojan code (like a real time
+Tripwire)</p>
+</li>
+<li><p align="left">mediates via system calls, should be
+difficult for attackers to circumnavigate</p>
+</li>
+</ul>
+<ul>
+<li><p align="left">http://immunix.org/subdomain.html</p>
+</li>
+</ul>
+<p align="left">Chroot techniques / tools</p>
+<ul>
+<li><p align="left">Chroot restricts access to the filesystem</p>
+</li>
+<li><p align="left">If software is running as root it can
+break out of a chroot&#146;ed environment</p>
+</li>
+<li><p align="left">ldd is useful for find required libraries</p>
+</li>
+<li><p align="left">rpm and dpkg installs can be relocated,
+making populating the chroot environment easier</p>
+</li>
+</ul>
+<p align="left">Fuzz</p>
+<ul>
+<li><p align="left">Black box testing tool</p>
+</li>
+<li><p align="left">Fuzz tests for buffer overflows by
+pounding a program with random input to see if it dies</p>
+</li>
+<li><p align="left">Useful for testing third party,
+proprietary software </p>
+</li>
+<li><p align="left">Automated tool, easy to scan all the
+binaries on a system (time consuming however)</p>
+</li>
+<li><p align="left">http://fuzz.sourceforge.net/</p>
+</li>
+</ul>
+<p align="left">ITS4</p>
+<ul>
+<li><p align="left">White box testing tool (clear box?)</p>
+</li>
+<li><p align="left">Scans C and C++ code for buffer overflows
+and other nasty problems</p>
+</li>
+<li><p align="left">Can be used in UNIX or Windows (requires
+CygWin which is free)</p>
+</li>
+</ul>
+<ul>
+<li><p align="left">http://www.cigital.com/its4/</p>
+</li>
+</ul>
+<p align="left">NSA Security Enhanced Linux</p>
+<ul>
+<li><p align="left">GPL licensed, freely available, steep
+learning curve</p>
+</li>
+<li><p align="left">provides security policies, type
+enforcement, etc.</p>
+</li>
+<li><p align="left">http://www.nsa.gov/selinux/</p>
+</li>
+</ul>
+<p align="left">Summary</p>
+<ul>
+<li><p align="left">Safe computing practices:</p>
+</li>
+<li><p align="left">Keep software up to date</p>
+</li>
+<li><p align="left">Do not run foreign code</p>
+</li>
+<li><p align="left">Make backups, keep a set off site, this
+includes OS installation media</p>
+</li>
+<li><p align="left">Security in depth</p>
+</li>
+<li><p align="left">Have systems fail close instead of open</p>
+</li>
+</ul>
+<p align="left">Summary (cont.)</p>
+<ul>
+<li><p align="left">Have a written security policy and abide
+by it, make sure people can get a copy to read</p>
+</li>
+<li><p align="left">Involve users in security, teach them why
+it matters, listen to them</p>
+</li>
+<li><p align="left">Subscribe to mailing lists, the bad guys
+do</p>
+</li>
+<li><p align="left">Keep things in perspective</p>
+</li>
+<li><p align="left">Don&#146;t panic</p>
+</li>
+</ul>
+<p align="left">Reference URL&#146;s</p>
+<ul>
+<li>&nbsp;</li>
+</ul>
+<p align="left">Recommended books</p>
+<ul>
+<li><p align="left">Running Linux </p>
+</li>
+<li><p align="left">Linux Network Administrators Guide </p>
+</li>
+<li><p align="left">Process of network security </p>
+</li>
+<li><p align="left">Secret&#146;s and lies</p>
+</li>
+</ul>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<hr>
+<p align="left"><a href="./">Back</a></p>
+<p align="left">Last updated 3/24/2002</p>
+<p align="left">Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

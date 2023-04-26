@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - OAG - OpenBSD Administrator's Guide / Basic conversion from Linux</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Basic conversion from Linux</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#28435d5a5c685b4d414e5a414d4c06475a4f"><span class="__cf_email__" data-cfemail="f299878086b281979b94809b9796dc9d8095">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>This chapter covers the basic of conveting from OpenBSD to
+Linux. </p>
+<p>&nbsp;</p>
+<h2>Device names and conventions</h2>
+<p>Device names and conventions are different in OpenBSD.</p>
+<p>&nbsp;</p>
+<h3>Harddrives, CDROM's, and other removable media</h3>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Action</td>
+<td>Linux</td>
+<td>OpenBSD</td>
+</tr>
+<tr>
+<td>Mount the first partition on the first IDE drive as
+/exmaple</td>
+<td>mount /dev/hda1 /example</td>
+<td>mount /dev/wd0a /example</td>
+</tr>
+<tr>
+<td>Mount a DOS formatted floppy disk as /floppy</td>
+<td>mount -t dos /dev/fd0 /floppy</td>
+<td>mount -t msdos /dev/fd0a /floppy</td>
+</tr>
+<tr>
+<td>Mount a CDROM on the second channel that is master as
+/cdrom</td>
+<td>mount -t iso9660 /dev/hdc /cdrom</td>
+<td>mount -t cd9660 /dev/cd0a /cdrom</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>OpenBSD supports iso9660 (CDROM), EXT2, NFS, XFS, FAT (various
+forms) and a number of other common filesystems. The following
+command will display information about mount:</p>
+<blockquote>
+<pre>man mount</pre>
+</blockquote>
+<p>This manual page is also available online &quot;<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mount&amp;apropos=0&amp;sektion=8&amp;manpath=OpenBSD+Current&amp;arch=i386&amp;format=html">man
+mount</a>&quot;</p>
+<p>&nbsp;</p>
+<h3>Network devices</h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 24/3/2002</p>
+<p>Copyright Kurt Seifried 2002 <a href="/cdn-cgi/l/email-protection#254e5057516556404c43574c40410b4a5742"><span class="__cf_email__" data-cfemail="244f5156506457414d42564d41400a4b5643">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

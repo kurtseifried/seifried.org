@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network Based Authentication</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#761d0304023605131f10041f131258190411"><span class="__cf_email__" data-cfemail="87ecf2f5f3c7f4e2eee1f5eee2e3a9e8f5e0">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>There are a variety of methods to share authentication data
+between systems. This is an increasingly common task as networks
+become more distributed, access points more numerous, and users
+scatter away from the traditional corporate LAN.</p>
+<h2><a name="NIS / NIS+">NIS / NIS+</a></h2>
+<p>NIS and NIS+ (formally known as &#147;yellow pages&#148;)
+stands for Network Information Service. Essentially NIS and NIS+
+provide a means to distribute password files, group files, and
+other configuration files across many machines, providing account
+and password synchronization (among other services). NIS+ is
+essentially NIS with several enhancements (mostly security
+related), otherwise they are very similar.&nbsp;</p>
+<p>To use NIS you set up a master NIS server that will contain
+the records and allow them to be changed (add users, etc), this
+server can distribute the records to slave NIS machines that
+contain a read only copy of the records (but they can be promoted
+to master and set read/write if something bad happens). Clients
+of the NIS network essentially request portions of the
+information and copy it directly into their configuration files
+(such as /etc/passwd), thus making them accessible locally. Using
+NIS you can provide several thousand workstations and servers
+with identical sets of usernames, user information, passwords and
+the like, significantly reducing administration nightmares.&nbsp;</p>
+<p>However this is part of the problem: in sharing this
+information you make it accessible to attackers. NIS+ attempts to
+resolve this issue however, but NIS+ is an utter nightmare to set
+up.&nbsp;NIS+ uses secure RPC, which can make use of single DES
+encryption (which I personally feel is to weak to even bother
+with). I would not recommend relying on the single DES encryption
+of secure RPC to secure your NIS data.</p>
+<p>An alternative strategy would be to use some sort of VPN (like
+FreeS/WAN, which seems to solve a lot of problems) and encrypt
+the data before it gets onto the network. There is an NIS / NIS+
+HOWTO at: <a href="http://www.linuxdoc.org/HOWTO/NIS-HOWTO/">http://www.linuxdoc.org/HOWTO/NIS-HOWTO/</a>
+, and O&#146;Reilly has an excellent book on the subject, <a href="http://www.ora.com/catalog/nfs/">&quot;Managing NFS and
+NIS&quot;</a>. NIS / NIS+ runs over RPC which uses port 111, both
+tcp and udp. This should definitely be blocked at your network
+border, but will not totally protect NIS / NIS+. Because NIS and
+NIS+ are RPC based services they tend to use higher port numbers
+(i.e. above 1024) in a somewhat random fashion, making
+firewalling of it rather difficult. The best solutions is to
+place your NIS server(s) on an internal network that is blocked
+completely from talking to the Internet, inbound and outbound.
+There is also an excellent paper on securing NIS available from: <a href="http://www.eng.auburn.edu/users/doug/nis.html">http://www.eng.auburn.edu/users/doug/nis.html</a>.</p>
+<p>ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 111<br>
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 111<br>
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 111</p>
+<p>or</p>
+<p>ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0
+111<br>
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d
+0.0.0.0/0 111<br>
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 111</p>
+<h2><a name="Kerberos">Kerberos</a></h2>
+<p>Kerberos is a modern network authentication system based on
+the idea of handing a user a ticket once they have authenticated
+to the Kerberos server (similar to NT&#146;s use of tokens).
+Kerberos is available from: <a href="http://web.mit.edu/kerberos/www/">http://web.mit.edu/kerberos/www/</a>.
+The Kerberos FAQ is available at: <a href="http://www.nrl.navy.mil/CCS/people/kenh/kerberos-faq.html">http://www.nrl.navy.mil/CCS/people/kenh/kerberos-faq.html</a>.
+Kerberos is appropriate for large installations as it scales
+better and is more secure then NIS / NIS+. Kerberizing programs
+such as telnet, imap and pop can be achieved with some effort,
+Windows clients with Kerberos support are harder to find however.</p>
+<h2><a name="Radius">Radius</a></h2>
+<p>Radius is a commonly used protocol to authenticate dial-in
+users, and other types of network access. Many radius servers are
+available, check freshmeat.</p>
+<h3>xtradius</h3>
+<p><a href="http://www.xtradius.com/">http://www.xtradius.com/</a></p>
+<h3>gnu-radius</h3>
+<p><a href="ftp://ftp.gnu.org/gnu/radius/">ftp://ftp.gnu.org/gnu/radius/</a></p>
+<h2><a name="perlradius">perlradius</a></h2>
+<p><a href="http://members.iinet.net.au/~michael/radius.html">http://members.iinet.net.au/~michael/radius.html</a>
+</p>
+<h2><a name="Cistron RADIUS server">Cistron RADIUS server</a></h2>
+<p><a href="http://www.radius.cistron.nl/">http://www.radius.cistron.nl/</a>
+</p>
+<h3>FreeRADIUS</h3>
+<p><a href="http://www.freeradius.org/">http://www.freeradius.org/</a>
+</p>
+<h2><a name="ICRADIUS">ICRADIUS</a></h2>
+<p><a href="http://radius.innercite.com/">http://radius.innercite.com/</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href="../index.html">Back</a></p>
+<p>&nbsp;</p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#96fde3e4e2d6e5f3fff0e4fff3f2b8f9e4f1"><span class="__cf_email__" data-cfemail="62091710162211070b04100b07064c0d1005">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

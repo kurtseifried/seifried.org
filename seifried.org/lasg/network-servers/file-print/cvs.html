@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;CVS</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#0c67797e784c7f69656a7e65696822637e6b"><span class="__cf_email__" data-cfemail="0f647a7d7b4f7c6a66697d666a6b21607d68">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<p>CVS allows multiple developers to work together on large
+source code projects and maintain a large code base in a somewhat
+sane manner. CVS's internal security mechanisms are rather simple
+on their own; in fact some would say weak, and I would have to
+agree. CVS's authentication is typically achieved over the
+network using pserver, usernames are sent in clear text, and
+passwords are trivially hashed (no security really).&nbsp;</p>
+<p>To get around this you have several good options. In a Unix
+environment probably the simplest method is to use SSH to tunnel
+connections between the client machines and the server. &quot;Tim
+TimeWaster&quot; (Tim Hemel, one of the Final Scratch guys) has
+written an excellent page covering this at: <a href="http://cuba.xs4all.nl/~tim/scvs/">http://cuba.xs4all.nl/~tim/scvs/</a>.
+A somewhat more complicated approach (but better in the long run
+for large installations) is to kerberize the CVS server and
+clients.&nbsp;</p>
+<p>The primary &quot;vendor&quot; of cvs is <a href="http://www.cvshome.org/">http://www.cvshome.org/</a>. CVS
+can easily be run over the SSH protocol, this is advised if you
+are interested in security (it can also be done
+&quot;anonymously&quot;). </p>
+<p>&nbsp;</p>
+<p>Apart from that I would strongly urge firewalling CVS unless
+you are using it for some public purpose (such as an open source
+project across the Internet).&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>There are other less obvious concerns you should be aware of,
+when dealing with source code you should be very to ensure no
+Trojan horses or backdoors are allowed into the code. In an open
+source project this is relatively simple, review the code people
+submit, especially if it is a publicly accessible effort, such as
+the Mozilla project. Other concerns might be destruction of the
+source code, make sure you have backups. CVS uses port 2401, tcp.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 2401
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 2401
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 2401</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 2401
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 2401
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 2401</pre>
+<p><a href="index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#d4bfa1a6a094a7b1bdb2a6bdb1b0fabba6b3"><span class="__cf_email__" data-cfemail="9df6e8efe9ddeef8f4fbeff4f8f9b3f2effa">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

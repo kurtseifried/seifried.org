@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Administrative tools</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Administrative tools</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#97fce2e5e3d7e4f2fef1e5fef2f3b9f8e5f0"><span class="__cf_email__" data-cfemail="b7dcc2c5c3f7c4d2ded1c5ded2d399d8c5d0">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>There are a variety of tools to make administration of systems
+easier, from local tools like sudo which grant limited superuser
+privileges to www based systems that allow for remote management
+from a cybercafe while on vacation. For information on how to
+login remotely (i.e. interactive shell prompts) please see the <a href="../network-servers/shell/index.html">shell server</a>
+section.</p>
+<p>&nbsp;</p>
+<h2>Local tools</h2>
+<p>While it is possible to administer a Linux system from the
+command line using no &quot;additional&quot; tools it can be
+bothersome. If you wish to split up administrative tasks the
+&quot;sub administrators&quot; will often require root access to
+restart daemons, modify configuration files and so forth. Simply
+giving them all root access, or sharing the root password is
+often the first step to serious problem (this is one of the major
+reasons many large sites get broken into). </p>
+<p>&nbsp;</p>
+<h3>YaST</h3>
+<p>YaST (Yet Another Setup Tool) is a rather nice command line
+graphical interface (very similar to scoadmin) that provides an
+easy interface to most administrative tasks. It does not however
+have any provisions for giving users limited access, so it is
+really only useful for cutting down on errors, and allowing new
+users to administer their systems. Another problem is unlike
+Linuxconf it is not network aware, meaning you must log into each
+system you want to manipulate.&nbsp;YaST version two is now
+available and includes many new features as well as bug fixes, it
+is recommended you upgrade. </p>
+<p>&nbsp;</p>
+<h3>sudo</h3>
+<p>Sudo gives a user setuid access to a program(s), and you can
+specify which host(s) they are allowed to login from (or not) and
+have sudo access (thus if someone breaks into an account, but you
+have it locked down damage is minimized). You can specify what
+user a command will run as, giving you a relatively fine degree
+of control. If you must grant users access, be sure to specify
+the hosts they are allowed to log in from when using sudo, as
+well give the full pathnames to binaries, it can save you
+significant grief in the long run (i.e. if I give a user sudo
+access to &quot;adduser&quot;, there is nothing to stop them
+editing their path statement, and copying bash to /tmp/adduser
+and grabbing control of the box.). This tool is very similar to
+super but with slightly less fine grained control. Sudo is
+available for most distributions as a core package or a
+contributed package. Sudo is available from <a href="http://www.courtesan.com/sudo/">http://www.courtesan.com/sudo/</a>
+(just in case your distribution does not ship with it). Sudo
+allows you to define groups of hosts, groups of commands, and
+groups of users, making long term administration simpler. Several
+/etc/sudoers examples:</p>
+<pre>#Give the user &#145;seifried&#146; full access
+seifried ALL=(ALL) ALL</pre>
+<pre>#Create a group of users, a group of hosts, and allow then to shutdown the server as root
+Host_Alias WORKSTATIONS=localhost, station1, station2
+User_Alias SHUTDOWNUSERS=bob, mary, jane
+Cmnd_Alias REBOOT=halt, reboot, sync
+Runas_Alias REBOOTUSER=admin
+SHUTDOWNUSERS WORKSTATIONS=(REBOOTUSER) REBOOT</pre>
+<p>&nbsp;</p>
+<h3>Super</h3>
+<p>Super is one of the very few tools that can actually be used
+to give certain users (and groups) varied levels of access to
+system administration. In addition to this you can specify times
+and allow access to scripts, giving setuid access to even
+ordinary commands could have unexpected consequences (any editor,
+any file manipulation tools like chown, chmod, even tools like lp
+could compromise parts of the system). Debian ships with super,
+and there are rpm's available in the contrib directory. This is a
+very powerful tool (it puts sudo to shame in some ways), but
+requires a significant amount of effort to implement properly
+(like any powerful tool), and I think it is worth the effort.
+Some example config files are usually in the /usr/doc/super-xxxx/
+directory. Super is avialable <a href="ftp://ftp.ucolick.org/pub/users/will/">ftp://ftp.ucolick.org/pub/users/will/</a>.</p>
+<p>&nbsp;</p>
+<h2>WWW based tools</h2>
+<p>WWW based administration tools provide an attractive solution
+since virtually every modern computer and Internet access point
+is web capable (sometimes that is all they are capable of). </p>
+<p>&nbsp;</p>
+<h3>Webmin</h3>
+<p>Webmin has had number of security problems so make sure you
+are using the most recent one. Webmin is one of the better remote
+administration tools for Linux, written primarily in Perl it is
+easy to use and easy to setup. You can assign different 'users'
+(usernames and passwords are held internally by Webmin) varying
+levels of access, for example you could assign bob access to
+shutdown the server only, and give john access to create/delete
+and manipulate users only. In addition to this it works on most
+Linux platforms and a variety of other UNIX platforms. The main
+'problem' with Webmin is somewhat poor documentation in some
+areas of usage, and the fact that the username/password pair are
+sent in clear text over the network (this is minimized slightly
+by the ability to grant access to only certain hosts(s) and
+networks). Most importantly it makes the system more accessible
+to non-technical people who must administer systems in such a way
+that you do not have to grant them actual accounts on the server.
+Webmin is available <a href="http://www.webmin.com/webmin/">http://www.webmin.com/webmin/</a>,
+and is currently free. Webmin defaults to running on port 10000
+and should be firewalled.</p>
+<p>&nbsp;</p>
+<h3>Linuxconf</h3>
+<p>Linuxconf is a general purpose Linux administration tool that
+is usable from the command line, from within X, or via it's built
+in www server. From within X it provides an overall view of
+everything that can be configured (PPP, users, disks, etc.). To
+use it via a www browser you must first run Linuxconf on the
+machine and add the host(s) or network(s) you want to allow to
+connect (Conf &gt; Misc &gt; Linuxconf network access), save
+changes and quit. Then when you connect to the machine (by
+default Linuxconf runs on port 98) you must enter a username and
+password. By default Linuxconf only accepts root as the account,
+and Linuxconf doesn't support any encryption (it runs standalone
+on port 901), so I would have to recommend very strongly against
+using this feature across networks unless you have IPSec or some
+other form of IP level security. Linuxconf ships with several
+distributions and is available <a href="http://www.solucorp.qc.ca/linuxconf/">http://www.solucorp.qc.ca/linuxconf/</a>.
+Linuxconf also doesn't seem to ship with any man pages/etc, the
+help is contained internally which is slightly irritating. </p>
+<p>&nbsp;</p>
+<h2>Other network based tools</h2>
+<p>On the other hand web based administration tools tend to be
+limited, and are typically not designed for hetrogenous
+installations (i.e. Linux, HP-UX, AIX and so forth).
+&quot;Industrial&quot; strength tools may be called for, like the
+following ones. </p>
+<p>&nbsp;</p>
+<h3>Pikt</h3>
+<p>Pikt is an extremely interesting tool, it is actually more of
+a scripting language aimed at system administration then a simple
+program. Pikt allows you to do things such as killing off idle
+user processes, enforcing mail quotas, monitor the system for
+suspicious usage patterns (off hours, etc), and much more. About
+the only problem with Pikt will be a steep learning tools, as it
+uses it&#146;s own scripting language, but ultimately I think
+mastering this language will pay off if you have many systems to
+administer (especially since Pikt runs on Solaris, Linux and
+FreeBSD currently). Pikt is available at: <a href="http://pikt.uchicago.edu/pikt/">http://pikt.uchicago.edu/pikt/</a>.</p>
+<p>&nbsp;</p>
+<h3>VNC</h3>
+<p>Virtual Network Computer (VNC) is similar to X or PCAnywhere.
+You can display a graphical desktop, and control it remotely,
+with NT or Linux as the server and/or client. VNC across 10
+megabit Ethernet is quite good, however it does tend to use a lot
+of computer power relative to other methods of remote
+administration. You can get VNC <a href="http://www.uk.research.att.com/vnc/">http://www.uk.research.att.com/vnc/</a>.
+Security VNC isn't so great, but there are several sites with
+information on securing VNC, using SSL, SSH and other methods.
+There is also a page on securing VNC with SSH port forwarding at:
+<a href="http://www.zip.com.au/~cs/answers/vnc-thru-firewall-via-ssh.txt">http://www.zip.com.au/~cs/answers/vnc-thru-firewall-via-ssh.txt</a>.</p>
+<p>&nbsp;</p>
+<h3>cfengine</h3>
+<p>cfengine is a set of tools for automating administration tasks
+and is network aware. You can get cfengine <a href="http://www.cfengine.org/">http://www.cfengine.org/</a>.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 5/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#f69d838482b685939f90849f9392d8998491"><span class="__cf_email__" data-cfemail="ec87999e98ac9f89858a9e858988c2839e8b">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

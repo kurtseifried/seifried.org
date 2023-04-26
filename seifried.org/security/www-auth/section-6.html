@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 6.0 Logging out stale sessions</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>6.0 Logging out stale sessions</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#c2a9b7b0b682b1a7aba4b0aba7a6ecadb0a5"><span class="__cf_email__" data-cfemail="d1baa4a3a591a2b4b8b7a3b8b4b5ffbea3b6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Because HTTP and HTTPS are stateless protocols, the server has
+no idea if you rebooted your computer and continued browsing, got
+shunted through a different proxy server, and so on. Keeping
+track of users is very difficult, using IP addresses does not
+work since a users IP may change during the session, or many
+users may come from one IP (i.e. AOL has large proxy servers).
+Most tracking methods involve handing back the user a unique
+piece of data, this can take the form of a cookie, URL or hidden
+form field to name a few. One important thing to remember is that
+users can (and will) modify the data you give to them, URL's and
+cookies are trivial to edit, HTML pages can be created with
+modified HTML. There have been in fact numerous security holes
+related to programmers implicitly trusting the data the user
+hands back to them. Do not do this.</p>
+<p>The &quot;best&quot; method is to create a unique token for
+each session (i.e. a hash of the time, date, remote user IP,
+whatever), and encrypt the data (i.e. take the resulting hash and
+then use 3DES to encrypt it with a secret) it is almost
+impossible for an attacker to recreate someone else's token and
+possibly &quot;hijack&quot; their session or otherwise gain
+unauthorized access. If you use a hash of the data you will need
+to keep a copy locally with the time, since any timestamp will be
+reduced to a random series of letters. Using a timestamp alone is
+not safe since an attacker can simply make a copy of it and use
+it, you should also use identifying data such as IP address (not
+always reliable) browser type, and so on (basically an internal
+state table, a database backend can be used of course to store
+this data). If you know when it was issued, you can include usage
+rules (token expires after 10 minutes of non use, every time they
+use it that gets reset, or whatever), and you simply request the
+token each time they access the site. Users also cannot modify
+the token without &quot;breaking&quot; it if it is securely
+encrypted, nor can they glean what exactly it is you are handing
+them.</p>
+<p><strong>6.1 Cookies</strong></p>
+<p>Cookies, as mentioned in section 5.1, can be used to store
+unique pieces of information on a users computer. It is trivial
+to edit cookies, i.e. go into C:\Windows\Cookies\ with notepad
+and edit them. Additionally many users do not allow permanent
+cookies, or use cookie management software to periodically delete
+them. However using session cookies is relatively safe, although
+modifying them client side is of course possible, but the
+advantage is that most web browsers allow them and they are
+&quot;invisible&quot; to users. </p>
+<p><strong>6.2 Unique URLs</strong></p>
+<p>Unique URL's, as mentioned in section 5.4, can be used to
+uniquely identify sessions. It is extremely trivial for an
+attacker to modify the URL, also these URL's can
+&quot;leak&quot;, to proxy servers and so on. They should only be
+used with extreme caution. </p>
+<p><strong>6.3 Hidden form fields and other HTML code</strong></p>
+<p>Hidden form fields and other HTML code, as mentioned in
+section 5.6, can be used to uniquely identify sessions. It is
+relatively easy for an attacker to find the HTML (i.e. view
+source) and edit the data contained within it, so do not use
+things like &quot;admin=yes&quot; (don't laugh, one popular CGI
+did do this). </p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-5.html">Back</a> | <a href="section-7.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried Information Security / WWW Authentication / 1.0 IntroductionKurt Seifried - Security / WWW authentication</TITLE>
+<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.1  (Win32)">
+<META NAME="CREATED" CONTENT="20021215;15380887">
+<META NAME="CHANGED" CONTENT="20021215;15395310">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1>WWW Authentication</H1>
+<P>By: Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#bdd6c8cfc9fdced8d4dbcfd4d8d993d2cfda"><span class="__cf_email__" data-cfemail="751e0007013506101c13071c10115b1a0712">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+Copyright Kurt Seifried, 2001</P>
+<P>Version 1.31 (September 2 2001)</P>
+<HR>
+<P>&nbsp;</P>
+<P><A HREF="section-1.html">1.0 Introduction</A></P>
+<P><A HREF="section-2.html">2.0 Overview of the problems</A></P>
+<P><A HREF="section-3.html">3.0 Authentication methods</A></P>
+<P>3.1 Something you know<BR>3.1.1 Username and password<BR>3.2
+Something you have<BR>3.2.1 X.509 certificates on the client
+machine<BR>3.2.2 X.509 certificates on smartcards<BR>3.2.3 Challenge
+response token<BR>3.3 Something you are<BR>3.3.1 Fingerprint
+scanners<BR>3.3.2 Retinal scanners</P>
+<P><A HREF="section-4.html">4.0 Authentication information storage
+and retrieval</A></P>
+<P>4.1 Local methods<BR>4.1.1 System username/password database<BR>4.1.2
+WWW server username/password database<BR>4.2 Network based
+methods<BR>4.2.1 NIS/NIS+ server<BR>4.2.2 SMB server<BR>4.2.3 LDAP
+server<BR>4.2.4 Certificate authority server<BR>4.2.5 Network
+database server<BR>4.2.6 Radius<BR>4.2.7 TACACS/TACACS+<BR>4.2.8
+Novell<BR>4.2.8.1 NDS eDirectory, formerly Corporate Edition<BR>4.2.8.2
+NDS Authentication Services<BR>4.2.8.3 Novell iChain<BR>4.2.9
+ADS<BR>4.2.10 DCE<BR>4.2.11 WebSEAL<BR>4.2.12 Kerberos<BR>4.3 Others</P>
+<P><A HREF="section-5.html">5.0 User tracking methods</A></P>
+<P>5.1 Cookies<BR>5.1.1 Stored cookies<BR>5.1.2 Session cookies<BR>5.2
+X.509 certificates<BR>5.3 HTTP header based authentication (HTTP
+auth)<BR>5.4 Unique URL's<BR>5.4.1 Appending data to the URL<BR>5.4.2
+DNS names<BR>5.5 HTTP_REFERRER<BR>5.6 Hidden form fields and other
+HTML code</P>
+<P><A HREF="section-6.html">6.0 Logging out stale sessions</A></P>
+<P>6.1 Cookies<BR>6.2 Unique URLs<BR>6.3 Hidden form fields and other
+HTML code</P>
+<P><A HREF="section-7.html">7.0 Some notes on browsers</A></P>
+<P>7.1 Microsoft<BR>7.1.1 Microsoft Internet Explorer 4.x<BR>7.1.2
+Microsoft Internet Explorer 5.x, 6.x<BR>7.2 Netscape<BR>7.2.1
+Netscape Navigator / Communicator 4.x<BR>7.2.1 Netscape Navigator /
+Communicator 6.x<BR>7.3 Mozilla <BR>7.3.1 Mozilla 0.9x<BR>7.4
+Opera<BR>7.4.1 Opera 3.60</P>
+<P><A HREF="section-8.html">8.0 Some notes on WWW servers and WWW
+proxy servers</A></P>
+<P>8.1 Apache based<BR>8.1.1 Apache-SSL<BR>8.1.2 Apache mod-ssl<BR>8.1.3
+Raven<BR>8.1.4 Red Hat Secure Server<BR>8.1.5 Stronghold<BR>8.2
+Netscape<BR>8.2.1 Netscape Enterprise<BR>8.3 Roxen<BR>8.4 Zeus<BR>8.5
+Novell<BR>8.5.1 Novell BorderManager<BR>8.5.2 Novell ICS<BR>8.6 IBM
+Websphere<BR>8.7 Volera<BR>8.8 Squid<BR>8.9 Achilles</P>
+<P><A HREF="section-9.html">9.0 Securing files and directories with
+various WWW servers</A></P>
+<P>9.1 Apache based<BR>9.1.1 Apache-SSL<BR>9.1.2 Apache mod-ssl<BR>9.1.3
+Raven<BR>9.1.4 Red Hat Secure Server<BR>9.1.5 Stronghold<BR>9.2
+Netscape<BR>9.2.1 Netscape Enterprise<BR>9.3 Roxen<BR>9.4 Zeus<BR>9.5
+Novell<BR>9.6 IBM Websphere<BR>9.7 Volera<BR>9.8 Squid</P>
+<P><A HREF="section-10.html">10.0 Some notes on CGI programming
+languages</A></P>
+<P>10.1 Perl<BR>10.2 PHP<BR>10.3 ASP<BR>10.4 Python</P>
+<P><A HREF="section-11.html">11.0 Some notes on Client side languages</A></P>
+<P>11.1 Java<BR>11.1.1 Hushmail<BR>11.1.2 Guardbot<BR>11.2
+ActiveX<BR>11.1.2 InnerDynamics</P>
+<P><A HREF="section-12.html">12.0 Example combinations</A></P>
+<P><A HREF="section-13.html">13.0 Other authentication and encryption
+protocols</A></P>
+<P>13.1 AKE<BR>13.1.1 SRP<BR>13.2 SPEKE<BR>13.3 SNAKE<BR>13.4 PDM</P>
+<P><A HREF="section-14.html">14.0 Security for the authentication
+backend</A></P>
+<P>14.1 Basic security considerations<BR>14.2 Exporting
+authentication information<BR>14.2.1 Databases<BR>14.2.2 Windows
+2000<BR>14.3 SQL insertion attacks<BR>14.4 Preventing brute forcing
+</P>
+<P><A HREF="section-15.html">15.0 Infrastructure Projects</A></P>
+</P>
+<P><BR><BR>
+</P>
+<P><A HREF="section-16.html">16.0 Summary</A></P>
+<P>&nbsp;</P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

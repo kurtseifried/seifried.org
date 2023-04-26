@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Security / Security Advisories / KSSA-001 RPM PGP/GnuPG verification bug</title>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" cellpadding="2" width="100%">
+<tr>
+<td valign="top" colspan="2"><h1><strong>Kurt Seifried
+Security Advisory 001 (KSSA-001)</strong></h1>
+<p>Created by Kurt Seifried, <a href="/cdn-cgi/l/email-protection#bad1cfc8cefac9dfd3dcc8d3dfde94d5c8dd"><span class="__cf_email__" data-cfemail="86edf3f4f2c6f5e3efe0f4efe3e2a8e9f4e1">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a> </p>
+</td>
+</tr>
+<tr>
+<td valign="top"><ul type="disc">
+<li><a href="http://seifried.org/security/advisories/">Advisories</a></li>
+<li><a href="http://seifried.org/security/anti-virus/">Anti-virus</a></li>
+<li><a href="http://seifried.org/security/articles/">Articles</a></li>
+<li><a href="http://seifried.org/security/basic/">Basic
+security</a></li>
+<li><a href="http://seifried.org/security/best-practices/">Best
+practices</a></li>
+<li><a href="http://seifried.org/security/books/">Books</a></li>
+<li><a href="http://seifried.org/security/cryptography/">Cryptography</a></li>
+<li><a href="http://seifried.org/security/ids/">Intrusion
+Detection</a></li>
+<li><a href="http://seifried.org/security/keys/">Encryption
+keys</a></li>
+<li><a href="http://seifried.org/security/network/">Network</a></li>
+<li><a href="http://seifried.org/security/os/">Operating
+system</a></li>
+<li><a href="http://seifried.org/security/policy/">Policy</a></li>
+<li><a href="http://seifried.org/security/ports/">Ports</a></li>
+<li><a href="http://seifried.org/security/products/">Products</a></li>
+<li><a href="http://seifried.org/security/social/">Social</a></li>
+<li><a href="http://seifried.org/security/technical/">Technical</a></li>
+<li><a href="http://seifried.org/security/weekly-column/">Weekly
+column</a></li>
+<li><a href="http://seifried.org/security/www-auth/">WWW
+authentication</a></li>
+<li><a href="http://seifried.org/security/">Main page</a></li>
+<li><a href="./">Back</a></li>
+</ul>
+</td>
+<td valign="top"><a href="http://seifried.org/security/advisories/kssa-001.html">http://seifried.org/security/advisories/kssa-001.html</a>
+<p><strong>Title: </strong></p>
+<p>RPM PGP/GnuPG verification bug</p>
+<p><strong>Issue date:</strong></p>
+<p>Feb 27, 2001</p>
+<p><strong>History of advisory:</strong></p>
+<p>Feb 23, 2001 Ben De Rydt (ben dot de dot rydt at
+pandora dot be) brought this to my attention.</p>
+<p>Feb 27, 2001 advisory written and released to Linux
+vendor list, vendors notified.</p>
+<p>Feb 28, 2001 updated, thanks to Olaf Kirch for
+mentioning automatic key downloads.</p>
+<p><strong>Author:</strong></p>
+<p>Kurt Seifried <a href="/cdn-cgi/l/email-protection#8ce7f9fef8ccffe9e5eafee5e9e8a2e3feeb"><span class="__cf_email__" data-cfemail="600b1512142013050906120905044e0f1207">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p><strong>Credits:</strong></p>
+<p>Ben De Rydt (ben dot de dot rydt at pandora dot be)
+originally brought this to my attention, thanks go to
+him.</p>
+<p>Olaf Kirch <a href="/cdn-cgi/l/email-protection#b991d6d2d0cbf9dad8d5dddccbd897dddc">(<span class="__cf_email__" data-cfemail="630c080a112300020f070611024d0706">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>)
+for mentioning automatic key downloads and macros (which
+I read in the man page but mentally skipped over).</p>
+<p><strong>Overview:</strong></p>
+<p>There is a significant implementation/logic bug in how
+RPM verifies the cryptographic signatures on RPM files. </p>
+<p><strong>Vendor Contact:</strong></p>
+<p>N/A</p>
+<p><strong>Impact:</strong></p>
+<p>An attacker can create RPM's that will appear to be
+legitimate to the administrator, once installed root
+access (or anything else) can easily be achieved. </p>
+<p><font color="#000000"><strong>Details:</strong></font></p>
+<p><font color="#000000">If an attacker can trick an
+administrator into installing an RPM checking the
+signature on the RPM can easily be subverted, thus the
+trojan'ed RPM is installed and the attacker can gain
+access.</font></p>
+<p>If an attacker can trick an administrator into
+installing a new key, or the administrator has enabled
+automatic key downloads, and provide them with a
+trojan'ed rpm file they can gain root access. No local
+access is required. Getting an admin to install a new key
+can be as simple as posting fake keys with identities
+like &quot;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="addec8ced8dfc8eddbc8c3c9c2df83cbc2c2">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&quot; or by simply emailing
+them to administrators with a subject line such as
+&quot;new vendor key, please use to verify future rpm
+packages&quot;. Getting the administrator to download
+trojan'ed packages is attainable by poisoning DNS,
+spoofing a site, or breaking into a major RPM ftp site. </p>
+<p>1) Attacker creates fake key,
+&quot;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="addec8ced8dfc8eddbc8c3c9c2df83cbc2c2">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&quot;<br>
+2) Attacker creates trojan'ed RPM, signs with fake key<br>
+3) Attacker sends key to victim, via email or otherwise,
+or victim has &quot;<font color="#000000">automatic key
+download&quot; enabled (note: it is common for vendors to
+send out self signed keys on various mailing lists)</font><br>
+4) Attacker either spoofs an update site, or breaks into
+a legitimate update site, replaces the real RPM with
+their trojan'ed RPM<br>
+5) User downloads RPM, verifies it (examples sanitized):</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="c6b4a9a9b286b5a3b4b0a3b4">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /root]# rpm -K gnupg-1.0.1-1.i386.rpm 
+/root/RPMS/gnupg-1.0.2-4.i386.rpm: md5 gpg OK</pre>
+<p>Even with an &quot;rpm -Kvv&quot;:</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1b6974746f5b686f7e757873">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /root]# rpm -Kvv /root/RPMS/gnupg-1.0.1-1.i386.rpm 
+D: New Header signature
+D: Signature size: 149
+D: Signature pad : 3
+D: sigsize : 152
+D: Header + Archive: 709097
+D: expected size : 709097
+/root/RPMS/gnupg-1.0.2-4.i386.rpm:
+MD5 sum OK: 005707d7f35fc754dc5402462caf2ef6
+gpg: Signature made Wed 30 Aug 2000 04:14:57 PM MDT using DSA key ID DB42A60E
+gpg: Good signature from &quot;Vendor, Inc &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="3640535852594476534e575b465a5318505959">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;&quot;
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg: There is no indication that the signature belongs to the owner.
+gpg: Fingerprint: CA20 8686 2BD6 9DFC 65F6 ECC4 2191 80CD DB42 A60E</pre>
+<p>Please note that this is from a default install of a
+recent Linux distribution, error messages such as
+&quot;WARNING: This key is not certified with a trusted
+signature!&quot; are likely to be ignored (or they may
+have signed the attackers fake key).</p>
+<p>Unless the user checks the fingerprint of the key
+against a known good list (the key ID is not resistant to
+collision and can be faked) they will be none the wiser
+that this is an attackers key and RPM, and not a
+legitimate vendors. </p>
+<p>Due to the burden placed on the victim by this attack
+it is considered unlikely (unless of course automatic key
+downloads are enabled, in which case it is significantly
+easier) that widespread attacks based on it will happen.
+However an internal attacker, using this technique, does
+stand a good chance of leveraging access to other
+machines if the administrators are not sufficiently
+careful. This also underscores the need to provide users
+with more information when verifying cryptographically
+signed data, and the importance of securely storing
+keyrings.</p>
+<p><strong>Solutions and workarounds:</strong></p>
+<p>Disable automatic key downloads if they are enabled. </p>
+<p>Ideally you should create a seperate keyring with only
+the vendor keys on it to verify rpm's. Add the following
+lines to /etc/rpm/macros:</p>
+<pre>%_signature	gpg
+%_gpg_path	/etc/rpm-keys/</pre>
+<p>In this example the files:</p>
+<p>options<br>
+pubring.gpg<br>
+secring.gpg<br>
+trustdb.gpg</p>
+<p>will be placed into the directory /etc/rpm-keys/.
+Using rpm to verify packages will result in this keyring
+being used, and not root's default keyring. </p>
+<p>Do not install additional keys into root's keyring or
+the system one used to verify RPM's, and protect this
+keyring. Verify through a trusted channel any new vendor
+keys (e.g. many vendors now place them on distribution
+CD's). You can protect root's or the system keyring with
+the simple expedient of setting it read-only or immutable
+(on ext2):</p>
+<pre># chmod a-w /root/.gnupg/pubring.gpg</pre>
+<p>or</p>
+<pre># chattr +i /root/.gnupg/pubring.gpg</pre>
+<p>This will prevent accidental or casual insertion of
+new keys. If you have many keys in either keyring you
+should make sure to verify the fingerprint every time you
+check a package's signature. </p>
+<p>Vendors that ship RPM update tools should use a
+separate keyring (instead of root's) for verifying RPM's
+that are downloaded. </p>
+<p><strong>References:</strong></p>
+<p>[man page] rpm(8) </p>
+<p>[url] <a href="http://www.rpmdp.org/">http://www.rpmdp.org/</a>
+</p>
+<hr>
+<p>Permission is granted for copying and circulating this
+Bulletin to the Internet community for the purpose of
+alerting them to problems, if and only if, the bulletin
+is not edited or changed in any way, is attributed to
+Kurt Seifried, and provided such reproduction and/or
+distribution is performed for non-commercial purposes.</p>
+<p>Any other use of this information is prohibited. Kurt
+Seifried is not liable for any misuse of this information
+by any third party.</p>
+<hr>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

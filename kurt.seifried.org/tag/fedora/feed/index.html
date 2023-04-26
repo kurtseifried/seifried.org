@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>Fedora &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/fedora/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:42 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>Fedora &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Fedora 16 with SELinux running WordPress with WP Super Cache</title>
+		<link>http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/</link>
+		<comments>http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/#comments</comments>
+		<pubDate>Wed, 04 Jan 2012 08:32:22 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Information Security]]></category>
+		<category><![CDATA[Linux]]></category>
+		<category><![CDATA[Fedora]]></category>
+		<category><![CDATA[SELinux]]></category>
+		<category><![CDATA[Wordpress]]></category>
+		<category><![CDATA[WP-Super-Cache]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=127</guid>
+		<description><![CDATA[Updated (Jan 5, 2012): chcon changes the SELinux security on a file, but a restorecon would wipe that out, you need to actually run semanage to change the policy, then run restorecon to make it &#8220;permanent&#8221;.  Thanks to dwalsh@redhat.com for pointing this out to me. So I recently started upgrading all the CloudSecurityAlliance web servers [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=127&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p><strong>Updated (Jan 5, 2012)</strong>: chcon changes the SELinux security on a file, but a restorecon would wipe that out, you need to actually run semanage to change the policy, then run restorecon to make it &#8220;permanent&#8221;.  Thanks to dwalsh@redhat.com for pointing this out to me.</p>
+<p>So I recently started upgrading all the CloudSecurityAlliance web servers from F14 (with SELinux enabled) to F16 (with SELinux enabled). But I ran into a nasty little problem, WP Super Cache was broken. The error message that came up was:</p>
+<pre style="padding-left:30px;">Error: Your cache directory (/var/www/html/wp-content/cache/)
+or /var/www/html/wp-content need to be writable for this
+plugin to work. Double-check it.
+
+Cannot continue... fix previous problems and retry.</pre>
+<p>Well shoot. The file permissions were correct, apache had write permissions and so on to the directory. But it was unable to write&#8230; Ah.. must be SELinux. The quickest way to test this is to simply disable SELinux for a second:</p>
+<pre style="padding-left:30px;">setenforce Permissive</pre>
+<p>and reload the WP Super Cache control page. Ah it works. So we know it&#8217;s an SELinux problem. The good news is that this is easy to fix, simply set the label on the directories and files you want the httpd process to be able to write to (and don&#8217;t forget to re-enable SELinux after you disabled it in the previous step):</p>
+<p>You can use chcon to change the content on the directories:</p>
+<pre style="padding-left:30px;">chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/cache/
+chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/plugins/
+chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/themes
+chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/uploads/
+chcon -t httpd_sys_rw_content_t /var/www/html/wp-content/wp-cache-config.php</pre>
+<p>For a more permanent change however use semanage to change the targeted policy:</p>
+<pre style="padding-left:30px;">semanage -S targeted -i - &lt;&lt; _EOF
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/cache(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/uploads(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/plugins(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/themes(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/wp-cache-config.php
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/themes(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/blogs.dir(/.*)?
+_EOF</pre>
+<pre style="padding-left:30px;">restorecon -R -v /var/www/html</pre>
+<p>Also you may want to add &#8220;/var/www/html/wp-content/blogs.dir(/.*)?&#8221; so that WordPress multi-site uploads work properly.</p>
+<p>Be mindful of selinux policy updates, they shouldn&#8217;t overwrite the changes you made but you may want to in order to get the latest greatest policies. Also you probably won&#8217;t have semanage installed:</p>
+<pre style="padding-left:30px;">yum install policycoreutils-python</pre>
+<p>Ok that was easy. But how do we find out what label needs to be applied? Well the ls command can give us a hint:</p>
+<pre style="padding-left:30px;">ls -dZ /var/www/html
+drwxr-xr-x. root root system_u:object_r:httpd_sys_content_t:s0 /var/www/html</pre>
+<p>So we&#8217;re dealing with httpd (obviously, but for other servers and services it may not be as simple so I&#8217;m doing this step by step). We can check for httpd related contexts using grep:</p>
+<pre style="padding-left:30px;">grep httpd /etc/selinux/targeted/contexts/files/file_contexts</pre>
+<p>Which will return a huge list of stuff. If you examine the output however you will notice lines like:</p>
+<pre style="padding-left:30px;">/var/lib/drupal.*       system_u:object_r:httpd_sys_rw_content_t:s0
+/var/cache/mediawiki(/.*)?      system_u:object_r:httpd_cache_t:s0</pre>
+<p>So it would appear we have two main choices: httpd_sys_rw_content_t and httpd_cache_t. There are a number of other related labels as well: httpd_mediawiki_rw_content_t, httpd_git_rw_content_t, httpd_bugzilla_rw_content_t, httpd_mojomojo_rw_content_t and httpd_dspam_content_rw_t to name a few. Any of these will work, but I chose httpd_sys_rw_content_t as it;s rpetty obvious as to what it is for at first glance.</p>
+<p>For more details on Red Hat Enterprise Linux (this also applies to Fedora) with SELinux and confined services check the Red Hat documentation:</p>
+<p><a title="The Apache HTTP Server and SELinux - Types" href="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Managing_Confined_Services/sect-Managing_Confined_Services-The_Apache_HTTP_Server-Types.html">Managing_Confined_Services/sect-Managing_Confined_Services-The_Apache_HTTP_Server-Types.html</a></p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/127/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/127/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=127&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

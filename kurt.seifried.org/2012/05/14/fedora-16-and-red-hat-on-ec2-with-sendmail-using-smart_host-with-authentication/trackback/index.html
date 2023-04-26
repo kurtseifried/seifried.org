@@ -1,0 +1,469 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication | Kurt Seifried</title>
+<link rel="pingback" href="http://kurt.seifried.org/xmlrpc.php"/>
+<script src='https://r-login.wordpress.com/remote-login.php?action=js&amp;host=kurt.seifried.org&amp;id=86342&amp;t=1480695546&amp;back=http%3A%2F%2Fkurt.seifried.org%2F2012%2F05%2F14%2Ffedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication%2F' type="text/javascript"></script>
+<script type="text/javascript">
+		/* <![CDATA[ */
+			if ( 'function' === typeof WPRemoteLogin ) {
+				document.cookie = "wordpress_test_cookie=test; path=/";
+				if ( document.cookie.match( /(;|^)\s*wordpress_test_cookie\=/ ) ) {
+					WPRemoteLogin();
+				}
+			}
+		/* ]]> */
+		</script>
+<link rel='dns-prefetch' href='//s2.wp.com'/>
+<link rel='dns-prefetch' href='//s1.wp.com'/>
+<link rel='dns-prefetch' href='//s0.wp.com'/>
+<link rel='dns-prefetch' href='//kurtseifried.wordpress.com'/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Feed" href="http://kurt.seifried.org/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Comments Feed" href="http://kurt.seifried.org/comments/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with&nbsp;authentication Comments Feed" href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/feed/"/>
+<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1473172720h&ver=4.6.1-RC1-38499"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">img.wp-smiley,img.emoji{display:inline!important;border:none!important;box-shadow:none!important;height:1em!important;width:1em!important;margin:0 .07em!important;vertical-align:-0.1em!important;background:none!important;padding:0!important;}</style>
+<link rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJx9jtEKwjAMRX/IGibTPYnf0nbBdW220KQM/95W8UVlLyH3cg4JbGz8uiguClQMp3IPi0AKEQVmVLY+mlc6epED/MczJqs4Gl5Fv9Ke5teMtSe22gjCMVhMSBXb04gvH6utU31x98zGlTbOcUYRUyeFQkaneujXe9fAxUEsLgcfQfSRsIE3unZ93w3deRhO8xOHmHVX' type='text/css' media='all'/>
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='kubrick-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/kubrick/ie.css?m=1273203575h&#038;ver=4.6.1-RC1-38499' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJx9i8sKgCAQAH8oWwSjOkTfYmLLhrrig34/u0Rdus3ADBAELmQ45Ad6k3MHZxRNig0FfBXRVaTWoGXh2OhCHD4idqcp/a3Jbo6xIUKrXnpPq1+kGmalplGq4wKxyTcd' type='text/css' media='all'/>
+<link rel='stylesheet' id='print-css-3-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h' type='text/css' media='print'/>
+<link rel='stylesheet' id='all-css-4-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/actionbar/actionbar.css,/wp-content/themes/h4/global.css?m=1479929846j' type='text/css' media='all'/>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFj+sKwjAMhV/IrHib+kN8ltrFkdqbTevQpzcD/aEOhUDIyZfDiRoSUDCudsjKSl0q5tuzNZZn6hcAnvqsCzaewgs2MRQMZWR9PJJDqIxZ96KJ0SlOcCly8cgs0MT2PRKFK+HwF7NYkjZnyMh0/3L1FZKrPQVWGZ080MGY4WOSq4Pfz1dtu14sd5utfQAruHB+'></script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1377793621h' type='text/css' media='all'/>
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kurtseifried.wordpress.com/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"/>
+<link rel='prev' title='Creating temporary files&nbsp;securely' href='http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/'/>
+<link rel='next' title='Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely&nbsp;broken' href='http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/'/>
+<meta name="generator" content="WordPress.com"/>
+<link rel="canonical" href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/"/>
+<link rel='shortlink' href='http://wp.me/pmsC-2W'/>
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=json&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2012%2F05%2F14%2Ffedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication%2F&amp;for=wpcom-auto-discovery"/><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=xml&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2012%2F05%2F14%2Ffedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication%2F&amp;for=wpcom-auto-discovery"/>
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication"/>
+<meta property="og:url" content="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/"/>
+<meta property="og:description" content="So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&amp;#82…"/>
+<meta property="article:published_time" content="2012-05-14T06:59:39+00:00"/>
+<meta property="article:modified_time" content="2013-06-18T02:32:11+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png"/>
+<link rel='openid.server' href='http://kurtseifried.wordpress.com/?openidserver=1'/>
+<link rel='openid.delegate' href='http://kurtseifried.wordpress.com/'/>
+<link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried"/>
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com"/>
+<style type='text/css'><!--
+body { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgcolor.gif"); }
+#page { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgwide.gif") repeat-y top !important; border: none; }
+#header { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickheader.gif") no-repeat bottom center; }
+#footer { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickfooter.gif") no-repeat bottom; border: none;}
+#header { margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px; }
+#headerimg { margin: 7px 9px 0; height: 192px; width: 740px; }
+#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: ; }
+#headerimg h1 a, #headerimg .description { display:  }
+
+	--></style><meta name="application-name" content="Kurt Seifried"/><meta name="msapplication-window" content="width=device-width;height=device-height"/><meta name="msapplication-tooltip" content="Just another blog from just another guy (kurt@seifried.org)"/><meta name="msapplication-task" content="name=Subscribe;action-uri=http://kurt.seifried.org/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="title" content="Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with&nbsp;authentication | Kurt Seifried on WordPress.com"/>
+<meta name="description" content="So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&#039;t want to have to request that the email limit be increased on each server (as&hellip;"/>
+<link rel="amphtml" href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/amp/"/><style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body class="single single-post postid-182 single-format-standard mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page">
+<div id="header">
+<div id="headerimg" onclick=" location.href='http://kurt.seifried.org';" style="cursor: pointer;">
+<h1><a href="http://kurt.seifried.org/">Kurt Seifried</a></h1>
+<div class="description">Just another blog from just another guy (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="2f445a5d5b6f5c4a46495d464a4b01405d48">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)</div>
+</div>
+</div>
+<hr/>
+<div id="content" class="widecolumn">
+<div class="navigation">
+<div class="alignleft">&laquo; <a href="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/" rel="prev">Creating temporary files&nbsp;securely</a></div>
+<div class="alignright"><a href="http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/" rel="next">Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely&nbsp;broken</a> &raquo;</div>
+</div>
+<div class="clear post-182 post type-post status-publish format-standard hentry category-uncategorized tag-sendmail" id="post-182">
+<h2>Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with&nbsp;authentication</h2>
+<small class="single-by"></small>
+<div class="entry">
+<p>So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&#8217;t want to have to request that the email limit be increased on each server (as they come up and down a lot as demand requires).</p>
+<p>So my obvious thought was to run an EC2 instance that would act as an email relay for all these servers. Easy enough, install a host with Sendmail, and allowing relaying. The trick here is that I don&#8217;t want to have to edit the access file every time a new host comes up or leaves as the level of IP address churn is quite high. So we enable email authentication, and pre-load EC2 images with the credentials to relay email through the server and we&#8217;re done.</p>
+<p>So, foolishly, I thought I&#8217;d skip SMTP, and go straight to TLS encrypted SMTP (port 465), and require authentication. This way all the communications, email, authentication credentials and so on are well protected.I setup the Sendmail server, and tested it using Thunderbird, TLS+auth worked perfectly. However on the Sendmail client server side it did not work well, in fact I was unable to get it working at all, so if anyone knows how I&#8217;d love to hear from you.</p>
+<h2><strong>Setting up the Sendmail Server with encryption and authentication</strong></h2>
+<p>You&#8217;ll need to install sendmail and sasl:</p>
+<pre style="padding-left:30px;">yum install sendmail-cf cyrus-sasl-plain cyrus-sasl-md5 
+cyrus-sasl-gssapi cyrus-sasl-lib cyrus-sasl-devel cyrus-sasl</pre>
+<p>and enable / start it:</p>
+<pre style="padding-left:30px;">systemctl enable saslauthd.service
+systemctl enable sendmail.service
+systemctl start saslauthd.service
+systemctl start sendmail.service</pre>
+<p>Then you&#8217;ll need to edit /etc/mail/sendmail.mc, make sure these two lines are not commented out (they are by default):</p>
+<pre style="padding-left:30px;">TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl</pre>
+<p>and then enable submission:</p>
+<pre style="padding-left:30px;">DAEMON_OPTIONS(`Port=submission, Name=MSA, M=Ea')dnl</pre>
+<p>Then you&#8217;ll need to enable encryption certificates:</p>
+<pre style="padding-left:30px;">define(`confCACERT_PATH', `/etc/pki/tls/certs')dnl
+define(`confCACERT', `/etc/pki/tls/certs/CA_bundle.pem')dnl
+define(`confSERVER_CERT', `/etc/pki/tls/certs/server.crt')dnl
+define(`confSERVER_KEY', `/etc/pki/tls/private/server.key')dnl</pre>
+<p>and you&#8217;re basically done. Simply rebuild the sendmail configuration and restart it:</p>
+<pre style="padding-left:30px;">/etc/mail/make
+systemctl restart sendmail.service</pre>
+<p>You&#8217;ll then need to ensure port 587 is not firewalled (either on the local system or in your EC2 security groups), and you&#8217;ll have to create local accounts with passwords so the clients can authenticate against them (e.g. create a user called &#8220;mail-relay&#8221; with a password and lock the account down).</p>
+<p>You can easily test the server using an email client such as Thunderbird.</p>
+<h2><strong>Setting up the Sendmail Client Server with encryption and authentication</strong></h2>
+<p>First you&#8217;re going to need Sendmail and the syrus-sasl-plain rpms installed. The really annoying part is if you don&#8217;t install the cyrus-sasl-plain package email connections will fail, but the log files are less than helpful when this occurs:</p>
+<pre style="padding-left:30px;">May 20 23:22:48 ip-10-242-49-173 sendmail[9890]: q4L3MmFP009890: 
+client.example.org [10.1.2.3] (may be forged) did not issue 
+MAIL/EXPN/VRFY/ETRN during connection to MSA</pre>
+<p>To install the rpms simply:</p>
+<pre style="padding-left:30px;">yum install sendmail-cf cyrus-sasl-plain</pre>
+<p>So now to setup the client. This is woefully documented and there is a ton of conflicting information. To start with install the same sendmail and sasl packages as above. Then you&#8217;ll need a standard SMART_HOST entry line, but with the added options of telling it to use port 587 (submission) and a link to the file with the authentication information:</p>
+<pre style="padding-left:30px;">define(`SMART_HOST', `smarthost.example.org')dnl
+define(`RELAY_MAILER_ARGS', `TCP $h 587')
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')
+FEATURE(`authinfo',`Hash -o /etc/mail/authinfo.db')dnl</pre>
+<p>You&#8217;ll also need to create an /etc/mail/authinfo file with contents such as:</p>
+<pre style="padding-left:30px;">AuthInfo:smarthost.example.org "U:user_name" "P:password_here" "M:PLAIN"</pre>
+<p>and build it using the makemap program:</p>
+<pre style="padding-left:30px;">makemap hash /etc/mail/authinfo &lt; /etc/mail/authinfo</pre>
+<p>You can then restart sendmail and it should work, the log file from the client sendmail server:</p>
+<pre style="padding-left:30px;">May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq005188: from=ec2-user, 
+size=297,, nrcpts=1, msgid=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="7d4f4d4c4f4d484c494d4b484c530c49384b0d4c1c0c4d4d4e4c45453d140d504c4d504c4d504c4d504c4d53181e4f53141309180f131c11">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, 
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="2d5f48414c54105f4242596d41424e4c4145425e59">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3189]: q4E6p12W003189: 
+from=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="81e4e2b3acf4f2e4f3c1e8f1acb0b1acb0b1acb0b1acb0b1afe4e2b3afe8eff5e4f3efe0ed">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, size=577,, nrcpts=1, 
+msgid=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="182a28292a282d292c282e2d2936692c5d2e6829796928282b292020587168352928352928352928352928367d7b2a3671766c7d6a767974">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, 
+proto=ESMTP, daemon=MTA, relay=localhost.localdomain [127.0.0.1]
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq003188: 
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1c68732177696e685c6f79757a6e75797832736e7b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>, ctladdr=ec2-user (1000/1000), delay=00:00:00, 
+xdelay=00:00:00, mailer=relay, pri=30297, relay=[127.0.0.1] [127.0.0.1], 
+dsn=2.0.0, stat=Sent (q4E6p12W003189 Message accepted for delivery)
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3191]: STARTTLS=client, 
+relay=smarthost.example.org., version=TLSv1/SSLv3, verify=FAIL, 
+cipher=DHE-RSA-AES256-SHA, bits=256/256
+
+May 14 02:51:02 ip-10-10-10-10 sendmail[3191]: q4E6p52W003189: 
+to=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="8de6f8fff9cdfee8e4ebffe4e8e9a3e2ffea">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, ctladdr=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="224741100f57514750624b520f13120f13120f13120f13120c4741100c4b4c5647504c434e">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt; 
+(1000/1000), delay=00:00:01, xdelay=00:00:01, mailer=relay, pri=120577, 
+relay=smarthost.example.org. [1.2.3.4], dsn=2.0.0, stat=Sent 
+(q4E6p1ZE001355 Message accepted for delivery)</pre>
+<p>And on the server:</p>
+<pre style="padding-left:30px;">May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: STARTTLS=server, 
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), 
+version=TLSv1/SSLv3, verify=NO, cipher=DHE-RSA-AES256-SHA, bits=256/256
+
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: AUTH=server, 
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), 
+authid=email-client, mech=PLAIN, bits=0
+
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: q4E6nmgg001349: 
+from=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="650006574810160017250c154854554854554854554854554b0006574b0c0b1100170b0409">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, size=795,, nrcpts=1, 
+msgid=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="201210111210151114101614190e511465164e4d44651010131118126049500d11100d11100d11100d11100e4543120e494e5445524e414c">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, 
+proto=ESMTP, daemon=MSA, relay=ec2-1-2-3-4.compute-1.amazonaws.com 
+[1.2.3.4] (may be forged)
+
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: STARTTLS=client, 
+relay=aspmx.l.google.com., version=TLSv1/SSLv3, verify=FAIL, 
+cipher=RC4-SHA, bits=128/128
+
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: q4E6nmgg001349: 
+to=&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="22495750566251474b44504b47460c4d5045">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;, delay=00:00:01, xdelay=00:00:01, mailer=esmtp, 
+pri=120795, relay=aspmx.l.google.com. [173.194.68.26], dsn=2.0.0, 
+stat=Sent (OK 1336912345 gs11si19555555aaa.999)</pre>
+<p>As you can see the email comes in, and is then handed off to gmail.</p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-86342-182-58419efa8c1ab' data-src='//widgets.wp.com/likes/#blog_id=86342&amp;post_id=182&amp;origin=kurtseifried.wordpress.com&amp;obj_id=86342-182-58419efa8c1ab' data-name='like-post-frame-86342-182-58419efa8c1ab'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts'>
+<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>
+<p class="clear">Tags: <a href="http://kurt.seifried.org/tag/sendmail/" rel="tag">sendmail</a></p>
+<p class="postmetadata alt">
+<small>
+This entry was posted on May 14, 2012 at 12:59 AM and is filed under <a href="http://kurt.seifried.org/category/uncategorized/" rel="category tag">Uncategorized</a>. You can follow any responses to this entry through the <a href='http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/feed/'>RSS 2.0</a> feed.
+You can <a href="#respond">leave a response</a>, or <a href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/trackback/" rel="trackback">trackback</a> from your own site.
+</small>
+</p>
+</div>
+</div>
+ 
+<h3 id="comments">One Response to &#8220;Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with&nbsp;authentication&#8221;</h3>
+<ol class="commentlist">
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-436">
+<cite><a href='http://linuxkitchen.com/2012/12/20/sendmail-log/' rel='external nofollow' class='url'>Sendmail log | Linux, Kuhinja i još mnogo toga</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-436" title="">January 4, 2013 at 3:35 AM</a> | <a class='comment-reply-link' href='/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/?replytocom=436#respond' onclick='return addComment.moveForm("comment-436", "436", "respond", "182")'>Reply</a> </small>
+<p>[&#8230;] Ako se ovakva poruka javlja zaq veliki broj hostova iz interne mreže, i oni mogu da primaju, ali ne mogu da šalju mail poruke, pogledati ovaj sajt ovde. [&#8230;]</p>
+</li> 
+</ol>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+<div id="respond" class="comment-respond">
+<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/#respond" style="display:none;">Cancel reply</a></small></h3> <form action="http://kurt.seifried.org/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+<input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="644ee5962f"/><input type="hidden" name="_wp_http_referer" value="/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/"/>
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest"/>
+<div class="comment-form-field comment-textarea">
+<label for="comment">Enter your comment here...</label>
+<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+<div id="comment-form-identity" class="comment_registration">
+<div id="comment-form-nascar">
+<p>Please log in using one of these methods to post your comment:</p>
+<ul>
+<li>
+<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+<span></span>
+</a>
+</li>
+<li>
+</ul>
+</div>
+<div id="comment-form-guest" class="comment-form-service selected">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank"> <img src="" alt="Gravatar" width="25" class="no-grav"/>
+</a> </div>
+<div class="comment-form-fields">
+<div class="comment-form-field comment-form-email">
+<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+<div class="comment-form-input"><input id="email" name="email" type="email" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-author">
+<label for="author">Name <span class="required">(required)</span></label>
+<div class="comment-form-input"><input id="author" name="author" type="text" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-url">
+<label for="url">Website</label>
+<div class="comment-form-input"><input id="url" name="url" type="url" value=""/></div>
+</div>
+</div>
+</div>
+</div>
+<div id="comment-form-wordpress" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="WordPress.com Logo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value=""/>
+<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-twitter" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Twitter picture" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value=""/>
+<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-facebook" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Facebook photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value=""/>
+<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-googleplus" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Google+ photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value=""/>
+<p class="comment-form-posting-as pa-googleplus"><strong></strong> You are commenting using your Google+ account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-load-service" class="comment-form-service">
+<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+<p>Connecting to %s</p>
+</div>
+</div>
+<script type="text/javascript">
+var highlander_expando_javascript = function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+}
+jQuery(document).ready( highlander_expando_javascript );
+</script>
+<div id="comment-form-subscribe">
+<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog" style="display: inline;">Notify me of new posts via email.</label></p></div>
+<p class="form-submit">
+<input name="submit" type="submit" id="comment-submit" value="Post Comment"/>
+<input type='hidden' name='comment_post_ID' value='182' id='comment_post_ID'/>
+<input type='hidden' name='comment_parent' id='comment_parent' value='0'/>
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="49e2a77b7a"/></p>
+<input type="hidden" name="genseq" value="1480695546"/>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="84"/></p> </form>
+</div> 
+<div style="clear: both"></div>
+</div>
+<hr/>
+<div id="footer">
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+<br/><a href="http://kurt.seifried.org/feed/">Entries (RSS)</a> and <a href="http://kurt.seifried.org/comments/feed/">Comments (RSS)</a>. </p>
+</div>
+</div>
+ 
+<div style="display:none">
+</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/kurtseifried.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?action=logout&_wpnonce=724fd47a24","homeURL":"http:\/\/kurt.seifried.org\/","postID":"182","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"1","userIsLoggedIn":"","isJetpack":"0","text_direction":"ltr"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s2.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1479964158j'></script>
+<script type='text/javascript' src='https://s1.wp.com/wp-content/mu-plugins/akismet-3.0/_inc/form.js?m=1404442431h'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var actionbardata = {"siteID":"86342","siteName":"Kurt Seifried","siteURL":"http:\/\/kurt.seifried.org","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/void.gif' class='avatar avatar-36' height='36' width='36' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/kubrick","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2012%2F05%2F14%2Ffedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication%2F","themeURL":"","xhrURL":"http:\/\/kurt.seifried.org\/wp-admin\/admin-ajax.php","nonce":"c5d9519be6","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"321560f319\" \/>","referer":"http:\/\/kurt.seifried.org\/2012\/05\/14\/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication\/","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/kurtseifried.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fkurtseifried.wordpress.com%2F2012%2F05%2F14%2Ffedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication%2F","postID":"182","shortlink":"http:\/\/wp.me\/pmsC-2W","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/kurt.seifried.org\/182","i18n":{"view":"View Site","follow":"Follow","following":"Following","edit":"Edit","login":"Log In","signup":"Sign Up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Kubrick","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editFollows":"Manage Sites I Follow","editSubs":"Manage Subscriptions","viewReader":"View Site in the Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2012%2F05%2F14%2Ffedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication%2F\">Log in now.<\/a>"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJx9jEEOwjAMBD9EalBRywXxlpBY4BI7wUkK/J70QMWpt9XO7sArGReloBSYMnicyWF6d1PewR/ialKoN5IMgR6Y4Vmx4t2KD6i/MYkL1TfYRC4yt6NRTOHTMcmG0frGzdUqsM0FtSUTZ1SlRbZ2WwZXKMpiWFNbX/h8OI5D35+GcT99AYXhVt0='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script> <iframe src='http://widgets.wp.com/likes/master.html?ver=20160429#ver=20160429' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.async = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+<noscript>
+<p class="robots-nocontent"><img src="http://b.scorecardresearch.com/p?c1=2&c2=7518284&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1" alt="" style="display:none;" width="1" height="1"/></p>
+</noscript><script src="//stats.wp.com/w.js?55" type="text/javascript" async defer></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'86342','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'86342','v':'wpcom','tz':'-7','user_id':'0','post':'182','subd':'kurtseifried'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V+ZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVuX1NOVyZydj1UMkFYQS5GR3dMZkkuLlZCN3VZVHpRWU1PNElzektmQ1h3TGIzMWZVVzIlX2hlMVkwaW1oWVF2bk1mTFJ6UG9KRGZjPU1STXdDa2VzUGw4YmN4P05+ZHo5X0ZQJiZnSThuWTZyMHZIL1ViWGVzLWs4NFFBUDc0K0FHL1MtXQ=='}]);
+_stq.push([ 'clickTrackerInit', '86342', '182' ]);
+	</script>
+<noscript><img src="http://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt=""/></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script></body>
+</html>
+ 

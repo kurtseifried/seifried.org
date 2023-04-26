@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - OAG - OpenBSD Administrator's Guide - Advanced system management</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Advanced system management</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#8ee5fbfcfacefdebe7e8fce7ebeaa0e1fce9"><span class="__cf_email__" data-cfemail="32594740467241575b54405b57561c5d4055">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>There are a number of system management that I felt didn't
+quite fit into basic system management, many of these advanced
+issues require modification of critical files in /etc, reboots of
+the system, and so forth, and can potentially break your system
+if not done correctly. </p>
+<p>&nbsp;</p>
+<h2>Using a serial console</h2>
+<p>This is one of the best things about UNIX, the ability to have
+a serial console. If something breaks or you mangle your network
+settings and you need to remotely fix it, you have a good chance
+of being able to do so. On more &quot;intelligent&quot; hardware
+such as the Sparc platform the serial ports are intelligent
+enough to allow remote access to the BOOT PROM (the equivalent of
+the BIOS), and the boot command allowing you more flexibility and
+recovery ability then on Intel platforms (unless you install a
+third party &quot;intelligent&quot; serial management port). On
+Intel platforms (and others such as PPC) you will only have
+access to the &quot;boot&gt;&quot; command generally, however
+this will allow you to boot rescue kernels, GENERIC kernels
+(assuming you are playing with custom kernels) and so on. </p>
+<p>In OpenBSD (and most UNIX systems) there are two kinds of
+serial console, the first (and most common) is actually a serial
+terminal, and is only present once the system has booted,
+allowing you to log in remotely (via a modem or dumb terminal for
+example). Using this method you will not be able to access the
+boot prompt, however once the system is booted you will be able
+to login via the serial line. </p>
+<p>The second type is more common for administrative purposes,
+and is present when the system boots, allowing you to give
+options to the boot loader for system recovery to name one
+possible use. Using this method you will not see boot messages on
+a monitor if one is plugged in, the boot up messages are sent to
+the serial console. To enable a serial console you simply need to
+edit two files and reboot, there is no need to modify your kernel
+or install additional software. The first step is to modify
+&quot;/etc/boot.conf&quot; and add the following two lines:</p>
+<blockquote>
+<pre><strong>stty com0 9600
+set tty com0</strong></pre>
+</blockquote>
+<p>Most serial ports support higher speeds such as 19200 and so
+on, but 9600 is pretty much guaranteed to work, please test
+higher speeds first before using them on production servers. The
+next step is to modify the &quot;/etc/ttys&quot; file, and add or
+modify the console line:</p>
+<blockquote>
+<pre><strong>console &quot;/usr/libexec/getty std.9600&quot;&nbsp; vt100&nbsp;&nbsp; on&nbsp; secure	local</strong></pre>
+</blockquote>
+<p>Again specify the terminal speed (make sure it is the same as
+boot.conf) and also the terminal type, vt220 is nicer then vt100
+but vt100 is universally supported. Once you have edited these
+two files simply reboot the system. </p>
+<p>If you see an error such as:</p>
+<blockquote>
+<pre>open(hd0a:/etc/boot.conf): Unknown error: code 20</pre>
+</blockquote>
+<p>Please refer to the <a href="../common-errors/boot-errors.html">boot time error section </a>of
+the OAG. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 7/7/2002</p>
+<p>Copyright Kurt Seifried 2002 <a href="/cdn-cgi/l/email-protection#cea5bbbcba8ebdaba7a8bca7abaae0a1bca9"><span class="__cf_email__" data-cfemail="1f746a6d6b5f6c7a76796d767a7b31706d78">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

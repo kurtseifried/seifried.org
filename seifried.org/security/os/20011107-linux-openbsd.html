@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Why Linux will never be as secure as OpenBSD</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Why Linux will never be as secure as OpenBSD</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#f398868187b380969a95819a9697dd9c8194"><span class="__cf_email__" data-cfemail="39524c4b4d794a5c505f4b505c5d17564b5e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Counterpoint: <a href="20011107-openbsd-linux.html">Why
+OpenBSD will never be as secure as Linux</a></p>
+<p>&nbsp;</p>
+<p>Well my mother just finished knitting me a new pair of
+asbestos booties so I thought it was high time I try them out.
+Set phasers to &quot;flame&quot;. Please read the entire article
+before using them. Just remember, I could have copped out by
+making the title something like &quot;Will Linux ever be as
+secure as OpenBSD?&quot; or even &quot;Which is more secure,
+Linux or OpenBSD?&quot;. But I didn't. As well you should check
+out the LASG/LSKB if you haven't already. I also know about
+ImmunixOS from WireX and the NSA's SELinux (go read last week's
+column!). </p>
+<h2>The code</h2>
+<p>Let's face it, Linux is a great OS, I have more then a few
+machines running it, but due to a number of factors it's never
+going to be as secure as OpenBSD (which I also have running on
+several machines). But Linux will never be as secure as OpenBSD,
+for technical, political and marketing reasons. One of the most
+obvious differences between Linux and OpenBSD (assuming you look
+under the hood a bit) is the fact that OpenBSD has done an
+extensive code audit. The OpenBSD team has literally spent dozens
+of man years of effort auditing code, not only for security but
+for general correctness. Even the man pages for OpenBSD are clean
+and consistent. This is a very proactive form of security,
+OpenBSD fixes many problems before they become security issues.
+No such form of extensive code audit exists in the Linux world,
+and likely never will. Most vendors I have spoken with typically
+have a small security team of less then a half dozen people
+(usually much less). Even ignoring the fact that Linux vendors
+ship many more packages as standard then OpenBSD (which tends to
+rely on the ports collection for add on software) the basic
+components that both Linux and OpenBSD have (kernel, command
+shells, system utilities, etc.) are quite large, several hundred
+megabytes of source code in total. There simply are not enough
+competent Linux programmers to do a security audit on this code,
+let alone every vendor hiring enough people to fix their own
+versions/etc. Even when vendors do do code audits they typically
+face a problem, many programmers maintaining software are
+indifferent, or even hostile to people sending them security
+fixes, so it is very common for the original software to be
+insecure, and the vendor must maintain their own patch set. This
+problem affects OpenBSD far less as they maintain their own code
+base now, and it has significantly diverged in many areas (ssh
+and OpenSSH being a prime example). Even if Linux vendors wants
+to audit all their code there aren't enough Linux programmers
+capable of doing this. This means that Linux vendors are
+essentially doomed to reacting to security problems, applying
+patches and shipping out fixed versions of software, leaving
+users open to vulnerabilities for hours, days or even weeks in
+some cases. </p>
+<p>This is far more important then it sounds, even with
+additional security products such as PitBull there may be ways
+for an attacker to exploit some bug in the kernel that allows
+them to bypass add-on security, this happened with PitBull for
+Solaris, PitBull was fine, the Solaris kernel was not. Generally
+speaking add on security products cannot completely protect the
+system, for example unless a firewall product replaces the TCP-IP
+stack of an OS any problems in the TCP-IP stack will still be
+exploitable. </p>
+<p>&nbsp;</p>
+<h2>Cryptographic software</h2>
+<p>This is an area where OpenBSD trounces Linux. OpenBSD not only
+ships OpenSSL, OpenSSH, IPSec, and several other cryptographic
+software packages, but they have actually been largely
+responsible for OpenSSH, which is an incredibly important piece
+of software now. While many Linux vendors do ship OpenSSL and
+OpenSSH there are several that do not (Caldera being a notable
+example). However no major Linux vendors ship IPSec support built
+in, while there is a project for Linux IPSec, it is difficult at
+best to install and configure, and at worst almost impossible (I
+know, I've used it). OpenBSD on the other hand ships by default
+with one of the best IPSec implementations available. OpenBSD
+also provides a different (better in many ways) key daemon, with
+support for various forms of authentication, an area where
+FreeS/WAN is weak. Additionally because the majority of Linux
+work is done from within the US (Linus Torvalds now lives there)
+there is almost no cryptographic support built into the Linux
+kernel. If you want to add crypto you must patch the kernel and
+rebuild it. Very few vendors, if any at all any (I'm not aware of
+a single one), ship any crypto built into the kernel such as
+IPSec support, or any form of cryptographic hooks (however many
+do ship OpenSSL/OpenSSH and other cryptographic components).
+Because OpenBSD is done from Canada, the export of public domain
+(usually interpreted as OpenSource) is not a problem, giving you
+out of the box support. </p>
+<h2>Cryptographic hardware</h2>
+<p>Yet another area where OpenBSD shines and Linux is almost
+completely lacking. OpenBSD supports several cryptographic
+acceleration products, allowing you to build very powerful (and
+cheap) IPSec gateways for example. While there is some SSL
+acceleration hardware available for Linux this is essentially an
+easy problem to solve (most web load balancers can handle the
+encryption, and keep sessions organized properly). There is as
+far as I know no IPSec capable hardware acceleration products for
+Linux. As well OpenBSD is currently working towards allowing
+hardware to accelerate other cryptographic software such as ssh,
+which will become an increasingly large problem (how much CPU
+would you have to add to a server to support 1000 users using ssh
+instead of telnet?). As well with OpenSSH's support for large
+file transfers (via scp and sftp) load on servers using the SSH
+protocol will only increase. </p>
+<p>On the cryptographic front OpenBSD has Linux beat, hands down.
+The chances of Linux gaining this support is unlikely for a
+number of reasons, US crypto export policy, and a lack of
+programmers that are capable of writing the software to name a
+few. This is not something that will change for a long time (if
+ever). </p>
+<h2>Happy customers</h2>
+<p>Linux vendors care about having happy customers. OpenBSD
+developers don't. The Linux market has become a very competitive
+space, with around a dozen &quot;major&quot; distributions, and
+literally dozens (if not hundreds) of smaller players. The major
+distributions generally pursue similar markets, home desktop
+users, corporate/educational desktop users and
+corporate/educational servers. Almost every commercial vendor has
+invested significant effort in graphical installation programs,
+desktop software like Gnome and KDE, and other
+usability/entertainment/productivity software. There is
+absolutely nothing wrong with this, as more people use Linux the
+installation must become easier, and things like word processors
+are needed. However it means that Linux vendors have to spend a
+lot more effort pleasing users, several distributions now ship on
+multiple CD's because of all the add on software they include.
+Although customers complain about security, very few will
+actually take a secure product instead of an insecure product
+with more features (even if they may not need those features).
+Unless a sizable portion of customers start putting their money
+where their mouth is vendors will not change significantly. </p>
+<h2>Secure by default</h2>
+<p>In comparison OpenBSD 2.8's install files (all of them) are
+just over 90 megs, installed (with everything) it requires around
+200 megs of space. The only things enabled by default in OpenBSD
+are those that the developers deem &quot;safe&quot;. For example
+Telnet is disabled by default, and OpenSSH is enabled. Sendmail
+is configured to run in local queue mode, it can send mail but
+not receive (you must add the &quot;-bd&quot; option in rc.conf
+to enable it). As OpenBSD's webpage puts it:</p>
+<blockquote>
+<p><font color="#E00000"><strong>Four years without a remote
+hole in the default install!</strong></font></p>
+</blockquote>
+<p>Which is not something any Linux vendor can claim (or ever
+will in all likelihood). A typical installation of Linux will
+result in a half dozen or more network services being started,
+and while some vendors are starting to improve it is unlikely
+many will since disabling things results in frustrated users and
+increased support costs (although one wonders about the cost of
+rebuilding machines after they are broken into). </p>
+<h2>Summary</h2>
+<p>We need to teach people how to program well, and then maybe we
+can teach them how to program securely. We then need these
+programmers to either completely rewrite major portions of the
+software most Linux vendors ship, or audit the existing stuff (in
+both cases a task that is unlikely to be done). Since this is
+basically impossible we need to look at other solutions.
+ImmunixOS and SELinux are two solutions to this problem, and when
+installed, maintained and used correctly they do help, a lot.
+However this will not benefit the vast majority of Linux users.
+OpenBSD users on the other hand have an extremely clean and
+secure code base to work from, that is proactively being audited
+on a continuous basis. Linux has dug itself into a very deep
+hole, and appears to be digging downwards at an ever faster rate.
+Even with add on software like PitBull LX, or NSA's SELinux
+kernel modifications there are still potential security holes
+that could allow an attacker to bypass any Mandatory Access
+Controls, RBAC, Type Enforcement as was the case with PitBull for
+Solaris (Solaris had a flaw that allowed attackers to compromise
+the system despite PitBull). Without a high level of assurance in
+the actual source code of the Linux kernel and associated files
+there will always be a hint of doubt about the security of the
+system as a whole. This is why Linux can never be as secure as
+OpenBSD. </p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://www.openbsd.org/">http://www.openbsd.org/</a>
+- OpenBSD </p>
+<p><a href="http://www.openbsd.org/security.html">http://www.openbsd.org/security.html</a>
+- OpenBSD security page</p>
+<p><a href="http://www.openbsd.org/crypto.html">http://www.openbsd.org/crypto.html</a>
+- OpenBSD crypto page</p>
+<p><a href="http://seifried.org/lasg/">http://seifried.org/lasg/</a>
+- Linux Administrators Security Guide</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 8/11/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

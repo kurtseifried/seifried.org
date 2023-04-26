@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Security / Security Advisories / KSSA-003 NTFS Alternate data streams</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1><strong>Kurt Seifried Security Advisory 003 (KSSA-003)</strong></h1>
+<p>Created by Kurt Seifried, <a href="/cdn-cgi/l/email-protection#1b706e696f5b687e727d69727e7f3574697c"><span class="__cf_email__" data-cfemail="23485651576350464a45514a46470d4c5144">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p><a href="http://seifried.org/security/advisories/kssa-003.html">http://seifried.org/security/advisories/kssa-003.html</a>,
+<a href="/cdn-cgi/l/email-protection#19726c6b6d596a7c707f6b707c7d37766b7e"><span class="__cf_email__" data-cfemail="9ff4eaedebdfecfaf6f9edf6fafbb1f0edf8">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>An off site translation into spanish is also available, I have
+no idea if it is correct or not</p>
+<p><a href="http://www.kriptopolis.com/net/article.php?sid=352">http://www.kriptopolis.com/net/article.php?sid=352</a>
+- Muchas utilidades para borrado seguro de ficheros en Windows no
+destruyen adecuadamente los datos en sistemas de ficheros NTFS. </p>
+<hr>
+<p><strong>Title: </strong></p>
+<p>Multiple windows file wiping utilities do not properly wipe
+data with NTFS file systems. </p>
+<p><strong>Issue date:</strong></p>
+<p>Jan 21, 2002</p>
+<p><strong>Who should read this advisory:</strong></p>
+<p>Anyone using file wiping utilities such as PGP Wipe (from
+NAI), BCWipe (from Jetico) or East-Tec Eraser (from East-Tec) on
+a Windows system with an NTFS file system, such as Windows NT,
+Windows 2000 or Windows XP especially with features such as
+thumbnail pictures in explorer. This advisory affects virtually
+every Windows file wiping utility, none of the tested programs
+were found to be problem free. </p>
+<p><strong>Author and contact info:</strong></p>
+<p>This advisory is copyright 2002, Kurt Seifried, <a href="/cdn-cgi/l/email-protection#e18a949395a19284888793888485cf8e9386"><span class="__cf_email__" data-cfemail="2e455b5c5a6e5d4b47485c474b4a00415c49">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>, <a href="http://seifried.org/">http://seifried.org/</a> </p>
+<p><strong>Overview:</strong></p>
+<p>In the NTFS file system a facility exists to bind additional
+data to a file or directory, called an alternate data stream
+[url1][url2]. These alternate data streams cannot be be removed,
+unless the parent file or directory is destroyed. Unfortunately
+most file wiping utilities only deal with the primary data stream
+and do not wipe the alternate data streams, thus leaving data
+intact. </p>
+<p><strong>Affected software:</strong></p>
+<p>It is important to note that every single software package
+tested failed to erase single or multiple data streams (Eraser
+5.3 erased multiple data streams in, however missed alternate
+data streams when only one was present in a file). Based on this
+I find it unlikely that any other secure deletion programs
+implement alternate data stream wiping properly, all secure
+deletion programs for Windows should be treated as suspect until
+proven innocent. If you are using secure deletion software please
+check immediately for files with alternate data streams, and
+after deleting them you are strongly advised to wipe all free
+space. </p>
+<p>BCWipe version 1.x and 2.x from Jetico - Confirmed in testing
+and from vendor. <a href="http://www.bcwipe.com/">http://www.bcwipe.com/</a></p>
+<p>Eraser 5.3 - Confirmed in testing and from vendor. <a href="http://www.tolvanen.com/eraser/">http://www.tolvanen.com/eraser/</a></p>
+<p>SecureClean v3 build-2.0 - Confirmed in testing and from
+vendor. <a href="http://www.accessdata.com/main_deleted_data.htm">http://www.accessdata.com/main_deleted_data.htm</a></p>
+<p>East-Tec Eraser 2000 - Confirmed in testing. <a href="http://www.east-tec.com/eraser/index.htm">http://www.east-tec.com/eraser/index.htm</a>
+</p>
+<p>PGP 6.x freeware and commercial, 7.x, freeware and commercial
+- Confirmed in testing. <a href="http://www.pgp.com/">http://www.pgp.com/</a>,
+<a href="http://www.pgpi.org/">http://www.pgpi.org/</a> </p>
+<p>Numerous other packages are suspected to be vulnerable, it is
+strongly advised to use the workarounds listed below. </p>
+<p><strong>Impact:</strong></p>
+<p>If data is stored in an alternate data stream attached to a
+file (such as the thumbnail of an image) or directory when this
+file or directory is wiped the information contained within the
+alternate data stream will be left intact on the harddrive. No
+warning is given to the user at all by Windows or the wiping
+programs. For example if you use windows file explorer (the
+default file browser in Windows) and have thumbnails of pictures
+enabled (the default setting) then the thumbnail of the thumbnail
+image, once created (i.e. once the directory is viewed in
+Explorer) will not be deleted until you delete the file and wipe
+all free space. Alternate data streams also provide an ideal
+location to keep attack tools, snippets of virus code and so
+forth for attackers and viruses, in fact some virus scanners do
+not scan alternate data streams unless specifically configured to
+do so (often labeled as &quot;scan all files&quot; or similar). </p>
+<p>The good news is that floppy disks and most other removable
+media are not formatted as NTFS, thus it is unlikely that copied
+files will contain the alternate data streams. As well no all
+compression programs, such as WinZip copy the alternate data
+streams, while others such as WinRAR do copy the alternate data
+streams. While it is unlikely that files with alternate data
+streams will have made it to other systems with their alternate
+data streams intact it is possible, and any systems that have had
+sensitive data copied or moved to them should immediately have
+their free space wiped in order to ensure alternate data streams
+containing sensitive information are still present. </p>
+<p><font color="#000000"><strong>Details:</strong></font></p>
+<p>Create a file with an alternate data stream:</p>
+<blockquote>
+<pre>echo &quot;this is a text file&quot; &gt; C:\file.txt
+echo &quot;this is the alternate data stream lkajhkl2&quot; &gt; C:\file.txt:alternate-data-stream</pre>
+</blockquote>
+<p>If you use forensics software to examine the harddrive you
+will find the string of text &quot;this is the alternate data
+stream lkajhkl2&quot; present on the drive. </p>
+<p>Now using the file wiper of your choice (BCWipe, etc.) choose
+the file C:\file.txt and wipe it. Use any many passes as you
+want. </p>
+<p>Now examine the drive for the string &quot;this is the
+alternate data stream lkajhkl2&quot;. You should be able to find
+it. To do this using Linux simply create an image file of the
+drive and examine it using grep or strings:</p>
+<blockquote>
+<pre>dd if=/dev/hdb1 of=windows-disk.img
+grep &quot;this is the alternate data stream lkajhkl2&quot; windows-disk.img</pre>
+<pre>or</pre>
+<pre>strings windows-disk.img &gt; windows-disk.strings
+grep &quot;this is the alternate data stream lkajhkl2&quot; windows-disk.strings</pre>
+</blockquote>
+<p>As you will quickly discover the data is easily found. </p>
+<p>Alternate data streams are only available on NTFS file
+systems, making home users with older systems (Windows95,
+Windows98, WindowsME) immune to this problem, but newer systems
+based on WindowsXP are capable of using NTFS, thus potentially
+exposing customers to risk. NTFS is also available on most
+corporate systems such as WindowsNT, Windows2000 and WindowsXP. </p>
+<p>Another &quot;feature&quot; of alternate data streams is that
+they cannot be deleted. If you have an alternate data stream
+attached to a file you cannot delete it, you can write other data
+to the stream, however you cannot reliably delete it. To
+overwrite an alternate data stream simply place more data into
+it, for example:</p>
+<blockquote>
+<pre>echo &quot;this will overwrite existing data in the stream&quot; &gt; C:\file.txt:alternate-data-stream</pre>
+<pre>or</pre>
+<pre>type notepad.exe &gt; C:\file.txt:alternate-data-stream ***</pre>
+</blockquote>
+<p><strong>Solutions and workarounds:</strong></p>
+<p>Several workarounds exist, and several vendors are in the
+process of updating software so as to fix the problem. </p>
+<p>The first workaround is to avoid using alternate data streams
+to store sensitive information. To check for alternate data
+streams several free tools exist, one of the best of which is
+LADS [url3] from Frank Hayne Software (heysoft.de). Simply
+download lads.zip and unpack it, then run it from your root
+drives (e.g. C:\, D:\) and it should find and report any and all
+alternate data streams present. Because alternate data streams
+cannot be deleted tools to detect them are quite effective, once
+found you should securely delete the files and proceed to the
+next workaround, wiping free space, in order to ensure the
+alternate data streams are deleted. </p>
+<p>The second workaround is to immediately use the &quot;wipe
+free space&quot; feature present in most secure file deletion
+utilities. Since the parent file or directory that the alternate
+data streams were attached to have been deleted the data in the
+alternate data streams is now in &quot;free space&quot; on the
+harddrive, thus using &quot;wipe free space&quot; will overwrite
+it. The downside of this workaround of course is that wiping all
+the free space on a hard disk can take quite some time,
+especially on a modern disk that may have several tends of
+gigabytes of free space to wipe. One note on this: wiping free
+space may not be possible or effective on network shares using
+NTFS, it is recommended to encrypt truly sensitive data on NTFS
+network file systems. </p>
+<p>A third workaround is to encrypt sensitive data, Windows 2000
+offers encrypted file system, or you can use programs such as
+PGP's PGPDisk [url4] or Jetico's BestCrypt [url5]. It is
+recommended to use encrypted disk partitions rather then
+encrypting single files, encrypted disk partitions are much
+easier to work with, type in a password and you have access, when
+you are done you do not need to worry about encrypting the file,
+as the data is kept in an encrypted state on the hard drive.
+Additionally temporary files stored in the same directory (such
+as opened word files) will also be kept in an encrypted state,
+reducing the need for you to wipe free space. </p>
+<p>Several vendors have announced new versions in light of this,
+see below for more information:</p>
+<p>BCWipe 1.x and 2.x</p>
+<blockquote>
+<p>&quot;We confirm importance of the problem of wiping
+alternate data stream in files, created on NTFS disks. We
+would thank Mr. Seifried for writing us about the problem and
+are going to solve it in the next version 3 of BCWipe, which
+is planned to be released at April, 2002.&quot;</p>
+</blockquote>
+<p>SecureClean </p>
+<blockquote>
+<p>&quot;We will be covering all those issues in the next
+release. We plan to be shipping the product in February. The
+new release will be posted at www.accessdata.com. The current
+SecureClean does not handle alternate data streams or the
+thumbnails. That is coming in February.&quot;</p>
+</blockquote>
+<p>East-Tec Eraser 2000 </p>
+<blockquote>
+<p>&quot;EAST Technologies has acknowledged the possible
+problem concerning the wiping of the alternate data streams
+that may appear on NTFS disk drives and it will analyze this
+problem in the security product that it develops and the way
+this may compromise the user's personal security and privacy.
+EAST Technologies will also inform all its users and
+customers and in case it would be necessary, it will develop
+a fix.&quot; </p>
+</blockquote>
+<p>Eraser 5.3 ***</p>
+<p>PGP 6.x and 7.x ***</p>
+<p><strong>Additional information:</strong></p>
+<p>Check your anti-virus software, several packages do not scan
+alternate data streams by default, it is recommended you enable
+scanning of all files and confirm by placing the eicar.com [url6]
+in an alternate data stream of a file and scanning to test.
+Backup programs should also be checked, attach an alternate data
+stream to a file, delete and then restore it, check for the
+alternate data stream. You can remove an alternate data stream
+either by copying the parent file onto non NTFS media or backing
+it up with a program that does not save the alternate data
+stream, or by using the &quot;rm&quot; utility present in MKS
+Software's &quot;MKS Toolkit 8.0&quot;. An op-ed piece on this
+problem will be appearing at SearchSecurity [url7] later this
+week. </p>
+<p><strong>References:</strong></p>
+<p>[url1] <a href="http://www.microsoft.com/technet/treeview/default.asp?url=/TechNet/prodtechnol/winxppro/reskit/prkc_fil_xurt.asp">http://www.microsoft.com/technet/treeview/default.asp?url=/TechNet/prodtechnol/winxppro/reskit/prkc_fil_xurt.asp</a>
+- Multiple data streams</p>
+<p>[url2] <a href="http://support.microsoft.com/default.aspx?scid=kb;EN-US;q286797">http://support.microsoft.com/default.aspx?scid=kb;EN-US;q286797</a>
+- Windows File Protection and Alternative Data Streams (Q286797)</p>
+<p>[url3] <a href="http://www.heysoft.de/nt/ep-lads.htm">http://www.heysoft.de/nt/ep-lads.htm</a>
+- List alternate data streams. </p>
+<p>[url4] <a href="http://www.pgp.com/products/desktop-privacy.asp">http://www.pgp.com/products/desktop-privacy.asp</a>
+- PGP's Desktop privacy (includes encrypted drive software
+PGPDisk)</p>
+<p>[url5] <a href="http://www.jetico.com/index.htm#/products.htm">http://www.jetico.com/index.htm#/products.htm</a>
+- Jetico's BestCrypt </p>
+<p>[url6] <a href="http://www.eicar.org/anti_virus_test_file.htm">http://www.eicar.org/anti_virus_test_file.htm</a>
+- Eicar.com test file (for testing anti virus software). </p>
+<p>[url7] <a href="http://searchsecurity.com/">http://searchsecurity.com/</a>
+- Op-Ed piece on this to appear later this week. </p>
+<p><strong>Other acknowledgements / thanks / greetings /
+information:</strong></p>
+<p>dd, grep and strings</p>
+<p>CanSecWest - <a href="http://www.cansecwest.com/">http://www.cansecwest.com/</a>
+- See you there</p>
+<p><strong>URL for advisory, signature and keys:</strong></p>
+<p><a href="http://seifried.org/security/advisories/kssa-003.html">http://seifried.org/security/advisories/kssa-003.html</a>
+</p>
+<p><a href="http://seifried.org/security/advisories/kssa-003.html.asc">http://seifried.org/security/advisories/kssa-003.html.asc
+</a></p>
+<p><a href="http://seifried.org/security/keys/">http://seifried.org/security/keys/</a>
+</p>
+<pre>-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: PGPfreeware 7.0.3 for non-commercial use &lt;http://www.pgp.com&gt;
+
+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
+4DM73//OxJSRLTwVO5IVtq/WIQ==
+=azr0
+-----END PGP PUBLIC KEY BLOCK-----</pre>
+<hr>
+<p>Permission is granted for copying and circulating this
+Bulletin to the Internet community for the purpose of alerting
+them to problems, if and only if, the bulletin is not edited or
+changed in any way, is attributed to Kurt Seifried <a href="/cdn-cgi/l/email-protection#6a011f181e2a190f030c18030f0e4405180d"><span class="__cf_email__" data-cfemail="fe958b8c8abe8d9b97988c979b9ad0918c99">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>, and
+provided such reproduction and/or distribution is performed for
+non-commercial purposes.</p>
+<p>Any other use of this information is prohibited. Kurt Seifried
+<a href="/cdn-cgi/l/email-protection#89e2fcfbfdc9faece0effbe0eceda7e6fbee"><span class="__cf_email__" data-cfemail="72190700063201171b14001b17165c1d0015">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a> is not
+liable for any misuse of this information by any third party.</p>
+<hr>
+<p>Last updated 1/21/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

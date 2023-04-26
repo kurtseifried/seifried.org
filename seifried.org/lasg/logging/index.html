@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Logging</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Log files and other forms of monitoring</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#1d76686f695d6e78747b6f74787933726f7a"><span class="__cf_email__" data-cfemail="e58e909791a596808c83978c8081cb8a9782">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>One integral part of any UNIX system are the logging
+facilities. The majority of logging in Linux is provided by two
+main programs, sysklogd and klogd, the first providing logging
+services to programs and applications, the second providing
+logging capability to the Linux kernel. Klogd actually sends most
+messages to the syslogd facility but will on occasion pop up
+messages at the console (i.e. kernel panics). Sysklogd actually
+handles the task of processing most messages and sending them to
+the appropriate file or device, this is configured from within
+/etc/syslog.conf. By default most logging to files takes place in
+/var/log/, and generally speaking programs that handle their own
+logging (most httpd servers handle their logging internally) log
+to /var/log/program-name/, which allows you to centralize the log
+files and makes it easier to place them on a separate partition
+(some attacks can fill your logs quite quickly, and a full /
+partition is no fun). Additionally there are programs that handle
+their own interval logging, one of the more interesting being the
+bash command shell. By default bash keeps a history file of
+commands executed in ~username/.bash_history, this file can make
+for extremely interesting reading, as oftentimes many admins will
+accidentally type their passwords in at the command line. Apache
+handles all of its logging internally, configurable from
+httpd.conf and extremely flexible with the release of Apache
+1.3.6 (it supports conditional logging). Sendmail handles its
+logging requirements via syslogd but also has the option (via the
+command line -X switch) of logging all SMTP transactions straight
+to a file. This is highly inadvisable as the file will grow
+enormous in a short span of time, but is useful for debugging.
+See the sections in network security on Apache and Sendmail for
+more information.</p>
+<p>&nbsp;</p>
+<h2><a name="General log security">General log security</a></h2>
+<p>Generally speaking you do not want to allow users to see the
+log files of a server, and you especially don&#146;t want them to
+be able to modify or delete them. Generally speaking most log
+files are owned by the root user and group, and have no
+permissions assigned for other, so in most cases the only user
+able to modify the logs will be the root user (and if someone
+cracks the root account all bets are off). There are a few extra
+security precautions you can take however, the simplest being to
+use the &#147;chattr&#148; (CHange ATTTRibutes command) to set
+the log files to append only. This way in the event of a problem
+like a /tmp race that allows people to overwrite files on the
+system they cannot significantly damage the log files. To set a
+file to append only use:&nbsp;</p>
+<pre>chattr +a filename&nbsp;</pre>
+<p>only the superuser has access to this function of chattr. If
+you set all your log files to append only you must remember that
+log rotation programs will fail as they will not be able to zero
+the log file. Add a line to the script to unset the append only
+attribute:</p>
+<pre>chattr -a filename</pre>
+<p>and add a line after the log rotation script to reset the
+append only flag. If you keep log files on the system you may
+also wish to set them immutable so they cannot be tampered with
+as easily, to set the file immutable simply:</p>
+<pre>chattr +i filename</pre>
+<p>and this will prevent any changes (due to /tmp races, etc.) to
+the file unless the attacker has root access (in which case
+you&#146;re already in a world of hurt).&nbsp;</p>
+<pre>chattr -i filename</pre>
+<p>only the root user has access to the immutable flag.</p>
+<p>&nbsp;</p>
+<h2><a name="System logging">System logging</a></h2>
+<p>One feature of Linux (and most unices) is the syslog and klog
+facilities which allow software to generate log messages that are
+then passed to alog daemon and handled (written to a local file,
+a remote server, given to aprogram, and so on).</p>
+<p>&nbsp;</p>
+<h3>sysklogd / klogd</h3>
+<p>In a nutshell klogd handles kernel messages, depending on your
+setup this can range from almost none to a great deal if for
+example you turn on process accounting. It then passes most
+messages to syslogd for actual handling (that is it places the
+data in a physical file). The man pages for sysklogd, klogd and
+syslog.conf are pretty good with clear examples. One exceedingly
+powerful and often overlooked ability of syslog is to log
+messages to a remote host running syslog. Since you can define
+multiple locations for syslog messages (i.e. send all kern
+messages to the /var/log/messages file, and to console, and to a
+remote host or multiple remote hosts) this allows you to
+centralize logging to a single host and easily check log files
+for security violations and other strangeness. There are several
+problems with syslogd and klogd however, the primary ones being
+the ease of which once an attacker has gained root access to
+deleting/modifying log files, there is no authentication built
+into the standard logging facilities.&nbsp;</p>
+<p>The standard log files that are usually defined in syslog.conf
+are:</p>
+<pre>/var/log/messages
+/var/log/secure
+/var/log/maillog
+/var/log/spooler</pre>
+<p>The first one (messages) gets the majority of information
+typically; user logins, TCP_WRAPPERS dumps information here, IP
+firewall packet logging typically dumps information here and so
+on. The second typically records entries for events like users
+changing their UID/GID (via su, sudo, etc.), failed attempts when
+passwords are required and so on. The maillog file typically
+holds entries for every pop/imap connection (user login and
+logout), and the header of each piece of email that goes in or
+out of the system (from whom, to where, msgid, status, and so
+on). The spooler file is not often used anymore as the number of
+people running usenet or uucp has plummeted, uucp has been
+basically replaced with ftp and email, and most usenet servers
+are typically extremely powerful machines to handle a full, or
+even partial newsfeed, meaning there aren't many of them
+(typically one per ISP or more depending on size). Most home
+users and small/medium sized business will not (and should not in
+my opinion) run a usenet server, the amount of bandwidth and
+machine power required is phenomenal, let alone the security
+risks.&nbsp;</p>
+<p>You can also define additional log files, for example you
+could add:</p>
+<pre>kern.* /var/log/kernel-log</pre>
+<p>And you can selectively log to a separate log host:</p>
+<pre>*.emerg @syslog-host
+mail.* @mail-log-host</pre>
+<p>Which would result in all kernel messages being logged to
+/var/log/kernel-log, this is useful on headless servers since by
+default kernel messages go to /dev/console (i.e. someone logged
+in at the machines). In the second case all emergency messages
+would be logged to the host &#147;syslog-host&#148;, and all the
+mail log files would be sent to the &#147;mail-log-host&#148;
+server, allowing you to easily maintain centralized log files of
+various services. The default syslogd that ships with most Linux
+distributions is horribly insecure, log files are easily tampered
+with (or outright destroyed), and logging across the network is
+completely insecure as well as dangerous for the servers
+involved. I do not advise using syslog if you actually have a
+need for reliable logging (i.e. the ability to later view log
+files in the event of a break-in).&nbsp;</p>
+<p>The default file permissions on the log files are usually read
+/ write for root, and nothing for anyone else. In addition to
+this you can (and should) set the files append only (remember to
+take logrotate into account though, it needs to zero the files).
+This will prevent any deletion / modifications to the log files
+unless root unsets the append only attribute first.&nbsp;</p>
+<p>&nbsp;</p>
+<h3>modular syslog</h3>
+<p>changed</p>
+<p><a href="http://www.core-sdi.com/download/download1_modular.html">http://www.core-sdi.com/download/download1_modular.html</a>
+</p>
+<p>The major problem with syslog however is that tampering with
+log files is trivial (setting the log files append only with
+&#147;chattr +a&#148; helps, but if an attacker gains root, they
+can unset the attribute). There is however a secure version of
+syslogd, available at <a href="http://www.core-sdi.com/download/download1_modular.html">http://www.core-sdi.com/download/download1_modular.html</a>
+(these guys generally make good tools and have a good reputation,
+in any case it is open source software for those of you who are
+truly paranoid). This allows you to cryptographically sign logs
+to ensure they haven&#146;t been tampered with. Ultimately,
+however, an attacker can still delete the log files so it is a
+good idea to send them to another host, especially in the case of
+a firewall to prevent the hard drive being filled up.&nbsp;</p>
+<p>&nbsp;</p>
+<h3>next generation syslog</h3>
+<p>Another alternative is &#147;syslog-ng&#148; (Next Generation
+Syslog), which seems much more customizable then either syslog or
+secure-syslog, it supports digital signatures to prevent log
+tampering, and can filter based on content of the message, not
+just the facility it comes from or priority (something that is
+very useful for cutting down on volume). Syslog-ng is available
+at: <a href="http://www.balabit.hu/products/syslog-ng/">http://www.balabit.hu/products/syslog-ng/</a>.</p>
+<p>&nbsp;</p>
+<h3>Nsyslogd</h3>
+<p>Nsyslogd supports tcp, and SSL for logging to remote systems.
+It runs on a variety of UNIX platforms and you can download it
+from: <a href="http://coombs.anu.edu.au/~avalon/nsyslog.html">http://coombs.anu.edu.au/~avalon/nsyslog.html</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Log monitoring">Log monitoring</a></h2>
+<p>Log files are not much good unless you actually check them
+once in a while, this is an almost impossible task for most of us
+however due to the sheer volume of log files. There are a variety
+of tools to automate these tasks however.</p>
+<p>&nbsp;</p>
+<h3>Psionic Logcheck</h3>
+<p>Psionic Logcheck will go through the messages file (and
+others) on a regular basis (invoked via crontab usually) and
+email out a report of any suspicious activity. It is easily
+configurable with several &#145;classes&#146; of items, active
+penetration attempts which is screams about immediately, bad
+activity, and activity to be ignored (for example DNS server
+statistics or SSH rekeying). Psionic Logcheck is available from: <a href="http://www.psionic.com/abacus/logcheck/">http://www.psionic.com/abacus/logcheck/</a>.</p>
+<p>&nbsp;</p>
+<h3>colorlogs&nbsp;</h3>
+<p>colorlogs will color code log files allowing you to easily
+spot suspicious activity. Based on a config file it looks for
+keywords and colors the lines (red, cyan, etc.), it takes input
+from STDIN so you can use it to review log files quickly (by
+using &#147;cat&#148;, &#147;tail&#148; or other utilities to
+feed the log file through the program). You can get it at: <a href="http://www.resentment.org/projects/colorlogs/">http://www.resentment.org/projects/colorlogs/</a>.</p>
+<p>&nbsp;</p>
+<h3>WOTS</h3>
+<p>WOTS collects log files from multiple sources and will
+generate reports or take action based on what you tell it to do.
+WOTS looks for regular expressions you define and then executes
+the commands you list (mail a report, sound an alert, etc.). WOTS
+requires you have Perl installed and is available from: <a href="http://www.hpcc.uh.edu/~tonyc/tools/">http://www.hpcc.uh.edu/~tonyc/tools/</a>
+</p>
+<p>&nbsp;</p>
+<h3>swatch</h3>
+<p>swatch is very similar to WOTS, and the log files
+configuration is very similar. You can download swatch from: <a href="ftp://ftp.stanford.edu/general/security-tools/swatch/">ftp://ftp.stanford.edu/general/security-tools/swatch/</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Kernel logging">Kernel logging</a></h2>
+<p>The lowest level of logging possible is at the kernel level.
+Generally speaking users cannot disabled of avoid this type of
+logging, and also are usually not even aware it exists (a
+defenite advantage).</p>
+<p>&nbsp;</p>
+<h3>auditd</h3>
+<p><a href="../kernel/index.html#auditd">Information is available
+here.</a></p>
+<p>&nbsp;</p>
+<h2><a name="Shell logging">Shell logging</a></h2>
+<p>A variety of command shells have built in logging
+capabilities.</p>
+<p>&nbsp;</p>
+<h3>bash</h3>
+<p>I will also cover bash since it is the default shell in most
+Linux installations, and thus its logging facilities are
+generally used. bash has a large number of variables you can
+configure at run time or during it&#146;s use that modify how it
+behaves. Everything from the command prompt style to how many
+lines to keep in the log file.</p>
+<p>HISTFILE<br>
+name of the history file, by default it is
+~username/.bash_history</p>
+<p>HISTFILESIZE<br>
+maximum number of commands to keep in the file, it rotates them
+as needed.</p>
+<p>HISTSIZE<br>
+the number of commands to remember (i.e. when you use the up
+arrow key).</p>
+<p>The variables are typically set in /etc/profile, which
+configures bash globally for all users, however, the values can
+be over-ridden by users with the ~username/.bash_profile file,
+and/or by manually using the export command to set variables such
+as export EDITOR=emacs. This is one of the reasons that user
+directories should not be world readable; the .bash_history file
+can contain a lot of valuable information to a hostile party. You
+can also set the file itself non world readable, set your
+.bash_profile not to log, set the file non writeable (thus
+denying bash the ability to write and log to it) or link it to
+/dev/null (this is almost always a sure sign of suspicious user
+activity, or a paranoid user). For the root account I would
+highly recommend setting the HISTFILESIZE and HISTSIZE to a low
+value such as 10. On the other hand if you want to log users
+shell history and otherwise tighten up security I would recommend
+setting the configuration files in the user&#146;s home directory
+to immutable using the chattr command, and set the log files
+(such as .bash_history) to append only. Doing this however opens
+up some legal issues, so make sure your users are aware they are
+being logged and have agreed to it, otherwise you could get into
+trouble. Don't forget to set /hom/username/.bash_history append
+only (chattr +A). </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#87ecf2f5f3c7f4e2eee1f5eee2e3a9e8f5e0"><span class="__cf_email__" data-cfemail="7b100e090f3b081e121d09121e1f5514091c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

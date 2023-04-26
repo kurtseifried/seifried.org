@@ -1,0 +1,540 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Email servers</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#aac1dfd8deead9cfc3ccd8c3cfce84c5d8cd"><span class="__cf_email__" data-cfemail="73180601073300161a15011a16175d1c0114">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>Simple Mail Transfer Protocol (SMTP) is one of the more
+important services provided by the Internet. Almost all companies
+now have or rely upon email, and by extensions SMTP servers.
+There are many SMTP server packages available, the oldest and
+most tested is Sendmail (now commercially supported, etc.), and
+there are two new contenders, Postfix and Qmail, both of which
+were written from scratch with security in mind. Firewalling SMTP
+is straightforward, it runs on port 25, TCP:</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 25
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 25
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 25</pre>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 25
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 25
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 25</pre>
+<pre>iptables -A INPUT -p tcp -m tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 --dport 25
+iptables -A INPUT -p tcp -m tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 --dport 25
+iptables -A INPUT -p tcp -m tcp -j REJECT -s 10.0.0.0/8 -d 0.0.0.0/0 --dport 25</pre>
+<p>&nbsp;</p>
+<h2><a name="Sendmail">Sendmail</a></h2>
+<p>Sendmail has earned itself a very bad reputation for security,
+however I find it hard to blame software when I find systems
+running ancient versions of Sendmail. The root of the problem (if
+you'll pardon a bad pun) is that almost everyone runs Sendmail as
+root (and something like %70 of Internet email is handled by
+Sendmail machines, so there are a lot of them). As soon as an
+exploitable bug is found, finding a system to exploit it on is
+not all that hard. The last few releases of Sendmail have been
+quite good, no root hacks, etc, and with the new anti-spam
+features Sendmail is finally come of age. More information on
+Sendmail and source code is available from: <a href="http://www.sendmail.org/">http://www.sendmail.org/</a>.</p>
+<p>Chroot'ing Sendmail is a good option, but a lot of work, and
+since it largely runs as root, rather debatable as to the
+effectiveness of this (since root can break out of a chroot'ed
+jail). Newer releases of Sendmail from some vendors run less
+processes as root, and make it easier to chroot the daemon,
+however the last hole in Sendmail on Linux was locally
+exploitable and no amount of chroot or non root would have
+helped. </p>
+<p>Keeping Sendmail up to date is relatively simple, I would
+recommend minimally version 8.12.x. More information on 8.12.x is
+available at: <a href="http://www.sendmail.org/8.12.1.html">http://www.sendmail.org/8.12.1.html</a>.
+Most distributions ship 8.11.x or 8.12.x, and some vendors also
+include SMTP auth support, although configuring it can be
+difficult (it is poorly documented in most cases). You can also
+get the source from but compiling Sendmail is not for the faint
+of heart or those that do not have a chunk of time to devote to
+it (although building a more up to date version via dpkg or rpm
+is possible without to much black magic). The latest version of
+sendmail is available from: <a href="ftp://ftp.sendmail.org/">ftp://ftp.sendmail.org/</a>.</p>
+<p>Sendmail only needs to be accessible from the outside world if
+you are actually using it to receive mail from other machines and
+deliver the mail locally. Indeed this is the default with Red
+Hat, Sendmail only listens on localhost, allowing you to receive
+mail sent locally, and send mail to other systems (however
+changing this default can be rather annoying).</p>
+<p>If you only want to run Sendmail so that local mail delivery
+works (i.e. a stand alone workstation, test server or other) and
+so mail can easily be sent to other machines, simply firewall off
+Sendmail, or better, do not run it in daemon mode (where it
+listens for connections). Sendmail can be run in a queue flushing
+node, where it simply 'wakes' up once in a while and processes
+local mail, either delivering it locally, or sending it off on
+its way across the 'net. To set Sendmail to run in queue mode:</p>
+<p>edit your Sendmail startup script<br>
+and change the line that has:</p>
+<blockquote>
+<pre>sendmail -bd -q1h</pre>
+</blockquote>
+<p>to:</p>
+<blockquote>
+<pre>sendmail -q1h</pre>
+</blockquote>
+<p>Please note: if you use your system to send lots of email you
+may wish to set the queue flush time lower, perhaps
+&#147;-q15m&#148; (flush the queue every 15 minutes) now outbound
+and system internal mail will behave just fine, which unless you
+run a mail server, is perfect.</p>
+<p>Now for all those wonderful anti-spam features in sendmail.
+Sendmail's configuration files consist of (this applies to
+Sendmail 8.9.x):</p>
+<p>/etc/sendmail.cf&nbsp;<br>
+Primary config file, also tells where other config files are.</p>
+<p>/etc/mail/<br>
+You can define the location of configuration files in
+sendmail.cf, typically people place them in /etc/ or /etc/mail/
+(which makes it a little less cluttered).</p>
+<p>access<br>
+Access list database, allows you to reject email from certain
+sources (IP or domain), and control relaying easily. My access
+file looks like this:</p>
+<pre>10.0.0 RELAY
+spam.com REJECT</pre>
+<p>which means 10.0.0.* (hosts on my internal network) are
+allowed to use the email server to send email to wherever they
+want, and that all email to or from *.spam.com is rejected. There
+are lists online of known spammers, typically they are 5-10,000
+entries long, this can seriously impede sendmail performance (as
+each connection is checked against this list), on the other hand
+having your sendmail machine used to send spam is even worse.</p>
+<p>aliases&nbsp;<br>
+aliases file, allows you to control delivery of mail local to the
+system, useful for backing up incoming user&#146;s email to a
+separate spool. Most list serve software uses this file to get
+mail sent to lists delivered to the programs that actually
+process them. Remember to run the command &#147;newaliases&#148;
+after editing this file, and to then restart sendmail.</p>
+<p>domaintable&nbsp;<br>
+domain table (adding domains) that you handle, useful for virtual
+hosting.</p>
+<p>majordomo<br>
+configuration file for majordomo, I would personally recommend
+SmartList over Majordomo.</p>
+<p>sendmail.cw<br>
+file containing names of hosts for which we receive email, useful
+if you host more then one domain.</p>
+<p>sendmail.hf<br>
+location of help file (telnet to port 25 and type in
+&quot;HELP&quot;)</p>
+<p>virtusertable&nbsp;<br>
+Virtual user table, maps incoming users, i.e. maps
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="7605171a130536130e171b061a1358190411">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> to <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="305a5f585e705548515d405c551e5f42571e">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></p>
+<p>Sendmail 8.9.x (and previous versions) do not really support
+logging of all email very nicely (something required in today's
+world for legal reasons by many companies). This is one feature
+being worked on for the release of Sendmail 8.10.x. Until then
+there are 2 ways of logging email, the first is somewhat graceful
+and logs email coming IN to users on a per user basis. The second
+method is not graceful and involves a simple raw log of all SMTP
+transactions into a file, you would have to write some sort of
+processor (probably in Perl) to make the log useful.</p>
+<p>Mail (incoming SMTP connections to be more precise) is first
+filtered by the access file, in here we can REJECT mail from
+certain domains/IP&#146;s, and RELAY mail from certain hosts
+(i.e. your internal network of windows machines). Any local
+domains you actually host mail for will need to go into
+sendmail.cw. Assuming mail has met the rules and is queued for
+local delivery the next file that gets checked is virtusertable,
+this is a listing of email addresses mapped to the account
+name/other email address. i.e.:</p>
+<pre><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="0c67797e784c7f69656a7e65696822637e6b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> alias-seifried
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="d1bdb8a2a5a4a2b4a391a2b4b8b7a3b8b4b5ffbea3b6">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> listuser
+@seifried.org mangled-emails</pre>
+<p>The last rule is a catch all so mangled email addresses do not
+get bounced, and instead sent to a mailbox. Then the aliases file
+is checked, if an entry is found it does what it says to,
+otherwise it attempts to deliver the mail to a local users
+mailbox, my aliases file entry for seifried is:<br>
+alias-seifried: seifried, &quot;/var/backup-spool/seifried&quot;</p>
+<p>This way my email gets delivered to my normal mailbox, and to
+a backup mailbox (in case I delete an email I really didn't mean
+to), or as a worst case scenario, Microsoft Outlook decides to
+puke someday and hose my mailboxes. This would also be useful for
+corporations, as you now have a backup of all incoming email on a
+per user basis, and can allow them (or not) to access the file
+containing the backed-up mail.</p>
+<p>One caveat, when using a catch-all rule for a domain (i.e.
+@seifried.org) you must create an alias for EACH account, and for
+mailing lists. Otherwise when it looks through the list and
+doesn't find a specific entry (for say <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="234e424a4f4a4d440e4f4a50576350464a45514a46470d4c5144">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)
+it will send it to the mailbox specified by the catch all rule.
+For this reason alone you might not wish to use a catch all rule.</p>
+<p>The second method is very simple, you simply start sendmail
+with the -X option and specify a file to log all transactions to.
+This file will grow very large very quickly, I would NOT
+recommend using this method to log email unless you absolutely
+must.</p>
+<p>&nbsp;</p>
+<p><strong>Dynamic Relay Authorization Control</strong></p>
+<p>Dynamic Relay Authorization Control (DRAC) ties into your
+POP/IMAP server to temporarily grant SMTP relay access to hosts
+that successfully authenticate and pick up mail (the assumption
+being these hosts will send mail, and not abuse this privilege.
+You can get it from: <a href="http://mail.cc.umanitoba.ca/drac/index.html">http://mail.cc.umanitoba.ca/drac/index.html</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Postfix">Postfix</a></h2>
+<p>Postfix is a mail transfer agent (MTA) aimed at security,
+speed, ease of configuration, generally things Sendmail fails
+miserably at. I would highly recommend replacing Sendmail with
+Postfix. The only portion of Postfix that runs as root is a
+master control program, aptly called &#147;master&#148;, it calls
+several other programs to process mail to the queue
+(&#147;pickup&#148;), a program to manage the queue, wait for
+incoming connections, deferred mail delivers and so on
+(&#147;qmgr&#148;), a program to actually send and receive the
+mail (&#147;smtpd&#148;) and so on. Each part of Postfix is very
+well thought out, and usually does one or two tasks, very well.
+For example instead of the sendmail model where queued mail
+simply gets dumped into /var/spool/mqueue, in Postfix there is a
+world accessible directory called &#147;maildrop&#148; which is
+checked by &#147;pickup&#148;, which feeds the data to
+&#147;cleanup&#148; which moves the mail (if it&#146;s properly
+formatted and so on) to a secure queue directory for actual
+processing.</p>
+<p>The primary configuration files are held in /etc/postfix, and
+there are several primary configuration files you must have:</p>
+<p>master.cf</p>
+<p>Controls the behavior of the various &#147;helper&#148;
+programs, are they chroot&#146;ed, maximum number of processes
+they may run and so forth. It&#146;s probably best to leave the
+defaults on most mail servers unless you need to do some tuning
+for high loads or securing the server (i.e. chroot&#146;ing it).</p>
+<p>main.cf</p>
+<p>This file is as close to sendmail.cf as you will get (for
+purpose, as for layout it&#146;s quite different). It is well
+commented and sets all the major variables, and the locations and
+format of various files containing information such as virtual
+user mappings and related information.</p>
+<p>Here is a list of variables and file locations you will
+typically have to set, the /etc/postfix/main.cf file is usually
+heavily commented. Please note the following examples of main.cf
+entries are not a complete main.cf.</p>
+<pre># what is the machines hostname?
+myhostname = mail.example.org</pre>
+<pre># what is the domain name?
+mydomain = example.org</pre>
+<pre># what do I label mail as &#147;from&#148;?
+myorigin = $mydomain&nbsp;</pre>
+<pre># which interfaces do I run on? All of them usually.
+inet_interfaces = all</pre>
+<pre># a file containing a list of host names and fully qualified domains names I&nbsp;
+# receive mail for, usually they are listed like:&nbsp;
+# mydestination = localhost, $myhostname, etc
+# but I much prefer to keep them listed in a file.
+mydestination = /etc/postfix/mydestination</pre>
+<pre># map of incoming usernames. &#147;man 5 virtual&#148;
+virtual_maps = hash:/etc/postfix/virtual</pre>
+<pre># alias mappings (like /etc/aliases in sendmail), &#147;man 5 aliases&#148;
+alias_maps = hash:/etc/postfix/aliases</pre>
+<pre># alias database, you might have different settings. &#147;man 5 aliases&#148;
+alias_database = hash:/etc/postfix/aliases</pre>
+<pre># where to deliver email, Mailbox format or Maildir (traditional /var/spool/mail).
+home_mailbox = Maildir/</pre>
+<pre># where to keep mail, usually /var/spool/mail/ but you can easily change it
+mail_spool_directory = /var/spool/mail</pre>
+<pre># what command do we use to deliver email? /usr/bin/procmail is the default but if&nbsp;
+# you want to use scanmail which is the AMaViS anti-virus tie in software&nbsp;simply put:
+mailbox_command = /usr/sbin/scanmails</pre>
+<pre># who do I relay email for, again you can list them, or keep them in a file (one&nbsp;
+# per line).
+relay_domains = /etc/postfix/relaydomains</pre>
+<pre># list of local networks (by default we relay mail for these hosts).
+mynetworks = 10.0.0.0/24, 127.0.0.0/8</pre>
+<pre># what do we display to people connecting to port 25? By default it displays the
+# version number which I do not.
+smtpd_banner = $myhostname ESMTP $mail_name</pre>
+<p>Generally speaking any files that simply list one item per
+line (like /etc/postfix/mydestination or
+/etc/postfix/relaydomains) are usually just stored as a flat text
+file. Files that contain mappings (i.e. aliases, where you have
+entries like &#147;root: someuser&#148;) should be turned into
+hashed database files for speed (you can specify the type of file
+as hash, dbm, etc.).</p>
+<p>Like most IBM products, Postfix has a very funky license, but
+appears to be mostly open source and free. Postfix is available
+at: <a href="http://www.postfix.org/">http://www.postfix.org/</a>.
+You can get binary postfix packages from a numer of sources
+including most Linux vendors.</p>
+<p>&nbsp;</p>
+<h2><a name="Sendmail Pro">Sendmail Pro</a></h2>
+<p>Sendmail Pro is a commercial version of Sendmail with support,
+and is available at: <a href="http://www.sendmail.com/">http://www.sendmail.com/</a>.
+I haven&#146;t been able to get a demo or find anyone using it so
+I&#146;m not 100% sure as to how close it is to the
+&#147;original&#148; Sendmail, although the company has told me
+it uses the same code base.</p>
+<p>&nbsp;</p>
+<h2><a name="QMAIL">QMAIL</a></h2>
+<p>Qmail (like postfix) was created as a direct response to
+perceived flaws in Sendmail. Qmail is not under an OpenSource
+approved license, and there is no binary distribution clause
+meaning you must install it from source code. OpenBSD has removed
+Qmail from ports due to numerous conflicts with the license, and
+I do not reccomend using Qmail as vendor support is non-existant.
+Very little code in Qmail runs as root, and it is very modular
+compared to Sendmail (which is a pretty monolithic piece of
+code). You can download it from: <a href="http://www.qmail.org/">http://www.qmail.org/</a>.
+An excellent book is available for free at: <a href="http://www.lifewithqmail.org/">http://www.lifewithqmail.org/</a>.</p>
+<h2><a name="Zmailer">Zmailer</a></h2>
+<p>Zmailer is a GPL mailer available at: <a href="http://www.zmailer.org/">http://www.zmailer.org/</a>.
+It has crypto hooks and generally looks like it is well built.</p>
+<p>&nbsp;</p>
+<h2><a name="DMail">DMail</a></h2>
+<p>DMail is a commercial mail server, and is not open source. You
+can download a trial version from: <a href="http://netwinsite.com/dmail_first.htm">http://netwinsite.com/dmail_first.htm</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="nullmailer">nullmailer</a></h2>
+<p>nullmailer sends mail to smart hosts (relays) so that the
+local machine doesn't have to run any mail server software. It's
+at: <a href="http://em.ca/~bruceg/nullmailer/">http://em.ca/~bruceg/nullmailer/</a>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><a name="POP servers">POP servers</a></h2>
+<p>POP (post Office Protocol) is a relatively simple protocol
+that allows you to retrieve email from a server and delete it.
+The basic commands are USER, PASS (used to login), LIST (to list
+emails and sizes), RETR (to retrieve and email) and DELE (to
+delete an email). </p>
+<h2><a name="UW IMAPD (contains the default popd for most distros) POP"><strong>UW
+IMAPD (contains the default popd for most distros)</strong></a></h2>
+<p>POP and IMAP are fundamentally related but very different, so
+I have split them apart. POP stands for &#147;Post Office
+Protocol&#148; and simply allows you to list messages, retrieve
+them, and delete them. There are many POP servers for Linux
+available, the stock one that ships with most distributions is ok
+for the majority of users. The main problems with POP are similar
+to many other protocols; usernames and passwords are transmitted
+in the clear, making it a very good target for packet sniffing.
+POP can be SSL&#146;ified, however not all mail clients support
+SSL secured POP. Most POP servers come configured to use
+TCP_WRAPPERS, which is an excellent method for restricting
+access. Please see the earlier section on TCP_WRAPPERS for more
+information. POP runs as root (since it must access user
+mailboxes) and there have been a number of nasty root hacks in
+various POP servers in the past. POP runs on ports 109 and 110
+(109 is basically obsolete though), using the tcp protocol. The
+Washington University IMAPD server also comes with a pop server
+and is generally the &#145;stock&#146; pop server that ships with
+most Linux distributions. You can get it from: <a href="http://www.washington.edu/imap/">http://www.washington.edu/imap/</a>.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 110
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 110
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 110</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 110
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 110
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 110</pre>
+<h2><a name="Cyrus POP">Cyrus</a></h2>
+<p>Cyrus is an imap (it also supports pop and kpop) server aimed
+at &#145;closed&#146; environments. That is to say that the users
+will not have any access to the mail server other then by imap or
+pop protocols. This allows Cyrus to store the mail in a much more
+secure manner and allows for easier management of larger
+installations. Cyrus is not GNU licensed but is relatively
+&#147;free&#148;, and available from: <a href="http://asg.web.cmu.edu/cyrus/imapd/">http://asg.web.cmu.edu/cyrus/imapd/</a>.
+</p>
+<h2><a name="IDS POP">IDS POP</a></h2>
+<p>IDS (It Doesn&#146;t Suck) POP is a lighter popd replacement
+aimed at smaller installations. It is GPL and available from: <a href="http://www.nodomainname.net/software/ids-pop/">http://www.nodomainname.net/software/ids-pop/</a>.</p>
+<h2><a name="Qpopper">Qpopper</a></h2>
+<p>Qpopper is freeware produced by Qualcomm (the makers of
+Eudora). I would not recommend it (the source code is available
+at: <a href="ftp://ftp.qualcomm.com/eudora/servers/unix/popper/">ftp://ftp.qualcomm.com/eudora/servers/unix/popper/</a>).
+You can get it from: <a href="http://eudora.qualcomm.com/freeware/qpop.html">http://eudora.qualcomm.com/freeware/qpop.html</a>.</p>
+<h2><a name="IMAP">IMAP</a></h2>
+<p>IMAP is a much more advanced mail protocol, allowing you to
+retrieve email from the server, and manage it on the server (you
+can create folders to store messages on the server). This
+protocol is much more useful then POP since multiple email boxes
+are a bit more graceful, multiple people using one email box is
+workable, and for travelling users, since you download the
+headers first (subject, etc) and can more selectively retrieve
+email.</p>
+<h2><a name="UW">UW</a><a name="WU IMAPD (contains the default imapd for most distros) IMAP">
+IMAPD (contains the default imapd for most distros)</a></h2>
+<p>IMAP is POP on steroids. It allows you to easily maintain
+multiple accounts, have multiple people access one account, leave
+mail on the server, just download the headers, or bodies and no
+attachments, and so on. IMAP is ideal for anyone on the go or
+with serious email needs. The default POP and IMAP servers that
+most distributions ship (bundled together into a single package
+named imapd oddly enough) fulfill most needs.&nbsp;</p>
+<p>IMAP also starts out as root, although imapd typically drops
+to the privilege of the user accessing it, and cannot be easily
+set to run as a non-root user since they have to open mailboxes
+(and in IMAP&#146;s case create folders, files, etc. in the
+user&#146;s home directory), so they cannot drop privileges as
+soon as one would like. Nor can they easily be chroot'ed (IMAP
+needs access to /var/spool/mail, and IMAP needs access to the
+user&#146;s home directory). The best policy is to keep the
+software up to date. And if at all possible, firewall pop and
+imap from the outside world, this works well if no-one is on the
+road and needs to collect their email via the Internet.
+University Washington (UW) IMAPD is available from: <a href="http://www.washington.edu/imap/">http://www.washington.edu/imap/</a>.</p>
+<p>IMAP runs on port 143 and most IMAPD servers support
+TCP_WRAPPERS, making it relatively easy to lock down.&nbsp;</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 143
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 143
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 143</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 143
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 143
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 143</pre>
+<h2><a name="Cyrus IMAP">Cyrus</a></h2>
+<p>Cyrus is an imap (it also supports pop and kpop) server aimed
+at &#145;closed&#146; environments. That is to say that the users
+will not have any access to the mail server other then by imap or
+pop protocols. This allows Cyrus to store the mail in a much more
+secure manner and allows for easier management of larger
+installations, and I highly recommend it. Cyrus is not GNU
+licensed but is relatively &#147;free&#148;, and available from: <a href="http://asg.web.cmu.edu/cyrus/imapd/">http://asg.web.cmu.edu/cyrus/imapd/</a>.
+There is also a set of add on tools for Cyrus available from: <a href="ftp://ftp.hr.vc-graz.ac.at/cyrus-tools/">ftp://ftp.hr.vc-graz.ac.at/cyrus-tools/</a>.</p>
+<h2><a name="Courier-IMAP">Courier-IMAP</a></h2>
+<p>Courier-IMAP is a lightweight IMAP server specifically for use
+with Maildir style mailboxes (not /var/spool/mail). You can get
+it from: <a href="http://www.inter7.com/courierimap/">http://www.inter7.com/courierimap/</a>.</p>
+<h2><a name="Scanning email for viruses">Scanning email for
+viruses</a></h2>
+<p>While Linux is not terribly suspectible to viruses, Windows
+clients are.</p>
+<h3>Protector</h3>
+<p><a href="http://protector.sourceforge.net/">http://protector.sourceforge.net/</a>
+blocks all attachments except those listed (i.e.a white list). </p>
+<p>&nbsp;</p>
+<h2><a name="AMaViS">AMaViS</a></h2>
+<p>AMaViS uses third party scanning software (such as McAfee) to
+scan incoming email for viruses. You can get AMaViS at: <a href="http://www.amavis.org/">http://www.amavis.org/</a>.
+Make sure you get the latest version, previous ones have a root
+compromise. </p>
+<p><a name="Sendmail"><strong>Sendmail</strong></a></p>
+<p>Using AMaViS with Sendmail is relatively simple, it has a
+program called &#147;scanmail&#148; that acts as a replacement
+for procmail (typically the program that handles local delivery
+of email). When an email comes in instead of using procmail to
+deliver it, Sendmail calls scanmail which decompresses and
+decodes any attachments/etc. and then uses a virus scanner (of
+your choice) to scan the attachments. If no virus is found mail
+delivery goes ahead as usual. If a virus is found however, an
+email is sent to the sender informing them that they have sent a
+virus, and an email is sent to the intended recipient informing
+them about the person that sent them a virus. The instructions
+for this are at:&nbsp; <a href="http://www.amavis.org/">http://www.amavis.org/</a></p>
+<p><a name="Postfix"><strong>Postfix</strong></a></p>
+<p>Since Postfix can make use of procmail to do local mail
+delivery it should work in theory without any trouble. In
+practice it takes a few minor tweaks to work correctly. To enable
+it replace the line in main.cf:</p>
+<pre>mailbox_command = /usr/bin/procmail</pre>
+<p>with the line:</p>
+<pre>mailbox_command = /usr/sbin/scanmails</pre>
+<p>and restart postfix. For the local warning to work (a warning
+is sent to the intended recipient of the message) the hostname of
+the machine (sundog, mailserver01, etc.) must be listed in the
+&#147;mydestination&#148; in main.cf, otherwise the warning does
+not get delivered. You should (and most sites generally do)
+redirect root&#146;s email to a user account using the aliases
+file, otherwise warnings will not be delivered to root properly.
+By default as well mail to &#147;virusalert&#148; is directed to
+root, you should also redirect this mail to a normal user
+account.</p>
+<p>&nbsp;</p>
+<h2><a name="Enhancing E-Mail Security With Procmail">Enhancing
+E-Mail Security With Procmail</a></h2>
+<p>procmail (the default local delivery agent typically) has a
+wide variety of features that can be used to help
+&quot;sanitize&quot; email. More information on this is available
+at: <a href="ftp://ftp.rubyriver.com/pub/jhardin/antispam/procmail-security.html">ftp://ftp.rubyriver.com/pub/jhardin/antispam/procmail-security.html</a>.</p>
+<h2><a name="SSL wrapping POP and IMAP servers">SSL wrapping POP
+and IMAP servers</a></h2>
+<p>&nbsp;</p>
+<pre>simap stream tcp nowait root /usr/sbin/stunnel imapd -l imapd</pre>
+<pre>RANDFILE = stunnel.rnd
+[ req ]
+default_bits = 1024
+encrypt_key = no
+distinguished_name = req_dn
+x509_extensions = cert_type
+[ req_dn ]
+countryName = Country Name (2 letter code)
+organizationName = Organization Name (eg, company)
+0.commonName = Common Name (FQDN of your server)
+[ cert_type ]
+nsCertType = server</pre>
+<pre>openssl req -new -x509 -days 365 -config /etc/stunnel.cnf -out /etc/stunnel.pem -keyout stunnel.pem
+openssl x509 -subject -dates -fingerprint -noout -in stunnel.pem</pre>
+<p>&nbsp;</p>
+<p>Outlook</p>
+<p>Note on Outlook express, you cannot view certificates, and as
+long as it is for the right site and the date is correct it will
+be accepted (it can be signed by anyone). </p>
+<p>Netscape</p>
+<p>Netscape walks you through the traditional certificate dialog
+and self signed certs will generate a warning.</p>
+<p>&nbsp;</p>
+<h2><a name="Non-commercial mailing list software">Non-commercial
+mailing list software</a></h2>
+<p>mailman</p>
+<p>&nbsp;&nbsp;&nbsp; <a href="http://sourceforge.net/project/showfiles.php?group_id=103">http://sourceforge.net/project/showfiles.php?group_id=103</a><br>
+<br>
+for links to download all the patches and the source
+tarball.&nbsp; If you<br>
+decide to install the patches, please do read the release notes
+first:<br>
+<br>
+&nbsp;&nbsp;&nbsp; <a href="http://sourceforge.net/project/shownotes.php?release_id=63042">http://sourceforge.net/project/shownotes.php?release_id=63042</a><br>
+<br>
+Currently the SourceForge and <a href="http://www.list.org">www.list.org</a>
+sites are up-to-date, and I<br>
+expect the gnu.org site to be updated soon.<br>
+<br>
+See also:<br>
+<br>
+&nbsp;&nbsp;&nbsp; <a href="http://www.gnu.org/software/mailman">http://www.gnu.org/software/mailman</a><br>
+&nbsp;&nbsp;&nbsp; <a href="http://www.list.org">http://www.list.org</a><br>
+&nbsp;&nbsp;&nbsp; <a href="http://mailman.sf.net">http://mailman.sf.net</a><br>
+<br>
+I've also included links on the FAQ page to the Mailman FAQ
+wizard.<br>
+Thanks everybody for contributing good entries!&nbsp; (I may do
+some reorg<br>
+when I get a chance.)&nbsp; See the FAQ wizard at<br>
+<br>
+&nbsp;&nbsp;&nbsp; <a href="http://www.python.org/cgi-bin/faqw-mm.py">http://www.python.org/cgi-bin/faqw-mm.py</a><br>
+<br>
+</p>
+<p>&nbsp;</p>
+<h2><a name="SmartList">SmartList</a></h2>
+<p><a href="http://www.procmail.org/">http://www.procmail.org/</a></p>
+<h2><a name="Majordomo">Majordomo</a></h2>
+<p><a href="http://www.greatcircle.com/majordomo/">http://www.greatcircle.com/majordomo/</a></p>
+<h2><a name="Minordomo">Minordomo</a></h2>
+<p><a href="http://www.nodomainname.net/software/minordomo/">http://www.nodomainname.net/software/minordomo/</a></p>
+<h2><a name="Sympa">Sympa</a></h2>
+<p><a href="http://listes.cru.fr/sympa/">http://listes.cru.fr/sympa/</a></p>
+<h2><a name="Listar">Listar</a></h2>
+<p><a href="http://www.listar.org/">http://www.listar.org/</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href="http://www.linux-magazin.de/ausgabe/2001/06/Amavis/amavis.html">http://www.linux-magazin.de/ausgabe/2001/06/Amavis/amavis.html</a>,</p>
+<p><a href="http://www.linux.ie/pipermail/ilug/2001-November/039565.html">http://www.linux.ie/pipermail/ilug/2001-November/039565.html</a></p>
+<p><a href="http://www.computer-networking.de/~link/security/amavis-patch-old.php3#rlsmtppatch1a">http://www.computer-networking.de/~link/security/amavis-patch-old.php3#rlsmtppatch1a</a></p>
+<p><a href="http://www.linuxjournal.com/article.php?sid=4882">http://www.linuxjournal.com/article.php?sid=4882</a></p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#38534d4a4c784b5d515e4a515d5c16574a5f"><span class="__cf_email__" data-cfemail="513a2423251122343837233834357f3e2336">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

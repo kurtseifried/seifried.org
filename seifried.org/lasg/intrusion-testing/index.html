@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Intrusion testing - scanning / intrusion tools</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Intrusion testing - scanning / intrusion tools</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#8ae1fff8fecaf9efe3ecf8e3efeea4e5f8ed"><span class="__cf_email__" data-cfemail="e388969197a390868a85918a8687cd8c9184">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Over the last few years the number of security tools for
+Windows and UNIX has risen dramatically, even more surprising is
+the fact that most of them are freely available on the Internet.
+I will only cover the free tools since they tend to be the best
+(i.e. nmap, Nessus, etc.) and any serious cracker will have these
+tools at their disposal, why shouldn't you? There are several
+main categories of tools; ones that scan hosts from within that
+host, ones that scan other hosts and report back variously what
+OS they are running, services that are available and so on (i.e.
+TCP level scanners), and at the top of the food chain are the
+intrusion tools (i.e. application level scanners) that can
+actually execute exploits, and report back whether they worked or
+not, and lastly I include the exploits category, while not
+strictly an intrusion tool per se they do exist and you should be
+aware of them.&nbsp; These tools and techniques can also be used
+to conduct a self audit and ensure that the systems react as you
+think they should (i.e. you should be able to run the denial of
+service attacks that Nessus is capable of with no ill effects on
+your servers). </p>
+<p>&nbsp;</p>
+<h2>Host scanners</h2>
+<p>Host scanners are software packages you run locally on the
+system to probe for problems.&nbsp;Most of them are
+&quot;dead&quot; now because vendors have become much more
+security conscious and started to move away from some of the
+insanely insecure defaults that used to be common. As well with
+the increase of networking (i.e. virtually every system is now
+attached to the Internet full-time or at least part-time) the
+focus has shifted from host security (i.e. people with accounts)
+to network security (which means anyone of 100+ million people
+can potentially access it). For information on finding and
+removing setuid bits and tightening file permissions please see
+the <a href="../filesystem/">filesystem section</a>. </p>
+<p>&nbsp;</p>
+<h2><a name="Network scanners">Network scanners</a></h2>
+<p>Network scanners typically operate at the network level
+(imagine that), using protocols like TCP-IP, UDP, ICMP to elicit
+a response that will (among other things) tell them if a server
+is listening on the port, if it is firewalled, what the OS in use
+is and so forth. If you can find open ports and services then
+chances are an attacker can too. The popularity of these network
+scanners is apparent if you run a firewall, often within an hour
+(or much less) you will be scanned, often aggressively. These
+tools are also quite useful for finding out how a network is
+secured, firewall and other restriction software such as
+tcp_wrappers tend to respond differently.</p>
+<p>&nbsp;</p>
+<h3>Nmap</h3>
+<p>Nmap is a newer and much more fully-featured host scanning
+tool. It features advanced techniques such as TCP-IP
+fingerprinting, a method by which the returned TCP-IP packets are
+examined and the host OS is deduced based on various quirks
+present in all TCP-IP stacks. Nmap also supports a number of
+scanning methods from normal TCP scans (simply trying to open a
+connection as normal) to stealth scanning and half-open SYN scans
+(great for crashing unstable TCP-IP stacks). This is arguably one
+of the best port scanning programs available, commercial or
+otherwise. Nmap is available <a href="http://www.insecure.org/nmap/index.html">http://www.insecure.org/nmap/index.html</a>.</p>
+<p>&nbsp;</p>
+<h3>Firewalk</h3>
+<p>Firewalk is a program that uses a traceroute style of packets
+to scan a firewall and attempt to deduce the rules in place on
+that firewall. By sending out packets with various time to lives
+and seeing where they die or are refused a firewall can be
+tricked into revealing rules. There is no real defense against
+this apart from silently denying packets instead of sending a
+rejection message which hopefully will reveal less. I would
+advise utilizing this tool against your systems as the results
+can help you tighten up security. Firewalk is available <a href="http://www.packetfactory.net/firewalk/">http://www.packetfactory.net/firewalk/</a>.</p>
+<p>&nbsp;</p>
+<h3>ICMP related scanning</h3>
+<p>There is an excellent paper entitled &quot;ICMP Usage In
+Scanning&quot; by Ofir Arkin available <a href="http://www.sys-security.com/html/papers.html">http://www.sys-security.com/html/papers.html</a>.
+It covers topics from detecting ACL's using ICMP to specific
+hardware and operating system issues. </p>
+<p>&nbsp;</p>
+<h3>spidermap</h3>
+<p>spidermap is a set of perl scripts to help automate scans and
+make them more selective. You can get it <a href="http://www.digitaloffense.net/spidermap/">http://www.digitaloffense.net/spidermap/</a>.
+</p>
+<p>&nbsp;</p>
+<h2><a name="Application level Scanners">Application level
+Scanners</a></h2>
+<p>Application level scanners are one evolutionary step up from
+network scanners (although they often incorporate network
+scanning). These software packages will actually identify
+vulnerabilities, and in some cases allow you to actively try and
+exploit them. If your machines are susceptible to these attacks,
+you need to start fixing things, as any attacker can get these
+programs and use them.</p>
+<p>&nbsp;</p>
+<h3>Nessus</h3>
+<p>Nessus is relatively new but is fast shaping up to be one of
+the best intrusion scanning tools. It has a client/server
+architecture, the server currently runs on Linux, FreeBSD, NetBSD
+and Solaris, clients are available for Linux, Windows and there
+is a Java client. Communication between the server and client is
+ciphered for added security all in all a very slick piece of
+code. Nessus supports port scanning, and attacking, based on IP
+addresses or host name(s). It can also search through network DNS
+information and attack related hosts at your bequest. Nessus is
+relatively slow in attack mode, which is hardly surprising.
+However it currently has over 200 attacks and a plug-in language
+so you can write your own. Nessus is available from <a href="http://www.nessus.org/">http://www.nessus.org/</a>.</p>
+<p>&nbsp;</p>
+<h3>Saint</h3>
+<p>Saint is the sequel to Satan, a network security scanner made
+(in)famous by the media a few years ago (there were great worries
+that bad people would take over the Internet using it). Saint
+also uses a client/server architecture, but uses a www interface
+instead of a client program. Saint produces very easy to read and
+understand output, with security problems graded by priority
+(although not always correctly) and also supports add-in scanning
+modules making it very flexible. Saint is available from: <a href="http://www.wwdsi.com/products/saint_engine.html">http://www.wwdsi.com/products/saint_engine.html</a>.</p>
+<p>&nbsp;</p>
+<h3>Ftpcheck / Relaycheck</h3>
+<p>Two simple utilities that scan for ftp servers and mail
+servers that allow relaying, good for keeping tabs on naughty
+users installing services they shouldn&#146;t (or simply
+misconfiguring them), available from: <a href="http://david.weekly.org/code/">http://david.weekly.org/code/</a>.</p>
+<p>&nbsp;</p>
+<h3>SARA</h3>
+<p>Security Auditor&#146;s Research Assistant (SARA) is a tool
+similar in function to SATAN and Saint. SARA supports multiple
+threads for faster scans, stores it&#146;s data in a database for
+ease of access and generates nice HTML reports. SARA is free for
+use and is available from: <a href="http://www-arc.com/sara/">http://www-arc.com/sara/</a>.</p>
+<p>&nbsp;</p>
+<h3>BASS</h3>
+<p>BASS is the &#147;Bulk Auditing Security Scanner&#148; allows
+you to scan the internet for a variety of well known exploits. It
+was basically a proof of concept that the Internet is not secure.
+You can get it from: <a href="http://www.securityfocus.com/data/tools/network/bass-1.0.7.tar.gz">http://www.securityfocus.com/data/tools/network/bass-1.0.7.tar.gz</a></p>
+<p>&nbsp;</p>
+<h2><a name="Exploits">Exploits</a></h2>
+<p>I won't cover exploits specifically, since there are hundreds
+if not thousands of them floating around for Linux. Probably the
+best site to visit for exploits is Packetstorm (which is about
+the only major public exploit archive available now), available <a href="http://www.packetstormsecurity.net/">http://www.packetstormsecurity.net/</a>.
+</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 7/5/2002</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#c1aab4b3b581b2a4a8a7b3a8a4a5efaeb3a6"><span class="__cf_email__" data-cfemail="c9a2bcbbbd89baaca0afbba0acade7a6bbae">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

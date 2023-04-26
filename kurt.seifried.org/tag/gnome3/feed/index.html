@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>gnome3 &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/gnome3/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:42 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>gnome3 &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely broken</title>
+		<link>http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/</link>
+		<comments>http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/#respond</comments>
+		<pubDate>Sat, 02 Jun 2012 04:49:32 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[gnome3]]></category>
+		<category><![CDATA[usability]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=191</guid>
+		<description><![CDATA[Update (June 6, 2012): Gnome 3 is actually a LOT more broken than I previously thought. I have since found more problems that basically make it near impossible to configure sanely, if at all. So to put it bluntly the Gnome 3 changes suck if you use more than one application at a time and [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=191&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<h2>Update (June 6, 2012): Gnome 3 is actually a LOT more broken than I previously thought. I have since found more problems that basically make it near impossible to configure sanely, if at all.</h2>
+<p>So to put it bluntly the Gnome 3 changes suck if you use more than one application at a time and especially if you use more than one monitor as well. Having to move the mouse over to the top left constantly to show windows/applications so you can bring another window to the front or launch an application. I typically have 5-10 (sometimes 20) xterms open (most SSH&#8217;ed in to remote hosts), at least two web browser (Firefox and Chrome, more if I have a lot of tabs open so I can actually read the titles on the tabs, a not uncommon occurrence), my mail client, and my IRC client at a bare minimum.</p>
+<p>In other words the Fedora 17 + Gnome 3 defaults completely suck for me (and I suspect many others).</p>
+<h2>Step 1) getting my minimize and maximize buttons back:</h2>
+<p>You&#8217;ll need the UI tweak tool:</p>
+<pre style="padding-left:30px;">yum install gnome-tweak-tool</pre>
+<p>and then run it and go to &#8220;Shell&#8221; and then pick the &#8220;Arrangement of buttons on the titlebar&#8221; and select &#8220;All&#8221;:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png"><img class="aligncenter size-full wp-image-195" title="gnome-tweak-tool-min-max-close" alt="" src="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=450&#038;h=359" width="450" height="359" srcset="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=450&amp;h=359 450w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=150&amp;h=120 150w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=300&amp;h=240 300w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png 642w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>which will put them on the right hand side ala Windows / Gnome 2</p>
+<h2>Step 2) getting a taskbar</h2>
+<p>I like the taskbar, most of us have been using the taskbar since Win95, and in my case since OS/2 (yeah, that was an interesting dead end OS), and most versions of Linux copied it early on because, well, it works quite well.</p>
+<pre style="padding-left:30px;">yum install tint2</pre>
+<p>and then have it autostart, run the gnome-session-properties program:</p>
+<pre style="padding-left:30px;">gnome-session-properties</pre>
+<p>and add it in:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png"><img class="aligncenter size-full wp-image-193" title="tint2-autostart" alt="" src="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=450&#038;h=360" width="450" height="360" srcset="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=450&amp;h=360 450w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=150&amp;h=120 150w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=300&amp;h=240 300w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png 610w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<h2>Step 3) A dock bar for launching programs</h2>
+<p>Being able to launch applications quickly is kind of useful. A dock bar with icons is about as good as it gets.</p>
+<pre style="padding-left:30px;">yum install gnome-shell-extension-dock.noarch</pre>
+<p>and then .. I&#8217;m not sure, I logged out and back in and Gnome failed to load. Removing the dock extension appears to have addressed it. sigh. The good news is that Fedora 16 will be supported for another 6 months.</p>
+<h2>Added June 6, 2012:</h2>
+<h2>Step 4) Customizing icon launch properties</h2>
+<p>So I also need some of my icons to have customized command line options. Usually this is easy, you right click, and change the properties of the icon such as the &#8220;command&#8221; or &#8220;execute&#8221; line. For example if you want to launch the Google Chrome web browser with Kerberos 5 support you need something like:</p>
+<pre style="padding-left:30px;">google-chrome --auth-server-whitelist="*.example.com"</pre>
+<p>So doing this should be easy right, simply choose icon properties&#8230; hrmm.. that isn&#8217;t available. Just &#8220;New Window&#8221; and &#8220;Add to favorites&#8221;. Ok, maybe there is an application to do this, aha, &#8220;alacarte&#8221; which is &#8220;a graphical menu editor that lets you edit, add, and delete menu entries.&#8221; This should be perfect, just install it:</p>
+<p>yum install alacarte</p>
+<p>and run it. Nope, it&#8217;s broken &#8220;ImportError: No module named gmenu&#8221;. Now Debian has a package called &#8220;python-gmenu&#8221; which is &#8220;an implementation of the freedesktop menu specification for GNOME&#8221;, but there doesn&#8217;t appear to be such a package for Fedora.</p>
+<p>Worse, the alacarte program has been broken, since August of 2011: <a href="https://bugzilla.redhat.com/show_bug.cgi?id=734442">https://bugzilla.redhat.com/show_bug.cgi?id=734442</a> so I wouldn&#8217;t exactly hold my breath.</p>
+<p>So if you want to customize an icon to include command line options you&#8217;ll need to copy the icon file data into your home directory and edit it by hand, this is best described at <a href="http://superuser.com/questions/304271/commandline-options-in-gnome-3-launchers">http://superuser.com/questions/304271/commandline-options-in-gnome-3-launchers</a> and the short version is:</p>
+<p>copy the file from /usr/share/applications/ to ~/.local/share/applications/ and modify the &#8220;Exec=&#8221; line.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/191/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/191/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=191&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png" medium="image">
+			<media:title type="html">gnome-tweak-tool-min-max-close</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png" medium="image">
+			<media:title type="html">tint2-autostart</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Products / SecureEXE/NT/Stack</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>SecureWave </h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#9cf7e9eee8dceff9f5faeef5f9f8b2f3eefb"><span class="__cf_email__" data-cfemail="d3b8a6a1a793a0b6bab5a1bab6b7fdbca1b4">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Like many people, I use Microsoft products on a regular basis,
+but having spent as much or more (probably more) time in Unix, I
+find certain things frustrating. In the Unix world, I take for
+granted the ability to set permissions on files and devices.
+While NT and 2000 have file permissions, you cannot easily
+restrict users' access to communications ports and removable
+media, for example. </p>
+<p>I also want to be able to restrict what users can and cannot
+run. There are a number of ways to do this in Unix, with varying
+degrees of difficulty to implement and of effectiveness. </p>
+<p>Another one of the (dis)advantages of Unix is the degree to
+which you can customize the OS and installation, from simple
+functions like making /tmp a separate partition to patching the
+kernel to prevent some buffer overflows. Almost none of these
+capabilities ship with Microsoft operating systems, or the
+security tools that are provided are typically weak or flawed. </p>
+<p>Just a note: Normally I don't write hoo-rah-rah articles full
+of cheer and bonhomie, but every once in a while I do find a
+company building something very useful/usable that warrants
+covering. Next week I'll be going over some similar solutions for
+Linux. Let's face it, the default tools are often not enough to
+really secure a system.</p>
+<p>&nbsp;</p>
+<h2>SecureStack </h2>
+<p>It's a pity Microsoft doesn't harden its OS more. Most Unix
+platforms provide some form of protection against buffer
+overflows, and while they can typically be circumvented, the
+protection does raise the bar for attackers. With Solaris we have
+the file &quot;/etc/system&quot; with some interesting options
+such as:</p>
+<blockquote>
+<p><code>set noexec_user_stack = 1 <br>
+set noexec_stack_user_stack_log = 1</code></p>
+</blockquote>
+<p>And for Linux there is the ever-popular Solar Designers patch,
+which can (among other things) help prevent buffer overflows.
+Until recently nothing like this existed for Windows, but there
+is now SecureStack. The cool thing is, you can get a free version
+of SecureStack that will report buffer overflows, but not stop
+them. </p>
+<p>You would be well advised to at least install the free
+version, as it will give you an indication of attacks, etc. For
+any publicly accessible servers (such as IIS) or workstations, it
+is most likely a good investment, as these systems are the most
+likely to be exposed to hostile code. While it is unlikely
+SecureStack will prevent 100% of buffer overflow-based attacks,
+it will raise the bar and block many of the more common ones,
+giving you a bit of safety between the time exploit code is
+created, and a fix from Microsoft (or whichever vendor is in
+question).</p>
+<p>&nbsp;</p>
+<h2>SecureNT</h2>
+<p>Unless you seriously limit (or completely restrict) a user's
+ability to install software and access the Control Panel, you
+will be unable to prevent them from using their serial and
+parallel ports. Even if you do lock this down, by disabling the
+ports in Control Panel for example, any user that does need to
+use the parallel port or serial port will either need access to
+the Control Panel, or an admin to modify it. And of course you
+have to remember to disable the port after you're done, something
+that will likely be forgotten. </p>
+<p>The same goes for removable media like floppy disks and
+CD-ROMs. Of course, many users will have legitimate needs for
+these, so any solution that controls access to them must easily
+allow use. In Unix this is pretty simple: create a group of users
+and assign them access to the appropriate device. </p>
+<p>For Windows there is SecureNT (the name is a bit misleading
+&#151; it works in Win9x as well). SecureNT lets you control
+access to communications ports and removable media. You can
+assign access to users and groups, centrally administer and
+control it. SecureNT also has some other cool features, like
+letting administrators specify that all data copied to a floppy
+disk be also placed in a directory for later perusal (to make
+sure confidential data hasn't been copied). </p>
+<p>It's really too bad these features don't exist in Windows by
+default. If an attacker wants to copy masses of data off your
+network, it is often very simple to do so (use a floppy disk,
+parallel port CD burner, etc.), and it's also very easy for users
+to make &quot;mistakes&quot; like attaching a modem to their
+workstation so they can dial in from home (and not have to go
+through the hassle of getting access to the company dial-in
+pool). </p>
+<p>&nbsp;</p>
+<h2>SecureEXE</h2>
+<p>One of the easiest ways to hack into a system is to have a
+batch file that creates a new administrator account, and get
+someone with administrative access to run it (just one reason why
+auditing and logging system events is so important). </p>
+<p>This can be as simple as creating a desktop icon and telling
+the help desk, &quot;every time I click on this I get a weird
+error.&quot; They come by, log in, run it, and presto, the batch
+file (or whatever Trojan) is run.</p>
+<p>In addition, most companies want to control what users run.
+This is typically done by using system policies; however, these
+are very weak. Unless you give the full path to the executable,
+all an attacker needs to do is name their program
+&quot;notepad.exe&quot; (or something else the user is allowed to
+run). Even with the full path name to the executable, an attacker
+can overwrite a program the user is allowed to run with a Trojan
+&#151; and this doesn't even touch on the problems with other
+kinds of executable content such as DLLs. </p>
+<p>The SecureExe system uses not only the name and path of the
+program or file in question, but a SHA-1 digital signature,
+stored on a server. The system uses a kernel module that
+intercepts calls to things like DLLs, makes sure that the user in
+question is allowed to run the item, and that the signature
+matches. If the signature doesn't match, it won't be run and the
+violation will be logged. </p>
+<p>This is useful not only for preventing people from running
+Trojans (accidentally or otherwise), but also for enforcing
+software versions. (If someone upgrades, it will
+&quot;break&quot; since the signatures do not match the old
+profile.) </p>
+<p>&nbsp;</p>
+<h2>Summary</h2>
+<p>This is (in my opinion) all stuff that should be available by
+default in Windows 9x/NT/2000. Unfortunately, it is not. The good
+news is that if you require the extra security, it is available
+&#151; although I have no idea what the pricing is. Anyway, if
+you're paranoid you should probably contact them. If not, you
+should probably download SecureStack, since the demo is free and
+will tell you when someone exploits a buffer overflow.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://www.securewave.com/" target="_blank">http://www.securewave.com/</a>
+- SecureWave</p>
+<p><a href="http://www.securewave.com/products/securestack/secure_stack.html" target="_blank">http://www.securewave.com/products/securestack/secure_stack.html</a>
+- SecureStack 1.0</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

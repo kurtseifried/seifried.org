@@ -1,0 +1,525 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information Security / Articles / Protecting information from exposure </title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Protecting information from exposure</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#29425c5b5d695a4c404f5b404c4d07465b4e"><span class="__cf_email__" data-cfemail="0c67797e784c7f69656a7e65696822637e6b">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2>Information exposure</h2>
+<p>&nbsp;</p>
+<p>If you ask an administrator what they have done to protect
+information from being stolen or otherwise disclosed they will
+often respond with filesystem ACL's, strong user authentication
+and so forth. Unfortunately the strongest ACL's and user
+authentication in the world will only protect you from certain
+limited types of threats. It doesn't matter how strong your NT
+filesystem permissions are if I steal your laptop and use
+something like a dos boot disk with NTFS support to simply read
+all the files, or reset your password with NTLocksmith.
+Additionally information has an annoying tendency of ending up in
+odd places that you may not have expected, for example users may
+save data to a floppy disk or email it to themselves at home so
+they can work on it from there. Fortunately there are solutions
+to these problems, however without user education and support
+from management most will not be effective. </p>
+<p>&nbsp;</p>
+<h3>Limiting access</h3>
+<p>The first step is to limit access to the services and systems
+that share out or contain sensitive information. Firewalling file
+sharing protocols such as SMB, NFS and AFS at your border
+gateways is a good idea, indeed, any sharing of data over other
+networks should probably be done via virtual private networking
+or other forms of encryption. Of course these types of controls
+have absolutely no effect on &quot;insiders&quot;, any user with
+files on a file server will of course mean that they can
+potentially get at other user's files. This is typically where
+the next major defense line is, filesystem access control lists.
+In the Unix world we typically have three sets of permissions on
+a file, user, group and other as a bare minimum. In the NT/2000
+and more advanced Unix world file permissions can typically be
+assigned arbitrarily to an almost infinite degree of complexity.
+If these file and directory permissions are setup correctly then
+a user should only have access to the files that they need access
+to and nothing more. Unfortunately this is often not the case as
+administrators and users will often assign overly permissive file
+permissions due to a number of reasons, the main one being if you
+don't have access to a file you are much more likely to notice
+that then if you accidentally have access to a file you
+shouldn't. There are a number of solutions on the market that
+address these problems, however they are typically add-on
+packages and do not come with the operating system. These file
+permissions of course rely on being able to accurately identify
+the user, which means that strong user authentication must be
+used otherwise the system of ACL's is largely useless. The vast
+majority of enterprises still rely on usernames and passwords
+which are far from ideal. Users often have the same password for
+multiple systems (at work and home) meaning that the exposure of
+a password for an unrelated service is probably sufficient to
+gain access to some other more secure service. User's accessing
+POP mail boxes of FTP accounts at their ISP would transmit their
+password in the clear, a smart attacker would try this password
+against the corporate servers. To make matters worse some forms
+of file sharing, such as NFS, do not even rely on user
+authentication, instead directories are shared out with their
+file permissions and the remote end is trusted to report the user
+as being the correct one.</p>
+<p>&nbsp;</p>
+<h3>Protecting network traffic</h3>
+<p>To add insult to injury most file sharing protocols either do
+not support strong encryption or do not use it by default, so no
+matter how strong your filesystem ACL's are if a user must access
+data over the network chances are an attacker can view and copy
+it (or possibly even alter in). The best way to solve these
+problems is to use string encryption everywhere, thus an attacker
+will not be able to grab passwords from the network, or view
+information as it passes along. Network level encryption in the
+form of IPSec is growing in popularity and ease of deployment,
+network cards from Intel with crypto acceleration hardware built
+in are only $50 now and will allow a workstation or server to
+encrypt all network traffic with only a minimal loss in
+performance. Novell supports strong encryption of network traffic
+using it's own proprietary methods however all the Novell clients
+(i.e. Win32) support it making it easy to deploy. Windows file
+sharing (SMB/CIFS) supports the use of SSL, however a smart
+attacker will be able to execute a man in the middle attack using
+a variety of SSL tools. NFS does not support encryption however
+TCFS does and can be used as a replacement for NFS with most
+platforms if network encryption of the data traffic is needed
+[1]. </p>
+<p>&nbsp;</p>
+<h3>Information leakage</h3>
+<p>So once you've secured the areas that you know sensitive data
+resides or will travel through it is time to start looking at the
+areas where that data may end up unintentionally (or otherwise).
+When you edit a file on a computer for example that file not only
+exists on the harddrive in it's protected location, but is also
+loaded into memory so it can be manipulated. This often results
+in the data being written to a swap file or partition without the
+users knowledge or consent, an attacker will be able to retrieve
+data from these locations with little difficulty if access is
+gained. OpenBSD for example now supports an encrypted swap
+partition, in the file /etc/sysctl.conf simply enable
+vm.swapencrypt.enable:</p>
+<blockquote>
+<pre>vm.swapencrypt.enable=1</pre>
+</blockquote>
+<p>In windows NT and 2000 you can force the swap file(s) to be
+held on certain partitions, creating a small (i.e. 200 megs for a
+100 meg swap file) D: drive and placing the swap file there not
+only reduces the risk of it getting fragmented but makes it much
+easier to control access to it since controlling access to the C:
+drive on a windows machine tightly will often break many
+applications. In Linux you can encrypt partitions using a number
+of methods and could in theory mount a swap file (instead of a
+swap partition) on an encrypted partition to protect it however
+this is rather cumbersome. With the apparent death of the
+International Kernel crypto patch and several other software
+packages that allowed for the encryption of the entire system the
+future of encrypted swap files does not look good for Linux. </p>
+<p>As well there are any number of directories a user can copy a
+file to in most systems, for example on Unix the /tmp directory
+is often world readable and writeable, it is easy for an attacker
+to monitor this directory and &quot;steal&quot; files as they are
+copied in. One way to help prevent this is to set a strong umask
+for users, i.e. the default file permissions used when a file is
+created, &quot;man &lt;shellname&gt;&quot; will contain the
+necessary information, unfortunately many Unix systems still
+default to having world writeable umasks. </p>
+<p>Restricting access to removable devices is required if you do
+not want users to be able to take information home with them, in
+Unix simply assigning the appropriate permissions to the /dev/*
+entries will do the trick. For Windows a commercial software
+packages such as SecureNT can be used to limit access to
+removable media [2]. If users have access to the Internet then it
+is possible that they can upload files, restricting access for
+outgoing protocols such as SSH, FTP, RSYNC, TFTP as well as the
+users ability to install additional file transfer software on
+their workstation can prevent them from sending out information.
+Of course almost every user now has access to email, meaning they
+can simply attach the files and hit send, to prevent this you can
+often block outgoing attachments in most mail server packages or
+buy add on software to prevent this type of activity. </p>
+<p>&nbsp;</p>
+<h3>Summary</h3>
+<p>There are any number of ways in which information can be
+exposed to an attacker, either through direct attacks or passive
+attacks. If you are worried about inside users accessing and
+sending out sensitive information then your problem is that much
+harder, as they often have legitimate access to the data you are
+trying to protect. Hopefully some of the ideas and solutions
+present this week will help you, as well next week is part two
+which will go into destruction of data and some other interesting
+areas. </p>
+<p>&nbsp;</p>
+<h2>File encryption</h2>
+<p>&nbsp;</p>
+<p>As mentioned before one method to help prevent information
+from being exposed is to encrypt it. Unfortunately encrypting
+data effectively is a lot harder then it should be, consequently
+it is often not done correctly, if at all due to the challenges.
+There are a large number of commercial products and other
+software packages that enable you to encrypt data on your
+harddrive, I will cover them by each major OS in a sort of
+practical guide format along with the pitfalls that may be
+present. No solution fits all, so it is very difficult for me to
+actually give any a strong recommendation over each other (they
+all work reasonably well). The beauty of encryption is that in
+theory if it is done correctly an attacker has absolutely no way
+to get at the data unless they somehow steal the encryption keys.
+If you use a strong passphrase to protect your keys or store your
+keys offline then even with physical possession of the device
+(i.e. a laptop) an attacker would still have to try a huge number
+of combination, and in theory should not be able to break it
+using brute force. </p>
+<p>&nbsp;</p>
+<h3>Key and data recovery</h3>
+<p>Probably one of the thorniest issues with encryption is the
+subject of key recovery and escrow. People encrypt data so that
+other people cannot get at it. Unfortunately this means that just
+like the attacker if you have a legitimate need to the data but
+the person that knows the key's passphrase is not available you
+are out of luck. And unlike locking your keys in the car you
+cannot generally call upon someone to quickly decrypt the data
+(if someone else could quickly decrypt the data that would negate
+the whole point of encrypting it in the first place). However for
+many corporations there is a legitimate need for key escrow or
+key recovery, what happens in Johnson gets crushed to death by a
+stack of old 386's? What happens if Johnson quits on bad terms
+with the company and refuses to give the key up (while there may
+be legal recourse that doesn't guarantee that you will get your
+data). The problem with key escrow is that it is very &quot;in
+the face&quot; of users, i.e. when they create a key set your
+demand a copy, or worse yet issue them the keys. As well you must
+make sure that you store these copies of the keys very securely,
+otherwise someone that wants to get at the encrypted data may
+have an easy way to get it. Key recovery varies in exact
+implementation but a good implementation will be configurable so
+that it can reflect company policies. For example a small firm
+may grant their sysadmin who they trust the ability to recover
+keys, this means that the sysadmin can get at any data encrypted
+with recoverable keys, probably without anyone else finding out.
+A larger firm such as a bank may require 5 officers to each
+participate in the key recovery process (by using a split
+password or split keys, etc.) so that no individuals or small
+groups can get at corporate data without others knowing. If the
+product does not support key recovery then you will need to use
+key escrow. Make sure that anytime a user creates a new key they
+register it, otherwise if Johnson creates a new key and starts
+using it when the 386 crushes his brain pan the data will be lost
+forever. </p>
+<p>&nbsp;</p>
+<h3>PGP for Windows</h3>
+<p>Probably the best all-round encryption program available
+currently. Sadly the source code is no longer available for
+auditing, which is why Phillip Zimmerman (the creator of PGP)
+apparently left NAI for Hushmail. PGP is primarily aimed at the
+Windows platform, and it contains a standard file encryption
+program and key management tools as the core, on to this are
+added filesystem encryption, network encryption (IPSec), a
+firewall and IDS system (for network security) and plug-ins for
+popular mail clients. PGP is probably the easiest third party
+program to use for windows file, volume and email encryption. PGP
+supports split keys (i.e. multiple people are needed to access
+the secret key) and key recovery, to quote from the help file:</p>
+<blockquote>
+<p>If you ever lose your private key or you forget your
+passphrase, there is no way to recover from it unless your
+administrator has set up a key reconstruction policy, which
+includes setting up a key reconstruction server and enabling
+this option in your PGP software. If this feature is enabled
+in your software, you would have provided recovery
+information&#151;five secret questions and answers&#151;and
+would have sent your key to the key reconstruction server.</p>
+</blockquote>
+<p>So if you are willing to purchase the commercial PGP
+encryption products and put a bit of work into it you can have a
+very flexible and robust encryption infrastructure. Unfortunately
+like all windows add on encryption product when it comes to
+encrypting files you cannot easily encrypt files and directories,
+while you can encrypt files you must decrypt them to work with
+them, meaning that unencrypted copies will be floating around
+your harddrive. Alternatively you can create a pseudo filesystem
+(basically a file you mount like a network share), however you
+must create it a certain size so you may end up wasting space or
+eventually running out, as well it requires to keep all your
+encrypted work on the &quot;F:&quot; drive for example [3][4]. </p>
+<p>&nbsp;</p>
+<h3>Windows 2000 EFS</h3>
+<p>EFS is built into Windows 2000 and allows you to encrypt files
+and directories in a relatively easy interface (windows/file
+explorer). The advantage of this over PGP or BestCrypt is that
+you can encrypt an existing file or directory (however this is
+not advised, see the URL at the end on EFS best practices). You
+can also create a new encrypted directory (such as C:\secret) and
+then any files created within this directory will be
+automatically encrypted. EFS also supports key recovery, in fact
+you must configure some sort of key recovery configuration before
+you can use EFS, and unfortunately the administrator account
+typically is the one with this access set up. If you do not want
+one person to be able to access all information you must
+configure the key recovery when you start installing your windows
+2000 infrastructure, unfortunately for many companies they have
+not done this, and probably will not (so if you are currently
+using EFS you could check!). EFS has a number of security issues
+and because of it's apparent ease of use most people will not be
+aware of them and may inadvertently expose information, Microsoft
+has issued one fix so far, but you should also educate your users
+[5]. </p>
+<p>&nbsp;</p>
+<h3>BestCrypt for Windows and Linux</h3>
+<p>BestCrypt is an add on product like PGP, however it is
+available for both Windows and Linux. In addition to this the
+source code is available so you can audit the code if you want to
+do so. The file it uses to store the data (called the
+&quot;container&quot;) can be mounted by the Linux version and
+the windows version adding to it's convenience, if you dual boot
+your laptop for example you can store the container on your
+windows partition and access it from Windows and Linux. As far as
+I know BestCrypt does not support key recovery, so if you need
+access to the data you will need to enforce key escrow (or in
+this case &quot;passphrase&quot; escrow) which is not as reliable
+(the user may change the passphrase or create a new encrypted
+container with a different key) [6]. </p>
+<p>&nbsp;</p>
+<h3>Other Linux solutions</h3>
+<p>Like most operating systems Linux does not contain any
+products like EFS so any encryption is either done on a per file
+basis (resulting in unencrypted copies lying around) or at the
+partition level. One of the most popular solutions for this was
+the &quot;International Kernel patch&quot; which included strong
+encryption and an interface to mount encrypted files as
+partitions, however the maintainer has not released a new version
+in several months and repeated attempts to contact him have
+failed so I can only conclude he is dead or on a real vacation.
+Other popular solutions such as PPDD which could actually enable
+you to encrypt the entire filesystem (i.e. /, the swap,
+everything) were not ported to the 2.4 series kernel and are
+consequently not available. Hopefully other maintainers will take
+up the &quot;International Kernel patch&quot;. TCFS unfortunately
+has not been worked on in a while and only supports older
+versions of operating systems (i.e. Linux 2.0, OpenBSD 2.7,
+NetBSD 1.4.2), so your mileage may vary (i.e. if it works and
+does not destroy data, great). </p>
+<p>&nbsp;</p>
+<h3>Summary</h3>
+<p>Unfortunately for Unix users it appears that the availability
+of good filesystem encryption is on the decline, and the chances
+of a major Unix (such as Linux) gaining EFS style file and
+directory encryption are unlikely (it is extremely difficult to
+do). The good news is that for Windows users (and let's face it,
+that is the majority of most desktops) there are several
+excellent solutions that cover almost every conceivable
+situation, requirement and price range. Next week I will cover
+destruction of data, because eventually old machines must depart
+us and that gives attackers an excellent chance to have some
+quality time with your data. </p>
+<p>&nbsp;</p>
+<h2><font color="#000000">Securely deleting data</font></h2>
+<p>&nbsp;</p>
+<p>So you've done everything you can to prevent information from
+being exposed while it's in use. Your network is encrypted, you
+use encrypted drive partitions and encrypted swap file where
+possible, and blocked access to the Internet and removable
+devices. No matter how hard you try chances are the data exists
+somewhere in an unencrypted format that you are not aware of, a
+temp file, a swap file, or from the original file server itself.
+If a file was every copied to a computer with a writeable
+harddrive there is a chance that it was stored on the harddrive
+somewhere (either in the form of a temp file or swap space) and
+subsequently deleted (but not forgotten). With modern harddrives
+easily in the 40-80 gigabyte range the possibility of a file not
+being overwritten is quite high, even over a lifespan of several
+years. HP currently makes a line of print servers based on Linux
+that comes with a 6 gigabyte harddrive. I know if I were an
+industrial spy I would purchase these used if at all possible or
+steal them if not possible (eventually anything of interest gets
+printed out). </p>
+<p>&nbsp;</p>
+<h3>Who wants your data?</h3>
+<p>This is a major component of any security system, what is the
+level of threat against it. How much is the information worth?
+Medical and banking records tend to have a long lifespan
+(sometimes longer then the life of the individual they concern)
+and are typically of great interest to certain people (opponents
+of politicians, journalists, etc.). If the information is a
+selection of R&amp;D projects with proprietary methods (i.e. the
+11 secret spices that KFC uses) then the information would of
+course be of great interest to certain parties. The largest
+components for calculating the &quot;value&quot; would be the
+actual value of the data, and the length of time for which it is
+useful. If data will still be of interest in 100 years then it is
+probably advisable to take extreme measure to prevent it from
+disclosure. Of course the technical ability of your adversary is
+a major component, and if the data will be valuable for a
+significant amount of time it is possible that some new currently
+un-thought of technique will become available in the future. </p>
+<p>&nbsp;</p>
+<h3>Wiping data</h3>
+<p>As the computer industry grew so did hard drives, and the
+importance people placed on them for storing data. Companies
+began producing software and developed hardware techniques to
+retrieve data that was inadvertently deleted, formatted, hit by a
+power surge and so on[10]. This has led to an arms race of sorts,
+as commercial software become available to recover lost files
+other manufacturers have created software to make sure that files
+you want to delete stay deleted. Of course people started using
+this software and accidental deletions using it occurred so
+software was created to deal with the early file deletion
+programs, and this in turn led to better file deletion programs.
+The current state of file deletion is that most common programs
+will delete a file and you will not be able to recover this file
+using commercially available software. There are current methods
+to physically retrieve data that has been accidentally deleted or
+damaged, the success of these physical methods against current
+software is, in theory, entirely possible. There are even a
+number of papers online that discuss the possibilities and
+methods for retrieving data from volatile memory (i.e. ram) which
+was previously thought to be utterly impossible. If the timeframe
+on the value of your data exceeds five years I would probably
+advise against trusting in software to wipe it, and if your data
+will still be valuable for ten years or more I would strongly
+recommend a secure physical destruction method (more on this
+later). </p>
+<p>&nbsp;</p>
+<h3>Software to wipe data</h3>
+<p>There are four main ways of wiping data that you will probably
+be interested. The first and most simple is wiping individual
+file(s) and directories, this is your first line of defense,
+tossing something into the recycle bin or trash can and hitting
+empty is not enough. The next stage would be to regularly wipe
+the free space on your system, thus anything that was deleted
+(securely or not) is, well, wiped out (pun intended =). Of course
+wiping free space will probably not delete something on a swap
+partition or currently in a swap file (as well depending on
+exactly how the swap file is configured data may linger long
+times). The next step is to wipe partitions, of course wiping
+your drives means you will need to reload the OS and data from
+backups. This however provides a higher degree of assurance,
+especially for Windows systems, because the swap file will be
+completely cleaned. The last step is the most severe, you wipe
+the device itself, this should destroy all the data, all the data
+structures, partition tables, the master boot record and so
+forth. This guarantees that data in swap partitions or on other
+unused partitions is completely wiped. If you do not wipe the
+device completely there will always be an element of doubt
+(however slight) that some data may have remained. To wipe a
+drive you can either boot from a floppy disk, put the drive into
+another system or even purchase a hardware unit with that can
+wipe the drive (many hardware disk copying products have this
+option). </p>
+<p>The problem with software wiping solutions is that in theory
+if an attacker gets ahold of the drive (after it has been wiped)
+there may be some flaw in the software (how many people verify
+the data has been wiped using a different software package?) that
+allows an attacker to retrieve data. Alternatively some stunning
+new discovery might result in an attacker being able to somehow
+reconstruct the orientation of bits that were physically present
+at one point. As well there is much more room for error, if you
+wipe a file there is no easy way to tell if the file was wiped or
+not short of doing a full forensics work up on the drive. If you
+do a partition or complete disk wipe then you better make sure
+that the process is not interrupted (and heaven only know how
+long it will take for several wipes on an 80 gig device). If your
+data is truly sensitive then the next paragraph is for you. </p>
+<p>&nbsp;</p>
+<h3>Hardware to wipe data</h3>
+<p>Physical destruction of the device is generally speaking a lot
+more effective then a software wipe, however it is a lot more
+trouble. The Pentagon reversed an order they had in place for 6
+months that required the physical destruction of harddrives for
+systems that had contained &quot;unclassified&quot; data, so like
+many the trade off of physical destruction is not worth it for
+all systems [7][8][9]. If you choose to go with a physical
+destruction device make sure it meets the various DOD (Department
+of Defense) standards that are applicable, if a device does not
+meet DOD standards but claims to destroy data effectively be wary
+of it (I would not purchase it). The most common method for
+physically destroying hard drives is through the use of strong
+magnetic fields that fluctuate, thus &quot;resetting&quot; all
+the bits so that no data can be retrieved. Another common method
+is to grind the surface of the disk off, this is more common with
+CD destruction machines, but is highly effective and also has the
+benefit of leaving visible proof that the unit in question has
+been dealt with. The last method tends not to be used because it
+is messy but consists of using heat or flame to oxidize the
+surface of the platter or melt it, again leaving visible proof
+that the unit in question has been dealt with. Some places will
+simply drill a hole in the drive with a power drill, in theory
+there is no realistic way to retrieve data from such a damaged
+unit however as new technology becomes available it is likely
+that retrieve the data will be possible. This also applies to
+physically warping the platters (i.e. bending them in half), as
+attractive as it seems you would be better off using a DOD
+approved method. </p>
+<p>&nbsp;</p>
+<h3>Summary</h3>
+<p>Preventing people from getting at your data is never easy, but
+it can be done. Care and attention must be paid to details
+however with the correct procedures put in place you generally do
+not need to worry about accidentally giving away a computer with
+someone's medical records contained on it. In some cases it may
+not be wise to give away the harddrive no matter what software
+techniques you use to wipe it, taking the drive out and using a
+physical destruction method is a lot safer and new harddrives are
+relatively cheap. As well you may consider a yearly wipe of
+systems and reloading of software to avoid data being exposed, I
+would highly recommend using a free space wiper on any corporate
+laptops. In short it's not easy, but it can (and probably should)
+be done. </p>
+<p>&nbsp;</p>
+<h3>Reference links:</h3>
+<p>[1] - <a href="http://tcfs.dia.unisa.it/">http://tcfs.dia.unisa.it/</a>
+- Transperent Cryptographic File System</p>
+<p>[2] - <a href="http://www.securewave.com/">http://www.securewave.com/</a>
+- SecureNT</p>
+<p>[3] - <a href="http://www.pgp.com/">http://www.pgp.com/</a> -
+Commercial PGP version</p>
+<p>[4] - <a href="http://www.pgpi.com/">http://www.pgpi.com/</a>
+- PGP International version</p>
+<p><font color="#000000">[5] - </font><a href="http://www.colmancomm.com/resources/EFS_Guidelines.htm"><font color="#000000">http://www.colmancomm.com/resources/EFS_Guidelines.htm</font></a><font color="#000000"> - Guidelines on using EFS</font></p>
+<p>[6] - <a href="http://www.jetico.com/">http://www.jetico.com/</a>
+- BestCrypt</p>
+<p>[7] - <a href="http://dailynews.yahoo.com/h/nm/20010608/od/pentagon_dc_1.html?&amp;_ref=1610027298">http://dailynews.yahoo.com/h/nm/20010608/od/pentagon_dc_1.html?&amp;_ref=1610027298</a>
+- Pentagon Reverses Order to Destroy Old Hard Drives</p>
+<p>[8] - <a href="http://www.usenix.org/publications/library/proceedings/sec96/full_papers/gutmann/">http://www.usenix.org/publications/library/proceedings/sec96/full_papers/gutmann/</a>
+- Secure Deletion of Data from Magnetic and Solid-State Memory</p>
+<p>[9] - <a href="http://www.fma.hq.navy.mil/FMA/Publications/NAVSO%2520Publications/P5239-10.pdf">http://www.fma.hq.navy.mil/FMA/Publications/NAVSO%20Publications/P5239-10.pdf</a>
+- Navy document on data deletion (327 pages)</p>
+<p>[10] - <a href="http://www.porcupine.org/forensics">http://www.porcupine.org/forensics</a>
+- The Coroners Toolkit</p>
+<p><a href="http://www.datadev.com/v88.html">http://www.datadev.com/v88.html</a>
+- V88 Appian Type II Degausser </p>
+<p><a href="http://www.jetico.com/index.htm#/bcwipe.htm">http://www.jetico.com/index.htm#/bcwipe.htm</a>
+- BC Wipe</p>
+<p><a href="http://www.tolvanen.com/eraser/">http://www.tolvanen.com/eraser/</a>
+- Eraser</p>
+<p><a href="http://www.secure-data.com/diskscrb.html">http://www.secure-data.com/diskscrb.html</a>
+- DiskScrub</p>
+<p><a href="http://www.nb.net/~lbudney/linux/software/fwipe.html">http://www.nb.net/~lbudney/linux/software/fwipe.html</a>
+- FWipe</p>
+<p><a href="http://sourceforge.net/projects/srm/">http://sourceforge.net/projects/srm/</a>
+- SRM</p>
+<p><a href="http://www.citeweb.net/berke/wipe/">http://www.citeweb.net/berke/wipe/</a>
+- Wipe</p>
+<p><a href="http://www.accessdata.com/main_deleted_data.htm">http://www.accessdata.com/main_deleted_data.htm</a>
+- SecureClean and CleanDrive</p>
+<p><a href="http://www.toolsthatwork.com/ttw-tools.shtml">http://www.toolsthatwork.com/ttw-tools.shtml</a>
+- ByteBack</p>
+<p><a href="http://wipe.sourceforge.net/">http://wipe.sourceforge.net/</a>
+- Wipe</p>
+<p><a href="http://www.east-tec.com/erprod/index.htm">http://www.east-tec.com/erprod/index.htm</a>
+East Tec Eraser</p>
+<p><a href="http://www.kyuzz.org/antirez/overwrite.html">http://www.kyuzz.org/antirez/overwrite.html</a>
+- Overwrite</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

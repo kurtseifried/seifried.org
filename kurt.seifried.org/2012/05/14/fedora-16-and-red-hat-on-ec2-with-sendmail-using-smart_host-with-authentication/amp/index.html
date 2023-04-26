@@ -1,0 +1,162 @@
+<!doctype html>
+<html amp lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication"/>
+<meta property="og:url" content="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/"/>
+<meta property="og:description" content="So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&amp;#82…"/>
+<meta property="article:published_time" content="2012-05-14T06:59:39+00:00"/>
+<meta property="article:modified_time" content="2013-06-18T02:32:11+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<title>Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication &#8211; Kurt Seifried</title>
+<link rel="canonical" href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/"/>
+<script src="https://cdn.ampproject.org/v0.js" async></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic,700,700italic">
+<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"BlogPosting","mainEntityOfPage":"http:\/\/kurt.seifried.org\/2012\/05\/14\/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication\/","publisher":{"@type":"Organization","name":"Kurt Seifried","logo":{"@type":"ImageObject","url":"https:\/\/s2.wp.com\/i\/favicons\/apple-touch-icon-60x60.png","width":60,"height":60}},"headline":"Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication","datePublished":"2012-05-14T00:59:39+00:00","dateModified":"2013-06-17T20:32:11+00:00","author":{"@type":"Person","name":"kurtseifried"},"image":{"@type":"ImageObject","url":"http:\/\/2.gravatar.com\/avatar\/8b588344181b6098f508e9741ac36e0e?s=200&amp;d=identicon&amp;r=G","width":200,"height":200}}</script>
+<style amp-custom>.alignright{float:right;}.alignleft{float:left;}.aligncenter{display:block;margin-left:auto;margin-right:auto;}.amp-wp-enforced-sizes{max-width:100%;margin:0 auto;}.amp-wp-unknown-size img{object-fit:contain;}.amp-wp-content,.amp-wp-title-bar div{margin:0 auto;max-width:450px;}html{background:#0a89c0;}body{background:#fff;color:#353535;font-family:'Merriweather','Times New Roman',Times,Serif;font-weight:300;line-height:1.75em;}p,ol,ul,figure{margin:0 0 1em;padding:0;}a,a:visited{color:#0a89c0;}a:hover,a:active,a:focus{color:#353535;}blockquote{color:#353535;background:rgba(127,127,127,.125);border-left:2px solid #0a89c0;margin:8px 0 24px 0;padding:16px;}blockquote p:last-child{margin-bottom:0;}.amp-wp-meta,.amp-wp-header div,.amp-wp-title,.wp-caption-text,.amp-wp-tax-category,.amp-wp-tax-tag,.amp-wp-comments-link,.amp-wp-footer p,.back-to-top{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen-Sans","Ubuntu","Cantarell","Helvetica Neue",sans-serif;}.amp-wp-header{background-color:#0a89c0;}.amp-wp-header div{color:#fff;font-size:1em;font-weight:400;margin:0 auto;max-width:calc(840px - 32px);padding:.875em 16px;position:relative;}.amp-wp-header a{color:#fff;text-decoration:none;}.amp-wp-header .amp-wp-site-icon{background-color:#fff;border:1px solid #fff;border-radius:50%;position:absolute;right:18px;top:10px;}.amp-wp-article{color:#353535;font-weight:400;margin:1.5em auto;max-width:840px;overflow-wrap:break-word;word-wrap:break-word;}.amp-wp-article-header{align-items:center;align-content:stretch;display:flex;flex-wrap:wrap;justify-content:space-between;margin:1.5em 16px 1.5em;}.amp-wp-title{color:#353535;display:block;flex:1 0 100%;font-weight:900;margin:0 0 .625em;width:100%;}.amp-wp-meta{color:#696969;display:inline-block;flex:2 1 50%;font-size:.875em;line-height:1.5em;margin:0;padding:0;}.amp-wp-article-header .amp-wp-meta:last-of-type{text-align:right;}.amp-wp-article-header .amp-wp-meta:first-of-type{text-align:left;}.amp-wp-byline amp-img,.amp-wp-byline .amp-wp-author{display:inline-block;vertical-align:middle;}.amp-wp-byline amp-img{border:1px solid #0a89c0;border-radius:50%;position:relative;margin-right:6px;}.amp-wp-posted-on{text-align:right;}.amp-wp-article-featured-image{margin:0 0 1em;}.amp-wp-article-featured-image amp-img{margin:0 auto;}.amp-wp-article-featured-image.wp-caption .wp-caption-text{margin:0 18px;}.amp-wp-article-content{margin:0 16px;}.amp-wp-article-content ul,.amp-wp-article-content ol{margin-left:1em;}.amp-wp-article-content amp-img{margin:0 auto;}.amp-wp-article-content amp-img.alignright{margin:0 0 1em 16px;}.amp-wp-article-content amp-img.alignleft{margin:0 16px 1em 0;}.wp-caption{padding:0;}.wp-caption.alignleft{margin-right:16px;}.wp-caption.alignright{margin-left:16px;}.wp-caption .wp-caption-text{border-bottom:1px solid #c2c2c2;color:#696969;font-size:.875em;line-height:1.5em;margin:0;padding:.66em 10px .75em;}amp-carousel{background:#c2c2c2;margin:0 -16px 1.5em;}amp-iframe,amp-youtube,amp-instagram,amp-vine{background:#c2c2c2;margin:0 -16px 1.5em;}.amp-wp-article-content amp-carousel amp-img{border:none;}amp-carousel>amp-img>img{object-fit:contain;}.amp-wp-iframe-placeholder{background:#c2c2c2 url(http://s2.wp.com/wp-content/plugins/amp/assets/images/placeholder-icon.png) no-repeat center 40%;background-size:48px 48px;min-height:48px;}.amp-wp-article-footer .amp-wp-meta{display:block;}.amp-wp-tax-category,.amp-wp-tax-tag{color:#696969;font-size:.875em;line-height:1.5em;margin:1.5em 16px;}.amp-wp-comments-link{color:#696969;font-size:.875em;line-height:1.5em;text-align:center;margin:2.25em 0 1.5em;}.amp-wp-comments-link a{border-style:solid;border-color:#c2c2c2;border-width:1px 1px 2px;border-radius:4px;background-color:transparent;color:#0a89c0;cursor:pointer;display:block;font-size:14px;font-weight:600;line-height:18px;margin:0 auto;max-width:200px;padding:11px 16px;text-decoration:none;width:50%;-webkit-transition:background-color 0.2s ease;transition:background-color 0.2s ease;}.amp-wp-footer{border-top:1px solid #c2c2c2;margin:calc(1.5em - 1px) 0 0;}.amp-wp-footer div{margin:0 auto;max-width:calc(840px - 32px);padding:1.25em 16px 1.25em;position:relative;}.amp-wp-footer h2{font-size:1em;line-height:1.375em;margin:0 0 .5em;}.amp-wp-footer p{color:#696969;font-size:.8em;line-height:1.5em;margin:0 85px 0 0;}.amp-wp-footer a{text-decoration:none;}.back-to-top{bottom:1.275em;font-size:.8em;font-weight:600;line-height:2em;position:absolute;right:16px;}.amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c{padding-left:30px;}</style>
+</head>
+<body class="">
+<header id="#top" class="amp-wp-header">
+<div>
+<a href="http://kurt.seifried.org">
+Kurt Seifried </a>
+</div>
+</header>
+<article class="amp-wp-article">
+<header class="amp-wp-article-header">
+<h1 class="amp-wp-title">Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication</h1>
+<div class="amp-wp-meta amp-wp-byline">
+<amp-img src="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=24&#038;d=identicon&#038;r=g" width="24" height="24" layout="fixed"></amp-img>
+<span class="amp-wp-author author vcard">kurtseifried</span>
+</div>
+<div class="amp-wp-meta amp-wp-posted-on">
+<time datetime="2012-05-14T00:59:39+00:00">
+5 years ago </time>
+</div>
+</header>
+<div class="amp-wp-article-content">
+<p>So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don’t want to have to request that the email limit be increased on each server (as they come up and down a lot as demand requires).</p>
+<p>So my obvious thought was to run an EC2 instance that would act as an email relay for all these servers. Easy enough, install a host with Sendmail, and allowing relaying. The trick here is that I don’t want to have to edit the access file every time a new host comes up or leaves as the level of IP address churn is quite high. So we enable email authentication, and pre-load EC2 images with the credentials to relay email through the server and we’re done.</p>
+<p>So, foolishly, I thought I’d skip SMTP, and go straight to TLS encrypted SMTP (port 465), and require authentication. This way all the communications, email, authentication credentials and so on are well protected.I setup the Sendmail server, and tested it using Thunderbird, TLS+auth worked perfectly. However on the Sendmail client server side it did not work well, in fact I was unable to get it working at all, so if anyone knows how I’d love to hear from you.</p>
+<h2><strong>Setting up the Sendmail Server with encryption and authentication</strong></h2>
+<p>You’ll need to install sendmail and sasl:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">yum install sendmail-cf cyrus-sasl-plain cyrus-sasl-md5 &#13;
+cyrus-sasl-gssapi cyrus-sasl-lib cyrus-sasl-devel cyrus-sasl</pre>
+<p>and enable / start it:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">systemctl enable saslauthd.service&#13;
+systemctl enable sendmail.service&#13;
+systemctl start saslauthd.service&#13;
+systemctl start sendmail.service</pre>
+<p>Then you’ll need to edit /etc/mail/sendmail.mc, make sure these two lines are not commented out (they are by default):</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl&#13;
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl</pre>
+<p>and then enable submission:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">DAEMON_OPTIONS(`Port=submission, Name=MSA, M=Ea')dnl</pre>
+<p>Then you’ll need to enable encryption certificates:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">define(`confCACERT_PATH', `/etc/pki/tls/certs')dnl&#13;
+define(`confCACERT', `/etc/pki/tls/certs/CA_bundle.pem')dnl&#13;
+define(`confSERVER_CERT', `/etc/pki/tls/certs/server.crt')dnl&#13;
+define(`confSERVER_KEY', `/etc/pki/tls/private/server.key')dnl</pre>
+<p>and you’re basically done. Simply rebuild the sendmail configuration and restart it:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">/etc/mail/make&#13;
+systemctl restart sendmail.service</pre>
+<p>You’ll then need to ensure port 587 is not firewalled (either on the local system or in your EC2 security groups), and you’ll have to create local accounts with passwords so the clients can authenticate against them (e.g. create a user called “mail-relay” with a password and lock the account down).</p>
+<p>You can easily test the server using an email client such as Thunderbird.</p>
+<h2><strong>Setting up the Sendmail Client Server with encryption and authentication</strong></h2>
+<p>First you’re going to need Sendmail and the syrus-sasl-plain rpms installed. The really annoying part is if you don’t install the cyrus-sasl-plain package email connections will fail, but the log files are less than helpful when this occurs:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">May 20 23:22:48 ip-10-242-49-173 sendmail[9890]: q4L3MmFP009890: &#13;
+client.example.org [10.1.2.3] (may be forged) did not issue &#13;
+MAIL/EXPN/VRFY/ETRN during connection to MSA</pre>
+<p>To install the rpms simply:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">yum install sendmail-cf cyrus-sasl-plain</pre>
+<p>So now to setup the client. This is woefully documented and there is a ton of conflicting information. To start with install the same sendmail and sasl packages as above. Then you’ll need a standard SMART_HOST entry line, but with the added options of telling it to use port 587 (submission) and a link to the file with the authentication information:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">define(`SMART_HOST', `smarthost.example.org')dnl&#13;
+define(`RELAY_MAILER_ARGS', `TCP $h 587')&#13;
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')&#13;
+FEATURE(`authinfo',`Hash -o /etc/mail/authinfo.db')dnl</pre>
+<p>You’ll also need to create an /etc/mail/authinfo file with contents such as:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">AuthInfo:smarthost.example.org "U:user_name" "P:password_here" "M:PLAIN"</pre>
+<p>and build it using the makemap program:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">makemap hash /etc/mail/authinfo &lt; /etc/mail/authinfo</pre>
+<p>You can then restart sendmail and it should work, the log file from the client sendmail server:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq005188: from=ec2-user, &#13;
+size=297,, nrcpts=1, msgid=&lt;201205140651.q4E6p1aq003188@ip-10-10-10-10.ec2.internal&gt;, &#13;
+relay=root@localhost&#13;
+&#13;
+May 14 02:51:01 ip-10-10-10-10 sendmail[3189]: q4E6p12W003189: &#13;
+from=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt;, size=577,, nrcpts=1, &#13;
+msgid=&lt;201205140651.q4E6p1aq003188@ip-10-10-10-10.ec2.internal&gt;, &#13;
+proto=ESMTP, daemon=MTA, relay=localhost.localdomain [127.0.0.1]&#13;
+&#13;
+May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq003188: &#13;
+to=kurt@seifried.org, ctladdr=ec2-user (1000/1000), delay=00:00:00, &#13;
+xdelay=00:00:00, mailer=relay, pri=30297, relay=[127.0.0.1] [127.0.0.1], &#13;
+dsn=2.0.0, stat=Sent (q4E6p12W003189 Message accepted for delivery)&#13;
+&#13;
+May 14 02:51:01 ip-10-10-10-10 sendmail[3191]: STARTTLS=client, &#13;
+relay=smarthost.example.org., version=TLSv1/SSLv3, verify=FAIL, &#13;
+cipher=DHE-RSA-AES256-SHA, bits=256/256&#13;
+&#13;
+May 14 02:51:02 ip-10-10-10-10 sendmail[3191]: q4E6p52W003189: &#13;
+to=&lt;kurt@seifried.org&gt;, ctladdr=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt; &#13;
+(1000/1000), delay=00:00:01, xdelay=00:00:01, mailer=relay, pri=120577, &#13;
+relay=smarthost.example.org. [1.2.3.4], dsn=2.0.0, stat=Sent &#13;
+(q4E6p1ZE001355 Message accepted for delivery)</pre>
+<p>And on the server:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: STARTTLS=server, &#13;
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), &#13;
+version=TLSv1/SSLv3, verify=NO, cipher=DHE-RSA-AES256-SHA, bits=256/256&#13;
+&#13;
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: AUTH=server, &#13;
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), &#13;
+authid=email-client, mech=PLAIN, bits=0&#13;
+&#13;
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: q4E6nmgg001349: &#13;
+from=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt;, size=795,, nrcpts=1, &#13;
+msgid=&lt;201205140649.q4E6nmdE003182@ip-10-10-10-10.ec2.internal&gt;, &#13;
+proto=ESMTP, daemon=MSA, relay=ec2-1-2-3-4.compute-1.amazonaws.com &#13;
+[1.2.3.4] (may be forged)&#13;
+&#13;
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: STARTTLS=client, &#13;
+relay=aspmx.l.google.com., version=TLSv1/SSLv3, verify=FAIL, &#13;
+cipher=RC4-SHA, bits=128/128&#13;
+&#13;
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: q4E6nmgg001349: &#13;
+to=&lt;kurt@seifried.org&gt;, delay=00:00:01, xdelay=00:00:01, mailer=esmtp, &#13;
+pri=120795, relay=aspmx.l.google.com. [173.194.68.26], dsn=2.0.0, &#13;
+stat=Sent (OK 1336912345 gs11si19555555aaa.999)</pre>
+<p>As you can see the email comes in, and is then handed off to gmail.</p>
+</div>
+<footer class="amp-wp-article-footer">
+<div class="amp-wp-meta amp-wp-tax-category">
+Categories: <a href="http://kurt.seifried.org/category/uncategorized/" rel="category tag">Uncategorized</a> </div>
+<div class="amp-wp-meta amp-wp-tax-tag">
+Tags: <a href="http://kurt.seifried.org/tag/sendmail/" rel="tag">sendmail</a> </div>
+<div class="amp-wp-meta amp-wp-comments-link">
+<a href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/#comments">
+Leave a Comment </a>
+</div>
+</footer>
+</article>
+<footer class="amp-wp-footer">
+<div>
+<h2>Kurt Seifried</h2>
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+</p>
+<a href="#top" class="back-to-top">Back to top</a>
+</div>
+</footer>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;host=kurt.seifried.org&#038;ref=DOCUMENT_REFERRER&#038;amp=1&#038;blog=86342&#038;v=wpcom&#038;tz=-7&#038;user_id=0&#038;post=182&#038;subd=kurtseifried"></amp-pixel>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;v=wpcom-no-pv&#038;crypt=UE40eW5QN0p8M2Y%2FRE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V%2BZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVuX2NNR3EwTTJtLExDJUZQMUEzNCZ1RUQvbWF0UyY3V0Rwcl9WX1gsJkczZjFMZGhiUDZMWDNqbEV4c1F4bkRUSl1rLEdOZy9GN1t0fkJdRkVvPVJhb01IN1kmcSVhW1daY3l8"></amp-pixel>
+</body>
+</html>

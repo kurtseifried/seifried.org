@@ -1,0 +1,806 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Products / Web server roundup</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Web server round up</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#9ff4eaedebdfecfaf6f9edf6fafbb1f0edf8"><span class="__cf_email__" data-cfemail="69021c1b1d291a0c000f1b000c0d47061b0e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2>Availability</h2>
+<p>There are a variety of secure webservers, but which one is
+right for you? In this article I will start the process of
+helping you to choose the right server for your environment. In
+this series of closet articles I will cover legality,
+availability, features, and so on of the major secure server
+packages, using Linux primarily for my testing. The choice of
+operating system is important, but the choice of www server is
+usually more important, since that will define your feature set,
+and long term potential. In conjunction with these articles will
+be a series of individual product reviews of the more popular
+servers. This review will only cover 128 bit platforms as I feel
+128 bit encryption is relatively weak, and 40 and 56 bit
+encryption is worthless, please keep this in mind as it will
+affect availability quite a bit.</p>
+<p>&nbsp;</p>
+<h3>Export/Import, Platform availability and Licensing issues</h3>
+<p>This is the first hurdle, if the webserver available in your
+country, and for your platform of choice? Servers made in the USA
+for example are generally not much use outside the USA since the
+export of strong crypto is heavily restricted (to Canada only).
+Free servers that have not paid for RSA data licenses are
+generally not used in the USA since RSA is patented there, and
+you must pay for the use of RSA data components. This first table
+is a list of server products, their origin and the countries you
+may or may not use them in:</p>
+<table border="2" cellpadding="2">
+<tr>
+<td valign="top"><font size="1">Server</font></td>
+<td valign="top"><font size="1">Made in</font></td>
+<td valign="top"><font size="1">Available to</font></td>
+<td valign="top"><font size="1">Restricted from</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Apache-SSL</font></td>
+<td valign="top"><font size="1">uses OpenSSL from
+Australia</font></td>
+<td valign="top"><font size="1">Most countries</font></td>
+<td valign="top"><font size="1">unknown (suspected none)</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Apache mod-ssl</font></td>
+<td valign="top"><font size="1">uses OpenSSL from
+Australia</font></td>
+<td valign="top"><font size="1">Most countries</font></td>
+<td valign="top"><font size="1">unknown (suspected none)</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Netscape Enterprise
+4.0SP2</font></td>
+<td valign="top"><font size="1">USA</font></td>
+<td valign="top"><font size="1">USA, Canada</font></td>
+<td valign="top"><font size="1">unknown (7 crypto
+restricted countries possibly)</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Raven</font></td>
+<td valign="top"><font size="1">USA</font></td>
+<td valign="top"><font size="1">USA, Canada</font></td>
+<td valign="top"><font size="1">unknown (7 crypto
+restricted countries possibly)</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Red Hat Secure Server</font></td>
+<td valign="top"><font size="1">USA</font></td>
+<td valign="top"><font size="1">USA, Canada</font></td>
+<td valign="top"><font size="1">unknown (7 crypto
+restricted countries possibly)</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Roxen</font></td>
+<td valign="top"><font size="1">Sweden</font></td>
+<td valign="top"><font size="1">Australia, Austria,
+Belgium, Canada, Denmark, Finland, France, Germany,
+Greece, Ireland, Italy, Japan, Luxembourg, Netherlands,
+New Zealand, Norway, Portugal, Spain, Sweden,
+Switzerland, United Kingdom</font> <p><font size="1">United
+States (they are negotiating with RSA, it should be legal
+to use in the USA in the near future)</font></p>
+</td>
+<td valign="top"><font size="1">Restricted from all
+countries not listed, however you can apply for an export
+permit, availability will vary</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Stronghold</font></td>
+<td valign="top"><font size="1">Britain</font></td>
+<td valign="top"><font size="1">Most countries</font></td>
+<td valign="top"><font size="1">None (although you might
+want to check as there are British export laws that may
+effect you)</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Zeus</font></td>
+<td valign="top"><font size="1">Britain</font></td>
+<td valign="top"><font size="1">Most countries</font></td>
+<td valign="top"><font size="1">Restricted from:
+Afghanistan,&nbsp;Angola, Armenia,
+Azerbaijan,&nbsp;Bosnia and Herzegovina,&nbsp;Burma
+(Myanmar),&nbsp;Burundi, Croatia, Democratic Republic of
+the Congo, Ethiopia, Eritrea, Iran, Iraq, Liberia,
+Libya,&nbsp; Nigeria, North Korea,&nbsp; People's
+Republic of China (excluding Hong Kong SAR),
+Rwanda,&nbsp;Sierra Leone, Somalia, Sudan, Tanzania,
+Uganda, Yugoslavia (Federal Republic of) </font></td>
+</tr>
+</table>
+<p>Platform availability is your next concern, if you are
+experienced with Solaris and have no experience with Linux you'd
+probably be best off with a server that runs on Solaris. When
+handling secure web serving the server platform MUST be secure
+otherwise it isn't worth bothering in the first place. In the
+following chart I have attempted to be as precise as possible,
+yes is more likes a &quot;probably&quot;, no is &quot;definitely
+not&quot;, blank means I don't know.</p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top" width="12%"><font size="1">OS/Server</font></td>
+<td valign="top" width="12%"><font size="1">Apache-SSL
+*±</font></td>
+<td valign="top" width="12%"><font size="1">Apache
+mod-ssl *±</font></td>
+<td valign="top" width="12%"><font size="1">Netscape
+Enterprise 4.0SP2</font></td>
+<td valign="top" width="12%"><font size="1">Raven</font></td>
+<td valign="top" width="13%"><font size="1">Red Hat
+Secure Server 3.1</font></td>
+<td valign="top" width="13%"><font size="1">Roxen ±</font></td>
+<td valign="top" width="13%"><font size="1">Stronghold</font></td>
+<td valign="top" width="13%"><font size="1">Zeus</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">AIX</font></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%"><font size="1">4.1.2.0</font></td>
+<td valign="top" width="12%"><font size="1">rs6000 4.1.x+</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%"><font size="1">Yes</font></td>
+<td valign="top" width="13%"><font size="1">4</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">BSDi</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">3.x+</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">2.x, 3.x, 4.x</font></td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">DG/UX</font></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%"><font size="1">4.0D</font></td>
+<td valign="top" width="12%"><font size="1">x86 4.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%"><font size="1">Yes</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">FreeBSD</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">x86 3.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%"><font size="1">Yes</font></td>
+<td valign="top" width="13%"><font size="1">2.1, 2.2, 3.0</font></td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">HP-UX</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">11.x</font></td>
+<td valign="top" width="12%"><font size="1">10.x / 11.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%"><font size="1">Yes</font></td>
+<td valign="top" width="13%"><font size="1">10</font></td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">IRIX</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">yes</font></td>
+<td valign="top" width="12%"><font size="1">6.5</font></td>
+<td valign="top" width="12%"><font size="1">5.3, 6.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">5.3, 6.2</font></td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">Linux libc**</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Alpha</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%"><font size="1">Yes</font></td>
+<td valign="top" width="13%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">Linux glibc**</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">x86/Sparc/Most</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Alpha</font></td>
+<td valign="top" width="13%"><font size="1">x86 Red Hat
+5.x, 6.x</font></td>
+<td valign="top" width="13%"><font size="1">Yes</font></td>
+<td valign="top" width="13%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">NetBSD</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">x86 1.3.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">x86 / Sparc </font></td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">OpenBSD</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc /
+Most</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">x86 2.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">QNX</font></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">4.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">SCO</font></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">Openserver
+3.2, 5.0</font></td>
+<td valign="top" width="13%"><font size="1">x86 / Sparc</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">Solaris</font></td>
+<td valign="top" width="12%"><font size="1">x86 / Sparc</font></td>
+<td valign="top" width="12%"><font size="1">x86 /Sparc</font></td>
+<td valign="top" width="12%"><font size="1">x86 /Sparc</font></td>
+<td valign="top" width="12%"><font size="1">Sparc 2.x /
+x86 2.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%"><font size="1">x86 /Sparc</font></td>
+<td valign="top" width="13%"><font size="1">Sparc 2.x /
+x86 2.x</font></td>
+<td valign="top" width="13%"><font size="1">x86 / Sparc</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">Tru64</font></td>
+<td valign="top" width="12%"><font size="1">Alpha</font></td>
+<td valign="top" width="12%"><font size="1">Alpha</font></td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">4.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">yes</font></td>
+</tr>
+<tr>
+<td valign="top" width="12%"><font size="1">UnixWare</font></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%"><font size="1">no</font></td>
+<td valign="top" width="12%"><font size="1">7.x</font></td>
+<td valign="top" width="13%"><font size="1">no</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><font size="1">2, 7</font></td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>*Apache and OpenSSL support most platforms.</p>
+<p>**Linux glibc is Red Hat 5.x and beyond, Slackware 7.0, or
+basically any modern distribution (I can't think of any current
+Linux distributions that are not glibc based).</p>
+<p>± These software packages are OpenSource, so if your platform
+is not supported you can port it yourself or pay someone to,
+chances are an effort is underway</p>
+<p>As you can see the most prolific platforms are Linux and
+Solaris, both of which service their respective markets ver well.
+Apache has a variety of SSL options, either relying on
+&quot;free&quot; SSL implementations, like OpenSSL, or commercial
+ones, like Raven. Apache currently has 50%+ of the non secure
+server market, so if you are looking for a familiar face Apache
+with an SSL module, or an Apache derived server (Like Red Hat's,
+or Stronghold's) are a good bet. </p>
+<p>Another major factor in choosing your webserver will be the
+license, cost and support options available. For many people it
+is preferable to simply get a quick answer from a support
+organization rather then spend time trying to figure it out
+themselves, just as some people will be opposed to anything that
+is not open source. Luckily the RSA patent has expired in the USA
+and you can now legally use OpenSource software with OpenSSL
+without having to disable RSA, use RSAREF (a broken
+implementation) or paying RSA for a license.</p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2">
+<tr>
+<td valign="top" width="20%"><font size="1">Server</font></td>
+<td valign="top"><font size="1">License</font></td>
+<td valign="top" width="10%"><font size="1">Cost</font></td>
+<td valign="top"><font size="1">Support</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Apache-SSL</font></td>
+<td valign="top"><font size="1">BSD style</font></td>
+<td valign="top" width="10%"><font size="1">Free</font></td>
+<td valign="top"><font size="1">No vendor, so support is
+limited to third party organizations and other online
+(mailing lists, newsgroups, IRC, etc.) support options</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Apache
+mod-ssl</font></td>
+<td valign="top"><font size="1">BSD style</font></td>
+<td valign="top" width="10%"><font size="1">Free</font></td>
+<td valign="top"><font size="1">No vendor, so support is
+limited to third party organizations and other online
+(mailing lists, newsgroups, IRC, etc.) support options</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Netscape
+Enterprise 4.0SP2</font></td>
+<td valign="top"><font size="1">Commercial</font></td>
+<td valign="top" width="10%"><font size="1">?????</font></td>
+<td valign="top"><font size="1">Vendor support</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Raven</font></td>
+<td valign="top"><font size="1">Commercial</font></td>
+<td valign="top" width="10%"><font size="1">$357 USD</font></td>
+<td valign="top"><font size="1">Vendor support, and since
+it is Apache based the usual online support options are
+available (mailing lists, newsgroups, IRC, etc.)</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Red Hat
+Secure Server</font></td>
+<td valign="top"><font size="1">Commercial</font></td>
+<td valign="top" width="10%"><font size="1">$149.95 USD</font></td>
+<td valign="top"><font size="1">Vendor support, and since
+it is Apache based the usual online support options are
+available (mailing lists, newsgroups, IRC, etc.)</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Roxen</font></td>
+<td valign="top"><font size="1">GPL (however additional
+server add-ons are not)</font></td>
+<td valign="top" width="10%"><font size="1">Free</font></td>
+<td valign="top"><font size="1">Vendor support</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Stronghold</font></td>
+<td valign="top"><font size="1">Commercial</font></td>
+<td valign="top" width="10%"><font size="1">$995</font></td>
+<td valign="top"><font size="1">Vendor support, and since
+it is Apache based the usual online support options are
+available (mailing lists, newsgroups, IRC, etc.)</font></td>
+</tr>
+<tr>
+<td valign="top" width="20%"><font size="1">Zeus</font></td>
+<td valign="top"><font size="1">Commercial</font></td>
+<td valign="top" width="10%"><font size="1">$1699 USD</font></td>
+<td valign="top"><font size="1">Vendor support</font></td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h3>Other variables</h3>
+<p>The various secure web servers can be broadly broken into two
+categories, those based on Apache, and those that are not. The
+Apache based servers tend to be somewhat barebones, with no fancy
+web based GUI's for setup and management of servers, which some
+people dislike in any case. On advantage is the sheer number of
+non secure Apache www sites have resulted in a large number of
+people that are very proficient with Apache, so finding online
+support is less difficult then one would think, however if it is
+a secure server issue as opposed to a generic Apache issue,
+finding support will be somewhat more difficult. Another decision
+is to use an OpenSource server (such as Apache or Roxen) or a
+closed source, there are arguments both ways, but ultimately it
+will be more of a political issue then anything else in most
+cases. Another issue is the use of hardware cryptographic
+accelerators. These range from a plug in PCI card to a full blown
+network appliance you plug in between the www server and the
+internet. Depending on the cryptographic accelerator you buy you
+may not even need a secure www server (this generally is only for
+the high end network appliances). </p>
+<p>&nbsp;</p>
+<h3>Summary</h3>
+<p>There is no overall &quot;best&quot; www server even just
+taking availability issues into account. Various servers are
+appropriate for various situations. In the following articles and
+product reviews I will attempt to cover the major areas of www
+server considerations such as configuration, features, security,
+flexibility, scalability, and so on. Next week I'll be covering
+smart cards (which tie in nicely to secure web serving), the week
+after that we'll start comparing features of the various www
+server products.</p>
+<p>Comparision </p>
+<p>&nbsp;</p>
+<p>Last month I started the web server round up, and
+unfortunately it looks like I bit off a lot more then I can chew.
+Properly testing each web server takes a lot of time (10-30
+hours), and that doesn't include any time to actually write about
+the results. Well I've finally worked my way through most of the
+servers, and it's been interesting. A web server isn't any good
+if you can't get it installed properly, configured properly, or
+if it simply does not posses the feature set you require. The
+majority of these products do allow you to download demonstration
+versions (or are completely free in some cases), I would advise
+trying them out first to make sure you end up with the one you
+want (in other words don't believe everything you read, including
+this =). </p>
+<p>&nbsp;</p>
+<h3>Ease of installation</h3>
+<p>This is an obvious choice for the first thing to cover, if you
+can't get the server installed properly it's probably not going
+to do you much good. In some cases the installation required
+compiling of software components, but the majority of the
+commercial products that are OpenSource (and partially or
+completely available as source code) came in binary format,
+easing installation. Where possible I used binary installations,
+as this is what the majority of users will opt to do (I have
+nothing against compiling personally, but most people will take
+the path of least resistance, myself included). For the
+&quot;free&quot; SSL based server that use OpenSSL you also have
+to compile or find a binary of OpenSSL, so I included that in the
+process where it was required. In all cases I would recommend
+getting the most recent version, they will contain any needed bug
+fixes, and any installation/compiling problems that exist in
+older ones have probably been fixed. All my installations were
+done on a stock Red Hat 6.1 box, and in no case did I hit any
+significant difficulties, in most cases the installs took less
+then 5 minutes.</p>
+<p>&nbsp;</p>
+<h3>Configuration</h3>
+<p>The next big item on the road to &quot;getting it to
+work&quot;. All but one of the Apache based servers don't have
+any significant improvements (i.e. any tools for configuration),
+which shouldn't be a problem for most administrators, but for
+maintaining many sites automated tools and templates are useful.
+In addition to this is the degree of detail allowed, can you
+easily set one virtual site to have access to Java servlets, and
+no others sites for example? If you plan to host more then one
+site chances are you will find yourself wanting a high degree of
+control over who gets access to what, especially if you charge
+people for features (think virtual web hosting). </p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top"><font size="1">Server</font></td>
+<td valign="top"><font size="1">Compiling</font></td>
+<td valign="top"><font size="1">Configuration</font></td>
+<td valign="top"><font size="1">Granularity of
+Configuration</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Apache-SSL</font></td>
+<td valign="top"><font size="1">OpenSSL takes a while to
+compile (also available in binary formats for RedHat,
+etc.), I personally have not had OpenSSL give me any
+trouble. Apache-SSL is a simple patch to the Apache
+source code, and it never gave me any problems as well.</font></td>
+<td valign="top"><font size="1">Default Apache style,
+edit the config file(s) by hand. There are automated
+tools but many of them do a poor job on the server server
+configs.</font></td>
+<td valign="top"><font size="1">Some functionality but
+you cannot for example restrict things like who gets
+access to various services such as authentication or Java
+servlets very easily, some control given by the access
+configurations, but more control would be nice.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Apache mod-ssl</font></td>
+<td valign="top"><font size="1">OpenSSL takes a while to
+compile (also available in binary formats for RedHat,
+etc.), I personally have not had OpenSSL give me any
+trouble. Apache mode-ssl is a bit more tricky then
+installing Apache-SSL, but assuming your platform is
+reasonably sane you shouldn't have any real problems.</font></td>
+<td valign="top"><font size="1">Default Apache style,
+edit the config file(s) by hand. There are automated
+tools but many of them do a poor job on the server server
+configs.</font></td>
+<td valign="top"><font size="1">Some functionality but
+you cannot for example restrict things like who gets
+access to various services such as authentication or Java
+servlets very easily, some control given by the access
+configurations, but more control would be nice.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Netscape Enterprise</font></td>
+<td valign="top"><font size="1">Binary only installation
+(proprietary package), installs to a self contained
+directory, asks a few simple questions that setup the www
+based config.</font></td>
+<td valign="top"><font size="1">Really nice www
+interface, cleanly laid out, very easy to use, Netscape
+put a lot of work into it. </font></td>
+<td valign="top"><font size="1">High granularity,
+relatively easy to use. The only product that had an
+obvious method to setting the encryption strength
+required to access the server (very nice feature).</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Raven</font></td>
+<td valign="top"><font size="1">Run the install script
+and stand back, there's not much to do. </font></td>
+<td valign="top"><font size="1">Default Apache style,
+edit the config file(s) by hand. There are automated
+tools but many of them do a poor job on the server server
+configs.</font></td>
+<td valign="top"><font size="1">Some functionality but
+you cannot for example restrict things like who gets
+access to various services such as authentication or Java
+servlets very easily, some control given by the access
+configurations, but more control would be nice.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Red Hat Secure Server</font></td>
+<td valign="top"><font size="1">This product is designed
+for Red hat Linux, and installing it is extremely simple
+(rpm -Uvh). Please note you do need Red Hat 6.x for the
+latest version of Red hat Secure Server.</font></td>
+<td valign="top"><font size="1">Default Apache style,
+edit the config file(s) by hand. There are automated
+tools but many of them do a poor job on the server server
+configs.</font></td>
+<td valign="top"><font size="1">Some functionality but
+you cannot for example restrict things like who gets
+access to various services such as authentication or Java
+servlets very easily, some control given by the access
+configurations, but more control would be nice.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Roxen</font></td>
+<td valign="top"><font size="1">Available as source and
+binary, the binary package installs painlessly into a
+self contained directory, asks a variety of simple
+questions that setup the www based config.</font></td>
+<td valign="top"><font size="1">Really nice www
+interface, a bit quirky, but easy to learn.</font></td>
+<td valign="top"><font size="1">High granularity,
+relatively easy to use. You can easily grant certain
+sites access to items like www-auth, or restrict them
+from using them. </font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Stronghold</font></td>
+<td valign="top"><font size="1">Stronghold has a very
+nice install script that installs itself to a self
+contained directory, asks a variety of easy to answer
+questions and walks you through setup of your first
+secure host.</font></td>
+<td valign="top"><font size="1">Default Apache style,
+edit the config file(s) by hand. Initial setup of one
+site handled during install by prompting user with
+questions.</font></td>
+<td valign="top"><font size="1">Some functionality but
+you cannot for example restrict things like who gets
+access to various services such as authentication or Java
+servlets very easily, some control given by the access
+configurations, but more control would be nice.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Zeus</font></td>
+<td valign="top"><font size="1">Binary only installation
+(proprietary package), installs to a self contained
+directory, asks a few simple questions that setup the www
+based config.</font></td>
+<td valign="top"><font size="1">One of the best www
+interfaces to a piece of software I have seen, allows you
+to control multiple Zeus servers, group multiple sites
+into standard configurations (like allow Java or not).</font></td>
+<td valign="top"><font size="1">High granularity,
+extremely easy to use. Unlike Roxen it scales well to,
+you can create groups of servers with common config files
+(i.e. access to FrontPage extensions, but not Java
+servlets), reduces mistakes significantly.</font></td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h3>Features (a.k.a. bells and whistles).</h3>
+<p>This is one area where most people exhibit interest, in all
+honesty most of these web servers do a pretty fair job of serving
+data, they are all pretty stable (almost all the above products
+are used at a variety of large sites). All the servers provide a
+certain baseline of functionality, they can server static
+documents, a variety of dynamic documents (such as server side
+includes), they have a CGI interface (so you can tie programs
+into your site), and so on. One major feature more and more sites
+(especially sites doing virtual hosting) are using is FrontPage
+extensions, which are full of security holes under UNIX and not
+really recommended (the vendor that wrote the FrontPage
+extensions for UNIX has a less then stellar track record security
+wise). One way around this is to use Samba to share out the www
+files selectively to clients (the username and password can be
+encrypted, the data is not, so it isn't any worse from a security
+point of view then FrontPage extensions are), however it does not
+allow them to make use of some of FrontPages more advanced
+features. I actually started an HTML table with a listing of all
+the important features, but in almost all cases all the servers
+supported the features listed, so it struck me as rather
+pointless. The Zeus, Roxen and Netscape Enterprise web servers do
+have some additional features not currently available in Apache,
+Roxen for example has RXML, a server side scripting language that
+allows for dynamic content (similar to PHP). </p>
+<p>&nbsp;</p>
+<h3>Support / Documentation</h3>
+<p>As with any products chances are at some point you will need
+assistance with it. When that time comes you will need to find
+help, if you're lucky it will be covered in the documentation.
+The Apache based products of course are the best documented,
+there are many books available, and the apache web site which has
+pretty much full documentation on the server itself (although
+some of the SSL directives are not covered or are different). All
+the vendors support their own products, and several will probably
+support Apache-SSL, and Apache mod-ssl if you pay them (since in
+some cases the commercial products makes use of the same OpenSSL
+that the two free ones do). There is a definite advantage to
+choose an Apache based product, with over 50% of the non-secure
+market, finding a competent Apache administrator or support
+organization is not to difficult.</p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top"><font size="1">Server</font></td>
+<td valign="top"><font size="1">Online documentation and
+help</font></td>
+<td valign="top"><font size="1">Vendor / Commercial
+support</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Apache-SSL</font></td>
+<td valign="top"><font size="1">Yes,
+http://www.apache.org/, help is also available by a
+variety of mailing lists, www boards and IRC.</font></td>
+<td valign="top"><font size="1">Some commercial support
+available</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Apache mod-ssl</font></td>
+<td valign="top"><font size="1">Yes,
+http://www.apache.org/, help is also available by a
+variety of mailing lists, www boards and IRC.</font></td>
+<td valign="top"><font size="1">Some commercial support
+available</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Netscape Enterprise</font></td>
+<td valign="top"><font size="1">Yes,
+http://www.netscape.com/, help is also available by a
+variety of mailing lists, www boards and IRC, product
+ships with excellent context sensitive help.</font></td>
+<td valign="top"><font size="1">Various vendor support
+options available</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Raven</font></td>
+<td valign="top"><font size="1">Yes,
+http://www.apache.org/, help is also available by a
+variety of mailing lists, www boards and IRC.</font></td>
+<td valign="top"><font size="1">Various vendor support
+options available, they also support Apache</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Red Hat Secure Server</font></td>
+<td valign="top"><font size="1">Yes,
+http://www.apache.org/, help is also available by a
+variety of mailing lists, www boards and IRC.</font></td>
+<td valign="top"><font size="1">Various vendor support
+options available, they also support Apache</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Roxen</font></td>
+<td valign="top"><font size="1">Extensive documentation
+at http://www.roxen.com/, product ships with excellent
+context sensitive help.</font></td>
+<td valign="top"><font size="1">Various vendor support
+options available</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Stronghold</font></td>
+<td valign="top"><font size="1">Yes,
+http://www.apache.org/, help is also available by a
+variety of mailing lists, www boards and IRC.</font></td>
+<td valign="top"><font size="1">Various vendor support
+options available</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="1">Zeus</font></td>
+<td valign="top"><font size="1">Extensive documentation
+at http://www.zeustechnology.com/</font></td>
+<td valign="top"><font size="1">Various vendor support
+options available</font></td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h3>Summary</h3>
+<p>For the cost conscious, especially if only running one or two
+sites, an Apache based solution is ideal. For high volume web
+serving, or serving many sites with similar configurations Apache
+also works very well, but you will need to apply a lot of elbow
+grease in administration and maintenance (basically you will
+probably want to write scripts and other automation tools to
+assist you). The Apache based servers are in some ways the
+simplest to configure (one nicely commented text file), and the
+easiest to find support for online (there are many books devoted
+to Apache) as well as being very cheap (ranging from free to $160
+USD, $357 USD and up). If you want something with a few more
+bells and whistles, and a nice www interface Roxen is the next
+logical step, Roxen is OpenSource and free (for the basic
+server), however you cannot yet use it legally in the US (due to
+the RSA patent). If you're willing to spend the money then Roxen
+probably wins for sheer number of features and add-ons (but
+$11,800 USD might be seen as a bit pricey for many people). If
+you don't mind spending money, and want to get an extremely high
+performance server then Zeus is the ticket (every single web
+record I have seen uses Zeus). Zeus has the best configuration
+interface I have seen, allowing you to manage multiple servers,
+multiple sites, and it scales well. Netscape seems like a very
+popular secure web server for major sites, it has great java
+servlet support, and a wonderful www interface, making it very
+simple to setup and maintain. They are all very good server
+products, if used in the right environment and administered
+properly (unfortunately there is no way around that yet).
+Fortunately with almost all the products you can get evaluation
+versions, so try before you commit to a web server, and make sure
+it supports features you think you might need in the future
+(because chances are you will need them).</p>
+<p>&nbsp;</p>
+<p><b>Related links:</b></p>
+<p><a href="http://www.apache-ssl.org/" target="_top">http://www.apache-ssl.org/</a></p>
+<p><a href="http://www.modssl.org/" target="_top">http://www.modssl.org/</a></p>
+<p><a href="http://www.covalent.net/raven/ssl/" target="_top">http://www.covalent.net/raven/ssl/</a></p>
+<p><a href="http://www.iplanet.com/downloads/testdrive/index.html" target="_top">http://www.iplanet.com/downloads/testdrive/index.html</a></p>
+<p><a href="http://www.iplanet.com/downloads/iwsonlinux.html" target="_top">http://www.iplanet.com/downloads/iwsonlinux.html</a>
+</p>
+<p><a href="http://www.c2.net/products/sh3/">http://www.c2.net/products/sh3/</a>
+</p>
+<p><a href="http://www.roxen.com/" target="_top">http://www.roxen.com/</a></p>
+<p><a href="http://www.c2.net/products/sh2/" target="_top">http://www.c2.net/products/sh2/</a></p>
+<p><a href="http://www.zeustechnology.com/" target="_top">http://www.zeustechnology.com/</a></p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

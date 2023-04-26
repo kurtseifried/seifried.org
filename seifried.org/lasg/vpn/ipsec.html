@@ -1,0 +1,647 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Virtual Private Networking - IPSec</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>IPSec</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#ef849a9d9baf9c8a86899d868a8bc1809d88"><span class="__cf_email__" data-cfemail="89e2fcfbfdc9faece0effbe0eceda7e6fbee">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>IP Security (IPSec) is the encryption of network traffic. You
+cannot encrypt the header information or trailer (i.e. the IP
+address/port the packet is from, and going to, the CRC checksums,
+and so on), but you can encrypt the data payload. This allows you
+to secure protocols such as POP/WWW without having to change them
+in any ways, since the encryption occurs at the IP level. It also
+allows you to securely connects LANs and clients to each other
+over insecure networks (like the Internet). Currently IPSec for
+Linux is in testing, however there have been several stable
+releases, and I myself have deployed Linux based IPSec servers
+successfully. IPSec is a standard, and a part of the IPv6
+protocol, you can already purchase IPSec software for Windows
+95/98/NT, Solaris, and other unices that will interoperate with
+Linux IPSec. For &quot;drilling&quot; through a firewall or
+perhaps to get by a NAT box (such as Linux with IP Masquerading)
+please see the <a href="../firewall/index.html">firewall section</a>.</p>
+<p>FreeSWAN is a free, OpenSource IPSec implementation for Linux.
+It's a pretty solid implementation however not as advanced as
+some, automatic keying and certificate support is well under way
+though, and should be &quot;production&quot; quality relatively
+soon.</p>
+<p>IP Security (IPSec) is the encryption of network traffic. You
+cannot encrypt the header information or trailer (i.e. the IP
+address/port the packet is from, and going to, the CRC checksums,
+and so on), but you can encrypt the data payload. This allows you
+to secure protocols such as POP/WWW without having to change them
+in any ways, since the encryption occurs at the IP level. It also
+allows you to securely connects LANs and clients to each other
+over insecure networks (like the Internet). Currently IPSec for
+Linux is in testing, however there have been several stable
+releases, and I myself have deployed Linux based IPSec servers
+successfully. IPSec is a standard, and a part of the IPv6
+protocol, you can already purchase IPSec software for Windows
+95/98/NT, Solaris, and other Unices that will interoperate with
+Linux IPSec. For &quot;drilling&quot; through a firewall or
+perhaps to get by a NAT box (such as Linux with IP Masquerading)
+please see the firewall section.</p>
+<p>You will need to compile support into your kernel, this is a
+somewhat tricky process, but if you follow the instructions
+included it should go smoothly. The primary difficulty is usually
+setting up the configuration file, you will definitely want to
+read the IPSec documentation for this as it changes (especially
+when support for new features is added).</p>
+<p><a href="http://www.freeswan.org/download.html">http://www.freeswan.org/download.html</a>
+</p>
+<p>&nbsp;</p>
+<h2><a name="IPSec kernel support">IPSec kernel support</a></h2>
+<p>To use IPSec you need IPSec support in the kernel.
+Unfortunately no American Linux distribution can ship strong
+crypto outside of North America so generally speaking they choose
+not to include it at all, of the foreign Linux distributions,
+currently, none ship with IPSec support built into the kernel.
+You will need to get the kernel source (I recommend 2.2.13, as of
+December 1999), and the Linux IPSec source code, available from: <a href="http://www.freeswan.org/">http://www.freeswan.org/</a>
+(current stable snapshot 1.2, as of December 1999).</p>
+<p>Install the kernel source (usually to /usr/src/linux) and then
+compile a new kernel, install it, boot to it, and test it. Make
+sure your networks work properly, if they don&#146;t work,
+getting IPSec to work will be impossible. Now you need to
+download the latest IPSec software (version 1.0 will NOT work
+with 2.2.x kernels). Then go to /usr/local/src (or wherever you
+put your source code for programs), unpack the source and run the
+install program (make menugo typically for the ncurses based
+configuration). This will patch the kernel files, then run the
+kernel configuration, and then build the IPSec tools, and the
+kernel.</p>
+<pre>cd /usr/local/src/
+tar &#150;zvvxf /path/to/tarball/snapshot.tar.gz
+chown &#150;R root:root freeswan-snap1999Jun14b
+cd freeswan-snap1999Jun14b
+make menugo&nbsp;</pre>
+<p>make sure you save the kernel configuration, even though the
+options are chosen they have not been saved. You might also have
+to rebuild the kernel as the &quot;make menugo&quot; command
+sometimes runs a &quot;make zImage&quot; which usually fails due
+to the large kernel sizes with 2.2.x. Once the compile is done it
+should have an error message or two, simply:</p>
+<pre>cd /usr/src/linux
+make bzImage
+cp /usr/src/linux/arch/i386/boot/bzImage /boot/vmlinuz-2.2.13-ipsec&nbsp;</pre>
+<p>Now we need to edit lilo.conf, rerun lilo, and reboot to make
+use of the new kernel. lilo.conf should look like:</p>
+<pre>boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=100
+image=/boot/vmlinuz-2.2.13-ipsec
+label=linux-ipsec
+root=/dev/hda1
+read-only
+image=/boot/vmlinuz-2.2.13
+label=linux
+root=/dev/hda1
+read-only&nbsp;</pre>
+<p>rerun lilo and you should see:</p>
+<pre>linux-ipsec *
+linux&nbsp;</pre>
+<p>then reboot and you should be running kernel 2.2.13 with IPSec
+support. As the machine reboots and starts the IPSec stuff you
+will see several errors, by default IPSec is set to use the
+eth999 interface, which of course does not exist. You should also
+add /usr/local/lib/ipsec to your path statement or else you will
+have to type the full path in a lot.</p>
+<h2><a name="IPSec network setup">IPSec network setup</a></h2>
+<p>You will need to enable TCP-IP forwarding on the gateway
+server, in Red Hat Linux this is accomplished by changing the
+line in /etc/sysconfig/network from:</p>
+<pre>FORWARD_IPV4=&quot;false&#148;</pre>
+<p>to:</p>
+<pre>FORWARD_IPV4=&quot;yes&quot;</pre>
+<p>or you can enable it via the /proc filesystem:</p>
+<pre>cat 1 &gt; /proc/sys/net/ipv4/ip_forward</pre>
+<p>Since most people have default deny policies for forwarding
+packets you will need to allow packets to traverse from the
+remote network / machine to your network / machine and vice
+versa. In addition to this, any masquerading rules for internal
+networks that are also using IPSec must come after the rules
+allowing IPSec related traffic, or the machine will try to
+masquerade the packets, instead of them being passed over to
+IPSec.</p>
+<h2><a name="IPSec configuration">IPSec configuration</a></h2>
+<p>Then you need to configure your ipsec settings. These are
+typically held in /etc/ipsec.conf, and /etc/ipsec.secrets, you
+can use an include statement however to break the files up.</p>
+<h2><a name="Manual connection keying">Manual connection keying</a></h2>
+<p>First we&#146;ll set up a link using manual keying (for
+simplicity), you will need to edit ipsec.conf, and your firewall
+rules. Most of the defaults in the ipsec.conf file are fine but
+you will need to change the following:</p>
+<pre>conn sample
+type=tunnel
+left=
+leftnexthop=
+leftsubnet=
+right=
+rightnexthop=
+rightsubnet=
+spibase=0x200
+esp=3des-md5-96
+espenckey=
+espauthkey=&nbsp;</pre>
+<p>replace the espenckey and espauthkey with new keys (using
+ranbits to generate a number, remember to leave the leading 0x
+that specifies it is a hex number) so that it looks like:</p>
+<pre>conn my-tunnel
+type=tunnel
+left=1.2.3.4
+leftnexthop=1.2.3.1
+leftsubnet=10.0.0.0/24
+right=5.6.7.8
+rightnexthop=5.6.7.1
+rightsubnet=192.168.0.0/24
+spibase=0x200
+esp=3des-md5-96
+espenckey=some_auth_key_here (ranbits 192)
+espauthkey=some_other_key_here (ranbits 128)&nbsp;</pre>
+<p>Once you have done this copy the files ipsec.conf and
+ipsec.secrets from the machine you edited them on to the other
+server in a secure manner. Now all that remains to be done is the
+addition of some firewall rules so that packets do not get
+masqueraded (instead we simply want them forwarded).</p>
+<p>On Server 1.2.3.4 you should add the following rules:</p>
+<pre>ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d 192.168.0.0/24
+ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d 10.0.0.0/24&nbsp;</pre>
+<p>make sure these rules appear before the masquerading rule, it
+should look like this:</p>
+<pre>#
+# FORWARD RULES
+#
+ipchains -P forward DENY
+#
+ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d 192.168.0.0/24
+ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d 10.0.0.0/24
+ipchains -A forward -p all -j MASQ -s 10.0.0.0/24 -d 0.0.0.0/0&nbsp;</pre>
+<p>And on server 5.6.7.8 you basically repeat the process:</p>
+<pre>ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d 10.0.0.0/24
+ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d 192.168.0.0/24&nbsp;</pre>
+<p>make sure these rules appear before the masquerading rule, it
+should look like this:</p>
+<pre>#
+# FORWARD RULES
+#
+ipchains -P forward DENY
+#
+ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d 10.0.0.0/24
+ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d 192.168.0.0/24
+ipchains -A forward -p all -j MASQ -s 192.168.0.0/24 -d 0.0.0.0/0&nbsp;</pre>
+<p>Now you should be able to bring up the ipsec tunnel on both
+machines manually and the machines on Network A should be able to
+talk to the machines on Network B with no problems.</p>
+<pre>ipsec manual &#150;up my-tunnel&nbsp;</pre>
+<p>and it should produce output similar to:</p>
+<pre>/usr/local/lib/ipsec/spi: message size is 36
+/usr/local/lib/ipsec/spi: message size is 132
+/usr/local/lib/ipsec/spi: message size is 132&nbsp;</pre>
+<p>To test it try pinging 192.168.0.2 from the 10.0.0.2 client.
+If this works then you have set it up correctly. If it does not
+work check your network to make sure 1.2.3.4 can reach 5.6.7.8,
+and that TCP-IP forwarding is enabled, and make sure that no
+firewall rules are blocking the packets, or trying to masquerade
+them. Once you have established a connection and tested it
+successfully you should move to automatic keying (especially if
+it&#146;s in a production environment).</p>
+<h2><a name="Automatic connection keying">Automatic connection
+keying</a></h2>
+<p>If you intend to use IPSec in a production environment, manual
+keying is a bad idea generally speaking. With automatic keying
+you have a 256 bit shared secret you copy to both ends of the
+tunnel, which is then used during the key exchanges to make sure
+a man in the middle attack does not occur. With automatic keying
+the default lifetime of a key is 8 hours, which you can set to
+anything you like, and if someone manages to brute force the key,
+it is only good for that 8 hour chunk of traffic. The following
+example builds on the previous one:</p>
+<p>ipsec.secrets contains the shared secret. This file must be
+kept secure at all costs. For a connection between the 1.2.3.4
+and 5.6.7.8 servers you would need a line like:</p>
+<pre>1.2.3.4 5.6.7.8 &#147;0xa3afb7e6_20f10d66_03760ef1_9019c643_a73c7ce0_91e46e84_ef6281b9_812392bf&#148;</pre>
+<p>This line needs to be in the ipsec.secrets file of both
+computers. You would then need to edit the tunnel configuration
+in ipsec.conf to the following:</p>
+<pre>conn my-tunnel
+type=tunnel
+left=1.2.3.4
+leftnexthop=1.2.3.1
+leftsubnet=10.0.0.0/24
+right=5.6.7.8
+rightnexthop=5.6.7.1
+rightsubnet=192.168.0.0/24
+keyexchange=ike
+keylife=8h
+keyingtries=0</pre>
+<p>The pluto daemon will then startup, try to connect to the
+Pluto daemon at the other end of the tunnel, and establish a
+connection. One caveat, Pluto runs on port 500, UDP, so chances
+are you will have to poke a hole in your firewall to allow it
+through:</p>
+<pre>ipchains -A input -p udp -j ACCEPT -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 500</pre>
+<p>I find it convenient to use the &#147;%search&#148; keyword
+instead of listing the tunnel to bring up, by adding:</p>
+<pre>auto=start</pre>
+<p>to each tunnel configuration and editing ipsec.secrets:</p>
+<pre>plutoload=%search
+plutostart=%search</pre>
+<p>This will make your life generally easier in the long run. If
+all goes well you should see something like this in
+/var/log/messages:</p>
+<pre>Jun 26 02:10:41 server ipsec_setup: Starting FreeS/WAN IPSEC... 
+Jun 26 02:10:41 server ipsec_setup: /usr/local/lib/ipsec/spi: message size is 28. 
+Jun 26 02:10:41 server ipsec_setup: KLIPS debug `none' 
+Jun 26 02:10:41 server ipsec_setup: KLIPS ipsec0 on eth0 1.2.3.4/255.255.255.0 broadcast 24.108.11.255 Jun 26 02:10:42 server ipsec_setup: Disabling core dumps: 
+Jun 26 02:10:42 server ipsec_setup: Starting Pluto (debug `none'): 
+Jun 26 02:10:43 server ipsec_setup: Loading Pluto database `my-tunnel': 
+Jun 26 02:10:44 server ipsec_setup: Enabling Pluto negotiation: 
+Jun 26 02:10:44 server ipsec_setup: Routing for Pluto conns `my-tunnel': 
+Jun 26 02:10:45 server ipsec_setup: Initiating Pluto tunnel `my-tunnel': 
+Jun 26 02:10:45 server ipsec_setup: 102 &quot;my-tunnel&quot; #1: STATE_MAIN_I1: initiate 
+Jun 26 02:10:45 server ipsec_setup: 104 &quot;my-tunnel&quot; #1: STATE_MAIN_I2: from STATE_MAIN_I1; sent MI2, expecting MR2 
+Jun 26 02:10:45 server ipsec_setup: 106 &quot;my-tunnel&quot; #1: STATE_MAIN_I3: from STATE_MAIN_I2; sent MI3, expecting MR3 
+Jun 26 02:10:45 server ipsec_setup: 003 &quot;my-tunnel&quot; #1: STATE_MAIN_I4: SA established 
+Jun 26 02:10:45 server ipsec_setup: 110 &quot;my-tunnel&quot; #2: STATE_QUICK_I1: initiate 
+Jun 26 02:10:45 server ipsec_setup: 003 &quot;my-tunnel&quot; #2: STATE_QUICK_I2: SA established Jun 26 02:10:46 server ipsec_setup: ...FreeS/WAN IPSEC started</pre>
+<p>And in the /var/log/secure file you should see something like:</p>
+<pre>Jun 26 02:10:42 server Pluto[25157]: Starting Pluto (FreeS/WAN Version snap1999Jun14b)
+Jun 26 02:10:44 server Pluto[25157]: added connection description &quot;my-tunnel&quot;
+Jun 26 02:10:44 server Pluto[25157]: listening for IKE messages
+Jun 26 02:10:44 server Pluto[25157]: adding interface ipsec0/eth0 1.2.3.4Jun 26 02:10:44 server Pluto[25157]: loading secrets from &quot;/etc/ipsec.secrets&quot;
+Jun 26 02:10:45 server Pluto[25157]: &quot;my-tunnel&quot; #1: initiating Main Mode
+Jun 26 02:10:45 server Pluto[25157]: &quot;my-tunnel&quot; #1: ISAKMP SA established
+Jun 26 02:10:45 server Pluto[25157]: &quot;grumpy-seifried&quot; #2: initiating Quick Mode POLICY_ENCRYPT+POLICY_TUNNEL+POLICY_PFS
+Jun 26 02:10:45 server Pluto[25157]: &quot;my-tunnel&quot; #2: sent QI2, IPsec SA established
+Jun 26 02:11:12 server Pluto[25157]: &quot;my-tunnel&quot; #3: responding to Main Mode
+Jun 26 02:11:12 server Pluto[25157]: &quot;my-tunnel&quot; #3: sent MR3, ISAKMP SA established
+Jun 26 02:11:12 server Pluto[25157]: &quot;my-tunnel&quot; #4: responding to Quick Mode
+Jun 26 02:11:12 server Pluto[25157]: &quot;my-tunnel&quot; #4: IPsec SA established
+Jun 26 02:31:31 server Pluto[25157]: &quot;my-tunnel&quot; #5: responding to Main Mode
+Jun 26 02:31:32 server Pluto[25157]: &quot;my-tunnel&quot; #5: sent MR3, ISAKMP SA established
+Jun 26 02:31:32 server Pluto[25157]: &quot;my-tunnel&quot; #6: responding to Quick Mode
+Jun 26 02:31:32 server Pluto[25157]: &quot;my-tunnel&quot; #6: IPsec SA established</pre>
+<p>In addition to this you can view the &#147;eroute&#148; output
+to make sure the tunnels are correctly configured:</p>
+<pre>10.0.0.0/24 -&gt; 192.168.0.0/24 =&gt; <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="4f3b3a217f377e7e7b0f7e617d617c617b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></pre>
+<p>And if you view your routes (&#147;route&#148;) you should
+see:</p>
+<pre>Kernel IP routing table
+Destination Gateway Genmask Flags Metric Ref Use Iface
+1.2.3.4 0.0.0.0 255.255.255.255 UH 0 0 0 eth0
+10.0.0.1 0.0.0.0 255.255.255.255 UH 0 0 0 eth
+11.2.3.0 0.0.0.0 255.255.255.0 U 0 0 0 eth0
+1.2.3.0 0.0.0.0 255.255.255.0 U 0 0 0 ipsec0
+192.168.0.0 1.2.3.1 255.255.255.0 UG 0 0 0 ipsec0
+10.0.0.0 0.0.0.0 255.255.255.0 U 0 0 0 
+eth1127.0.0.0 0.0.0.0 255.0.0.0 U 0 0 0 
+lo0.0.0.0 1.2.3.1 0.0.0.0 UG 0 0 0 eth0</pre>
+<h2><a name="Some example ipsec configurations">Some example
+ipsec configurations</a></h2>
+<h2><a name="Two servers with protected networks directly attached">Two
+servers with protected networks directly attached</a></h2>
+<p>In our example we will have the following network setup:</p>
+<p>Server A, where eth0 is attached to the Internet and has the
+IP address 1.2.3.4, and eth1 is attached to the internal network
+and has the IP address 10.0.0.1.</p>
+<p>Network A is the network &#145;behind&#146; Server A and
+consists of machines on the 10.0.0.* subnet.</p>
+<p>Server B, where eth0 is attached to the Internet and has the
+IP address 5.6.7.8, and eth1 is attached to the internal network
+and has the IP address 192.168.0.1.</p>
+<p>Network B is the network &#145;behind&#146; Server B and
+consists of machines on the 192.168.0.* subnet.</p>
+<p>Network C is the Internet, to which Server A and B are
+connected (by T1, let&#146;s be generous).</p>
+<p><strong>Basic server setup</strong></p>
+<p>Each machine will have Red Hat Linux 6.1 installed, with the
+default kernel 2.2.12, make sure you install ipchains, by default
+this does not usually get installed. Any other software on the
+machines is incidental (we are primarily concerned about moving
+packets and such).</p>
+<p>Go to ftp.linux.org (or your favourite mirror) and download
+the full Linux kernel 2.2.10. Go to /usr/src/ and remove the
+existing linux symlink, unpack kernel 2.2.10 and mv it to
+/usr/src/linux-2.2.10, and recreate the &quot;linux&quot; symlink
+to point to it. Then cd into /usr/src/linux, configure the
+kernel, compile and install it. Make sure you choose all the IP
+masquerading items, and where possible compile them in as static
+components, and not modules. Remember to use &quot;make
+bzImage&quot;, as chances are the new kernel will be to large for
+lilo to load normally.</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">cd /usr/src/ <br>
+rm linux<br>
+tar &#150;zvvxf /path/to/tarball/linux-2.2.10.tar.gz<br>
+mv linux linux-2.2.10<br>
+chown &#150;R root:root linux-2.2.10<br>
+ln &#150;s linux-2.2.10 linux<br>
+cd linux<br>
+make menuconfig<br>
+make dep<br>
+make bzImage<br>
+make modules<br>
+make modules_install<br>
+cp /usr/src/linux/arch/i386/boot/bzImage
+/boot/vmlinuz-2.2.10<br>
+rm /boot/System.*<br>
+cp /usr/src/linux/System.map /boot/System.map</td>
+</tr>
+</TBODY></table>
+<p>Now we need to edit lilo.conf, rerun lilo, and reboot to make
+use of the new kernel. Like the IPSec documentation stresses,
+make sure your network works first before even attempting to
+install the software.</p>
+<p>Lilo.conf should look like:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">boot=/dev/hda <br>
+map=/boot/map<br>
+install=/boot/boot.b<br>
+prompt<br>
+timeout=100<br>
+image=/boot/vmlinuz-2.2.10<br>
+label=linux<br>
+root=/dev/hda1<br>
+read-only<br>
+image=/boot/vmlinuz-2.2.5-12<br>
+label=linuxold<br>
+root=/dev/hda1<br>
+read-only</td>
+</tr>
+</TBODY></table>
+<p>rerun lilo and you should see:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">linux * <br>
+linuxold</td>
+</tr>
+</TBODY></table>
+<p>then reboot and you should be running kernel 2.2.10.</p>
+<p>Now we need to edit the firewall rules, on both servers you
+should be masquerading the internal machines and using a default
+policy of denying forwarding for security with something like:</p>
+<p>Server A:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">ipchains -P forward DENY<br>
+ipchains -A forward -p all -j MASQ -s 10.0.0.0/24 -d
+0.0.0.0/0</td>
+</tr>
+</TBODY></table>
+<p>Server B:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">ipchains -P forward DENY<br>
+ipchains -A forward -p all -j MASQ -s 192.168.0.0/24 -d
+0.0.0.0/0</td>
+</tr>
+</TBODY></table>
+<p>Remember to put these rules last in your firewalling script.
+You will also need to enable packet forwarding, edit the
+/etc/sysconfig/network and replace the line:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">FORWARD_IPV4=&quot;no&quot;</td>
+</tr>
+</TBODY></table>
+<p>with the line:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">FORWARD_IPV4=&quot;yes&quot;</td>
+</tr>
+</TBODY></table>
+<p>You should now be able to ping Server B from Network A (ping
+5.6.7.8), and you should also be able to ping Server A from
+Network B (ping 1.2.3.4).</p>
+<p>Assuming all this works we can now attempt to install the IP
+Security software.</p>
+<p><strong>IPSec installation</strong></p>
+<p>Download the latest IPSec snapshot (version 1.0 will NOT work
+with 2.2.x kernels). Then go to /usr/local/src (or wherever),
+unpack the source and run the install program (make menugo
+typically for the ncurses based configuration). This will patch
+the kernel files, then run the kernel configuration, and then
+build the IPSec tools, and the kernel.</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">cd /usr/local/src/<br>
+tar &#150;zvvxf /path/to/tarball/snapshot.tar.gz<br>
+chown &#150;R root:root freeswan-snap1999Jun14b<br>
+cd freeswan-snap1999Jun14b<br>
+make menugo</td>
+</tr>
+</TBODY></table>
+<p>make sure you save the kernel configuration, even though the
+options are chosen they have not been saved. You will also have
+to rebuild the kernel as the &quot;make menugo&quot; command runs
+a &quot;make zImage&quot; which usually fails due to the large
+kernel sizes with 2.2.x. Once the compile is done it should have
+an error message or two, simply:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">cd /usr/src/linux<br>
+make bzImage<br>
+cp /usr/src/linux/arch/i386/boot/bzImage
+/boot/vmlinuz-2.2.10-ipsec</td>
+</tr>
+</TBODY></table>
+<p>Now we need to edit lilo.conf, rerun lilo, and reboot to make
+use of the new kernel. </p>
+<p>Lilo.conf should look like:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">boot=/dev/hda<br>
+map=/boot/map<br>
+install=/boot/boot.b<br>
+prompt<br>
+timeout=100<br>
+image=/boot/vmlinuz-2.2.10-ipsec<br>
+label=linux-ipsec<br>
+root=/dev/hda1<br>
+read-only<br>
+image=/boot/vmlinuz-2.2.10<br>
+label=linux<br>
+root=/dev/hda1<br>
+read-only</td>
+</tr>
+</TBODY></table>
+<p>rerun lilo and you should see:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">linux-ipsec *<br>
+linux</td>
+</tr>
+</TBODY></table>
+<p>then reboot and you should be running kernel 2.2.10 with IPSec
+support. As the machine reboots and starts the IPSec stuff you
+will see several errors, by default IPSec is set to use the
+eth999 interface, which of course does not exist. You should also
+add /usr/local/lib/ipsec to your path statement or else you will
+have to type the full path in a lot.</p>
+<p>Configuring IPSec</p>
+<p>We will initially use manual keying (i.e. for now we will
+ignore the pluto IKE daemon) as this makes life simpler. You will
+need to edit ipsec.conf and ipsec.conf. These two files will then
+need to be copied to the other server in a secure manner (ssh,
+floppy disk, etc.).</p>
+<p>Here is a diagram of the network:</p>
+<p>&nbsp;</p>
+<p>You will need to edit the ipsec.conf file, most of the
+defaults are fine but you will need to change the following:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">conn sample<br>
+type=tunnel<br>
+# left security gateway (public-network address)<br>
+left=<br>
+# next hop to reach right<br>
+leftnexthop=<br>
+# subnet behind left (omit if there is no subnet)<br>
+leftsubnet=<br>
+# right s.g., subnet behind it, and next hop to reach
+left<br>
+right=<br>
+rightnexthop=<br>
+rightsubnet=<br>
+#<br>
+spibase=0x200<br>
+# (manual) encryption/authentication algorithm and
+parameters to it<br>
+esp=3des-md5-96<br>
+espenckey=<br>
+espauthkey=</td>
+</tr>
+</TBODY></table>
+<p>replace the espenckey and espauthkey with new keys (using
+ranbits to generate a number, remmeber to leave the leading 0x
+that specifies it is a hex number) so that it looks like:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">conn my-tunnel<br>
+type=tunnel<br>
+# left security gateway (public-network address)<br>
+left=1.2.3.4<br>
+# next hop to reach right<br>
+leftnexthop=1.2.3.1<br>
+# subnet behind left (omit if there is no subnet)<br>
+leftsubnet=10.0.0.0/24<br>
+# right s.g., subnet behind it, and next hop to reach
+left<br>
+right=5.6.7.8<br>
+rightnexthop=5.6.7.1<br>
+rightsubnet=192.168.0.0/24<br>
+#<br>
+spibase=0x200<br>
+# (manual) encryption/authentication algorithm and
+parameters to it<br>
+esp=3des-md5-96<br>
+espenckey=some_auth_key_here (ranbits 192)<br>
+espauthkey=some_other_key_here (ranbits 128)</td>
+</tr>
+</TBODY></table>
+<p>Once you have done this copy the files ipsec.conf and
+ipsec.secrets from the machine you edited them on to the other
+server in a secure manner. Now all that remains to be done is the
+addition of some firewall rules so that packets do not get
+masqueraded (instead we simply want them forwarded).</p>
+<p>On Server A you should add the following rules:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">ipchains -A forward -p all -j ACCEPT -s
+10.0.0.0/24 -d 192.168.0.0/24<br>
+ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d
+10.0.0.0/24</td>
+</tr>
+</TBODY></table>
+<p>make sure these rules appear before the masquerading rule, it
+should look like this:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">#<br>
+# FORWARD RULES<br>
+#<br>
+ipchains -P forward DENY<br>
+#<br>
+ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d
+192.168.0.0/24<br>
+ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d
+10.0.0.0/24<br>
+ipchains -A forward -p all -j MASQ -s 10.0.0.0/24 -d
+0.0.0.0/0</td>
+</tr>
+</TBODY></table>
+<p>And on server B you basically repeat the process:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">ipchains -A forward -p all -j ACCEPT -s
+192.168.0.0/24 -d 10.0.0.0/24<br>
+ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d
+192.168.0.0/24</td>
+</tr>
+</TBODY></table>
+<p>make sure these rules appear before the masquerading rule, it
+should look like this:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">#<br>
+# FORWARD RULES<br>
+#<br>
+ipchains -P forward DENY<br>
+#<br>
+ipchains -A forward -p all -j ACCEPT -s 192.168.0.0/24 -d
+10.0.0.0/24<br>
+ipchains -A forward -p all -j ACCEPT -s 10.0.0.0/24 -d
+192.168.0.0/24<br>
+ipchains -A forward -p all -j MASQ -s 192.168.0.0/24 -d
+0.0.0.0/0</td>
+</tr>
+</TBODY></table>
+<p><strong>Starting up your connection</strong></p>
+<p>Now you should be able to bring up the ipsec tunnel on both
+machines manually and the machines on Network A should be able to
+talk to the machines on Network B with no problems.</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">ipsec manual &#150;up my-tunnel</td>
+</tr>
+</TBODY></table>
+<p>and it should produce output similar to:</p>
+<table border="1" cellpadding="7" cellspacing="1" width="100%">
+<TBODY> <tr>
+<td valign="top">/usr/local/lib/ipsec/spi: message size
+is 36<br>
+/usr/local/lib/ipsec/spi: message size is 132<br>
+/usr/local/lib/ipsec/spi: message size is 132</td>
+</tr>
+</TBODY></table>
+<p>To test it try pinging 192.168.0.2 from the 10.0.0.2 client
+(you cannot ping from 192.168.0.1 to 10.0.0.1 or the external
+gateway addresses since you have not configured tunnels to handle
+those packets). If this works then you have set it up correctly.</p>
+<p>&nbsp;</p>
+<h2><a name="Two servers with protected networks attached via the Internet (or some other network)">Two
+servers with protected networks attached via the Internet (or
+some other network)</a></h2>
+<p>In this example I will strictly cover the configuration and
+not the isntall as in the last one.</p>
+<p>&nbsp;</p>
+<p>Here is a diagram of the network:</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#e08b959294a09385898692898584ce8f9287"><span class="__cf_email__" data-cfemail="0c67797e784c7f69656a7e65696822637e6b">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

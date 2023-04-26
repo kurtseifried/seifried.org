@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 14 - Encrypting network traffic (Virtual Private Networks) with IPSec</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 14 - Encrypting network traffic (Virtual Private
+Networks) with IPSec</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#78130d0a0c380b1d111e0a111d1c56170a1f"><span class="__cf_email__" data-cfemail="5f342a2d2b1f2c3a36392d363a3b71302d38">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>With sensitive data moving across public networks some form of
+encryption is needed to protect the data, provide authentication,
+and prevent spoofing/etc. The emerging standard for this problem
+is IPSec (IP Security), which has broad industry support and a
+recognized set of RFC's laying down the rules. Unfortunately one
+of the major areas of IPSec is key management, and this is one
+area where many vendors have trouble interoperating, so if you
+are considering a hetrogenous network do plenty of testing
+beforehand. The good news is most vendors support IPSec, many
+&quot;out of the box&quot;, and there are numerous free to cheap
+clients for Windows 95/98/NT (2000 has built in support). </p>
+<p>The first decision needed when implementing IPSec is to decide
+what traffic you want to encrypt. Will you simply be using IPSec
+to connect various LAN's across the Internet securely (gateway to
+gateway), will dial-up and other remote users be connecting into
+the corporate LAN (client to gateway), or will all traffic be
+encrypted (client to client)? For servers and gateways you should
+definately consider buying hardware accelerators, there are also
+several new ethernet cards on the market (like <a href="appendix-a.html#Intel-Pro-100-S-Server-Adaptor">this one</a>
+from Intel) that have built in hardware to handle the encryption,
+and driver support under several operating systems. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td valign="top">Operating System</td>
+<td valign="top">Name</td>
+<td valign="top">URL</td>
+<td valign="top">License</td>
+<td valign="top">Notes</td>
+</tr>
+<tr>
+<td valign="top">Linux</td>
+<td valign="top">FreeS/WAN</td>
+<td valign="top"><a href="appendix-a.html#FreeS/WAN">here</a></td>
+<td valign="top">GPL</td>
+<td valign="top">Some vendors ship, most do not</td>
+</tr>
+<tr>
+<td valign="top">OpenBSD</td>
+<td valign="top">IPSec</td>
+<td valign="top"><a href="http://www.openbsd.org/">http://www.openbsd.org/</a>
+</td>
+<td valign="top">BSD</td>
+<td valign="top">Ships with OpenBSD</td>
+</tr>
+<tr>
+<td valign="top">NetBSD</td>
+<td valign="top">KAME</td>
+<td valign="top"><a href="http://www.kame.net/">http://www.kame.net/</a></td>
+<td valign="top">BSD-like AS-IS </td>
+<td valign="top">Ships with NetBSD</td>
+</tr>
+<tr>
+<td valign="top">FreeBSD</td>
+<td valign="top">KAME</td>
+<td valign="top"><a href="http://www.kame.net/">http://www.kame.net/</a></td>
+<td valign="top">BSD-like AS-IS </td>
+<td valign="top">Ships with FreeBSD</td>
+</tr>
+<tr>
+<td valign="top">Solaris 8.0</td>
+<td valign="top">IPSec</td>
+<td valign="top"><a href="http://www.sun.com/">http://www.sun.com/</a>
+</td>
+<td valign="top">Commercial</td>
+<td valign="top">Ships with Solaris 8.0</td>
+</tr>
+<tr>
+<td valign="top" rowspan="5">Windows 95 / 98 / NT</td>
+<td valign="top">PGP VPN Client</td>
+<td valign="top"><a href="appendix-a.html#PGP-Desktop-Security">here</a></td>
+<td valign="top">Commercial</td>
+<td valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top">PGP Freeware</td>
+<td valign="top"><a href="appendix-a.html#PGP-Freeware">here</a></td>
+<td valign="top">Commercial, free for personal,
+non-commercial use</td>
+<td valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top">PGP International</td>
+<td valign="top"><a href="appendix-a.html#PGP-International">here</a></td>
+<td valign="top">Commercial, free for personal,
+non-commercial use</td>
+<td valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top">SafeNet/Soft-PK</td>
+<td valign="top"><a href="appendix-a.html#SafeNet-Soft-PK">here</a></td>
+<td valign="top">Commercial</td>
+<td valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top">F-Secure VPN+</td>
+<td valign="top"><a href="appendix-a.html#F-Secure-VPN+">here</a></td>
+<td valign="top">Commercial</td>
+<td valign="top">&nbsp;</td>
+</tr>
+<tr>
+<td valign="top">Windows 2000</td>
+<td valign="top">IPSec</td>
+<td valign="top"><a href="http://www.microsoft.com/">http://www.microsoft.com/</a>
+</td>
+<td valign="top">Commercial</td>
+<td valign="top">Ships with Windows 2000</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-13.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-15.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

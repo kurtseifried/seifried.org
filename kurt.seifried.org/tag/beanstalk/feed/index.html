@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>beanstalk &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/beanstalk/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:39 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>beanstalk &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Python Performance Part 4</title>
+		<link>http://kurt.seifried.org/2010/05/31/python-performance-part-4/</link>
+		<comments>http://kurt.seifried.org/2010/05/31/python-performance-part-4/#comments</comments>
+		<pubDate>Mon, 31 May 2010 08:37:24 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Python]]></category>
+		<category><![CDATA[beanstalk]]></category>
+		<category><![CDATA[json]]></category>
+		<category><![CDATA[memcache]]></category>
+		<category><![CDATA[performance]]></category>
+		<category><![CDATA[pyton]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=66</guid>
+		<description><![CDATA[Python Performance Part 1 Python Performance Part 2 Python Performance Part 3 In part one I covered a basic introduction to threads and the producer-consumer pattern. In part two I covered some (unfortunately common) pathological cases where threading in Python can make things much worse. In part three I covered how to profile and measure [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=66&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/">Python  Performance Part 1</a><br />
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/">Python  Performance Part 2</a><br />
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/">Python  Performance Part 3</a><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/"><br />
+</a></p>
+<p>In part one I covered a basic introduction to threads and the producer-consumer pattern. In part two I covered some (unfortunately common) pathological cases where threading in Python can make things much worse. In part three I covered how to profile and measure performance within your code and some strategies to address them. Finally I covered a more advanced producer-consumer pattern that uses a spinlocks and a locking hierarchy. Now in part four we&#8217;re going to explore how you can escape a single core using Python and distribute your application across multiple CPU&#8217;s and multiple systems. I&#8217;m also going to cover a few of the more common strategies and tools for distributing applications and work loads across multiple systems. I have a lot of ground to cover so I will be unable to go in depth with detailed code examples/etc., however the Python documentation includes excellent examples which I will reference.</p>
+<p><strong>Escaping the core – multiprocessing</strong></p>
+<p>So as you have probably learned by now the GIL giveth (easy threading) and the GIL taketh (you can only run threaded code on one CPU core). Oddly enough the Python developers were not too happy about this either, so in Python 2.6 they introduced the &#8220;multiprocessing&#8221; module [MULTIPROCESSING]. The multiprocessing module provides a very similar set of primitives as the &#8220;thread&#8221; and &#8220;threading&#8221; modules. You get a process class which allows you to spawn multiple processes, a queue class which allows you to create queues that can be accessed from multiple processes, pipes that allow for bi-directional and uni-directional communications, locking, and shared memory in the form of values and arrays. You also get a manager which allows you to control a server process and pools which allow you to create and control multiple processes. Using this you can extend the consumer-producer pattern to multiple processes running across multiple CPU cores on multiple systems.</p>
+<p>A quick note on subprocess[SUBPROCESS], this is primarily designed for executing external scripts and programs (e.g. ping, traceroute, whois, etc.) that are not written in Python. You can launch programs and scripts and talk to their stdin/stdout which is great for non python programs but extremely limited when compared to the multiprocessing module.</p>
+<p><strong>Inter-process communication</strong></p>
+<p>One major advantage of using the multiprocessing module is that inter-process communication mechanisms provided. You have several options; pipes (pipe()), locks (lock()), shared memory (Value() and Array()) and the server process (Manager()). The shared memory facilities provided by multiprocessing such as Value() and Array() are relatively fast since they are implemented as a shared memory structure, but of course by definition (shared memory space) they cannot be shared between processes running on different systems. If you want to share Python objects (such as variables, arrays, etc.) across processes running on separate servers you can use Manager() to create a server process that will hold and share the Python objects.</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="116"></col>
+<col width="148"></col>
+<col width="202"></col>
+<col width="155"></col>
+<tbody>
+<tr valign="TOP">
+<td width="116">Facility</td>
+<td width="148">Provides</td>
+<td width="202">Pros</td>
+<td width="155">Cons</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Lock()</td>
+<td width="148">locks</td>
+<td width="202">Provides locking for operations that are not 			thread or multiple process safe</td>
+<td width="155">Limited to single system</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Queue()</td>
+<td width="148">Work queues</td>
+<td width="202">Fast, good for sharing work</td>
+<td width="155">Limited to single system</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Pipe()</td>
+<td width="148">Bi-directional and uni-directional 			communication pipes</td>
+<td width="202">Simple, send() and recv(), you can pass pretty 			much anything through it (variables, arrays, etc.)</td>
+<td width="155">Not completely safe, each end of pipe must be 			accessed one at a time only</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Shared memory</td>
+<td width="148">Value() and Array()</td>
+<td width="202">Very fast</td>
+<td width="155">Limited to single system, limited to standard 			values and arrays (no other Python objects)</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Manager()</td>
+<td width="148">list, dict, Namespace, Lock, RLock, Semaphore, 			BoundedSemaphore, Condition, Event, Queue, Value and Array</td>
+<td width="202">Very flexible, provides everything, works 			across multiple processes and systems</td>
+<td width="155">Slower than shared memory</td>
+</tr>
+</tbody>
+</table>
+<p>One of the more common patterns for designing communication capabilities into a program that uses multiple processes is to use a single control process which then has a bi-directional pipe to each worker processes allowing it to communicate with them. Now if you want to communicate across processes running on separate system you will need some external communications method such as xmlrpclib or asynchat (to name two possibilities). Like many open source projects one of the problems in Python is that you have numerous options that can lead to mental overload. My advice is that you list out what you need (i.e. do you need to pass the data through firewalls/etc, in which case something like xmlrpclib that can use HTTP as a transport may be a good idea) and go with the simplest option (which you may have to replace anyways).</p>
+<p><strong>Inter-process signals</strong></p>
+<p>Python provides a signal() module that gives you the ability to send signals, unfortunately there are some issues with handling signals in Python. You cannot intentionally block signals in Python, meaning that you can&#8217;t take a critical code section and tell it to ignore signals while it is running (ensuring that the code finishes executing) thus it is possible for critical code to only partially execute before yielding the GIL lock and another thread is run, which means you may need to think about transactions and methods ensure that partially completed tasks do not cause problems should another thread be executed. As well only the main thread can set a new signal handler, a common design pattern in Python is to have the main thread loop and handle signals while it spawns of child threads that do the actual work.</p>
+<p><strong>Pyro – Python Remote Objects</strong></p>
+<p>One disadvantage of using the Manager() module to provide communication between different systems is that it is somewhat limited. Although it provides a basic level of security (in the form of an authkey) it doesn&#8217;t appear to provide anything beyond that. Pyro[PYRO] supports SSL encrypted communications but most importantly it provides greater flexibility with objects and types and also includes some important capabilities like automatic reconnection in case a connection drops. Pyro also provides a name service so you can register objects and easily share them and an event service which is similar to queues but can be used for many to many communications, however it does not guarantee delivery of messages which can be a problem.</p>
+<p><strong>Beanstalkd message queue – sharing messages (and work)</strong></p>
+<p>Now one of my favorite pieces of software. One reason is that the beanstalkd [BEANSTALKD] server binary itself is around 59k. I like small and simple code since it generally has fewer bugs and other surprises. Beanstalkd provides a distributed work queue, you can put jobs in, take them out, bury them (they are essentially hidden until you pull them back out, a great way to put problematic jobs out of the way for a human to inspect later) and create multiple tubes, essentially unique queues (a single beanstalkd server can handle multiple related or unrelated queues). The major downside to beanstalkd is that it doesn&#8217;t provide any encryption of network traffic or authentication capabilities, so any client with access to a running instance of a beanstalkd server will have access to all the queues in that running instance. This can be gotten around by wrapping beanstalkd in SSL (using stunnel or a similar service) to secure communications and limiting access to beanstalkd queues based on either IP address or by requiring SSL client authentication. The beanstalkc [BEANSTALKC] Python client provides a very stable client for beanstalkd and also importantly has excellent documentation.</p>
+<p><strong>Formatting messages and work – pickle and JSON</strong></p>
+<p>So assuming you are not using the Python Value(), Array(), Pipe() or Manager() or something like Pyro (all of which support native Python objects) to communicate between processes you will need to format your data so that it can be passed around. If you need to pass an actual Python object such as a class (as opposed to a variable) then you will need to pickle() [PICKLE] it, which will serialize the object. Python pickle() supports several protocols for pickling objects, the first of which is text based (protocol 0) and is extremely useful if you need to pass an object over a text based protocol such as HTTP. The other two protocols are binary in nature.</p>
+<p>If however you merely need to pass data and variables around you can use JSON instead of pickling. I really, really like JSON [JSON] because the specification is simple (it fits on one page) and it is human readable (so debugging it is simple, you can print and read the messages directly). Two Python libraries for JSON are available (simplejson and pyson), and as of Python 2.6 the JSON encoder (called &#8220;json&#8221;) is included.</p>
+<p><strong>Caching – increase speed and decrease workload</strong></p>
+<p>Of course if you can do work in advance, or do work once and keep the answer for later use again you will be able to significantly speed up your application. The real trick to caching an answer or a result is to know what to cache, whether or not caching it will improve things (to make it worthwhile) and finally how to expire answers (assuming this needs to be done). For example if you display photos online and want to display a thumbnail image you can create it when the image is uploaded, meaning that when someone asks to view it the thumbnail will be available almost immediately, the downside being that you potentially store thumbnails that are never requested by anyone. Alternatively you can generate the thumbnail as needed and keep the thumbnail for later use, you run don&#8217;t store thumbnails that are never asked for, but it will take longer for the system to display the thumbnail the first time it is requested (since it must be generated). Either way you also need to decide how long to keep the thumbnail image for; forever, or do you expire it at some point? The answer to these types of questions varies hugely of course depending on your data, usage and what is important to you (latency? speed? storage? processing time?). A general rule of thumb is to cache data that is as finished as possible, e.g. rather than caching a database query you can cache the compiled result (such as a piece of a generated web page) to reduce processing time and latency. As for cache expiry you can use tricks such as checking to see if the source data has changed since you last used it, saving you the processing time if it&#8217;s still valid (but not the time needed to get the data). Another strategy is to expire on update, when new data comes in have it trigger an expiry of any cached data based on the old data it has replaced. It should also be noted that some services and servers have built-in caching, e.g. MySQL&#8217;s query cache can be used to cache query results.</p>
+<p><strong>Caching with memcache</strong></p>
+<p>If you need to cache objects then memcache [MEMCACHED] is (usually) the cache for you. It&#8217;s basically an object store that uses a unique key (text string) to locate the object. It keeps objects in memory and does not write them to disk which makes it very fast. One trick is to use some calculable value for the key such as a URL, username, etc. to make it easy to query the cache for an object (and if the object doesn&#8217;t exist or is stale you can then generate a new one). For most sites you can get away with using spare amounts of memory on various servers, although some sites with especially heavy usage will dedicate entire servers to memcached. To access memcached from Python you want python-memached [PYTHON MEMCACHED]. One interesting project that recently came to light is Cachepy which is a caching solution based on Google App Engine. [CACHEPY]</p>
+<p><strong>A note on MySQL</strong></p>
+<p>I can&#8217;t put it any more simply then this: use InnoDB rather than MyISAM most of the time. MyISAM is sometimes faster for reads, but for writes (INSERT/UPDATE/etc.) to a table it can be muchh slower since the entire table must be locked for a write. InnoDB uses row level locking so as long as different rows of data are being updated the writes can occur concurrently rather than sequentially which is a huge advantage.</p>
+<p><strong>A note on PostgreSQL</strong></p>
+<p>The VACUUM FULL command will lock your database table and basically make it perform slower than mud while the VACUUM FULL is running. In other words avoid VACUUM FULL and use AUTOVACUUM, VACUUM, CLUSTER, or a SELECT INTO to copy data to a new table or a TRUNCATE TABLE if you want to clear it out. These options are covered in the PostgreSQL wiki. [VACUUM FULL]</p>
+<p><strong>A note on Google App Engine</strong></p>
+<p>If you want to start playing with large scale Python applications you should definitely check out Google App Engine. [APPENGINE]</p>
+<p><strong>Shared nothing/Sharding and other (potentially complicated) scaling strategies</strong></p>
+<p>My final performance tip is to use shared nothing or sharded data architectures. If you need to do user authentication and allow users to update their account info (in other words you can&#8217;t outsource authentication to something like OpenID) than you will need to store this data somewhere (most likely within a database). So you have a single central database for all user accounts, well that doesn&#8217;t scale to well (especially if you end up with more than one location hosting servers). So you replicate the database, creating multiple slaves with copies of the master so at least servers can get good read performance. But you&#8217;re still stuck with a single master for write operations. So you end up using something like MySQL Cluster which supports multi-master replication (you can write to any of the masters), but you still need to be careful about race conditions.</p>
+<p>However there is a simpler method to spread out the read and write operations on the database. Using a fast hash function or even just a simple &#8220;algorithm&#8221; like all accounts starting with the letters &#8220;A&#8221; through &#8220;E&#8221; are on server 1, &#8220;F&#8221; through &#8220;J&#8221; are on server 2 and so on would allow you to split user accounts up into shards that can be handled by separate servers. Using a hash function is better, if done right you end up with accounts very evenly spread out across the servers (so if a whole bunch of people with accounts starting with the letter &#8220;A&#8221; join up it won&#8217;t mess things up). One such system that implemented this was the Cache Array Routing Protocol (CARP) [CARP], the idea being you could take a URL, hash it and determine which cache server would contain a copy of the data (and if the cache server didn&#8217;t have it then it would go fetch it). The advantage of this is that no communication with a central server (that tracks information location) or every single server (brute force method) is needed to determine which server hosts the information. One important note on sharding: few tools or services implicitly support it, and it can add significant complexity to your system, so use with caution (ideally only if absolutely necessary).</p>
+<p><strong>The future of Python performance &#8211; Unladen Swallow</strong></p>
+<p>So finally we come to the end, or rather the beginning of Python performance. As you may or may not know Google uses Python a lot internally (YouTube is mostly built using Python). Google appears to be in the situation where it is cheaper to re-architect and improve the language they are using rather than to rewrite all their existing code in some faster language. This is ultimately a VERY good thing for us Python users. So what is this &#8220;Unladen Swallow&#8221; [UNLADEN SWALLOW] and what does it do? From the FAQ:</p>
+<p>We want to make Python faster, but we also want to make it easy for large, well-established applications to switch to Unladen Swallow.</p>
+<p>1. Produce a version of Python at least 5x faster than CPython.</p>
+<p>2. Python application performance should be stable.</p>
+<p>3. Maintain source-level compatibility with CPython applications.</p>
+<p>4. Maintain source-level compatibility with CPython extension modules.</p>
+<p>5. We do not want to maintain a Python implementation forever; we view our work as a branch, not a fork.</p>
+<p>The largest aspects of this project are moving Python to a new JIT compiler and using the LLVM [LLVM]. The advantage of moving to the Low Level Virtual Machine (LLVM) is that it creates very fast code and any improvements made to the LLVM will result in improvements to Python. Additionally Unladen Swallow is looking at improving startup time (which can be slow due to imports) and speeding up regular expressions to name a few other aspects. Finally one of the bigger goals was to remove the GIL, the idea being that a single Python process with multiple threads would then be able to use multiple CPU cores with no hassle, but as it turns out this is more complicated than expected so I guess we may have to wait a while for this.</p>
+<p>Some more articles on performance:</p>
+<p><a href="http://wiki.python.org/moin/PythonSpeed/PerformanceTips">http://wiki.python.org/moin/PythonSpeed/PerformanceTips</a></p>
+<p><a href="http://www.kegel.com/c10k.html">http://www.kegel.com/c10k.html</a> &#8211; the ten thousand client connection problem</p>
+<p><a href="http://ajbrown.org/blog/2008/11/05/micro-optimize-your-time-not-your-code/">http://ajbrown.org/blog/2008/11/05/micro-optimize-your-time-not-your-code/</a></p>
+<p><a href="http://stackoverflow.com/questions/110259/python-memory-profiler">http://stackoverflow.com/questions/110259/python-memory-profiler</a> &#8211; Python memory profiler</p>
+<p><a href="http://dbshards.com/database-sharding-blog/">http://dbshards.com/database-sharding-blog/</a> &#8211; Sharding Blog</p>
+<p><a href="http://sites.google.com/site/io/building-scalable-web-applications-with-google-app-engine">http://sites.google.com/site/io/building-scalable-web-applications-with-google-app-engine</a> &#8211; Building scalable web applications with Google App Engine</p>
+<p><a href="http://highscalability.com/">http://highscalability.com/</a> &#8211; High Scalability blog</p>
+<p><a href="http://wiki.python.org/moin/ParallelProcessing">http://wiki.python.org/moin/ParallelProcessing</a> &#8211; Parallel Processing and Multiprocessing in Python</p>
+<p>[MULTIPROCESSING]</p>
+<p><a href="http://docs.python.org/library/multiprocessing.html">http://docs.python.org/library/multiprocessing.html</a></p>
+<p>[SUBPROCESS]</p>
+<p><a href="http://docs.python.org/library/subprocess.html">http://docs.python.org/library/subprocess.html</a></p>
+<p>[PYRO]</p>
+<p><a href="http://pyro.sourceforge.net/">http://pyro.sourceforge.net/</a></p>
+<p>[BEANSTALKD]</p>
+<p><a href="http://kr.github.com/beanstalkd/">http://kr.github.com/beanstalkd/</a></p>
+<p>[BEANSTALKC]</p>
+<p><a href="http://github.com/earl/beanstalkc">http://github.com/earl/beanstalkc</a></p>
+<p>[PICKLE]</p>
+<p><a href="http://docs.python.org/library/pickle.html">http://docs.python.org/library/pickle.html</a></p>
+<p>[JSON]</p>
+<p><a href="http://www.json.org/">http://www.json.org/</a></p>
+<p>[MEMCACHED]</p>
+<p><a href="http://memcached.org/">http://memcached.org/</a></p>
+<p>[PYTHON MEMCACHED]</p>
+<p><a href="http://www.tummy.com/Community/software/python-memcached/">http://www.tummy.com/Community/software/python-memcached/</a></p>
+<p>[CACHEPY]</p>
+<p><a href="http://appengine-cookbook.appspot.com/recipe/cachepy-faster-than-memcache-and-unlimited-quota/">http://appengine-cookbook.appspot.com/recipe/cachepy-faster-than-memcache-and-unlimited-quota/</a></p>
+<p>[VACUUM FULL]</p>
+<p><a href="http://wiki.postgresql.org/wiki/VACUUM_FULL">http://wiki.postgresql.org/wiki/VACUUM_FULL</a></p>
+<p>[APPENGINE]</p>
+<p><a href="http://code.google.com/appengine/">http://code.google.com/appengine/</a></p>
+<p>[CARP]</p>
+<p><a href="http://en.wikipedia.org/wiki/Cache_Array_Routing_Protocol">http://en.wikipedia.org/wiki/Cache_Array_Routing_Protocol</a></p>
+<p>[PYSHARDS]</p>
+<p><a href="http://code.google.com/p/pyshards/wiki/Pyshards">http://code.google.com/p/pyshards/wiki/Pyshards</a></p>
+<p>[UNLADEN SWALLOW]</p>
+<p><a href="http://code.google.com/p/unladen-swallow/">http://code.google.com/p/unladen-swallow/</a></p>
+<p>[LLVM]</p>
+<p><a href="http://llvm.org/">http://llvm.org/</a></p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/66/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/66/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=66&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/05/31/python-performance-part-4/feed/</wfw:commentRss>
+		<slash:comments>2</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried - Security / Security Advisories / KSSA-004 Linux iSCSI</TITLE>
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1><STRONG>Kurt Seifried Security Advisory 004 (KSSA-004)</STRONG></H1>
+<P>Created by Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#a4cfd1d6d0e4d7c1cdc2d6cdc1c08acbd6c3"><span class="__cf_email__" data-cfemail="462d3334320635232f20342f232268293421">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>
+</P>
+<P><A HREF="http://seifried.org/security/advisories/kssa-004.html">http://seifried.org/security/advisories/kssa-004.html</A>,
+<A HREF="/cdn-cgi/l/email-protection#fa918f888eba899f939c88939f9ed495889d"><span class="__cf_email__" data-cfemail="147f6166605467717d72667d71703a7b6673">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<HR>
+<P><STRONG>Title: </STRONG>
+</P>
+<P>Linux iSCSI leaves passwords exposed in world readable
+configuration file</P>
+<P><STRONG>Issue date:</STRONG></P>
+<P>Aug 8, 2002</P>
+<P><STRONG>Who should read this advisory:</STRONG></P>
+<P>Anyone using Cisco's iSCSI implementation for Linux.
+</P>
+<P><STRONG>Author and contact info:</STRONG></P>
+<P>This advisory is copyright 2002, Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#ff948a8d8bbf8c9a96998d969a9bd1908d98"><span class="__cf_email__" data-cfemail="aac1dfd8deead9cfc3ccd8c3cfce84c5d8cd">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+<A HREF="http://www.seifried.org/">http://www.seifried.org/</A>
+</P>
+<P><STRONG>Overview:</STRONG></P>
+<P>The Cisco iSCSI implementation leaves the configuration file
+&ldquo;/etc/iscsi.conf&rdquo; world readable by default, potentially
+exposing passwords used to access iSCSI resources.</P>
+<P><STRONG>Affected software:</STRONG></P>
+<P>Cisco's iSCSI implementation for Linux on Red Hat Linux.
+</P>
+<P><STRONG>Impact:</STRONG></P>
+<P>Attackers can view passwords and access iSCSI resources using
+other systems potentially bypassing access controls.
+</P>
+<P><STRONG><FONT COLOR="#000000">Details:</FONT></STRONG></P>
+<P STYLE="margin-bottom: 0in">iSCSI offers a flexible framework for
+various authentication options to access shared data resources. By
+viewing passwords an attacker can potentially access iSCSI resources
+and bypass authenticaiton controls.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P><STRONG>Solutions and workarounds:</STRONG></P>
+<P>Ensure that the file &ldquo;/etc/iscsi.conf&rdquo; is not world
+readable. Please note that SuSE Linux used mode 0600 by default on
+this file.
+</P>
+<P><STRONG>Additional information:</STRONG></P>
+<P>This software is an external Cisco project and not formally
+supported by PSIRT.</P>
+<P><STRONG>References:</STRONG></P>
+<P><A HREF="http://service1.symantec.com/SUPPORT/nav.nsf/docid/2003061214465806?OpenDocument&amp;src=_mi">None</A></P>
+<P><STRONG>Other acknowledgements / thanks / greetings / information:</STRONG></P>
+<P>None</P>
+<P><STRONG>URL for advisory, signature and keys:</STRONG></P>
+<P><A HREF="http://seifried.org/security/advisories/kssa-004.html">http://seifried.org/security/advisories/kssa-004.html</A>
+</P>
+<P><A HREF="http://seifried.org/security/advisories/kssa-004.html.sig">http://seifried.org/security/advisories/kssa-004.html.sig</A></P>
+<P>
+<PRE>
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+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
+PBU7khW2r9Yh
+=TEKv
+-----END PGP PUBLIC KEY BLOCK-----
+</PRE>
+</P>
+<HR>
+<P>Permission is granted for copying and circulating this Bulletin to
+the Internet community for the purpose of alerting them to problems,
+if and only if, the bulletin is not edited or changed in any way, is
+attributed to Kurt Seifried <A HREF="/cdn-cgi/l/email-protection#3e554b4c4a7e4d5b57584c575b5a10514c59"><span class="__cf_email__" data-cfemail="81eaf4f3f5c1f2e4e8e7f3e8e4e5afeef3e6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+and provided such reproduction and/or distribution is performed for
+non-commercial purposes.</P>
+<P>Any other use of this information is prohibited. Kurt Seifried
+<A HREF="/cdn-cgi/l/email-protection#73180601073300161a15011a16175d1c0114"><span class="__cf_email__" data-cfemail="6a011f181e2a190f030c18030f0e4405180d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A> is not
+liable for any misuse of this information by any third party.</P>
+<HR>
+<P>Last updated 8/8/2002</P>
+<P>Copyright Kurt Seifried 2002</P>
+<P>&nbsp;</P>
+<P><A HREF="./">Back</A></P>
+<P>&nbsp;</P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

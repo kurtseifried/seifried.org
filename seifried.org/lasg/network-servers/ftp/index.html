@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;FTP</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#80ebf5f2f4c0f3e5e9e6f2e9e5e4aeeff2e7"><span class="__cf_email__" data-cfemail="43283631370330262a25312a26276d2c3124">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>FTP used to be the most used protocol on the Internet by sheer
+data traffic until it was surpassed by HTTP a few years ago (yes,
+there was a WWW-free Internet once upon a time). FTP does one
+thing, and it does it well, transferring of files between
+systems. The protocol itself is insecure, passwords, data, etc is
+transferred in cleartext and can easily be sniffed, however most
+ftp usage is 'anonymous', so this isn't a huge problem. One of
+the main problems typically encountered with ftp sites is
+improper permissions on directories that allow people to use the
+site to distribute their own data (typically copyrighted
+material, etc). Again as with telnet you should use an account
+for ftping that is not used for administrative work since the
+password will be flying around the network in clear text.</p>
+<p>Problems with ftp in general include:</p>
+<p>· Clear text authentication, username and password.&nbsp;<br>
+· Clear text of all commands.&nbsp;<br>
+· Password guessing attacks<br>
+· Improper server setup and consequent abuse of servers&nbsp;<br>
+· Several nasty Denial of Service attacks still exist in various
+ftp servers<br>
+· Older version of WU-FTPD and derivatives have root hacks&nbsp;</p>
+<p>Securing FTP isn't to bad, between firewalling and
+TCP_WRAPPERS you can restrict access based on IP address /
+hostname quite well. In addition most ftp servers run chroot'ed
+by default for anyone anonymous access, or an account defined as
+guest. With some amount of work you can set all users that are
+ftping in to be chroot'ed to their home directory or wherever
+appropriate. You can also run ftp servers that encrypts the data
+(using such things as SSL/etc.) however this means your ftp
+clients must speak the encryption protocol, and this isn't always
+practical. Also make very sure you have no publicly accessible
+directories on your ftp server that are both readable and
+writeable, otherwise people will exploit it to distribute their
+own software (typically warez or porn).</p>
+<p>An example of firewalling rules:</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 21
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 21
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 21</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 21
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 21
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 21</pre>
+<p>An example of the same using TCP_WRAPPERS in /etc/hosts.allow:</p>
+<pre>in.ftpd: 10.0.0.0/255.0.0.0, some.trusted.host</pre>
+<p>And in /etc/hosts.deny:</p>
+<pre>in.ftpd: 0.0.0.0/0.0.0.0</pre>
+<p>There are several encrypted alternatives to ftp as mentioned
+before, SSLeay FTPD, and other third party utils. Since most ftp
+accounts are not used as admin accounts (cleartext passwords, you
+have been warned), and hopefully run chroot'ed, the security risk
+is minimized. Now that we have hopefully covered all the network
+based parts of ftp, lets go over securing the user accounts and
+environment.</p>
+<h2><a name="FTP servers">FTP servers</a></h2>
+<p>There are numerous ftp server software packages available for
+Linux. The popular ones (Wu-FTPD and ProFTPD) have had a severe
+number of problems, so make sure your version is up to date.</p>
+<h2>vsftpd</h2>
+<p><br>
+Ok, the thing deserves a 1.x release version now, it seems to be
+doing<br>
+useful work on various production sites.<br>
+<br>
+Before the 1.0 release details, something potentially
+interesting: my next<br>
+project. Before I start investigating the feasability, I want to
+judge the<br>
+demand. I'm considering a &quot;vssshd&quot;, which would be a
+very cut down/minimal<br>
+server-only implementation of the ssh2 protocol. The intended
+audience<br>
+would be paranoid people who want no-frills secure remote access.
+I'm not<br>
+saying the current sshd implementations are insecure; however,
+their<br>
+design leaves something to be desired. In particular there seems
+to be<br>
+rather too much use of &quot;root&quot; (witness the severity of
+the deattack.c<br>
+flaw). I am tempted to investigate the possibility of writing a
+minimal<br>
+sshd where all protocol parsing and in particular SSL code runs
+as<br>
+non-root in a chroot() environment.<br>
+<br>
+vsftpd-1.0.0<br>
+<a href="ftp://ferret.lmh.ox.ac.uk/pub/linux/vsftpd-1.0.0.tar.gz">ftp://ferret.lmh.ox.ac.uk/pub/linux/vsftpd-1.0.0.tar.gz</a><br>
+<br>
+Approximate changelog:<br>
+- Fix build on RedHat7.2<br>
+- Fix build on Mandrake systems<br>
+<br>
+README:<br>
+vsftpd is an FTP server, or daemon. The &quot;vs&quot; stands for
+Very Secure.<br>
+Obviously this is not a guarantee, but a reflection that I have
+written<br>
+the entire codebase with security in mind, and carefully designed
+the<br>
+program to be resilient to attack.<br>
+<br>
+Recent evidence shows that vsftpd is also extremely fast and
+scalable. vsftpd<br>
+has achieved ~4000 concurrent users on a single machine, in a
+production<br>
+environment.<br>
+<br>
+vsftpd is now a proven stable solution. Of particular note,
+RedHat used vsftpd<br>
+to enable <a href="ftp://ftp.redhat.com">ftp.redhat.com</a> to
+support 15,000 concurrent users across their<br>
+server pool. This extreme load was generated by the release of
+RedHat 7.2<br>
+to the world.<br>
+<br>
+<br>
+<br>
+Cheers<br>
+Chris<br>
+</p>
+<p>&nbsp;</p>
+<h2><a name="ProFTPD">ProFTPD</a></h2>
+<p>ProFTPD is a GPL licensed ftp server that can run on a variety
+on UNIX platforms. It supports newer features such as virtual
+ftp, per directory configuration (using .ftpaccess files similar
+to Apache&#146;s .htaccess files), support for expired accounts
+and more. It also supports really useful features such as
+limiting downloads and much tighter security controls then
+WU-FTPD. I highly recommend it over any other freely available
+FTP server for UNIX.</p>
+<p>ProFTPD&#146;s main configuration file is /etc/proftpd.conf,
+it has a rather Apache-esque configuration style which I like a
+lot. ProFTPD can be run from inetd (and make use of TCP_WRAPPERS)
+or it can be run as a stand-alone server. It also supports per
+directory config files to limit access and so forth. ProFTPD
+supports virtual ftp as well (although unlike virtual www
+serving, extra IP addresses are required) and each site can be
+configured differently (different anonymous access, if any, and
+more things along those lines). The general proftpd.conf
+typically has a section covering global settings (inetd or
+standalone, maximum number of processes to run, who to run as,
+and so on), followed by a default config, followed by specific
+site (virtual sites) configuration. On a server doing virtual
+hosting it is probably a good idea to turn
+&#147;DefaultServer&#148; off, so any clients ftping in aimlessly
+are denied instead of being dumped into a default site.</p>
+<p>Sample configuration for a ProFTPD server being run from inetd
+with no anonymous access:</p>
+<pre>ServerName &quot;ProFTPD Default Installation&quot;
+ServerType inetd
+DefaultServer on
+Port 21
+Umask 022
+MaxInstances 30
+User nobody
+Group nobody
+&lt;Directory /*&gt;
+AllowOverwrite on
+&lt;/Directory&gt;</pre>
+<p>Let&#146;s say, like me, that you are paranoid and want to
+control access to the ftp server by IP addresses, hostnames and
+domain names (although I would recommend only relying on
+IP&#146;s). You could accomplish via firewall rules, but that
+tends to slow the machine down (especially if you are adding lots
+of rules as would be prone to happen). You could use
+TCP_WRAPPERS, but you wouldn&#146;t be able to selectively limit
+access to virtual sites, anonymous sites, just the server itself.
+Or you could do it in the proftpd.conf file using the
+&#147;&lt;Limit LOGIN&gt;&#148; directive.</p>
+<p>The following example will limit access to 10.1.*.* and
+1.2.3.4, all other machines will be denied access.</p>
+<pre>&lt;Limit LOGIN&gt;
+Order Allow,Deny
+Allow from 10.1., 1.2.3.4
+Deny from all
+&lt;/Limit&gt;</pre>
+<p>If you place this within a &#147;&lt;VirtualHost&gt;&#148; or
+&#147;&lt;Anonymous&gt;&#148; directives it applies only to that
+virtual site or anonymous setup, if placed in a
+&#147;&lt;Global&gt;&#148; directive it will apply to all the
+&#147;&lt;VirtualHost&gt;&#148; and &#147;&lt;Anonymous&gt;&#148;
+sections, and if placed in the server config (i.e. with the
+&#147;ServerName&#148; and related items) it will behave like
+TCP_WRAPPERS would, anyone not from 10.1.*.* or 1.2.3.4
+immediately gets bumped when they try to connect to port 21, as
+opposed to simply being denied login if it&#146;s in a
+&#147;&lt;Global&gt;&#148;, &#147;&lt;VirtualHost&gt;&#148; or
+&#147;&lt;Anonymous&gt;&#148; section.</p>
+<p>If you want to add anonymous access simply append:</p>
+<pre>&lt;Anonymous ~ftp&gt;
+User ftp
+Group ftp
+RequireValidShell off
+UserAlias anonymous ftp
+MaxClients 10
+DisplayLogin welcome.msg
+DisplayFirstChdir .message
+&lt;Directory *&gt;
+&lt;Limit WRITE&gt;
+DenyAll
+&lt;/Limit&gt;
+&lt;/Directory&gt;
+&lt;/Anonymous&gt;</pre>
+<p>This would assign the &#147;ftp&#148; users home directory
+(assuming a normal setup &#147;~ftp&#148; would probably be
+/home/ftp) as the root anonymous directory, the ProFTPD would run
+as the user &#147;ftp&#148; and group &#147;ftp&#148; when people
+log in anonymously (as opposed to logging in as a normal user),
+and anonymous logins would be limited to 10. As well the file
+/home/ftp/welcome.msg would be displayed when anonymous users ftp
+in, and any directory with a .message file containing text would
+be displayed when they changed into it. The &#147;&lt;Directory
+*&gt;&#148; covers /home/ftp/*, and then denies write access for
+all, meaning no-one can upload any files. If you wanted to add an
+incoming directory simply add the following after the
+&#147;&lt;Directory *&gt;&#148; directives:</p>
+<pre>&lt;Directory incoming&gt;
+&lt;Limit WRITE&gt;
+AllowAll
+&lt;/Limit&gt;
+&lt;Limit READ&gt;
+DenyAll
+&lt;/Limit&gt;
+&lt;/Directory&gt;</pre>
+<p>This would allow people to write files to /home/ftp/incoming/,
+but not read (i.e. download) them. As you can see ProFTPD is very
+flexible, this results in ProFTPD requiring more horsepower then
+WU-FTPD, but it is definitely worth it for the added control. You
+can get ProFTPD and the documentation from: <a href="http://www.proftpd.net/">http://www.protftpd.net/</a>.</p>
+<p><strong>proftpd-ldap</strong></p>
+<p>proftpd-ldap allows you to do password look ups using an LDAP
+directory, you can download it from: <a href="http://horde.net/~jwm/software/proftpd-ldap/">http://horde.net/~jwm/software/proftpd-ldap/</a>.</p>
+<h2><a name="WU-FTPD">WU-FTPD</a></h2>
+<p>WuFTPD used to have numerous security issues however 2 years
+ago a security audit was done by SuSE and many of the problems
+were removed. If you use WuFTPD make sure it is a descendant of
+the audited version (it should be unless the vendor is using an
+ancient codebase). </p>
+<p>One of the main security mechanisms in WU-FTPD is the use of
+chroot. For example; by default all people logging in as
+anonymous have /home/ftp/ set as their &#147;root&#148;
+directory. They cannot get out of this and say look at the
+contents of /home/ or /etc/. The same can be applied to groups of
+users and / or individuals, for example you could set all users
+to be chroot'ed to /home/ when they ftp in, or in extreme cases
+of user privacy (say on a www server hosting multiple domains)
+set each user chroot'ed to within their own home directory. This
+is accomplished through the use of /etc/ftpaccess and /etc/passwd
+(man ftpaccess has all the info). I will give a few examples of
+what needs to be done to accomplish this since it can be quite
+confusing at first. ftpd also checks /etc/ftpusers and if the
+user attempting to login is listed in that file (like root should
+be) it will not let the user login via ftp.</p>
+<p>To chroot users as they login into the ftp server is rather
+simple, but poorly documented. The ftp server check
+/etc/ftpaccess for &#147;guestgroup&#148;&#146;s, which are
+simply &quot;guestgroup some-group-on-the-system&quot; i.e.
+&quot;guestgroup users&quot;. The groupname needs to be defined
+in /etc/group and have members added. You need to edit their
+passwd file line so that the ftp server knows where to dump them.
+And since they are now chroot'ed into that directory on the
+system, they do not have access to /lib, etc so you must copy
+certain files into their dir for things like &#147;ls&#148; to
+work properly (always a nice touch).</p>
+<p>Setting up a user (billybob) so that he can ftp in, and ends
+up chroot'ed in his home directory (because he keeps threatening
+to take the sysadmin possum hunting). In addition to this
+billybob can telnet in and change his password, but nothing else
+because he keeps trying to run ircbots on the system. The system
+he is on uses shadowed passwords, so that's why there is an 'x'
+in billybob's password field.</p>
+<p>First off billybob needs a properly setup user account in
+/etc/passwd:</p>
+<pre>billybob:x:500:500:Billy Bob:/home/billybob/./:/usr/bin/passwd</pre>
+<p>this means that the ftp server will chroot billybob into
+/home/billybob/ and chdir him into what is now / (/home/billybob
+to the rest of us). The ftpaccess man file covers this bit ok,
+and of course /usr/sbin/passwd needs to be listed in /etc/shells.</p>
+<p>Secondly, for the ftp server to know that he is being
+chroot'ed he needs to be a member of a group (badusers,
+ftppeople, etc) that is defined in /etc/group. And then that
+group must be listed in /etc/ftpaccess.</p>
+<p>Now you need to copy some libraries and binaries in the chroot
+&#147;jail&#148;, otherwise &#147;billybob&#148; won't be able to
+do a whole lot once he has ftp'ed in. The files needed are
+available as packages (usually called &#147;anonftp&#148;), once
+this is installed the files will be copied to /home/ftp/, you
+will notice there is an /etc/passwd, this is simply uses to map
+UID's to usernames, if you want billybob to see his username and
+not UID, add a line for him (i.e., copy his line from the real
+/etc/passwd to this one). The same applies to the group file as
+well.</p>
+<p>without &quot;billybob:*:500:500:::&quot; in
+/home/billybob/etc/passwd:</p>
+<pre>drwxr-xr-x 2 500 500 1024 Jul 14 20:46 billybob</pre>
+<p>and with the line added to /home/billybob/etc/passwd:</p>
+<pre>drwxr-xr-x 2 billybob 500 1024 Jul 14 20:46 billybob</pre>
+<p>and with a line for billybob's group added to
+/home/billybob/etc/group:</p>
+<pre>drwxr-xr-x 2 billybob billybob 1024 Jul 14 20:46 billybob</pre>
+<p>Billybob can now ftp into the system, upload and download
+files from /home/billybob to his hearts content, change his
+password all on his own, and do no damage to the system, nor
+download the passwords file or other nasty things.</p>
+<p>FTP is also a rather special protocol in that the clients
+connect to port 21 (typically) on the ftp server, and then port
+20 of the ftp server connects to the client and that is the
+connection that the actual data is sent over. This means that
+port 20 has to make outgoing connections. Keep this in mind when
+setting up a firewall either to protect ftp servers or clients
+using ftp. As well there is 'passive' ftp and usually used by www
+browsers/etc, which involves incoming connections to the ftp
+server on high port numbers (instead of using 20 they agree on
+something else). If you intend to have a public ftp server put up
+a machine that JUST does the ftp serving, and nothing else,
+preferably outside of your internal LAN (see Practical Unix and
+Internet Security for discussions of this 'DMZ' concept). You can
+get WU-FTPD from <a href="http://www.wu-ftpd.org/">http://www.wu-ftpd.org/</a>
+</p>
+<h2><a name="NcFTPD">NcFTPD</a></h2>
+<p>NcFTPD is a high volume ftp server, however it is only free
+for personal or .edu usage. You can get it from: <a href="http://www.ncftpd.com/ncftpd/">http://www.ncftpd.com/ncftpd/</a>.</p>
+<h2><a name="FTP - SSL">FTP - SSL</a></h2>
+<p>Also a drop in replacement for your favorite ftpd (probably
+WU-FTPD), also available as a set of patches for WU-FTPD. This is
+highly appropriate as most servers have many users that require
+ftp access. The tarball is available at: <a href="ftp://ftp.uni-mainz.de/pub/internet/security/ssl/">ftp://ftp.uni-mainz.de/pub/internet/security/ssl/</a>.</p>
+<h2><a name="FTP - SRP">FTP - SRP</a></h2>
+<p>SRP can also be used to encrypt the username/password login
+portion of your ftp session, or the entire session. You can get
+SRP at <a href="http://srp.stanford.edu/srp/">http://srp.stanford.edu/srp/
+</a>and it is covered in the LASG <a href="../authentication/index.html">here</a>.</p>
+<h2><a name="sftp">sftp</a></h2>
+<p>sftp runs over ssh which makes for relatively ftp sessions.
+You can get it from: <a href="http://www.xbill.org/sftp/">http://www.xbill.org/sftp/</a>.
+</p>
+<p><a href="../index.html">Back</a></p>
+<p>&nbsp;</p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#dfb4aaadab9facbab6b9adb6babbf1b0adb8"><span class="__cf_email__" data-cfemail="472c3235330734222e21352e222369283520">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

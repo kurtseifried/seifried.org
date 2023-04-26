@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;Printing</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#03687671774370666a65716a66672d6c7164"><span class="__cf_email__" data-cfemail="8be0fef9ffcbf8eee2edf9e2eeefa5e4f9ec">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p>&nbsp;</p>
+<h2><a name="Print servers for Linux">Print servers for Linux</a></h2>
+<h2><a name="lpd">lpd</a></h2>
+<p>lpd is the UNIX facility for printing (Line Printer Daemon).
+It allows you to submit print jobs, run them through filters,
+manage the print queues, and so on. lpd can accept print jobs
+locally, or over the network, and access various parts of the
+system (printers, logging daemons, etc), making it a potential
+security hole. Historically lpd has been the source of several
+nasty root hacks. Although these bugs seems to have been mostly
+ironed out, there are still many potential denial of service
+attacks though due to it&#146;s function (something simple like
+submitting huge print jobs and running the printer out of paper).
+Fortunately, lpd is slowly being phased out with the advent of
+network aware printers, however there is still a huge amount of
+printing done via lpd. lpd access is controlled via
+/etc/hosts.equiv, and /etc/hosts.lpd. You should also firewall
+lpd from the outside world. And if you need to send print jobs
+across public networks, remember anyone can read them, so a VPN
+solution is a good idea. lpd runs on port 515 using tcp. The
+hosts.lpd file should contain a list of hosts
+(workstation1.yourdomain.org, etc), one per line that are allowed
+to use the lpd services on the server, you might as well use
+ipfwadm/ipchains.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 515
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 515
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 515</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 515
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 515
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 515</pre>
+<h2><a name="LPRng">LPRng</a></h2>
+<p>An alternative to the stock lpd is &#147;LPRng&#148; (LPR Next
+Generation), it provides new enhancements and also supports a
+higher level of security. LPRng supports Kerberos and PGP-based
+authentication, as well as a restrictions files, /etc/lpd.perms,
+which allows you to control access based on user, group,
+authentication, IP, and so on, allowing for extremely flexible
+and secure configurations. LPRng has excellent documentation and
+is available at: <a href="http://www.lprng.com/">http://www.lprng.com/</a>
+</p>
+<h2><a name="CUPS"><b>CUPS</b></a></h2>
+<p>Common UNIX Printing System (CUPS), is GPL licensed and
+version 1.0 just came out. CUPS is available from: <a href="http://www.cups.org/">http://www.cups.org/</a>.&nbsp;</p>
+<p><a href="index.html">Back</a></p>
+<p>Last updated on 31/8/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#0e657b7c7a4e7d6b67687c676b6a20617c69"><span class="__cf_email__" data-cfemail="4d26383f390d3e28242b3f24282963223f2a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

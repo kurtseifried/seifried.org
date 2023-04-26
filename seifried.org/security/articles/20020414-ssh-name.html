@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - Articles / What's in a name? - SSH</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>What's in a Name? </h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#43283631370330262a25312a26276d2c3124"><span class="__cf_email__" data-cfemail="147f6166605467717d72667d71703a7b6673">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<table border="0">
+<tr>
+<td><b>February 14, 2001 - </b>Yesterday it became public
+knowledge that Tatu Ylonen, the creator of the SSH
+protocol and founder of a company with the same name,
+asked the OpenSSH group to change its name. Normally such
+a case, a commercial company asking someone to change its
+name, wouldn't be a terribly big deal &#151; but in this
+case it is. SSH was first used as the name for a
+protocol, &quot;Secure SHell.&quot; The SSH protocol uses
+strong crypto and public key cryptography and provides a
+secure replacement for insecure protocols such as Telnet,
+rexec, rcp, rsh, FTP and so on. In addition, the SSH
+protocol features tunneling, allowing you to easily wrap
+insecure protocols such as POP or X and face far fewer
+worries when using them. <p>The history of the SSH
+protocol is long and checkered. Originally, around July
+of 1995 Tatu Ylonen released the first version. Just over
+half a year later version 1.2.13 was released. 1.2.13 was
+a major release. It signaled the start of a new era, with
+SSH Communications signing agreements with F-Secure.
+Interestingly enough, at that time versions 1.2.0 to
+1.2.12 were removed from the FTP site (and since then
+copies have been very hard to find). </p>
+<p>The original licenses (they change over time) on
+Tatu's SSH software allowed for modification and
+distribution of the code. As time went on, however, the
+license on SSH become increasingly restrictive, with a
+fully commercial license in version 1.2.28, by which time
+SSH had become a very popular standard. </p>
+<p>Enter OpenSSH. Created as a free alternative to SSH
+Communications' product, the OpenBSD team forked an
+earlier version of Tatu's SSH code, which had a less
+restrictive license than later versions. OpenSSH's source
+code was tidied up and then released, and protocol 2
+support was added in, making it fully compatible with the
+commercial SSH implementation. </p>
+<p>More recently, the IETF (Internet Engineering Task
+Force) has been working on making the SSH protocol a
+standard. During the latter parts of this process SSH
+Communications has begun trying to enforce the term
+&quot;SSH&quot; as a trademark it claims to own.</p>
+<p>This is where things get messy. For SSH Communications
+to claim that &quot;SSH&quot; is a trademark, they must
+meet several conditions. The most obvious is that they
+must register &quot;SSH&quot; as a trademark; this has
+been done. </p>
+<p>Secondly, they must defend their trademark, and as far
+as I know this is the first time they have chosen to
+enforce their trademark. After several years of no
+enforcement, several dozen software packages exist that
+use the word &quot;SSH&quot; in their titles.
+Additionally, SSH Communications has contacted only the
+OpenSSH project; the only other contact was an attempt to
+send an email to Bugtraq regarding ScanSSH's use of the
+word SSH, sent by Tatu Ylonen (which is odd, since the
+contact information for the authors of ScanSSH is not
+hard to find). </p>
+<p>Also, various rights were granted in earlier versions
+of Tatu's SSH license, and once rights are granted they
+cannot be taken away. (There are other issues with the
+license as well, regarding the use of GPL code, for
+example.) All in all this is a very messy situation. </p>
+<p>Tatu Ylonen of SSH Communications seems to want his
+major competitor, OpenSSH, to change its name and stop
+using the word &quot;SSH.&quot; He also has written that
+he is willing to grant the IETF usage of the trademark
+&quot;SSH,&quot; but will later revoke that permission.
+The complete non-enforcement of the &quot;SSH&quot;
+trademark for several years, followed by extremely
+selective enforcement (OpenSSH.com was contacted, while
+OpenSSH.org was not) seems rather strange until you
+consider several facts:</p>
+<ul type="disc">
+<li>The SSH protocol is about to become an official
+Internet standard. It is already hugely popular
+and important. (Theo de Raadt rates the three
+most important protocols on the Internet as BGP,
+DNS and SSH.)</li>
+<li>Despite commercial SSH products being
+&quot;free&quot; for Linux and Free/Net/OpenBSD
+users, there are no Linux/BSD vendors shipping
+Commercial SSH with their operating systems. In
+fact, the vast majority have chosen OpenSSH (with
+one minor exception using older versions of
+Tatu's SSH that are still free).</li>
+<li>The stock price of F-Secure (distributor for SSH)
+has tumbled 90% in the last few months. SSH
+Communications' stock price, since going public
+in December of 2000, has fallen 50%. </li>
+</ul>
+<p>Moreover, the actual registered trademark at <a href="http://tess.uspto.gov/bin/showfield?f=doc&amp;state=muin9a.3.1">http://tess.uspto.gov/bin/showfield?f=doc&amp;state=muin9a.3.1</a>
+and <a href="http://tess.uspto.gov/bin/showfield?f=doc&amp;state=muin9a.3.2">http://tess.uspto.gov/bin/showfield?f=doc&amp;state=muin9a.3.2</a>
+seems to cover only the logo itself. In any event,
+Fairchild Industries, Inc. seems to think it owns the
+trademark already. </p>
+<p>I managed to interview three of the principal people
+involved in this: Tatu Ylonen (SSH Communications), Theo
+de Raadt (OpenBSD/OpenSSH) and Bill Sommerfeld (IETF SSH
+working group). Interviews were done via email. Hopefully
+this dispute will be resolved. To quote Bill Sommerfeld:</p>
+<blockquote>
+<p>Needless to say, added delay in the standards
+process does not help the end user.</p>
+</blockquote>
+<p><br>
+</p>
+<hr>
+<h2>SSH Communications</h2>
+<blockquote>
+<p><b>Kurt Seifried: </b>What prompted you to write
+SSH originally?</p>
+<p><b>Tatu Ylonen: </b>There was a hacker attack at
+the university network in Finland. It was a password
+sniffing attack, and when it was discovered, the
+attacker had several thousand username-password pairs
+in its database, including some from my company at
+the time.</p>
+<p>I basically wanted to build something that I can
+use to log into my company's and university servers
+without having to worry about someone stealing my
+password. I also wanted to advance the widespread
+deployment of strong cryptography, because I think it
+is important both from a network security standpoint
+and for the stability of the society at large, since
+the networks are very much the backbone that the
+information society build on. They must be secure. </p>
+<p>The software filled a wide need that was just
+beginning to be recognized. It did the right thing at
+the right time, and for the first time made
+encrypting login sessions easy for the users. I
+released the first version in July 1995, and started
+SSH Communications Security Corp when I could no
+longer deal with the support requests I was receiving
+(150 mails per day by the end of 1995).</p>
+<p><b>Kurt Seifried: </b>Why are you asking OpenSSH
+to change the name of their project?</p>
+<p><b>Tatu Ylonen: </b>Because their product name and
+their unauthorized use of the SSH trademark has
+caused significant confusion as to the meaning and
+origin of the SSH brand. I've also received quite a
+few e-mails where people have confused OpenSSH as my
+product.</p>
+<p><b>Kurt Seifried:</b> What is the best thing about
+SSH currently? What is the worst?</p>
+<p><b>Tatu Ylonen: </b>I think one of the cooler
+things with SSH Secure Shell is the fully integrated
+secure file transfers that you get on Windows with
+SSH Secure Shell for Workstations (evaluation version
+available <a href="ftp://ftp.ssh.com/pub/ssh">ftp://ftp.ssh.com/pub/ssh</a>).
+It makes using corporate files from one's laptop
+extremely easy, even for novice users who have never
+used a Unix machine. I think it is very important to
+make things easy for users, so that they get widely
+deployed.</p>
+<p>I guess this trademark incident is the worst. We
+have no other alternative but to protect the
+trademark. For this reason, I've asked the OpenSSH
+group to please change the name of their product. Our
+trademark policy has been well known to them for a
+long time, e.g. through the IETF working group.</p>
+<p><b>Kurt Seifried:</b> If you could do three things
+to SSH, ignoring backward compatibility, etc., what
+would they be?</p>
+<p><b>Tatu Ylonen: </b>I'm quite happy with version 2
+of the protocol. The version 1 protocol is flawed (it
+doesn't properly authenticate the key exchange, and
+additionally it uses message authentication code that
+is cryptographically way too weak). These bugs open
+an endless stream of possible security flaws, which
+we will undoubtedly see emerging time after time in
+the public. If I could change one thing, it would be
+the version 1 key exchange. On the other hand, it is
+already solved in the version 2 protocol.</p>
+<p><b>Kurt Seifried:</b> Why do you think SSH
+Protocol 1 should be depreciated? All the attacks
+listed at your site (<a href="http://www.ssh.com/products/ssh/cert/vulnerability.html">http://www.ssh.com/products/ssh/cert/vulnerability.html</a>)
+involve either encryption being turned off, or the
+use of RC4.</p>
+<p><b>Tatu Ylonen: </b>All of these problems are just
+individual symptoms of a much deeper, fundamental
+problem in the protocol, which we will encounter time
+after time as people find ways to circumvent the
+kludges that are being used to work around previous
+instances of the problem. </p>
+</blockquote>
+<p><br>
+</p>
+<hr>
+<h2>OpenSSH</h2>
+<blockquote>
+<p><b>Kurt Seifried: </b>What prompted you to start
+the OpenSSH project originally?</p>
+<p><b>Theo de Raadt: </b>I think that after BGP and
+DNS, the SSH protocol is the most important thing
+that people need to maintain reliability of the
+internet. Since a free one did not exist, we started
+[our] project as soon as we found out about the
+licensing terms on ssh-1.2.12. These terms permitted
+completely free use of the software, and the names
+&quot;ssh&quot; and &quot;Secure Shell&quot; as long
+as the protocol matched the supplied RFC document. So
+we maintained compatibility. </p>
+<p><b>Kurt Seifried: </b>About how many people are
+working on the OpenSSH project (full- or part-time)?</p>
+<p><b>Theo de Raadt: </b>Open source developers are
+funny; they work harder part-time than most people
+work full-time. I think that there are perhaps 5
+really serious OpenSSH developers. By far, the most
+serious one is Markus Friedl.</p>
+<p><b>Kurt Seifried:</b> Why do you think you are now
+being asked to change the name of the project?</p>
+<p><b>Theo de Raadt: </b>Probably because ssh.com
+sees us as competition and wants to create confusion.</p>
+<p><b>Kurt Seifried:</b> What is the best thing about
+SSH/OpenSSH currently? What is the worst?</p>
+<p><b>Theo de Raadt: </b>The best thing is that it
+can be freely incorporated in any system anyone wants
+to. Any operating system group, vendor of a switch or
+router, of a firewall appliance, can just pop it in
+and have a secure channel into their product. The
+security of our international network infrastructure
+is going to happen because they can add secure
+network connection technology to it for $0.</p>
+<p>Since it is free, there is no worst. If you don't
+like it, you are free to use something else!</p>
+<p><b>Kurt Seifried:</b> Do you think the SSH 1
+protocol should be depreciated? All the attacks
+listed at your site (<a href="http://www.ssh.com/products/ssh/cert/vulnerability.html">http://www.ssh.com/products/ssh/cert/vulnerability.html</a>)
+either involve encryption being turned off, or the
+use of RC4.</p>
+<p><b>Theo de Raadt: </b>Most of those issues listed
+are old attacks, predating all but the most aged SSH
+protocol users. More recently, we have encouraged
+groups such as CORE-SDI to find new flaws (I visited
+Buenos Aires and dared them to find something). Some
+other implementation flaws have also come to light,
+and luckily we already had them fixed. Honestly,
+there are some other theoretical attacks against SSH1
+protocol (and to some extent against SSH2 protocol as
+well), but we will continue [work] on repairing them.
+Note that SSH1-only servers account for 70% of all
+servers. Of the remaining, roughly 8% do SSH2
+protocol only. For now, supporting both makes sense,
+supporting only protocol 1 is future-insensitive, but
+supporting only protocol 2 is stupid. I think that
+ssh.com wants SSH1 protocol dead because it makes
+them no money.</p>
+<p><a href="http://ssh-research.ucs.ualberta.ca/ssh-stats.html">http://ssh-research.ucs.ualberta.ca/ssh-stats.html</a></p>
+<p><b>Kurt Seifried: </b>According to <a href="http://www.ssh.com/about/press/2000/release15082000.html">http://www.ssh.com/about/press/2000/release15082000.html</a>:
+&quot;Users of Linux, FreeBSD, NetBSD, and OpenBSD
+operating systems may now use SSH Secure Shell 2.3
+free of charge, regardless of use.&quot; Also,
+developers (vendors) such as Red Hat, FreeBSD, etc.
+can ship commercial SSH with their distributions, and
+the license for 2.3 allows much greater
+non-commercial use and single-user usage. As far as I
+know, none of these vendors ship commercial SSH with
+their operating systems. Why do you think this is?</p>
+<p><b>Theo de Raadt: </b>They choose OpenSSH because
+it is a 100%-equivalent solution which supports both
+SSH1 and SSH2, and it is completely free. I think
+this is something which the Open Source community
+understands well enough that I don't need to explain
+it.</p>
+</blockquote>
+<p><br>
+</p>
+<hr>
+<h2>IETF</h2>
+<blockquote>
+<p><b>Kurt Seifried: </b>Why do you (IETF) feel that
+the SSH protocol is so important?</p>
+<p><b>Bill Sommerfeld:</b> The original ssh1 protocol
+is widely used as an alternative to flagrantly
+insecure protocols and as such is a major
+improvement; however, it has a number of significant
+cryptographic flaws which are addressed in the
+protocol being developed by the IETF's Secure Shell
+working group.</p>
+<p>See <a href="http://www.securityfocus.com/archive/1/161150">http://www.securityfocus.com/archive/1/161150</a>
+(one which was recently announced).</p>
+<p>Also, the use of CRC32 for an
+&quot;authentication&quot; check is also highly
+suspect; the 'crc compensation attack detector' is at
+best a bandaid for the problem.</p>
+<p><b>Kurt Seifried:</b> Do you (IETF) worry about a
+vendor controlling part of the standards process so
+directly? (That is, SSH granting the use of the word
+SSH to the IETF under certain conditions?)</p>
+<p><b>Bill Sommerfeld: </b>The IETF has standardized
+protocols with trademarked names in the past.
+Kerberos (rfc1510) is a trademark of MIT, and PGP
+(rfc2440 among others) is a trademark of NAI. IETF
+working groups have also renamed protocols to avoid
+trademark issues. S/Key was standardized as
+&quot;OTP&quot; to avoid conflict with the Bellcore
+trademark on the original implementation (see <a href="http://www.ietf.org/html.charters/otp-charter.html">http://www.ietf.org/html.charters/otp-charter.html</a>).</p>
+<p><b>Bill Sommerfeld: </b>The IETF as a whole does
+not take a position on the validity of intellectual
+property claims -- see RFC2026, &quot;The Internet
+Standards Process&quot; (<a href="http://www.ietf.org/rfc/rfc2026.txt">http://www.ietf.org/rfc/rfc2026.txt</a>),
+and the IETF's page of IPR notices (<a href="http://www.ietf.org/ipr.html">http://www.ietf.org/ipr.html</a>).
+</p>
+<p>The IETF has dozens of working groups. One of them
+is the Secure Shell (SECSH) working group, which was
+chartered in 1997 or so to define an internet
+standard based on Tatu Ylonen's SSH. (As an aside,
+the working group wasn't given the &quot;SSH&quot;
+abbreviation because, at the time, the IETF already
+had a &quot;Site Security Handbook&quot; working
+group which had grabbed the SSH abbreviation. Had the
+other SSH not been there, the working group would
+have been abbreviated as &quot;SSH&quot;.) </p>
+<p>The original working group chair stepped down over
+the summer, and I was asked to take over as working
+group chair at that time. Since then the working
+group has been making steady progress and we appeared
+to be very close to getting a set of documents ready
+to hand up to the IESG for review -- we were in the
+middle of the working group's &quot;Last Call&quot;
+period on the core Secure Shell protocol documents
+when I first received word of the dispute.</p>
+<p>In practice, IETF working groups tend to
+&quot;engineer around&quot; troublesome IPR issues;
+for instance, the SSH version 2 protocol was changed
+to use DSS instead of RSA to avoid the (now expired)
+RSA patent. I can't predict how the working group
+will react to this -- I only know that it will slow
+things down. </p>
+</blockquote>
+<hr>
+<p><strong>Reference links</strong></p>
+<p><b>SSH Shares February</b><br>
+<a href="http://cdpixel6.teledata.de/informer2/cdcharttcl?symm=XXH.BER&amp;hist=2&amp;dbrushwidth=&amp;charttype=&amp;gd1=&amp;gd2=&amp;benchmark=&amp;infos=&amp;indtype1=&amp;indtype2=&amp;volumen">http://cdpixel6.teledata.de/informer2/cdcharttcl?symm=XXH.<br>
+BER&amp;hist=2&amp;dbrushwidth=&amp;charttype=&amp;gd1=&amp;gd2=&amp;bench<br>
+mark=&amp;infos=&amp;indtype1=&amp;indtype2=&amp;volumen</a>=</p>
+<p><b>F-Secure Oyj Shares March to December</b><br>
+<a href="http://cdpixel5.teledata.de/informer2/cdcharttcl?symm=FSOYF.NAP&amp;hist=4&amp;dbrushwid\th=&amp;charttype=&amp;gd1=&amp;gd2=&amp;benchmark=&amp;infos=&amp;indtype1=&amp;indtype2=&amp;volumen=">http://cdpixel5.teledata.de/informer2/cdcharttcl?symm=FSO<br>
+YF.NAP&amp;hist=4&amp;dbrushwid\th=&amp;charttype=&amp;gd1=&amp;gd2=&amp;b<br>
+enchmark=&amp;infos=&amp;indtype1=&amp;indtype2=&amp;volumen=</a></p>
+<p><b>SSH trademarks and the OpenSSH product name</b><br>
+<a href="http://marc.theaimsgroup.com/?l=openssh-unix-dev&amp;m=98212056713751&amp;w=2">http://marc.theaimsgroup.com/?l=openssh-unix-dev&amp;m=<br>
+98212056713751&amp;w=2</a></p>
+<p><b>Secure Shell: Ärger um das Markenzeichen
+&quot;SSH&quot;</b><br>
+<a href="http://www.heise.de/newsticker/data/pab-14.02.01-000/">http://www.heise.de/newsticker/data/pab-14.02.01-000/</a></p>
+</td>
+<td valign="top"><table border="1" cellpadding="5" cellspacing="0" width="250" bordercolor="#000099">
+<tr>
+<td align="right" colspan="2" bgcolor="#000099"><font color="#FFFFFF"><b>How to Use the Word SSH</b></font></td>
+</tr>
+<tr>
+<td valign="top"><b>SSH (protocol)</b>.</td>
+<td valign="top">The name of the protocol
+&quot;Secure SHell.&quot; Numerous
+implementations exist, from Commercial SSH to
+OpenSSH and other free and open source software
+packages. Also being considered by the IETF as an
+official standard.</td>
+</tr>
+<tr>
+<td valign="top"><b>SSH1 (protocol)</b></td>
+<td valign="top">The first SSH protocol.</td>
+</tr>
+<tr>
+<td valign="top"><b>SSH2 (protocol)</b>.</td>
+<td valign="top">The second SSH protocol, with
+various changes and updates.</td>
+</tr>
+<tr>
+<td valign="top"><b>Tatu's SSH </b></td>
+<td align="right">The first implementation of the
+protocol, originally written in 1995 by Tatu
+Ylonen. The licensing on the software became
+progressively less free, ending in a completely
+commercial license.</td>
+</tr>
+<tr>
+<td valign="top"><b>Commercial SSH</b></td>
+<td valign="top">The now commercial
+implementation of the protocol based on Tatu
+Ylonen's work. Owned by SSH Communications.</td>
+</tr>
+<tr>
+<td valign="top"><b>OpenSSH</b></td>
+<td valign="top">An open source implementation of
+SSH also based on Tatu's early SSH
+implementation. </td>
+</tr>
+<tr>
+<td valign="top"><b>ScanSSH</b> </td>
+<td valign="top">A program that scans SSH servers
+and determines which versions of the protocol
+they support and which software they are using.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/14/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

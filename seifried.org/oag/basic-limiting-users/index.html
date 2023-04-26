@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - OAG - OpenBSD Administrator's Guide / Basic limiting users</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Basic limiting users</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#c0abb5b2b480b3a5a9a6b2a9a5a4eeafb2a7"><span class="__cf_email__" data-cfemail="d7bca2a5a397a4b2beb1a5beb2b3f9b8a5b0">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>Many security problems arise from the simple fact that you
+must allow user access to your systems. In some cases users can
+be malicious (i.e. internal attacker, university students, etc.)
+or they may accidentally expose their password to an attacker or
+simply use a weak password (like their username). In any event it
+is all to possible for users to attack a system, so it is
+advisable to monitor users, and limit the amount of damage they
+can do. </p>
+<p>&nbsp;</p>
+<h2><a name="Limiting user commands">Limiting user commands</a></h2>
+<p>Most UNIX systems allow all users to execute all commands. For
+example the &quot;route&quot; command, any user can execute it,
+however to use it to alter the routing tables (i.e. add, delete
+or modify routes) you must be root:</p>
+<blockquote>
+<pre>bash-2.05$ id
+uid=1000(seifried) gid=1000(seifried) groups=1000(seifried)
+bash-2.05$ route delete 0.0.0.0
+route: must be root to alter routing table: Permission denied
+bash-2.05$ route show
+Routing tables
+
+Internet:
+Destination      Gateway            Flags 
+default          1.2.3.4            UG     
+10.0.0.0         link#2             U     </pre>
+</blockquote>
+<p>It is advisable to remove the execute bit for
+&quot;other&quot; (i.e. chmod o-x) on potentially dangerous
+binaries, especially system utilities (such as the contents of
+/sbin/*). </p>
+<p>&nbsp;</p>
+<h2>Restricting access to cron and at</h2>
+<p>Users can sometimes avoid execution restrictions and other
+limits by scheduling jobs to run via cron or at. For example if
+you place a CPU limit on users if they leave an IRC boot running
+the system will eventually kill it. If the user has access to
+cron or at however they can simply schedule a job to run once a
+minute that checks to see if the IRC bot is running, and if it is
+not running it will be started. Thus whenever the system kills
+the bot it will be restarted less then a minute later
+automatically, allowing it to consume resources with ease. </p>
+<p>&nbsp;</p>
+<h3>Restricting access to cron</h3>
+<p>You can restrict access to cron in two ways, either by
+explicitly allowing only certain users to use it, or by
+explicitly denying certain users. To deny certain users simply
+list them in &quot;/var/cron/deny&quot;, for example:</p>
+<blockquote>
+<pre>bash-2.05# cat /var/cron/deny 
+seifried</pre>
+</blockquote>
+<p>To deny all users and only allow certain users simply list the
+users in &quot;/var/cron/allow&quot;:</p>
+<blockquote>
+<pre>bash-2.05# cat /var/cron/allow 
+root</pre>
+</blockquote>
+<p>You can view all the crontab entries in
+&quot;/var/cron/tabs/&quot;</p>
+<p>&nbsp;</p>
+<h3>Restricting access to at</h3>
+<p>You can restrict access to at in two ways, either by
+explicitly allowing only certain users to use it, or by
+explicitly denying certain users. To deny certain users simply
+list them in &quot;/var/at/at.deny&quot;, for example:</p>
+<blockquote>
+<pre>bash-2.05# cat /var/at/at.deny 
+seifried</pre>
+</blockquote>
+<p>To deny all users and only allow certain users simply list the
+users in &quot;/var/at/at.allow&quot;:</p>
+<blockquote>
+<pre>bash-2.05# cat /var/at/at.allow 
+root</pre>
+</blockquote>
+<p>You can view all the at entries in &quot;/var/at/jobs/&quot;</p>
+<p>&nbsp;</p>
+<h2><a name="Limiting user resources">Limiting user resources</a>
+</h2>
+<p>Users require resources like CPU time, memory and drive space
+to do their work. On many systems it is possible for users to hog
+resources, reducing the usefulness of the system to other users
+or in some cases actually bringing the server to a slow halt or
+crashing it. Users can also inadvertently use up more resources
+then they mean to, limiting their resources can prevent several
+classes of problems. Programs can crash. generating huge core
+dumps, or go crazy and user up all the available memory.
+Something to remember: global limits apply to root, so be
+careful! If you do not allow root to run enough processes for
+example cron jobs may fail or you may not even be able to log in
+to fix any problems. </p>
+<p>&nbsp;</p>
+<h3>login.conf</h3>
+<p>OpenBSD does not use PAM (Pluggable Authentication Modules) to
+authenticate logins and enforce user limits, instead it uses
+login.conf. login.conf in OpenBSD provides most of the same
+features PAM does with a few notable exceptions, the largest
+being the inability to limit the number of user logins by user or
+group. </p>
+<p>You can limit user access to resources by editing
+&quot;/etc/login.conf&quot;, limits can be placed on individual
+users, groups or &quot;default&quot; (any users without a valid
+login class). </p>
+<p>The available limits are:</p>
+<blockquote>
+<p><b>coredumpsize</b> -- Limits the core file size; usually
+set to 0 for most users to prevent core dumps.<br>
+<strong>datasize</strong> -- Maximum data size <br>
+<b>filesize</b> -- Maximum file size<br>
+<b>memorylocked</b> -- Maximum locked-in core memory address
+space (KB).<br>
+<b>memoryuse</b> -- Maximum core memory address space in use
+(KB).<br>
+<b>openfiles</b> -- Maximum number of open files per process.<br>
+<b>stacksize</b> -- Maximum stack size<br>
+<b>cputime</b> -- Maximum CPU time<br>
+<b>maxproc</b> -- Maximum number of processes.<br>
+<b>priority</b> -- The priority to run user process with.</p>
+</blockquote>
+<p>Limits can be set with &quot;-max&quot; and &quot;-cur&quot;,
+essentially a hard and soft limit, simply append &quot;-max&quot;
+or &quot;-cur&quot; to the capability name. Please see
+login.conf(5) <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&amp;apropos=0&amp;sektion=0&amp;manpath=OpenBSD+Current&amp;arch=i386&amp;format=html">here</a>.
+</p>
+<p>&nbsp;</p>
+<h3>Bash</h3>
+<p>Bash has built in limits, accessed via &#147;ulimit&#148;. Any
+hard limits cannot be set higher, so if you have limits defined
+in /etc/profile, or in the users .bash_profile (assuming they
+cannot edit/delete .bash_profile) you can enforce limits on users
+with Bash shells. You must also ensure that the user cannot
+change their login shell, if they use &quot;chsh&quot; to change
+their shell to ksh for example the next time they login they will
+have no limits (assuming you cave not put limits on ksh).
+Documentation is available on ulimit, log in using bash and
+issue:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="f0829f9f84b0839582869582">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /root]# <strong>help ulimit</strong>
+ulimit: ulimit [-SHacdflmnpstuv] [limit]
+    Ulimit provides control over the resources available to processes
+    started by the shell, on systems that allow such control.  If an
+    option is given, it is interpreted as follows:
+    
+        -S      use the `soft' resource limit
+        -H      use the `hard' resource limit
+        -a      all current limits are reported
+        -c      the maximum size of core files created
+        -d      the maximum size of a process's data segment
+        -f      the maximum size of files created by the shell
+        -l      the maximum size a process may lock into memory
+        -m      the maximum resident set size
+        -n      the maximum number of open file descriptors
+        -p      the pipe buffer size
+        -s      the maximum stack size
+        -t      the maximum amount of cpu time in seconds
+        -u      the maximum number of user processes
+        -v      the size of virtual memory
+    
+    If LIMIT is given, it is the new value of the specified resource.
+    Otherwise, the current value of the specified resource is printed.
+    If no option is given, then -f is assumed.  Values are in 1024-byte
+    increments, except for -t, which is in seconds, -p, which is in
+    increments of 512 bytes, and -u, which is an unscaled number of
+    processes.</pre>
+</blockquote>
+<p>To disallow core files (by setting the maximum size to 0) for
+example you would add:</p>
+<blockquote>
+<pre>ulimit -Hc 0</pre>
+</blockquote>
+<p>To set limits globally you would need to edit
+&quot;/etc/profile&quot;, of course this will also affect root,
+so be careful! To set limits on groups you would need to add
+scripting to &quot;/etc/profile&quot; that would check for the
+user's membership in a group and then apply the statements.</p>
+<p>&nbsp;</p>
+<h3>Disk usage quota's</h3>
+<p>Quota allows you to enforce user and group limits on disk
+usage. Quotas are most often used to prevents users from hogging
+disk space that is shared with other users (i.e.
+&quot;/home&quot;). There are several benefits to using quota
+instead of shell limitations; the first being that you can apply
+it selectively to disk systems, i.e. you can place a limit on
+/home/ but not on /tmp/. Additionally you can place limits on the
+number of inodes used as well as space, running out of inodes is
+as bad as running out of space since you won't be able to create
+new files. To see how much space a disk has (in kilobytes):</p>
+<blockquote>
+<pre>bash-2.05# <strong>df -k</strong>
+Filesystem  1K-blocks     Used    Avail Capacity  Mounted on
+/dev/wd0a     3969655   866510  2904663    23%    /</pre>
+</blockquote>
+<p>And to show inode usage:</p>
+<blockquote>
+<pre>bash-2.05# <strong>df -i</strong>
+Filesystem  512-blocks     Used    Avail Capacity iused   ifree  %iused  Mounted on
+/dev/wd0a      7939310  1733020  5809326    23%   85472  887582     9%   /</pre>
+</blockquote>
+<p>To enable quota's you first need to edit /etc/fstab and add a
+&quot;userquota&quot; or &quot;groupquota&quot; directive to the
+options for each filesystem you wish to enable quotas on, for
+example:</p>
+<blockquote>
+<pre>/dev/wd0a / ffs rw 1 1
+/dev/wd0b /tmp ffs rw 1 1
+/dev/wd0c /home ffs rw 1 1</pre>
+</blockquote>
+<p>Let's say you want to add quota support to /tmp for groups
+only, and quota support to /home for users and groups:</p>
+<blockquote>
+<pre>/dev/wd0a / ffs rw 1 1
+/dev/wd0b /tmp ffs rw,groupquota=/admin/tmp-quota.group 1 1
+/dev/wd0c /home ffs rw,userquota=/home/quota.user,groupquota=/home/quota.group 1 1</pre>
+</blockquote>
+<p>After editing &quot;/etc/fstab&quot; you will need to turn
+quotas on for each filesystem:</p>
+<blockquote>
+<pre>quotaon /dev/wd0b
+quotaon /dev/wd0c</pre>
+</blockquote>
+<p>You should also ensure that &quot;check_quotas&quot; in
+&quot;/etc/rc.conf&quot; is set to &quot;YES&quot;:</p>
+<blockquote>
+<pre>check_quotas=YES</pre>
+</blockquote>
+<p>You can then edit user and group quotas with
+&quot;edquota&quot;, it will drop you into your default editor
+(typically vi) and allow you to manipulate the disk quota's, both
+space allowed and inodes. If you permit a large enough amount of
+space and do not restricted the number of inodes a user can use
+they may be able to enough inodes to cause problems. The simplest
+example is if a user touches a large number of files, thus
+creating empty files that take up an inode, and use very little
+space. </p>
+<blockquote>
+<pre>bash-2.05a$ <strong>quota</strong>
+Disk quotas for user seifried (uid 1000): 
+     Filesystem  blocks   quota   limit   grace   files   quota   limit   grace
+              /     155 1000000 1000000           18334 1000000 1000000        </pre>
+</blockquote>
+<p>As you can see the number of inodes used is disproportionate
+to the size of the files. </p>
+<p>Typically you will only need to place quota on file systems
+directly writeable to the user, usually this consists of:</p>
+<blockquote>
+<pre>/tmp
+/var
+/home</pre>
+</blockquote>
+<p>Soft limits will generate warnings and hard limits will stop
+the user from using more disk space or inodes. </p>
+<p>&nbsp;</p>
+<h2><a name="Monitoring users">Monitoring users</a></h2>
+<p>Monitoring users may be a requirement of your security policy,
+or you may have discovered an account that has been compromised
+and you wish to monitor the attacker when they use it.
+Unfortunately while this used to be relatively easy there are now
+a number of new issues that make monitoring users problematic.
+The increased usage of encrypted protocols like SSH and SSL mean
+you can no longer simply run a packet sniffer and monitor the
+attacker. Typically the best way to monitor users is
+transparently, packet sniffers are ideal for this as you need not
+make any changes on the server at all. The second best is to use
+some form of monitoring on the server, this used to be possible
+with ttysnoop however ttysnoop does not appear to be actively
+maintained anymore. While you can use tricks like shell logging
+this will be obvious to a skilled attacker as the first thing
+they usually do is disable shell logging. If you are monitoring
+legitimate users you should inform them (this is a legal
+requirement in some countries and states). If you are monitoring
+an attacker and intend to use the log files as evidence you
+should probably consult a lawyer to make sure it is done
+correctly. </p>
+<p>&nbsp;</p>
+<h3>sshsniff</h3>
+<p>This is actually a really useful tool I stumbled across. It
+allows you to monitor all traffic going in and coming out of a
+process, such as an interactive shell. The bad news is that it
+does not appear to be completely reliable. While testing it
+sshsniff reliably captured keystrokes sent to the shell and the
+replies, however when files were cat'ed, i.e. &quot;cat
+/etc/passwd&quot; the file was not always displayed on the
+monitoring shell:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="0e7a6b7d7a4e7d6b7c786b7c">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> test]$ ???\033???[???Acat /etc/passwd???
+--- SIGCHLD (Child exited) ---
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ee9a8b9d9aae9d8b9c988b9c">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> test]$ ???\033???[???Acat /etc/passwd???
+--- SIGCHLD (Child exited) ---
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="bbcfdec8cffbc8dec9cddec9">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> test]$ ???\033???[???Acat /etc/passwd???
+
+[pid 1417]
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:
+daemon:x:2:2:daemon:/sbin:
+adm:x:3:4:adm:/var/adm:
+lp:x:4:7:lp:/var/spool/lpd:
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:
+operator:x:11:0:operator:/root:
+games:x:12:100:games:/usr/games:
+ftp:x:14:50:FTP User:/home/ftp:/bin/true
+nobody:x:99:99:Nobody:/:
+rpc:x:32:32:Portmapper RPC user:/:/bin/false
+postfix:x:89:89::/var/spool/postfix:/bin/true
+test:x:500:500::/home/test:/bin/bash
++++ exited (status 0) +++
+
+[pid 1380]
+--- SIGCHLD (Child exited) ---</pre>
+</blockquote>
+<p>sshsniff is not perfect but it is able to bind to any PID and
+not just terminals, making it very flexible. You can download it
+from: <a href="http://www.psychoid.lam3rz.de/exploits.html">http://www.psychoid.lam3rz.de/exploits.html</a>.
+One note there is a file called col.c that contains an entry for
+/etc/passwd, it does not appear to be used but it does raise some
+questions. If you plan to use this code I strongly suggest you
+audit it.</p>
+<p>&nbsp;</p>
+<h3>dsniff</h3>
+<p>With protocols like SSH and SSL being widely deployed simple
+packet sniffers are no longer as useful as they once were. So
+people started writing more complex packet sniffers, like dsniff.
+dsniff is capable of doing man in the middle attacks against SSL
+and SSH. If you control the server then you can easily proxy
+connections (as you have access to the secret keys on the server)
+and thus decrypt the attackers SSH session and monitor what is
+going on. dsniff is not capable of dealing with all version of
+the SSH protocol however, so forcing only protocol 1 support on
+the server can solve this, in your sshd_config file:</p>
+<blockquote>
+<pre>Protocol 1</pre>
+</blockquote>
+<p>is specified and not:</p>
+<blockquote>
+<pre>Protocol 2,1</pre>
+</blockquote>
+<p>dsniff is available from: <a href="http://www.monkey.org/~dugsong/dsniff/">http://www.monkey.org/~dugsong/dsniff/</a>
+</p>
+<p>&nbsp;</p>
+<h2><a name="Account lockout">Account lockout</a></h2>
+<p>OpenBSD supports account lockouts using a variety of methods.
+You can set the user's shell to a non existent shell such as
+/bin/false (check /etc/shells first however), most daemons will
+honor this and refuse to let the user log in. Alternatively
+setting user login restrictions in /etc/login.conf can be used to
+restrict a user's access. Unfortunately there is no easy way to
+institute a user account lockout policy based on bad login
+attempts, and due to the nature of most OpenBSD machines this is
+largely unnecessary. OpenBSD enfoces strong passwords by default,
+and because most OpenBSD machines are on public networks it would
+be trivial for an attacker to abuse an automated account lockout
+policy, denying legitimate users access to the server. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 6/6/2002</p>
+<p>Copyright Kurt Seifried 2002 <a href="/cdn-cgi/l/email-protection#fd96888f89bd8e98949b8f949899d3928f9a"><span class="__cf_email__" data-cfemail="23485651576350464a45514a46470d4c5144">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

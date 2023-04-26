@@ -1,0 +1,1406 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Network / Firewall / Firewalls - evolve or die</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Firewalls - it's time to evolve or die</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#3b504e494f7b485e525d49525e5f1554495c"><span class="__cf_email__" data-cfemail="076c7275734774626e61756e626329687560">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Introduction<br>
+A basket of eggs sitting on a wall<br>
+Computers and networks exist to process and share data<br>
+To default deny or to default allow?<br>
+~2500 words</p>
+<p>Securing the firewall itself<br>
+Hiding the firewall from prying eyes<br>
+Protecting the privacy of your network<br>
+Some other common problems and misconceptions<br>
+~2500 words</p>
+<p>The network filter and proxy<br>
+Attacking the network filter and proxy<br>
+What's wrong with the network filter and proxy<br>
+~2000 words</p>
+<p>The application filter and proxy<br>
+Attacking the application filter and proxy<br>
+What's wrong with the application filter and proxy<br>
+~1800 words</p>
+<p>Examining and filtering encrypted data<br>
+Firewall management issues<br>
+Solutions and Evolutions<br>
+Parting comments<br>
+~3000 words plus URLS.</p>
+<p>&nbsp;</p>
+<h3>Introduction</h3>
+<p>I come not to praise firewalls but to tear them apart and
+expose their soft underbelly. However a disclaimer first: even
+though there are many problems with firewalls and they are far
+from perfect you are probably better of leaving them in, they are
+better than nothing most of the time. In some cases they are
+about the only major line of defense for many networks (more on
+this particular issue later) so please do not remove your
+firewall without some serious thought. I hope I am being clear
+enough, if you still think I am advocating the removal of
+firewalls stop reading now and please do not email me. </p>
+<p>There was a time (believe it or not) when firewalls were a
+pretty new concept, and many people thought that only the
+government, military and other paranoid organizations would ever
+use them. However the Internet expanded at a furious rate and all
+sorts of people become connected, many of whom have hostile
+intentions. Add to this the sheer number of network services on
+most networks now (file and print sharing, user authentication,
+interactive services, email, web, etc.) and there are plenty of
+network services to be exploited and abused. There are two
+primary types of firewall currently in use, network and
+application. Firewalls are good at many things, and also very
+poor at others.</p>
+<h3>A basket of eggs sitting on a wall</h3>
+<p>One (dis)advantage of firewalls is the tendency to overly rely
+on them as a part of your overall security strategy. Firewalls
+are very useful for implementing security measures and to some
+degree usage policies on your network. Because you can force all
+network traffic destined for external networks to pass through a
+firewall you can also apply rules on what is, and isn't allowed.
+Maintaining one firewall is much easier than maintaining access
+controls on servers running a variety of services (and some
+network daemons do not have very solid access controls). This of
+course will only work if all your traffic goes through firewalls,
+which leads us to the first major set of problems that I will dub
+the &quot;Maginot mentality&quot;. After WWI France was
+understandably nervous about another German invasion, so they
+built a string of fortified bunkers and defenses along their
+border with Germany. It was extremely effective in it's immediate
+purpose of preventing the Germans from getting through it,
+however it failed in the larger sense of being a security
+measure. The Germans simply went around it, bypassing all the
+expensive fortifications and dug in troops, instead punching
+through the Ardennes. If you have firewalls on your primary
+Internet links but have dialup access to the internal network
+with no firewall between that access and your LAN an attacker can
+do a simple end run and completely avoid your firewall. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Implementation): You must have firewalls
+between your protected network and all other networks, so
+any form of access from T1's and T3's to a dialup modem
+pool must be protected. This can all be easily
+circumvented if a user plugs a modem into their desktop
+and sets it up for dial-in access. This means you must
+also control the communications ports on all machines and
+have policies in place to deal with modems and so forth.</td>
+</tr>
+</table>
+<p>But it doesn't stop there. Internet access is now available to
+virtually anyone that can afford a computer, in Canada that
+appears to be over half of all households. It has become
+increasingly common for people to want to work from home and
+access the corporate network while at home so they can get their
+work done. Now you could run a dial-up modem pool for people to
+connect directly but this is expensive (and you already have that
+Internet connection). So in many cases this access is granted
+over the Internet. Of course this access must be secured, this is
+often accomplished by using VPN (Virtual Private Networks). If
+the VPN decryption happens after your firewall it will be
+impossible of course for the firewall to mediate that client's
+access to the LAN. The VPN endpoint should either have a firewall
+installed on it or between it and the network. Failure to do so
+can (and has) resulted in attackers breaking into poorly secured
+home machines (which are logically an extension of the protected
+LAN) and then simply using them to gain full access to the LAN. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Implementation): Anything attached to your
+network via VPN (or other connection) should be
+considered (logically) part of your network. You should
+put firewalls in-between these &quot;external&quot; parts
+of your LAN as well as protecting these
+&quot;external&quot; hosts with their own firewalls
+between them and the Internet (in most cases firewall
+software on the home machine will suffice).</td>
+</tr>
+</table>
+<p>Depending on how your network is currently designed it may
+require minimal redesign, or a massive overhaul. One of the most
+common firewall configurations is a DMZ (De-Militarized Zone).
+Because almost all networks must allow some incoming data (such
+as email, web client requests, etc.) and provide services (such
+as email and www) there must be servers that are allowed to
+communicate to the Internet without to much restriction. Placing
+these servers directly on your internal network and allowing
+incoming connections to them would be a bad idea, if an attacker
+breaks in to a service they would then have free run of your
+network. It is safer instead to create a DMZ, basically you have
+a firewall between you and the Internet, followed by a network
+for machines that will be accessed via people on the Internet and
+then another firewall to protect the internal LAN from the DMZ. </p>
+<p>So assuming all the access points (network links, dialup, VPN,
+etc.) to your network have firewalls in place you can now
+concentrate on implementing your policies (firewalls rules
+essentially). Depending on the sophistication of your firewall
+this can range from a simple &quot;do not allow incoming
+connection to port 25&quot; all the way to &quot;let Sue access
+the www from her workstation only during the lunch hour&quot;. Of
+course these policies must be kept up to date and properly
+installed on firewalls for them to be effective. This leads to a
+next set of relatively fundamental issues.</p>
+<h3>Computers and networks exist to process and share data</h3>
+<p>What do people use computers for? To process, store and
+present data. This is pretty useful, you can write a report and
+edit it, organize data alphabetically very fast and so on. This
+gets even better when you can move the data around to other
+computers (and by extension people). The killer app that really
+made the Internet popular was Email and another explosion of
+growth occurred with the www, which made sharing and retrieving
+information very easy. People build computer networks so that
+many people can access resources and get work done. Of course
+these people want to move all sorts of data around, everything
+from articles about security to animations of dancing babies. For
+example Microsoft uses port 135 for Microsoft RPC (Remote
+Procedure Call) and ports 137 to 139 for file and print sharing.
+If attackers can connect to port 137 to 139 it is highly likely
+that they will be able to find a poorly configured Windows
+machine with network shares and exploit it. The answer to this is
+to block incoming access to ports 137 to 139. Because of
+weaknesses in Microsoft's TCP stack connections to port 135 can
+also benefit an attacker. Again the answer to this is to block
+incoming data to port 135. Because of some weaknesses in the way
+that Microsoft encodes passwords and userdata when it is sent
+across a network it is possible for an attacker to get a client
+to connect out externally to a Windows fileshare and reveal their
+username and password. Many administrators now block outgoing
+access to ports 137 to 139. Also because of dangers in allowing
+outbound RPC connections many block port 135. So now we have an
+environment where RPC is &quot;broken&quot; because so many
+people block inbound and outbound access to it. Microsoft's
+response to this has been to start using port 80 (www) to move
+COM objects and so forth, blocking port 80 simply isn't possible
+in most environments because the www is so incredibly useful. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): If you block dangerous services
+chances are people will find ways to continue using them.
+By using port 80 in many cases it becomes excruciatingly
+difficult to block and filter data. This problem will be
+covered in more detail later.</td>
+</tr>
+</table>
+<p>Other services such as AOL Instant Messenger and Napster which
+allow file sharing are also becoming difficult to block. Napster
+now can connect out on a large number of ports to numerous IP
+addresses. Even if incoming access is heavily restricted Napster
+will still work, the client connects out and data is then moved
+over this channel to other users that request it. </p>
+<h3>To default deny or to default allow?</h3>
+<p>This is one of the trickiest and most fundamental security
+issues to deal with. Do you block things by default and only
+allow certain types of data, or do you allow everything and only
+block certain (dangerous) services and types of data? There are
+several advantages and disadvantages to each strategy, however
+with newer network technologies it is becoming increasingly hard
+to monitor and block certain types of data. Generally speaking
+most corporate and government networks are very restrictive on
+what they allow to enter the network, however many large academic
+networks (because of the types of work done on them) must be left
+relatively open, resulting in an environment more difficult to
+secure. However if you allow users to install software on their
+desktop then it becomes a rather moot point whether you default
+deny or allow services as modern software (such as Napster) is
+designed specifically to punch through most firewalls. These
+software programs (Napster, Gnutella, etc.) allow users to share
+files, and in many cases this can make it trivial for an
+opportunistic attacker to retrieve data from your network. </p>
+<p>The main advantages of a default allow policy is that most
+services will work and users will be less likely to complain.
+However if you do default allow data in and out there are several
+services you should block if at all possible (both inbound and
+outbound):</p>
+<ul type="disc">
+<li>port 20/21 FTP - FTP should only be allowed to external
+public or DMZ servers, never into the network itself, ftp
+clients should use a proxy if possible</li>
+<li>port 22 SSH - Allowing inbound SSH is extremely dangerous
+as weak passwords on user accounts are far to common, and
+allowing shell access onto server in general is a bad
+idea</li>
+<li>port 23 Telnet - Same as SSH</li>
+<li>port 67/68 DHCP - DHCP is for use on local networks and
+you should use a DHCP relay if you need to pass the data
+between networks.</li>
+<li>port 69 TFTP - if you must have external devices that use
+TFTP (like Cisco routers) setup a secure TFTP host for
+them.</li>
+<li>port 111 RPC - RPC has so many problems it's best to just
+block it (however services that use RPC may still be
+reachable by an attacker).</li>
+<li>port 135 Microsoft RPC - Should be blocked if possible
+however newer Microsoft software allows you to tunnel COM
+objects/etc over HTTP. </li>
+<li>port 137-139 SMB - Windows file and print sharing, if you
+need to share files or print services over the Internet
+you should use a VPN to encapsulate it.</li>
+<li>port 161/162 SNMP - Access to SNMP services on your
+equipment should be heavily restricted, especially since
+current SNMP largely lacks any security.</li>
+<li>port 512, 513 and 514 exec, biff, login, who, shell,
+syslog - The administrative services like exec, login and
+shell should be replaced with secure alternatives (such
+as SSH) and things like syslog should be encapsulated in
+a VPN if you need to move the data over the Internet.</li>
+<li>port 515 spooler - UNIX print services, if you need to
+share print services over the Internet you should use a
+VPN to encapsulate it.</li>
+<li>port 540 UUCP - This protocol is largely obsolete
+(replaced by SMTP) and should be blocked in case someone
+accidentally installs it on a machine/etc.</li>
+<li>ports 1812 and 1813 radius protocols - Authentication
+protocols should generally be blocked at firewalls
+(unless of course you have a specific need such as a
+terminal server on the other side)</li>
+<li>port 2049 NFS - UNIX file sharing service, if you need to
+share files over the Internet you should use a VPN to
+encapsulate it or a more secure method than NFS.</li>
+<li>3128 and 3130 Squid proxy server - Generally speaking you
+do not want to provide WWW proxy services for people
+outside your local network.</li>
+<li>3306 MySQL - Popular database, older versions have
+authentication issues, if you need to remotely administer
+the database you should encapsulate the protocol using a
+VPN or similar.</li>
+<li>6000 X - X windows, security issues and generally if you
+need to allow access to X over untrusted networks you
+should use a VPN to encapsulate the protocol.</li>
+</ul>
+<p>These are just a few example however there are many more.
+Additionally if you want to block certain services such as
+Napster this is like playing whack-a-mole since newer versions of
+the software can establish connections successfully over numerous
+different ports and to several different servers. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Implementation): With default allow many
+services will work, including ones you may not be aware
+of that pose a security risk. Even with default deny it
+is becoming difficult to block certain services and
+software that tunnel over port 80. </td>
+</tr>
+</table>
+<p>The main advantages of a default deny policy is that services
+will (generally) not work unless you specifically enable them.
+There are of course exceptions with services that use HTTP
+tunneling (since outbound HTTP access is almost always allowed).
+If you are blocking a service that users want to use you will
+generally find out about it from them, with a default allow
+policy services you may not want people to use might be allowed.
+Conversely if you are blocking a service someone in management
+wants to use you will also hear about it. Default deny is also
+more likely to catch noisy trojans that are trying to connect
+outwards to servers and other types of suspicious activity. </p>
+<p>If you use NAT or IPMASQ this makes it much harder to
+establish a connection to machines inside of the firewall however
+it will break many protocols (especially gaming and some file
+sharing) protocols. However it is not impossible for external
+people to retrieve data from internal machines. Several software
+packages such as Napster establish a connection with the server,
+when another client want to take to the client behind a firewall
+it sends a request to the server which forwards it to the
+internal client. In this manner external clients can talk to
+internal clients. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): At some point you will have to
+allow some data through the firewall (otherwise you might
+as well cancel your Internet feed and save some money),
+and this means that information and services you want to
+block can probably get through somehow.</td>
+</tr>
+</table>
+<h3>Securing the firewall itself</h3>
+<p>An all to common problem are firewalls with good protective
+rulesets that are installed on weak operating systems or are
+implemented poorly and prone to creative forms of attack. No
+matter how good your firewall software and the rules in place are
+if a vulnerable service is installed the attacker can break in
+and seize control of it. If your firewall is simply a network
+filter or proxy there is usually less to worry about than if you
+are setting up an application proxy. With a generic packet filter
+simply strip the server down so that the only service available
+is a secured login service (such as SSH or SSL wrapped telnet).
+If you are using something like SOCKS then you make sure that the
+SOCKS software is secured (as users connect to it's port,
+authenticate and then use it to proxy circuit level connections),
+running it as a non-root user if possible is a good idea. </p>
+<p>For a more complicated system such as application level
+firewall using Postfix to proxy mail in and out of your network
+or a Squid web proxy/http accelerator a great deal of care must
+be taken. The software in use should be secure as possible, using
+something like Postfix (which runs mostly as non root users)
+instead of Sendmail (which pretty much runs as root completely)
+is a good idea. Extreme attention needs to be paid to
+configuration, if you accidentally allow external use of the
+proxy in an unintended manner (such as to relay email) chances
+are an attacker will find and abuse it. An older but common
+problem was with Squid web proxies, many sites did not configure
+them properly thus allowing any IP address to use the proxy to
+access websites (and attack them) or internal hosts. To this date
+there is still scanning activity for this problem.</p>
+<p>Firewalls should rely as little as possible on external
+services. For example it would be a very bad idea to configure an
+NFS server to mount /usr from an internal NFS server If the NFS
+server were to fail then the firewall would likely fail as well.
+The NFS connection would also afford any attacker another method
+to gain entry to the firewall. If the firewall needs to do DNS
+resolution it should either have it's own DNS server installed
+(and tightly restricted) or it should use a secured DNS server to
+do the queries for it. If you need to do user authentication then
+the path from the firewall to the authentication server must be
+heavily secured, use some type of network encryption such as
+IPSec if possible to prevent someone from spoofing the
+authentication server. And on no event should normal users be
+allowed shell access to the firewall (and even administrative
+access should be heavily restricted). </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (implementation): Securing your firewall
+should be done with a high degree of attention to detail.
+Bastion hosts (application level proxies) are
+exceptionally difficult to secure completely as they must
+run software like mail servers, web proxies and so on. Go
+with secure alternatives like OpenBSD and Postfix if
+possible. </td>
+</tr>
+</table>
+<h3>Hiding the firewall from prying eyes</h3>
+<p>Stealthing firewalls is an interesting security techniques
+because you can make it very difficult for someone to attack the
+firewall directly, as well as hiding the fact you have a firewall
+in place. One technique is to set the firewall up as an Ethernet
+bridge that can filter (for example Linux). Another method is to
+use a non-routable IP addresses (such as 10.*) on the firewall.
+Several commercial firewalls such as Solaris Sunscreen have
+stealthing options built into them. </p>
+<p>The first method involves configuring your firewall as an
+Ethernet bridge, this is of course very OS specific and may not
+be properly supported. Your OS also needs to support firewalling
+packets going through the TCP-IP stack while it is in bridging
+mode (most likely it well if it supports bridging mode at all).
+You also need another interface for administration since the
+interfaces being used for firewalling are in bridge mode and do
+not have an IP address. This interface (be it a network link or
+serial TTY) should be attached to a secured server or network
+that very few people (i.e. only administrators) know about or
+have access to. The primary benefit of this (over using non
+routable IP's) is that there is now way an attacker can
+&quot;see&quot; the bridge. They can infer it's existence if they
+notice a change latency on that link (i.e. the time packets take
+to traverse the link doubles) and by the fact that certain kinds
+of packets are being dropped. </p>
+<p>The second method is much simpler and simply involves
+configuring the firewall interfaces with non-routable IP
+addresses (such as 10.*). The routers connected to the firewall
+need to be configured, on the external router configure it so
+that the gateway for your internal IP blocks is the IP on the
+external interface of the firewall. On the internal router
+specify the default gateway as the IP on the internal interface
+on the firewall. Any firewall can be configured in this manner
+without any need to mess around with the kernel and so forth
+which is a big advantage. To administer the firewall you either
+need another interface with a &quot;real&quot; IP address, or you
+need to actually route the &quot;non-routable&quot; IP addresses
+across your internal network so you can reach it from a
+workstation. This setup will be detectable by an attacker as
+traceroute/etc will show some host decreasing the TTL on the
+packet and possible dropping them. This assumes of course the
+firewall doesn't completely block ICMP and so forth at which
+point traceroute will simply &quot;die&quot; once it reaches the
+firewall. This is a good indication the ICMP protocol is being
+firewalled, ergo there is probably a firewall there. </p>
+<p>Both options generally make it impossible to do NAT or IPMASQ
+on your firewall, as it needs a &quot;real&quot; IP address to
+label the packets as from. As well the firewall will most likely
+not be able to perform any kind of VPN services or user
+authentication so you will likely need a second firewall behind
+the first stealthed one to use any of these advanced features.
+However these techniques can be ideal for placing internal
+firewalls that you do not want people to know about, generally
+speaking. They also make it much harder to attack the firewall
+itself, the chances of an attacker being able to compromise a
+machine over the network if they cannot connect directly to it
+are very slim (unless there is an extremely serious bug in the
+firewall, which is not impossible). </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Implementation): Many people do not
+adequately protect their network filters from hostile
+attackers, if possibly you should stealth your firewall.
+You should also separate the administrative channel to a
+separate (protected) interface that is not generally
+accessible.</td>
+</tr>
+</table>
+<h3>Protecting the privacy of your network</h3>
+<p>For most attackers a detailed map of how your network is laid
+out and what is installed on it would be a gold mine. There are
+numerous tools to help an attacker determine exactly this. If
+your network was attached to the Internet, and not sufficiently
+protected by firewalls it would be trivial for an attacker to
+point a tool such as Cheops at your domain or IP address block
+and let it discover the layout of your network.</p>
+<p>[insert screen shot of cheops?]
+********************************</p>
+<p>Even if your network is protected by a firewall and external
+scans are denied an attacker can still determine internal layout.
+A common source of information is mail header information, for
+example:</p>
+<blockquote>
+<pre>From <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="5f2c3a36392d363a3b1f2c3a36392d363a3b71302d38">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> Sat Dec 30 02:00:54 2000
+Return-Path: &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="d7a4b2beb1a5beb2b397a4b2beb1a5beb2b3f9b8a5b0">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;
+Delivered-To: <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="5b283e323d29323e3f1b3e233a362b373e75383436">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+Received: from mail.somewhere.com (server.somewhere.com [1.2.3.4])
+by mail.example.com (Postfix) with ESMTP id 340B261DAC
+for &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1467717d72667d717054716c75796478713a777b79">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;; Sat, 30 Dec 2000 02:00:54 -0800 (PST)
+Received: from seifried (workstation.research.somewhere.com [10.1.1.2])
+by mail.somewhere.com (Postfix) with SMTP id 4221A2FC65
+for &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="5a293f333c28333f3e1a3f223b372a363f74393537">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;; Sat, 30 Dec 2000 03:01:35 -0700 (MST)</pre>
+</blockquote>
+<p>This tells an attacker that the email originated on a machine
+called workstation.internal-private.somewhere.com with the IP
+address of 10.1.1.2, it was sent to mail.somewhere.com and then
+delivered. As well you would receive (in some cases detailed)
+data concerning the mail client used:</p>
+<blockquote>
+<pre>X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 5.50.4522.1200
+X-MimeOLE: Produced By Microsoft MimeOLE V5.50.4522.1200</pre>
+</blockquote>
+<p>Many older versions of mail software are susceptible to
+specific attacks that can allow an attacker to more easily slip
+in virus payloads and so forth. Removing this data from outgoing
+emails is often a good idea. </p>
+<p>Another service that can reveal a lot of information is the
+www. Most www client will happily tell a server exactly what type
+of browser and version they are as well as the OS they are
+running on and what the machines real IP address is (assuming you
+use NAT or a proxy server). Cookies can also be used to track
+individual machines, if you use a laptop at work and a site loads
+a cookie onto it when you dialup and access that website again it
+can link you to the previous activity from another IP address.
+The less information an attacker can gather the better. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): Preventing the leakage of
+information regarding your network layout with firewalls
+is very difficult and requires quite a bit of planning.
+Even simple things like mail server errors can generate a
+lot of information that is useful to an attacker.</td>
+</tr>
+</table>
+<h3>Some other common problems and misconceptions</h3>
+<p>This section is sort of a catch all for problems and issues
+that did not fit neatly into other sections. </p>
+<p>Quoting from the Firewalls FAQ available at:</p>
+<blockquote>
+<p><a href="http://www.landfield.com/faqs/firewalls-faq/">http://www.landfield.com/faqs/firewalls-faq/</a>
+</p>
+</blockquote>
+<blockquote>
+<p>2.3 What can a firewall protect against? </p>
+<p>Some firewalls permit only Email traffic through them,
+thereby protecting the network against any attacks other than
+attacks against the Email service. Other firewalls provide
+less strict protections, and block services that are known to
+be problems. </p>
+</blockquote>
+<p>This is incorrect, not only can the attacker attack the Email
+service on the server (Sendmail for example) they can also attack
+the network stack of the operating system it sits on (for example
+Solaris). Even if you are running an up to date version of
+Sendmail with no exploitable problems the attacker could still
+SYN flood port 25 on the mailserver, possibly crashing it for
+example. This is one reason that circuit level and application
+level proxies can be extremely beneficial as they mediate access
+to the server, and your proxy can be a hardened system
+specifically designed to handle hostile traffic.</p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): Even with restrictive firewall
+policies an attacker can still try to exploit publicly
+available services and the operating system they reside
+on (using the ping of death for example).</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>How you deal with packets that you block can also have a
+significant impact on the overall security of your network (and
+others). If you choose to log packets (on anything faster then a
+slow speed link) you make yourself susceptible to denial of
+service attacks. On a high speed link if an attacker sends
+several hundred packets per second that need to be logged they
+can quickly overwhelm the I/O capacity of your disks, and
+potentially fill them up (and then launch the real attack).
+Depending on how you deal with a denied packet, silently
+discarding it or sending an ICMP response also matters. If you
+give an ICMP response the attacker can tie up your outgoing
+bandwidth as well as incoming. Alternatively they can use you to
+mirror traffic and attack another person by spoofing data so it
+appears to be from the victim, thus getting your firewall to send
+a lot of ICMP traffic to the victim's network. If you choose to
+silently discard packets then anyone that wants to spoof you will
+have a somewhat easier time. Normally if you spoof packets the
+site you are sending them to would reply to the address you
+spoofed, this machine in turn might issue a response that results
+in the connection being closed. If the site you are spoofing
+silently discards certain kinds of packets you can spoof those,
+and not worry about the connection being closed by a response
+from the site you are pretending to be. The end result is that an
+attacker can spoof your site with far less chance of detection by
+the victim, or you (assuming you do not log all blocked packets).</p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Implementation): How you deal with packets
+you want to discard should be carefully considered as
+there are benefits and disadvantages to each solution.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>Relying on port numbers as a form of authentication (i.e.
+connections from ports &lt;1024 must be root) or identification
+(port 80 is a web server) is a bad idea. An attacker can easily
+send out data on ports below 1024 simply by setting up their own
+machine running Linux, a BSD or Solaris (now cheaply available)
+for example. Many sites allow access to port 80 (www) and port 53
+(DNS) either directly or through some type of proxy. In both
+cases it is possible for an attacker to send out other types of
+data to these ports, for example remote control software. When
+TCP and other related protocols were designed it was in an
+environment that was much safer than the current Internet. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): Port numbers are merely widely
+accepted conventions and do not guarantee what kind of
+data or service it is. Relying on connections from port
+&lt;1024 to be a valid root user on a machine you trust
+are also not a good idea.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>Verifying that your firewall rules behave as expected is
+something that far to few people actually do. If you want to
+block a program such as Napster you should install a copy on a
+test workstation and try to use it (hint: if it works then your
+firewall rules need to be notified). If you want to block inbound
+data then you should scan your site using a tool such as nmap
+from some other network (which does not have a firewall on
+outbound data as this can makes the results look a lot less
+dangerous then they may be). This process should be automated as
+much as possible, when new versions of Napster are released you
+should test them, when new rules are added you should also check
+the old ones since there may be interactions that you did not
+expect.</p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Implementation): You need to verify that
+your firewall actually works, and doing this by using
+&quot;real world&quot; techniques is usually more
+effective than testing tools that some firewalls ship
+with. You also need to do this whenever rules are changed
+added or deleted and whenever newer version of software
+you are trying to block come out.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>Numerous firewall appliance vendors have &quot;rolled their
+own&quot; OS for their firewall, making for many potential
+security problems. Many vendors also take operating systems, such
+as FreeBSD, and use them for their products, far to often they do
+not issue needed security updates that have been issued by the
+original OS team (such as OpenBSD, FreeBSD, etc.). Many vendors
+also leave unsafe default settings, such as allowing source
+routed packets through the firewall, something most modern
+operating systems block in the kernel, let alone firewall. When
+using a product that advertises itself as being based on a
+&quot;proprietary&quot; operating system you may want to ask the
+vendor what it is actually based on, and whether or not they ship
+updates. As well any vendor that claims to use a
+&quot;hardened&quot; operating system should be asked as to what
+exactly it is they did to harden it, in many cases it simply
+consists of removing unneeded network services, no actual changes
+to the OS have been done. </p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): You may not be getting exactly
+what you bargained for. Make sure you ask your vendor
+questions, and get the response in writing if you can. If
+the product is closed source check their history for
+security updates, if there are none that is usually a bad
+sign. You should also check online security sites for
+mention of their product and name in regards to any
+problems. Some vendors have been known to downplay or
+even ignore serious problems.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>Firewalls can easily block and log data. However making use of
+logged data requires a lot of effort, you need software to parse
+the logs and generate reports, this software is generally
+difficult to create and prone to errors such as false positives
+and missing things that are a problem. As well any new problems
+may not be detected if they use a sufficiently different
+technique or exploit a new problem. Firewalls (generally
+speaking) cannot heuristically detect a new attack and block it,
+while there are some efforts in this direction it is a reasonably
+difficult problem and will likely be some time before
+commercially viable solutions are available.</p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Problem (Conceptual): Firewalls can only block and
+log exactly what you tell them to. They generally cannot
+learn or analyze traffic sufficiently to decide whether
+it is an attack or not.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h3>The network filter and proxy</h3>
+<p>Network firewalls are by far the most common, they can be
+implemented on virtually any operating system that has a network
+stack. The first network firewalls were (and some still are)
+non-stateful, that is each packet was examined individually, the
+firewall has no concept of what the packet is in the grand scheme
+of things. For example it could be the return packet from a
+connection established by an internal client, or it could be a
+random packet sent by an attacker. This lack of state means that
+for outgoing connection to work for say telnet you would have to
+allow incoming data from the telnet port (port 23, TCP). This
+means that an attacker can simply make their data packets come
+from port 23 on their machine and it would punch right through
+your firewall (assuming you did not differentiate between SYN and
+ACK packets of course). For connectionless protocols such as DNS
+you have to create all kinds of rules to allow internal clients
+to query external servers and receive an answer, again an
+attacker could scan your network with relative ease. For
+protocols such as FTP where the server creates an incoming
+connection things got even messier, if your internal clients used
+ftp a lot you would virtually have to allow any packet destined
+for a high port number into your network. Even with the tweaks
+possible on client operating systems (in many forms of UNIX you
+can specify what ports outgoing connections will originate from)
+and the defaults of others still meant your firewall had to be
+relatively &quot;promiscuous&quot; for many protocols to work
+properly. </p>
+<p>Examples of this include Linux ipfwadm and Linux ipchains
+(present in 1.x and 2.0, 2.1, and 2.2 versions of the kernel)
+which is the default firewall for Linux by and large. The 2.2.x
+kernel is still incredibly popular and will continue to be in
+widespread use for a long time. </p>
+<p>To alleviate a lot of these problems better firewalls were
+created, ones that could &quot;keep state&quot;. Instead of
+allowing all kinds of return packets you could make simple rules
+such as &quot;allow outgoing telnet connections, and the
+returning packets&quot;. Then when an internal client made a
+telnet connection to 1.2.3.4 packets from 1.2.3.4 that were
+destined for the internal host would be allowed through. This
+makes for a much smaller window of exposure (if implemented
+correctly) but isn't perfect. With your internal network having
+routable IP addresses it was still possible for attackers to come
+over the Internet and talk directly to internal machines. </p>
+<p>Examples of this include IPF (IP Filter) which is the default
+firewall in most BSD based systems.</p>
+<p>Various factors coincided (the Internet started to grow very
+fast, security become more of an issue, etc.) and people again
+improved firewalls to support what was called &quot;NAT&quot;
+(Network Address Translation). NAT takes many forms but it
+generally boils down to an internal client having a non routable
+IP address (such as 10.* or 192.168.*) and connecting to the
+Internet through a server capable of NAT. The NAT server takes
+the outgoing packet, strips the source info and replaces it with
+it's own, then send it to the Internet, and keeps a record of
+this. When the response packets come back it strips the
+destination info, puts in the internal host's data and send it to
+the internal host. The internal host thinks it is talking
+directly to the Internet, and machines on the Internet simply
+think the NAT server is the one they are communicating with. This
+not only saved people a lot of effort and money (instead of
+needing a block of network addresses to connect a LAN to the
+Internet you only needed one) but had a significant security
+benefit. Because the internal LAN uses non routable IP addresses
+external attackers cannot initiate a connection with it. Others
+forms of this circuit level proxying are also available such as
+SOCKS version 4 and 5, SOCKS has several added benefits including
+user authentication, and one major drawback, client software must
+support the SOCKS protocol (and not all does). </p>
+<p>Examples of this include IPF (IP Filter) which is the default
+firewall in most BSD based systems and IPMASQ (a component of the
+firewalling) in Linux. SOCKS is primarily maintained by NEC but
+there are other implementations of it.</p>
+<p>Because most packet level firewalls were relying on IP
+addresses to &quot;identify&quot; internal (and external)
+machines it was open to abuse. You could simply change the IP
+address on your workstation to that of a host with more access
+and the firewall would generally be none the wiser. Many modern
+packet firewalls now include the ability to require user
+authentication, from simple username and password all the way to
+smartcards and tokens. These are significantly better because you
+are now applying your firewall rules to individual users and not
+simple IP addresses (which can easily be changed in most
+situations).</p>
+<p>Examples of this include FireWall-1 from Checkpoint</p>
+<h3>Attacking the network filter and proxy</h3>
+<p>Contrary to popular opinion there are many ways to attack
+firewalls and to probe their rulesets. If the firewall can be
+reached directly (i.e. it is not in bridging mode or using
+non-routable IP addresses) then chances are you can attack any
+services on it (commonly administrative ports such as SSH, Telnet
+and web interfaces). If these interfaces must be enabled access
+to them should be restricted heavily to a small group of trusted
+internal hosts. Cisco for example had a nasty bug in it's telnet
+code (that has been fixed) that could allow an attacker to
+execute a successful denial of service on the router without to
+much difficulty. The network stacks on many firewalls are far
+from perfect, push enough badly fragmented packets at the
+firewall and it may slow down or even lockup. There are numerous
+other ways to mangle network data packets, playing with TTL,
+window size and other options can cause problems on some
+firewalls. It is advisable to block badly fragmented packets
+(i.e. very small fragment sizes), several firewall packages (such
+as IPF) have specific options for this.</p>
+<p>Determining what the firewall is blocking can also greatly aid
+an attacker. Some firewalls (for example those based on Cisco
+routers) expose their configuration, for Cisco you can backup and
+load the configuration via TFTP, is an attacker can gain access
+to the TFTP server and retrieve this data they can find out what
+the firewalling rules are. There are also ways to discover what
+the rules are, one software package that makes this possible is
+&quot;firewalk&quot;, it is similar to traceroute in concept. By
+sending out packets with varying TTL's and listening to the
+response codes firewalk can determine if the packet is being
+blocked or not by a firewall (and can glean the existence of
+stealthed firewalls). </p>
+<p>If source routing is supported and allowed by the network
+equipment on the victims end you can potentially bypass
+firewalls, this is why putting a firewall on every link between
+your network and the rest of the world is so critical (even
+unused backup links). Sadly enough there are still some firewall
+software packages and appliances that support source routing,
+however as they are found and publicly shamed they tend to be
+fixed. Other times the firewall may support protocols other than
+TCP-IP, for example IPX/SPX, any supported protocol should be
+firewalled. </p>
+<p>One of the simplest methods to attack a firewall is to simply
+flood it. Throw enough data at the firewall (i.e. saturate the
+link) then chances are it will become very slow (ignoring the
+fact that the link is saturated). If a firewall logs packets then
+simply spoofing varying kinds of packets (so it doesn't aggregate
+messages, such as &quot;56 packets of type foo dropped&quot;) can
+generate a huge amount of data. If the firewall uses syslog to
+log to a remote host (such as a Cisco router does) then it's
+likely that messages will be dropped on the network as syslog
+uses UDP to send data, and disk I/O on the logging server could
+also be overloaded. Even if the logging server manages to record
+everything the task of processing this data (and separating the
+wheat from the chaff as it were) would require a large amount of
+effort, determining where the real attack or probe came from
+would be difficult to track down.</p>
+<table border="2">
+<tr>
+<td>Problem (Implementation): Your firewall cannot
+prevent an attacker from flooding the network links in
+&quot;front&quot; of it, if this occurs you need to block
+the traffic higher up, which may not be done quickly
+enough (if at all).</td>
+</tr>
+</table>
+<h3>What's wrong with the network filter and proxy</h3>
+<p>There are many problems with network filters and proxies. One
+of the primary problems is the difficulty involved in firewalling
+outbound data. If you want to prevent from an internal attacker
+from sending data out of the network (assuming you have
+restricted access to floppy devices and other removable media) is
+extremely difficult. If you allow any kind of encryption (secure
+www or encrypted email for example) then it is trivial for an
+attacker to slip data out of your network. Filtering by IP
+address is also a difficult process as it is relatively easy in
+most operating systems to change the IP address. Locking down a
+workstation completely to prevent a determined user with physical
+access is very time and energy consuming, in any event they can
+always just plug a laptop in and use that. You can filter by MAC
+address on many operating systems (such as Linux 2.4) however it
+is possible for people to spoof MAC addresses, so unless you have
+the same ruleset for all machines on a local subnet it is
+possible for an attacker to get around it. Filtering by port
+numbers is fundamentally flawed because of one simple problem:
+they are simply a convention, I use use SMTP over port 80 or WWW
+over port 21. More and more HTTP tunneling software is becoming
+available, and the vendor for SSH is advertising how SSH can be
+used to punch through firewalls from the inside. </p>
+<table border="2">
+<tr>
+<td>Problem (Conceptual): Because you have to allow some
+outbound data at some point attackers will be able to
+move data out of your network in some fashion.</td>
+</tr>
+</table>
+<p>Even if you do manage to properly filter all your protocols
+there are still some you must allow. Port 500 is used for many
+IPSec key servers, if you want to encrypt all network traffic
+using IPSec this port must be exposed, giving an attacker
+something to work on. Executing a denial of service on an IPSec
+keyserver would not be terribly difficult. This also allows the
+attacker to get at the network stack of the operating system,
+they can use brute force attacks such as SYN floods, fragment
+floods and so on to try and bring the server down. While policy
+enforcement is possible with firewalls you generally cannot use
+an IP address to identify a user, and although many packer
+firewalls do support user authentication it is difficult and
+makes other attacks possible. You must also be able to properly
+identify traffic, for example you may allow members of the sales
+group access to WWW but how do you know they are not using HTTP
+tunneling software?</p>
+<p>Network level firewalls also do very little (in general) to
+prevent session hijacking. While it may not be possible for an
+attacker to gain access to say telnet from his IP, or to guess
+the username and password (because you use tokens for example to
+secure logins) it is still possible for them to hijack a user's
+session. Generally speaking session hijacking is only possible if
+the attacker can intercept the data from the client to the
+server, being on the same subnet, assuming the subnet uses hubs
+or switches vulnerable to various attacks or being in the path of
+the session are ideal locations. However there are other tricks
+that can be used (ARP spoofing, DNS poisoning, etc.) to make the
+data more accessible to the attacker. The best way to deal with
+session hijacking is use strong encryption protocols, and
+preferably encrypt the entire TCP-IP stream using IPSec or
+something similar.</p>
+<table border="2">
+<tr>
+<td>Problem (Conceptual): Firewalls can help with some of
+the inadequacies in TCP-IP but it cannot protect you from
+all possible problems.</td>
+</tr>
+</table>
+<p>Network level proxies that can do NAT or IPMASQ can easily
+provide an additional layer of security and privacy for the
+internal network. Since all outgoing packet headers are relabeled
+the external sites only see the IP address of the NAT server.
+There are some limitation of course, various applications provide
+facilities to query the client for information or to have the
+client run arbitrary code and report any results (such as
+JavaScript). Additionally a NAT server can only handle a finite
+number of clients simultaneously, a hard limit on the number of
+ports is usually one such limitation (although you could have a
+very fancy NAT box that used the same port for connections), but
+more typically you will encounter operating system limits such as
+the number of open ports first. However load balancing can be
+done and multiple NAT servers can be used to handle large numbers
+of internal clients. </p>
+<p>Like all security measures nothing is 100% attack proof, but
+by making it 90%, 95% or 99% secure you can deter most attackers
+and hopefully notice the ones that do get through. One their own
+most of these security measures are relatively easy to
+circumvent, but if you were to use all of them your firewall
+would be quite effective. Having a firewall (that does nothing
+but firewall) in front of and behind all the various servers on
+your Internet connection (proxy servers, public DMZ servers, VPN
+servers, traffic shaping servers, etc.) is a very good idea as
+you can then protect exposed port if someone chooses to attack
+them. You should also look at using application level filters and
+proxies. </p>
+<h3>The application filter and proxy</h3>
+<p>Applications proxies and filters are also becoming
+increasingly common. The reasons for deploying them are numerous,
+from simply speeding up access to certain services (for example
+by using a web proxy) to filtering and access control and
+buffering internal servers against the Internet. Most application
+proxy servers can be attacked at the network level, but this will
+generally not result in a compromise of the server or getting
+packets past the proxy server. It is much more common (and
+productive in most cases) to attack the proxy software itself as
+these tend to be large complicated packages of software. Because
+application proxies work at the application layer the data
+packets have been reassembled and turned into their respective
+data formats. The proxy then handles the data in some manner,
+from simply passing it on or possible relabeling the request. If
+it is an interactive service, such as www it can strip incoming
+data of dangerous items, such as web cookies or browser type
+requests. Application proxies and filters allow you to reassemble
+the data and inspect it, scanning for viruses is one common
+requirement and generally cannot be achieved by a network layer
+proxy or firewall. Also because of the added complexity there is
+more room for error, numerous problems have been discovered in
+anti-virus scanning software proxies, from being able to slip
+infected items through to gaining remote administrative access
+because of buffer overflows in the software. </p>
+<p>Common uses for application level proxies are protecting
+internal servers, by deploying a DMZ and placing secured hosts in
+the DMZ that are publicly available you can reduce exposure of
+the internal servers. While internally you may need to run
+Microsoft Exchange server for email for example you can use a
+Postfix proxy host to send and receive email safely, as well as
+using Postfix's advanced filtering capabilities to prevent
+messages bound for nonexistent users from clogging up the
+Exchange server. DNS is another protocol that is commonly
+proxied, although in most cases this is less for security and
+more for performance reasons, setting up each workstation to
+query root level nameservers and handle the entire query would be
+very inefficient. It is much better to have several central
+servers to handle DNS queries (and cache the results). For other
+services like www it is much easier to block access to sites if
+users use a central set of proxies, as well access to legitimate
+sites will be speeded up due to the caching nature of most www
+proxies. There are several application proxies that support
+username and passwords for controlling access, however unless you
+default deny access to sites maintaining a current list of sites
+you wish to block is a Herculean task. Like network level proxies
+and filters controlling access by IP address and MAC address is
+usually bound to fail against a determined attacker.</p>
+<p>Generally speaking the first application level proxies were
+not specifically designed for security reasons but more often to
+increase network performance and make administration easier. Many
+network servers such as DNS, SMTP (email) and WWW are easily
+proxied by their respective software packages.</p>
+<p>Examples of this include Bind, Postfix, Sendmail, Squid, and
+Apache.</p>
+<p>These worked quite well however for actually implementing
+access control support for usernames and passwords (or some other
+method) is highly desirable, this spawned an expansion of some
+proxy software packages and the creation of new ones.</p>
+<p>Example of this include Squid and Microsoft Proxy Server 2.0.</p>
+<h3>Attacking the application filter and proxy</h3>
+<p>There are many attacks possible on application level proxies.
+Not only can you attack the proxy software (Sendmail, Postfix,
+Squid, MS Proxy, etc.) but you can also attack the network stack
+of the machine. Generally speaking any attacks possible against
+network filters and proxies are generally also available against
+application filters and proxies. Denial of service attacks are
+often trivial, if you were to send several dozen, let alone
+several hundred mail messages to an email proxy you could most
+likely cause it to become slow enough to be unusable, or possibly
+even starve it of sufficient resources to make unstable. Slipping
+data by proxies is usually easy, you simply compress the data in
+a format that the proxy cannot expand (such as a self contained
+executable like Neolite). Depending on how advanced a proxy is
+you can encode requests in Unicode or other non ASCII
+representations to defeat simple filters. Also if restrictions
+are based on domain names you can sometimes feed an IP address
+through which would require proper reverse DNS to be filtered
+(and reverse DNS isn't always available). </p>
+<p>Due to the complexity of application level proxies they are
+commonly misconfigured, for example there is a local government
+department uses a Microsoft Exchange server internally to handle
+email. It sends and receives email with the Internet via an
+application level proxy. This proxy is comprised of a Solaris
+server running Sendmail, unfortunately there is a nasty
+configuration bug. When you use the VRFY command to generate a
+list of valid users it will respond to each address with an OK,
+however for names that do exist it responds with a different
+hostname then those that do not exist:</p>
+<blockquote>
+<pre>220 some.department.misc.gov ESMTP Sendmail 8.8.8+Sun/8.8.8; Thu, 4 Jan 2001 01:08:28 -0700 (MST)
+VRFY root
+250 &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="02706d6d76427067636e6c636f672c6667726370766f676c762c6f6b71612c656d74">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;
+VRFY shshhs
+252 &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="7a0912091212093a0915171f1b16131b09541e1f0a1b080e171f140e5417130919541d150c">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;
+VRFY bin
+252 &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="86e4efe8c6f5e9ebe3e7eaefe7f5a8e2e3f6e7f4f2ebe3e8f2a8ebeff5e5a8e1e9f0">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;
+VRFY nobody
+250 &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1d73727f7279645d6f787c71737c70783379786d7c6f69707873693370746e7e337a726b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;</pre>
+</blockquote>
+<p>This is a good example, the machine is up to date with vendor
+security patches however is misconfigured in such a way as to
+make harvesting email addresses for a spammer possible. The email
+server for the &quot;misc.gov&quot; was configured even more
+poorly and would respond with &quot;User unknown&quot; to bogus
+email address and when fed a correct email alias/address it would
+respond with the correct email address. For this server
+harvesting email addresses would be even easier. </p>
+<table border="2">
+<tr>
+<td>Problem (Conceptual): Application levels proxies tend
+to be complex and can easily be misconfigured.</td>
+</tr>
+</table>
+<p>Several months ago @home (a consortium of cablemodem
+providers) was almost banned from Usenet news (NNTP). The reason
+was that many @home customers were running a number of proxies,
+one of which would proxy access for NNTP. Spammers were scanning
+blocks of @home addresses (relatively easy since the 24.* block
+is pretty much dedicated to cablemodems) to find open port 119's.
+They would then connect and use the open machine to relay the
+connection to one of @home's news server, meaning they could send
+huge amounts of spam without losing their network connection or
+being easily traceable. @home responded by scanning customers for
+these proxies (and numerous others types of proxies) and emailing
+customers when they were found. The reason this became such a
+huge problem is that many Windows application level proxy
+packages shipped with extremely promiscuous defaults, which meant
+they worked once installed but were very insecure.</p>
+<p>And in all cases of application level proxies slipping data
+out is usually trivial if any amount of compression or encryption
+is allowed. An especially savvy attacker could use steganography
+to hide the data, for example in encoded music or picture files.
+Controlling the flow of data would require blocking any type of
+encoded data you cannot decode and examine. Even then the filters
+needed to properly examine data would be enormously complex and
+difficult to maintain. A classic example is pornography blocking
+software which suffers an enormous rate of false positives (pages
+on breast cancer for example) and lets through data it is
+supposed to block (such as hardcore child porn). </p>
+<h3>What's wrong with the application filter and proxy</h3>
+<p>While application proxies and filters can help they typically
+require a high degree of expertise to install and configure
+correctly and there are ongoing maintenance issues (upgrading
+software and configuration). Unless you log every transaction
+(email, web request, etc.) and examine these logs chances are an
+attacker will be able to slip attacks through (they will keep
+trying until they succeed). While a web proxy for example can
+block all types of content, filenames with the extension .exe,
+web cookies, and so forth if the data is encrypted then you are
+essentially defeated. Even if everything works as expected client
+side software (such as outlook) is sufficiently complex and full
+of bugs that an attacker can still slip malicious data through
+and attack internal machines. With the ease of sending data out
+of a network, controlling these systems once compromised is not
+to difficult. One way is to simply using a reverse WWW shell. The
+client sends out a request to the attackers web server, the
+response from the attacker is the command they want run, the
+output is sent back as another www request. There are also legal
+issues, if you are regularly examining the data users send and
+receive there are numerous privacy issues (how would you like it
+if your ISP logged every single web site you visited?) and in
+some case this activity may even be illegal unless the user
+explicitly consents to being monitored. While using a web proxy
+to restrict access to certain sites is more effective than trying
+to configure every single user's web browser to block a site
+there are so many ways around it a determined user will find a
+way without to much effort. The popularity of email means that
+almost every desktop has some sort of mail reading software.
+Almost all of these (especially the Windows clients) have
+security flaws that can be exploited, or more simply an attacker
+can send executables labeled as a game. Blocking these with an
+application level proxy is difficult even with modern anti-virus
+scanning software.</p>
+<p>Because of the complexity of filtering data at the application
+level it would be virtually impossible to implement a default
+deny policy, that is any data that cannot be explicitly
+recognized and deemed &quot;safe&quot; is blocked, there would be
+far to many false positives in most environments. This means that
+most application level proxies must run in a default allow mode
+making them vulnerable to attack.</p>
+<p>However properly installed and maintained they can be very
+effective in protecting more vulnerable internal servers from
+attackers and in logging and filtering (to a degree) data passing
+in and out of your network. If an attacker must communicate
+through an application level proxy then the data must be
+completely reassembled before it is passed though (in most cases)
+this makes it harder (but not impossible) to exploit problems
+such as buffer overflows in network services. As well the
+attacker will have a more difficult time in determining exactly
+which network service and OS the internal server is running
+(assuming you protect the privacy of your internal network)
+resulting in a less surgical attack that is more likely to be
+detected. </p>
+<h3>Examining and filtering encrypted data</h3>
+<p>Even at the best of times when everything is working correctly
+examining data moving through a proxy can be difficult. Network
+packets become fragmented, meaning you must reassemble them
+properly before you can even start to examine the data payloads.
+Once the data has been reassembled you must identify what it is,
+this is not always easy as standards such as MIME can become
+mangled if certain software packages do not adhere correctly to
+the standards. Then when the data has been identified you can
+scan it for content, unless of course the data is compressed in
+some manner. Some forms of data compression are easy to deal
+with, gzip, zip, Compress and so on, others are much more
+difficult to deal with such as self extracting files. This of
+course is without a hostile entity trying to slip data past your
+filters and proxies. Hostile attackers can mangle identification
+strings, add spurious characters that will confuse your filter
+software but be accepted by the end application (such as email).
+Converting things from straight ASCII text to Unicode or ASCII
+codes is often sufficient to confuse detection software. This of
+course entirely ignores the entire problem of encrypted data such
+as secure WWW, email or VPN's. </p>
+<p>Unfortunately it is not an option in most networks to default
+to denying any data that cannot be decrypted, decompressed or
+otherwise examined as this would block a lot of information that
+end users demand. Doing key escrow and copying secret keys would
+be a solution however this has many disadvantages as well. Users
+must somehow securely transmit their secret keys to the system
+doing the decryption, this system will need to store the keys in
+a relatively unprotected manner since the user cannot type in a
+password to allow access to them. In any event this key escrow
+may simply not be possible, many modern smartcards generate the
+encryption keys internally, and are designed and built so that
+removing the secret key from the card is almost impossible (even
+if you are the legitimate owner). This of course greatly improves
+the security of these systems, however it makes decrypting the
+data at any point other than the end users workstation near
+impossible. For other systems such as webservers you can use a
+proxy in front that clients communicate with, decrypt the data
+there, and then send it in plain text to the actual webserver
+(which of course means you can filter and proxy it). </p>
+<p>Generally speaking if the encryption is done at the
+application level (PGP encrypted email) it is difficult to
+decrypt and examine as you must have the users grant you their
+secret keys. They can of course generate a new set of keys and
+simply use those, to prevent this you would need to block all
+data that cannot be decrypted. At the network level you can proxy
+the connections and then send plain text to the server, this can
+have the added benefit of reducing load on the server. Of course
+for client systems you cannot easily proxy SSL, so there is
+always the possibility of someone visiting a hostile website that
+sends them a virus, or slipping data outwards through an HTTPS
+tunnel. For VPN systems your best bet is to have tunnels go to a
+server and clear text to a client. You can then use IPSec or
+something similar between the internal server and the client. Of
+course if the client is running the VPN (such as the IPSec that
+ships with Windows 2000, OpenBSD and so on) unless you share the
+secret keys/etc you will not be able to effectively filter this
+traffic beyond rudimentary source/destination filters.</p>
+<table border="2">
+<tr>
+<td>Problem (Conceptual): To examine encrypted data you
+must decrypt it. Key escrow is highly unpopular with most
+security conscious people and with some modern
+technologies (smartcards/etc) it isn't even possible. For
+servers it is quite easy to handle the SSL/IPSec/etc
+connection on a dedicated machine, decrypt the traffic
+and then examine it, however for end user workstations
+this can be a real issue (especially in academic networks
+and other &quot;open&quot; networks where retracting
+services is unpopular). </td>
+</tr>
+</table>
+<h3>Firewall management issues</h3>
+<p>Getting a firewall properly setup and maintaining it is
+difficult at the best of times. Doing this for dozens, or even
+hundreds of firewalls distributed across multiple sites with
+multiple policies becomes an extremely challenging problem. How
+do you know that the firewall rules actually block or allow
+traffic as you desire? How can you be sure that an updated
+ruleset won't cause problems, and if it does how do you roll back
+to the last working set of rules? How can you be sure the
+firewall is operating, if someone removes it (accidental or
+otherwise) do you have some mechanism to inform you? Some of
+these problems have been solved by vendors, for example Sun's
+SunScreen firewall maintains previous configurations, you can
+easily revert back to an older configuration if you wish to do
+so. The central management console allows you to remotely control
+many firewalls and push out the rulesets to them. For other
+problems like verifying rules there are sometimes tools that ship
+with the firewall however these might be flawed, you are probably
+better of placing a machine external to your network and trying
+to send data that should (or shouldn't be blocked) and actually
+monitoring the results. For detecting when a firewall fails, or
+rulesets are accidentally flushed one possibility is to use an
+intrusion detection system behind the firewall, this of course
+adds more administrative overhead to your network. For firewalls
+that remotely log data how can you be sure log messages aren't
+being dropped or otherwise mishandled? Many systems such as Cisco
+routers use syslog which utilizes UDP to send data, this is of
+course not nearly as reliable as TCP. On the logging system
+(remote or local) is their sufficient disk space, generally
+speaking for each packet that gets logged a line of text is added
+to the log, this becomes a significant amount of data if the
+attacker is sending several thousand packets per second. Is there
+sufficient disk I/O to log sudden bursts of traffic, or memory to
+buffer it? For systems that log externally you may wish to have a
+dedicated interface straight to the logging server to provide
+sufficient bandwidth. </p>
+<p>If you decide to go beyond central firewalls and implement
+firewalls on every desktop machine the administrative nightmare
+only grows. If users find the firewall gets in their way (say it
+blocks outgoing IRC connections) then they might remove it
+(despite what your security policies say). For an attacker it is
+also desirable to remove the firewall as it makes attacking the
+machine that much easier. For systems like NT/2000 and UNIX if
+the user does not have privileged access and the machine is
+secure then removing the firewall should not be possible. However
+on systems like Windows 95/98 and any NT/2000 or UNIX system
+where the user has privileged access chances are that they can
+remove the firewall software, or modify the rules without to much
+trouble. One popular firewall for Windows, ZoneAlarm has an
+uninstall option (like most Windows products) but unfortunately
+for the end user this is very easy to access. Simply running the
+various ZoneAlarm executables (depending on which version you
+have any of: zapro.exe, zonealarm.exe, vsmon.exe, and
+minilog.exe) with the &quot;-unload&quot; and
+&quot;-uninstall&quot; options make it trivial for a virus or
+even a 3 line batch file to completely remove ZoneAlarm. </p>
+<p>Blocking new types of data and services also poses a problem.
+Many instant messenger and file sharing services are built to
+work through firewalls and blocking them can be difficult because
+of the number of IP's and ports involved. Many also use
+&quot;legitimate&quot; ports such as port 80 (WWW) to send and
+receive traffic. Keeping up with all this requires human
+intervention as most firewall vendors do not maintain or share
+firewall rules that would allow people to block these services
+(in any event being proactive about it is near impossible,
+meaning some data will leak through). To add insult to injury we
+have vendors like Microsoft now making it possible in the SDK's
+to move COM objects over port 80, blocking this is virtually
+impossible. This practice will grow and the old practice of using
+the port number to identify the type of traffic will become more
+and more useless, active scanning of content will have to happen,
+and as discussed in the previous section that is a non-trivial
+task.</p>
+<table border="2">
+<tr>
+<td>Problem (Conceptual): Networks are only going to grow
+in complexity, as will server and client software.
+Staying ahead of the game is now impossible as vendors
+move data through new and interesting ports, even keeping
+up with it is difficult. If you firewall is not easy to
+administer that is only one more challenge that will add
+to the insecurity of your network.</td>
+</tr>
+</table>
+<h3>Solutions and Evolutions</h3>
+<p>So what can we do? </p>
+<p>I knew I was going to have to answer this question.</p>
+<p>The first step would be to take the products we have and use
+them properly. Many people are not aware of all the features and
+possibilities in current firewalls. Take a look at what you have,
+is it installed in the right place? Is it a reasonably recent
+version (with hopefully no major security flaws)? Does it support
+the features you need, perhaps it is time to buy a firewall that
+supports user authentication? If you have accomplished this the
+next step would be to look at adding additional levels of
+protection. A DMZ mailserver capable of stripping headers to
+protect internal network information might be a good idea, there
+is an excellent solution in the form of Postfix (free and
+OpenSource) available that runs on virtually any form of UNIX.
+Perhaps it is time to install an external server that can scan
+your network, allowing you to make sure the firewall is in fact
+blocking packets it is supposed to, again an excellent solution
+for this would be nmap. Installing an IDS on the internal side of
+your firewall with a ruleset to detect packets the firewall
+should block that can alert you would be an excellent idea, snort
+with arachnids is a solid combination. At this point we need to
+start looking at taking existing solutions and modifying them, or
+completely new approaches.</p>
+<p>Firewalls that utilize an air gap, that is they do not
+directly transfer data but use a shared piece of memory (such as
+a chunk of ram or a harddisk). Only the internal or external unit
+can talk to it at any given moment, resulting in a
+&quot;gap&quot; that prevents many network level attacks and so
+on. These products are currently available (although expensive)
+but are starting to pick up steam. They will likely become a
+standard network component in the next few years to protect
+valuable targets such as web and database servers that process or
+handle credit card numbers for example.</p>
+<p>Firewalls that examine data at the application level are one
+approach, we currently have these however they are far from
+perfect. Even if you were to go so far as install VMWare on the
+firewall and a copy of Windows 98, executable content is
+sufficiently complex that executing it and monitoring what
+happens might not be sufficient (what if it waits 10 minutes
+before running the virus subroutine?). Now do this for 1000
+executable attachments an hour. The added complexity is also a
+problem, and the added latency makes them especially undesirable
+in some environments (or simply impossible).</p>
+<p>IDS style firewalls that would behave like an IDS and then
+block it based on signatures are a valid idea, however problems
+such as latency (it will have to assemble and scan the data very
+quickly) need to be addressed, and certain types of data are
+difficult to handle in this manner (compressed data), or
+downright impossible (encrypted data). Add to this problems like
+fragmentation, windowing sizes, streaming content and you have a
+very difficult problem to solve.</p>
+<p>Putting firewalls on ever single piece of equipment connected
+to the network is a good idea, especially with wireless networks
+becoming increasingly popular, however the management issues
+alone are enough to deter most people. Any firewall will need to
+be centrally managed, and available for many platforms (Windows,
+NT, 2000, UNIX, handhelds, etc.) to be effective.</p>
+<p>Filters and proxies built into applications, this is already
+starting to happen, Covalent networks who formally made an SSL
+add on package for Apache now make an IDS package for Apache to
+detect web site modification and alert you if it happens. </p>
+<p>Client proxies that encrypt the data between the client and
+the proxy using one key and then another key (controlled by the
+proxy) between the proxy and a server. Thus from the client to
+the end server we have encryption, SSL for example, but along the
+path it is decrypted and can be filtered or examined for various
+types of undesirable content (viruses for example). This kind of
+product is likely a ways away since client side software will
+need to support it correctly, but for example to proxy SSL for
+the WWW all you would need to do is install another root
+certificate in the client. The proxy could generate a self
+signed, and to the client apparently valid certificate for the
+site. You cannot use the sites real certificate (since it doesn't
+have the secret key associated with it). This type of solution
+would be relatively easy to implement however it would face some
+resistance as encrypted session such as SSL would no longer be
+exclusively between the client and the server, privacy
+concerns/etc would exist. </p>
+<h3>Parting comments</h3>
+<p>As always reader comments are welcome, my email address is <a href="/cdn-cgi/l/email-protection#483b2d212e3a212d2c083b2d212e3a212d2c66273a2f"><span class="__cf_email__" data-cfemail="592a3c303f2b303c3d192a3c303f2b303c3d77362b3e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+(just in case it's not at the top of the article as it should
+be), no flames please (but well reasoned arguments are welcome).</p>
+<p>Standard rules of computer security apply here; keep it up to
+date, maintain configuration, minimize privilege and access where
+possible (i.e. partition your network using firewalls). I hope we
+will see better products from vendors because what we have
+currently is definitely not going to provide very effective
+solutions in the future (and I'm not talking 5 years down the
+road, I mean more like this year). Things like SSL proxies that
+install a root certificate into the client and &quot;fake&quot;
+connections might be useful, it's one more stream of data you can
+examine (I'm amazed no-one has done this yet, I wish someone
+would). Hopefully running services on client machines and
+workstations will become less needed, if necessary then using
+IPSec software on the LAN and restricting the service (such as
+filesharing) to valid IPSec connections would help. As always we
+are in the unfortunate position of having built a network and
+systems fundamentally designed to share data, trying to restrict
+this activity is difficult at best and almost impossible at other
+times.</p>
+<h3>Thanks to:</h3>
+<p>I also must thank a number of people who reviewed the paper
+and made excellent suggestions:</p>
+<p>Thomas Biege <a href="/cdn-cgi/l/email-protection#e3978b8c8e8290a390969086cd8786"><span class="__cf_email__" data-cfemail="186c707775796b586b6d6b7d367c7d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+for reviewing and commenting on the paper.</p>
+<p>&nbsp;</p>
+<hr>
+<p>closet 20001213 - Back doors, back channels and HTTP(S)</p>
+<p>closet 20000412 - filtering software</p>
+<p>firewall series</p>
+<p><a href="http://www.wittys.com/files/mab/fwpentesting.html">http://www.wittys.com/files/mab/fwpentesting.html</a>
+- Firewall Penetration Testing</p>
+<p><a href="http://www.packetfactory.net/firewalk/">http://www.packetfactory.net/firewalk/</a>
+- Firewalk</p>
+<p><a href="http://www.sys-security.com/archive/papers/ICMP_Scanning_v2.5.pdf">http://www.sys-security.com/archive/papers/ICMP_Scanning_v2.5.pdf</a>
+- ICMP Usage In Scanning</p>
+<p><a href="http://www.linuxdoc.org/HOWTO/mini/Firewall-Piercing.html">http://www.linuxdoc.org/HOWTO/mini/Firewall-Piercing.html</a>
+- Firewall Piercing</p>
+<p><a href="http://www.landfield.com/faqs/firewalls-faq/">http://www.landfield.com/faqs/firewalls-faq/</a>
+- Firewall FAQ (excellent) </p>
+<p><a href="http://www.sans.org/newlook/resources/IDFAQ/ID_FAQ.htm">http://www.sans.org/newlook/resources/IDFAQ/ID_FAQ.htm</a>
+- Intrusion Detection FAQ </p>
+<p><a href="http://www.sans.org/giac.htm">http://www.sans.org/giac.htm</a>
+- Global Incident Analysis Center</p>
+<p><a href="http://pubweb.nfr.net/~mjr/pubs/think/">http://pubweb.nfr.net/~mjr/pubs/think/</a>
+- Thinking About Firewalls V2.0: Beyond Perimeter Security </p>
+<p><a href="http://www.research.att.com/~smb/papers/distfw.html">http://www.research.att.com/~smb/papers/distfw.html</a>
+- Distributed firewalls </p>
+<p><a href="http://www.hideaway.net/Server_Security/Library/Firewalls/firewalls.html">http://www.hideaway.net/Server_Security/Library/Firewalls/firewalls.html</a>
+- Firewall text library</p>
+<p><a href="http://www.robertgraham.com/pubs/firewall-seen.html">http://www.robertgraham.com/pubs/firewall-seen.html</a>
+- Firewall Seen FAQ </p>
+<p><a href="http://www.linuxdoc.org/HOWTO/mini/Bridge+Firewall.html">http://www.linuxdoc.org/HOWTO/mini/Bridge+Firewall.html</a>
+- Ethernet Bridge with Firewall under Linux</p>
+<p><a href="http://www.postfix.org/">http://www.postfix.org/</a>
+- Postfix</p>
+<p><a href="http://www.nmap.org/">http://www.nmap.org/ </a>- Nmap</p>
+<p><a href="http://www.snort.org/">http://www.snort.org/</a> -
+Snort</p>
+<p><a href="http://www.whitehats.com/">http://www.whitehats.com/</a>
+- Arachnids</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 25/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

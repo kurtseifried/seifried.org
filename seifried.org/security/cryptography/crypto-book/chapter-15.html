@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 15 - Secure web serving with SSL</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 15 - Secure web serving with SSL</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#8be0fef9ffcbf8eee2edf9e2eeefa5e4f9ec"><span class="__cf_email__" data-cfemail="29425c5b5d695a4c404f5b404c4d07465b4e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>Secure web serving is a relatively easy task due to the huge
+number of available servers and clients that all can communicate
+via SSL. Almost every web browser in has SSL support, even lynx,
+and the vast majority are free. The server side is a little bit
+trickier, for patent reasons in the US you typically have to buy
+an SSL enabled web server, although outside the US you can use a
+number of free ones (Apache and ROxen for example). Alsofor
+performance reasons you probably want to go with a commercially
+licensed secure web server, the OpenSSL implementation is solid,
+but but as fast as RSA's implementation. Additionally most of the
+commercial secure servers support hardware crypto accleration.
+There is a two part series on the various secure web servers
+available:</p>
+<p>Web Server Round-up, Part 1, availability ***************</p>
+<p>Web Server Round-up, Part 2</p>
+<p>Once you have installed the server
+you will need a server certificate, this contains information
+like your server name (www.example.org), organization name
+(Example Inc.), and so on, and the public key, this bundle of
+information is then signed by a trusted party such as Verisign
+(which has 99% or so of the server certificate market). You will
+need to provide proof of identity (person or corporate), along
+with the data, they then verify your identity, sign the data and
+send it back to you. Most SSL based sites typically are used to
+protect information stored on the site or transfered to the site,
+which involves tracking and authenticating users. </a></p>
+<p><a href="../../www-auth/">WWW Authentication paper</a></p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-13.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-16.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

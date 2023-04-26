@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Information Security | Kurt Seifried</title>
+<link rel="pingback" href="http://kurt.seifried.org/xmlrpc.php"/>
+<script src='https://r-login.wordpress.com/remote-login.php?action=js&amp;host=kurt.seifried.org&amp;id=86342&amp;t=1480695489&amp;back=http%3A%2F%2Fkurt.seifried.org%2Fcategory%2Finformation-security%2F' type="text/javascript"></script>
+<script type="text/javascript">
+		/* <![CDATA[ */
+			if ( 'function' === typeof WPRemoteLogin ) {
+				document.cookie = "wordpress_test_cookie=test; path=/";
+				if ( document.cookie.match( /(;|^)\s*wordpress_test_cookie\=/ ) ) {
+					WPRemoteLogin();
+				}
+			}
+		/* ]]> */
+		</script>
+<link rel='dns-prefetch' href='//s2.wp.com'/>
+<link rel='dns-prefetch' href='//s0.wp.com'/>
+<link rel='dns-prefetch' href='//kurtseifried.wordpress.com'/>
+<link rel='dns-prefetch' href='//s1.wp.com'/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Feed" href="http://kurt.seifried.org/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Comments Feed" href="http://kurt.seifried.org/comments/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Information Security Category Feed" href="http://kurt.seifried.org/category/information-security/feed/"/>
+<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1473172720h&ver=4.6.1-RC1-38499"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">img.wp-smiley,img.emoji{display:inline!important;border:none!important;box-shadow:none!important;height:1em!important;width:1em!important;margin:0 .07em!important;vertical-align:-0.1em!important;background:none!important;padding:0!important;}</style>
+<link rel='stylesheet' id='all-css-0-1' href='https://s0.wp.com/_static/??-eJx9jUEOAiEMRS8kNphRVsazADYOA2UaCpl4e0HjSjOb5vfnvXzYWPk1V8wVqClO7RGyQAoRBRasbH1U7+/oRQ7wH/drwd4T2zoIwnuwmJA6tqcRX77WiHPf2p3ZuNPKOS4oovql0EjVuQ/9ep8auDmIzZXgI0h9Jhzgja56mrTRZ2NOywvlj2BK' type='text/css' media='all'/>
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='kubrick-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/kubrick/ie.css?m=1273203575h&#038;ver=4.6.1-RC1-38499' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJx9i8sKgCAQAH8oWwSjOkTfYmLLhrrig34/u0Rdus3ADBAELmQ45Ad6k3MHZxRNig0FfBXRVaTWoGXh2OhCHD4idqcp/a3Jbo6xIUKrXnpPq1+kGmalplGq4wKxyTcd' type='text/css' media='all'/>
+<link rel='stylesheet' id='print-css-3-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h' type='text/css' media='print'/>
+<link rel='stylesheet' id='all-css-4-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/actionbar/actionbar.css,/wp-content/themes/h4/global.css?m=1479929846j' type='text/css' media='all'/>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFzt0KwjAMBeAXsiv+Tb0Qn6WrcaQuaW1Shz69HeiFMBQCgZyPQ+yYDLIfyhnEhjq3AvnxXk2Qhf0FDGGfnUJDyB/sIyuwTpZihwOYIpBdX2+16BJnXIqiBCIVzaTfLyHfEca/LIAm568mg+Bzaj3Rcblp2+1qfdjtwws0V1vd'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kurtseifried.wordpress.com/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"/>
+<meta name="generator" content="WordPress.com"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png"/>
+<link rel='openid.server' href='http://kurtseifried.wordpress.com/?openidserver=1'/>
+<link rel='openid.delegate' href='http://kurtseifried.wordpress.com/'/>
+<link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried"/>
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com"/>
+<style type='text/css'><!--
+body { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgcolor.gif"); }
+#page { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbg.gif") repeat-y top; border: none; }
+#header { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickheader.gif") no-repeat bottom center; }
+#footer { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickfooter.gif") no-repeat bottom; border: none;}
+#header { margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px; }
+#headerimg { margin: 7px 9px 0; height: 192px; width: 740px; }
+#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: ; }
+#headerimg h1 a, #headerimg .description { display:  }
+
+	--></style><meta name="application-name" content="Kurt Seifried"/><meta name="msapplication-window" content="width=device-width;height=device-height"/><meta name="msapplication-tooltip" content="Just another blog from just another guy (kurt@seifried.org)"/><meta name="msapplication-task" content="name=Subscribe;action-uri=http://kurt.seifried.org/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="title" content="Posts about Information Security on Kurt Seifried"/>
+<meta name="description" content="Information Security"/>
+<style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body class="archive category category-information-security category-15230 mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page">
+<div id="header">
+<div id="headerimg" onclick=" location.href='http://kurt.seifried.org';" style="cursor: pointer;">
+<h1><a href="http://kurt.seifried.org/">Kurt Seifried</a></h1>
+<div class="description">Just another blog from just another guy (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="c4afb1b6b084b7a1ada2b6ada1a0eaabb6a3">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)</div>
+</div>
+</div>
+<hr/>
+<div id="content" class="narrowcolumn">
+<h2 class="pagetitle">Archive for the &#8216;Information Security&#8217; Category</h2>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+<div class="post-354 post type-post status-publish format-standard hentry category-information-security">
+<h3 id="post-354"><a href="http://kurt.seifried.org/2013/09/01/critical-infrastructure-and-the-internet-and-by-extensions-the-cloud/" rel="bookmark">Critical Infrastructure and the Internet (and by extensions, the&nbsp;Cloud)</a></h3>
+<small>September 1, 2013</small>
+<div class="entry">
+<p>Dan Geer has written a nice article ( <a href="http://queue.acm.org/detail.cfm?id=2479677">http://queue.acm.org/detail.cfm?id=2479677</a>) about putting critical infrastructure (like power grids) online, unfortunately it seems to ignore the economics involved, using the Internet is vastly cheaper than anything else (e.g. dedicated physical communications infrastructure, imagine the cost of laying your own network to connect a few power plants and control centers up vs. just buying Internet access from a provider). I suspect this pattern of &#8220;ZOMG! critical infrastructure it attached to the Internet&#8221; will be repeated for the Cloud, with the same economic drivers resulting in stuff being shoved into the Cloud anyways.</p>
+<p>&nbsp;</p>
+</div>
+<p class="postmetadata"> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2013/09/01/critical-infrastructure-and-the-internet-and-by-extensions-the-cloud/#comments">1 Comment &#187;</a></p>
+</div>
+<div class="post-344 post type-post status-publish format-standard hentry category-information-security">
+<h3 id="post-344"><a href="http://kurt.seifried.org/2013/09/01/your-logical-fallacy-is/" rel="bookmark">Your Logical Fallacy&nbsp;Is</a></h3>
+<small>September 1, 2013</small>
+<div class="entry">
+<p>I can&#8217;t wait to teach my kids this stuff and send them to school: <a title="Your Logical Fallacy is" href="https://yourlogicalfallacyis.com/">https://yourlogicalfallacyis.com/</a></p>
+<p>And in case the site ever does down here&#8217;s a local high res copy of the poster: <a href="http://kurtseifried.files.wordpress.com/2013/09/fallaciesposter24x36.pdf">FallaciesPoster24x36</a></p>
+<p>&nbsp;</p>
+</div>
+<p class="postmetadata"> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2013/09/01/your-logical-fallacy-is/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="post-294 post type-post status-publish format-standard hentry category-information-security tag-bing tag-microsoft tag-spam">
+<h3 id="post-294"><a href="http://kurt.seifried.org/2013/06/05/is-microsoft-spamming-anyone-else-about-robots-txt-blocking-bing/" rel="bookmark">Is Microsoft spamming anyone else about robots.txt blocking&nbsp;Bing?</a></h3>
+<small>June 5, 2013</small>
+<div class="entry">
+<p>So Microsoft spammed me about my robots.txt again:</p>
+<blockquote><p>from: Jyoti Bhagavatula (HCL America Inc) &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="eb9dc68192849f8289ab868288998498848d9fc5888486">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;</p>
+<p>to: &#8220;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="9bfff5e8fafff6f2f5dbc8ded2ddc9d2dedfb5d4c9dc">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&#8221; &lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="f3979d8092979e9a9db380969a95819a9697dd9c8194">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;<br/>
+date: Wed, Jun 5, 2013 at 11:11 AM</p>
+<p>subject: Robots.txt blocking Bing crawler: <a href="http://www.seifried.org/robots.txt" rel="nofollow">http://www.seifried.org/robots.txt</a></p>
+<p>Hello,</p>
+<p>I am contacting you on behalf of the Bing Search engine (<a href="http://www.bing.com/" target="_blank">http://www.bing.com/</a>) in regards to your robots.txt file:</p>
+<p><a href="http://www.seifried.org/robots.txt" target="_blank">http://www.seifried.org/robots.txt</a></p>
+<p>Our customers have alerted us that your website was partially absent from our results and we have discovered that you are blocking our crawler, named BingBot, via a disallow directive in your robots.txt file:</p>
+<p><b><i>User-agent: msnbot</i></b></p>
+<p><b><i>Disallow: /</i></b></p>
+<p><b><i>User-agent: bingbot</i></b></p>
+<p><b><i>Disallow: /</i></b></p>
+<p>We would be pleased if you could edit your robots.txt file to allow our crawler to fetch and index your content properly, which will in turn increase traffic to your site via our search results, by including the following section:</p>
+<pre><b><i>User-agent: Bingbot</i></b></pre>
+<p><b><i>Disallow: </i></b></p></blockquote>
+<p><b><i></i></b>I find this pretty annoying, they don&#8217;t take the time to even look at my website and see that the contact email is pretty obviously <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="6c07191e182c1f09050a1e05090842031e0b">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>, instead they spam my DNS WHOIS email contact. Secondly, I&#8217;ve already told them several times I don&#8217;t want to let them index my site, first via robots.txt, and secondly in email replies to the spam they send me.</p>
+<p>Is anyone else getting this emails?</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/bing/" rel="tag">bing</a>, <a href="http://kurt.seifried.org/tag/microsoft/" rel="tag">microsoft</a>, <a href="http://kurt.seifried.org/tag/spam/" rel="tag">spam</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2013/06/05/is-microsoft-spamming-anyone-else-about-robots-txt-blocking-bing/#comments">1 Comment &#187;</a></p>
+</div>
+<div class="post-271 post type-post status-publish format-standard hentry category-information-security tag-bitcoin tag-economics">
+<h3 id="post-271"><a href="http://kurt.seifried.org/2013/03/20/make-money-fast-with-bitcoin/" rel="bookmark">Make Money Fast with&nbsp;BitCoin!</a></h3>
+<small>March 20, 2013</small>
+<div class="entry">
+<p>So I noticed these ads at slashdot.org: <a href="http://butterflylabs.com/landing/landing-ls.php">http://butterflylabs.com/landing/landing-ls.php</a> these are high speed crypto devices designed to mine BotCoins. They literally make money, fast. But if they are actually capable of mining BitCoins cost effectively why is the company selling them? Wouldn&#8217;t it make more sense to simply run them and harvest the BitCoins themselves?</p>
+<p>I did some back of the envelope math and they don&#8217;t look that cost effective (unless the price of BitCoins rise, but of course then all bets are off and in theory an Arduino would be cost effective). So I can only conclude that while this is some potentially cool technology it is not cost effective. If was going to try and make money with BitCoins, I would buy a ton of BitCoins, then sell them rapidly to crash the price (since the BitCoin market is still not terribly liquid) and then buy as the price bottoms out. Or I&#8217;d hack an exchange and steal a ton of BitCoins. Much like a Casino the only way to reliably mask money with BitCoins is to cheat.</p>
+<p>Also if you want to get into BitCoins (beyond cheating/speculating) I suggest you read about deflationary spirals: <a href="https://en.bitcoin.it/wiki/Deflationary_spiral">https://en.bitcoin.it/wiki/Deflationary_spiral</a></p>
+<p>All in all considering that BitCoins are wholly unregulated, the exchanges keep getting compromised, and the long term deflationary issues I would imagine that most of us are better off investing in pretty much anything other than BitCoins.</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/bitcoin/" rel="tag">bitcoin</a>, <a href="http://kurt.seifried.org/tag/economics/" rel="tag">economics</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2013/03/20/make-money-fast-with-bitcoin/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="post-241 post type-post status-publish format-standard hentry category-information-security category-linux tag-chrome tag-kerberos">
+<h3 id="post-241"><a href="http://kurt.seifried.org/2012/11/24/google-chrome-and-kerberos-on-linux/" rel="bookmark">Google Chrome and Kerberos on&nbsp;Linux</a></h3>
+<small>November 24, 2012</small>
+<div class="entry">
+<p>So we all know you can enable Kerberos by adding the &#8220;&#8211;auth-server-whitelist&#8221; to the command line:</p>
+<pre style="padding-left:30px;">google-chrome --auth-server-whitelist="*.example.org"</pre>
+<p>But you can also make it permanent. Simply create a directory (in Linux) called /etc/opt/chrome/policies/managed/ and within it drop a json file such as example-corp.json with the following contents:</p>
+<pre style="padding-left:30px;">{ "AuthServerWhitelist": "*.example.org",
+"AuthNegotiateDelegateWhitelist": "*.example.org" }</pre>
+<p>And voila, no need to fiddle the command line options every time you start Chrome. Plus as an administrator you can simply deploy that file automatically across all your workstations and not have to bother the users, things will just work.</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/chrome/" rel="tag">chrome</a>, <a href="http://kurt.seifried.org/tag/kerberos/" rel="tag">kerberos</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a>, <a href="http://kurt.seifried.org/category/linux/" rel="category tag">Linux</a> | <a href="http://kurt.seifried.org/2012/11/24/google-chrome-and-kerberos-on-linux/#comments">3 Comments &#187;</a></p>
+</div>
+<div class="post-127 post type-post status-publish format-standard hentry category-information-security category-linux tag-fedora tag-selinux tag-wordpress tag-wp-super-cache">
+<h3 id="post-127"><a href="http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/" rel="bookmark">Fedora 16 with SELinux running WordPress with WP Super&nbsp;Cache</a></h3>
+<small>January 4, 2012</small>
+<div class="entry">
+<p><strong>Updated (Jan 5, 2012)</strong>: chcon changes the SELinux security on a file, but a restorecon would wipe that out, you need to actually run semanage to change the policy, then run restorecon to make it &#8220;permanent&#8221;.  Thanks to <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="e98d9e88859a81a99b8c8d81889dc78a8684">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> for pointing this out to me.</p>
+<p>So I recently started upgrading all the CloudSecurityAlliance web servers from F14 (with SELinux enabled) to F16 (with SELinux enabled). But I ran into a nasty little problem, WP Super Cache was broken. The error message that came up was:</p>
+<pre style="padding-left:30px;">Error: Your cache directory (/var/www/html/wp-content/cache/)
+or /var/www/html/wp-content need to be writable for this
+plugin to work. Double-check it.
+
+Cannot continue... fix previous problems and retry.</pre>
+<p>Well shoot. The file permissions were correct, apache had write permissions and so on to the directory. But it was unable to write&#8230; Ah.. must be SELinux. The quickest way to test this is to simply disable SELinux for a second:</p>
+<pre style="padding-left:30px;">setenforce Permissive</pre>
+<p>and reload the WP Super Cache control page. Ah it works. So we know it&#8217;s an SELinux problem. The good news is that this is easy to fix, simply set the label on the directories and files you want the httpd process to be able to write to (and don&#8217;t forget to re-enable SELinux after you disabled it in the previous step):</p>
+<p>You can use chcon to change the content on the directories:</p>
+<pre style="padding-left:30px;">chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/cache/
+chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/plugins/
+chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/themes
+chcon -R -t httpd_sys_rw_content_t /var/www/html/wp-content/uploads/
+chcon -t httpd_sys_rw_content_t /var/www/html/wp-content/wp-cache-config.php</pre>
+<p>For a more permanent change however use semanage to change the targeted policy:</p>
+<pre style="padding-left:30px;">semanage -S targeted -i - &lt;&lt; _EOF
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/cache(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/uploads(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/plugins(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/themes(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/wp-cache-config.php
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/themes(/.*)?
+fcontext -a -t httpd_sys_rw_content_t /var/www/html/wp-content/blogs.dir(/.*)?
+_EOF</pre>
+<pre style="padding-left:30px;">restorecon -R -v /var/www/html</pre>
+<p>Also you may want to add &#8220;/var/www/html/wp-content/blogs.dir(/.*)?&#8221; so that WordPress multi-site uploads work properly.</p>
+<p>Be mindful of selinux policy updates, they shouldn&#8217;t overwrite the changes you made but you may want to in order to get the latest greatest policies. Also you probably won&#8217;t have semanage installed:</p>
+<pre style="padding-left:30px;">yum install policycoreutils-python</pre>
+<p>Ok that was easy. But how do we find out what label needs to be applied? Well the ls command can give us a hint:</p>
+<pre style="padding-left:30px;">ls -dZ /var/www/html
+drwxr-xr-x. root root system_u:object_r:httpd_sys_content_t:s0 /var/www/html</pre>
+<p>So we&#8217;re dealing with httpd (obviously, but for other servers and services it may not be as simple so I&#8217;m doing this step by step). We can check for httpd related contexts using grep:</p>
+<pre style="padding-left:30px;">grep httpd /etc/selinux/targeted/contexts/files/file_contexts</pre>
+<p>Which will return a huge list of stuff. If you examine the output however you will notice lines like:</p>
+<pre style="padding-left:30px;">/var/lib/drupal.*       system_u:object_r:httpd_sys_rw_content_t:s0
+/var/cache/mediawiki(/.*)?      system_u:object_r:httpd_cache_t:s0</pre>
+<p>So it would appear we have two main choices: httpd_sys_rw_content_t and httpd_cache_t. There are a number of other related labels as well: httpd_mediawiki_rw_content_t, httpd_git_rw_content_t, httpd_bugzilla_rw_content_t, httpd_mojomojo_rw_content_t and httpd_dspam_content_rw_t to name a few. Any of these will work, but I chose httpd_sys_rw_content_t as it;s rpetty obvious as to what it is for at first glance.</p>
+<p>For more details on Red Hat Enterprise Linux (this also applies to Fedora) with SELinux and confined services check the Red Hat documentation:</p>
+<p><a title="The Apache HTTP Server and SELinux - Types" href="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Managing_Confined_Services/sect-Managing_Confined_Services-The_Apache_HTTP_Server-Types.html">Managing_Confined_Services/sect-Managing_Confined_Services-The_Apache_HTTP_Server-Types.html</a></p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/fedora/" rel="tag">Fedora</a>, <a href="http://kurt.seifried.org/tag/selinux/" rel="tag">SELinux</a>, <a href="http://kurt.seifried.org/tag/wordpress/" rel="tag">Wordpress</a>, <a href="http://kurt.seifried.org/tag/wp-super-cache/" rel="tag">WP-Super-Cache</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a>, <a href="http://kurt.seifried.org/category/linux/" rel="category tag">Linux</a> | <a href="http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/#comments">1 Comment &#187;</a></p>
+</div>
+<div class="post-40 post type-post status-publish format-standard hentry category-information-security tag-openbsd tag-performance tag-testing">
+<h3 id="post-40"><a href="http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/" rel="bookmark">It feels slow &#8211; testing and verifying your network&nbsp;connection</a></h3>
+<small>May 1, 2010</small>
+<div class="entry">
+<p>So I have a backup network link (working from home means you need two network links) and it was feeling kind of slow. I had a Linksys BEsFx41 connected to it, which according to the specifications is an ok unit (does VPN, etc.) but in practice it felt really slow (web browsing was not fun). So let&#8217;s test this objectively I thought.</p>
+<p>First obviously was to check the speed, am I getting what I paid for? a quick visit to <a title="SpeedTest" href="http://www.speedtest.net/">www.speedtest.net</a> showed that I was indeed getting the 4 megabits down and 1 megabit up (it&#8217;s a wireless link, so not super fast, but I don&#8217;t have to worry about backhoe fade) that I pay for. So if I&#8217;m getting good upload/download speeds why would it feel slow?</p>
+<p>DNS</p>
+<p>Luckily the DNSSEC has been in the news a lot recently and several DNS testing sites have come up in various blogs/conversations/etc. So I headed over to the <a title="ICSI Netalyzr" href="http://netalyzr.icsi.berkeley.edu/">ICSI Netalyzr </a>which promises to &#8220;Debug your Internet.&#8221; It&#8217;s a java based test and takes a while, but I have to say the results are worth it. It checks for connection speed, filtering, DNS speed and filtering and a few other things. Turns out DNS lookups were horribly slow (on the order of several thousand milliseconds&#8230; aka seconds). No wonder web browsing felt slow!</p>
+<p>Turns out the BEFSX41 intercepts DNS lookups and proxies them, good for filtering, terrible for performance.</p>
+<p>So I tried out a Dlink EBR-2310, which had even worse DNS performance. To add insult to injury it doesn&#8217;t support routing properly. On the BEFSX41 I can specify static routes, i.e. a router on 192.168.1.1 can get to 10.1.2.0/255.255.255.0 through the machine at 192.168.1.2. The EBR-2310 simply doesn&#8217;t support any routing. It also does the DNS proxy intercept, worse than the BEFSX41 (about twice as slow, in other words completely unusable).</p>
+<p>So off to the store I go for a Netgear RP614v4. I was hoping that because it was a relatively recent device it would have slightly better hardware and firmware. Luckily I was right. It&#8217;s a mildly retarded device; you can set it up as a DHCP server but you don&#8217;t really have many (well any) options as to what it serves out via DHCP (domain, DNS servers, default gateway, etc., it does these all with a brain dead default set). But it does DNS lookups in an average if 70-80ms (as opposed to 1-3 seconds).</p>
+<p>On my main subnet Internet access is brokered through a pretty vanilla OpenBSD machine (apart from having IPv6 enabled it&#8217;s pretty bog standard) and DNS lookups/etc are much faster. If anything this experience has taught me that if you want performance go find a small cheap machine, load it up with OpenBSD and be happy. Time to buy a <a title="Soekris" href="http://soekris.com/">Soekris </a>I suppose. Oh and if you want DNSSEC these hardware firewalls aren&#8217;t going to do the trick, they all pretty much only support short DNS replies, meaning that longer DNSSEC replies will be truncated (and thus broken). To test this you can use the <a title="ORAC reply size test" href="https://www.dns-oarc.net/oarc/services/replysizetest">OARC reply size test</a>:</p>
+<pre>dig +short rs.dns-oarc.net txt
+</pre>
+<p>I also decided to test my network links for traffic shaping/etc., turns out my primary ISP does and my backups ISP doesn&#8217;t. To see if yours does/doesn&#8217;t check out the <a title="EFF test your ISP" href="http://www.eff.org/testyourisp">EFF page covering this</a>.</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/openbsd/" rel="tag">openbsd</a>, <a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/testing/" rel="tag">testing</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/#comments">1 Comment &#187;</a></p>
+</div>
+<div class="post-37 post type-post status-publish format-standard hentry category-information-security tag-ipv6 tag-openbsd">
+<h3 id="post-37"><a href="http://kurt.seifried.org/2010/05/01/ipv6-and-openbsd-part-2/" rel="bookmark">IPv6 and OpenBSD (Part&nbsp;2)</a></h3>
+<small>May 1, 2010</small>
+<div class="entry">
+<p>So now that you&#8217;re online with an IPv6 enabled OpenBSD machine what can you do? The first thing I ran into is noticing that not all OpenBSD ftp sites are IPv6 enabled. The following is a list of IPv6 capable FTP sites for OpenBSD:</p>
+<ul>
+<li>anga.funkfeuer.at</li>
+<li>ftp5.usa.openbsd.org</li>
+<li>ftp.arcane-networks.fr</li>
+<li>ftp.belnet.be</li>
+<li>ftp.esat.net</li>
+<li>ftp.estpak.ee</li>
+<li>ftp.eu.openbsd.org</li>
+<li>ftp.freenet.de</li>
+<li>ftp.fsn.hu</li>
+<li>ftp.heanet.ie</li>
+<li>ftp.irisa.fr</li>
+<li>ftp.kddlabs.co.jp</li>
+<li>ftp.nluug.nl</li>
+<li>ftp.obsd.si</li>
+<li>ftp.openbsd.dk</li>
+<li>ftp.piotrkosoft.net</li>
+<li>piotrkosoft.net</li>
+<li>ftp.rediris.es</li>
+<li>ftp.task.gda.pl</li>
+<li>ftp.tcc.edu.tw</li>
+<li>ftp.ulak.net.tr</li>
+<li>mirror.aarnet.edu.au</li>
+<li>mirror.bytemark.co.uk</li>
+<li>mirror.corbina.net</li>
+<li>mirror.planetunix.net</li>
+<li>mirrors.nic.funet.fi</li>
+<li>mirror.switch.ch</li>
+<li>stacken.kth.se</li>
+<li><a href="http://www.obsd.si" rel="nofollow">http://www.obsd.si</a></li>
+</ul>
+<p>What I find most interesting is how few North American sites are represented as compared to the European and Asian sites.</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/ipv6/" rel="tag">ipv6</a>, <a href="http://kurt.seifried.org/tag/openbsd/" rel="tag">openbsd</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2010/05/01/ipv6-and-openbsd-part-2/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="post-7 post type-post status-publish format-standard hentry category-information-security tag-ca tag-infosec tag-security tag-ssl">
+<h3 id="post-7"><a href="http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/" rel="bookmark">Verisign certificate authority finally fixes (part of the) domain verification&nbsp;problem</a></h3>
+<small>April 20, 2010</small>
+<div class="entry">
+<p>So a few months ago I decided to see how easy it was to buy an SSL certificate for a domain I didn&#8217;t own. It turns out that it was very easy because at least one large certificate authority (CA), RapidSSL (owned by Verisign) allowed a large number of email addresses to be used for verification (such as ssladministrator@, it@, etc.).</p>
+<p>The original article is available here: <a title="Breach of trust" href="http://www.linux-magazine.com/w3/issue/114/054-055_kurt.pdf">http://www.linux-magazine.com/w3/issue/114/054-055_kurt.pdf</a>. I also contacted the Mozilla/Firefox people through the <a title="mozilla.dev.security.policy" href="http://groups.google.com/group/mozilla.dev.security.policy/topics">mozilla.dev.security.policy</a> mailing list to let them know about it and to show the proof (the <a href="http://groups.google.com/group/mozilla.dev.tech.crypto/msg/8f9ccde899d5c088">emails from RapidSSL to me</a>). Betanews ran a nice article (<a title="Security researcher: 'Trivially easy' to buy SSL certificate for domain you don't own" href="http://www.betanews.com/article/Security-researcher-Trivially-easy-to-buy-SSL-certificate-for-domain-you-dont-own/1270072287">http://www.betanews.com/article/Security-researcher-Trivially-easy-to-buy-SSL-certificate-for-domain-you-dont-own/1270072287</a>), and not much else happened for a while.</p>
+<p>Things finally got rolling when a Bugzilla report was filed (<a title="Bug 556468  - Investigate incident with RapidSSL that issued SSL certificate for portugalmail.pt  " href="https://bugzilla.mozilla.org/show_bug.cgi?id=556468">Bug 556468</a>, which was basically a copy of an older bug <a title="Bug 477783  - Equifax not conforming to Mozilla CA Certificate Policy (7)  " href="https://bugzilla.mozilla.org/show_bug.cgi?id=477783">Bug 477783</a> concerning Equifax doing basically the same thing). A Verisign representative confirmed they had removed a bunch of problematic email addresses they allowed, but ssladmin@ was still valid (this turned out to be a mistake as you&#8217;ll soon see).</p>
+<p>Fast forward about two weeks and someone has copied my article and thrown in a few screen shots and submitted it to Slashdot (<a title="Become an SSLAdmin In a Few Easy Steps" href="http://news.slashdot.org/story/10/04/18/1218212/Become-an-SSLAdmin-In-a-Few-Easy-Steps">http://news.slashdot.org/story/10/04/18/1218212/Become-an-SSLAdmin-In-a-Few-Easy-Steps</a>) personally I don&#8217;t mind if people copy my work and build off of it, but when they protray it as their own original work with no credit or original source mentioned that is a bit annoying.</p>
+<p>Although annoying it had the benefit of showing the world that by using the ssladmin@ email address (remember, the one Verisign didn&#8217;t remove) which resulted in the rather quick disabling of it:</p>
+<blockquote><p>VeriSign will be removing the following generic approver email options for GeoTrust and RapidSSL as of tonight or tomorrow night:</p>
+<p>&#8211; ssladmin, sysadmin, and info</p></blockquote>
+<p>So I guess in the end it worked, certificates are hopefully a little more secure now but the sad thing is I spent several dozen hours basically holding vendors feet to the fire for something they should have been doing all along.</p>
+<p>Oh and there is no way to find out if a certificate authority has issued a certificate for your domain to someone else. Unlike DNS/etc. there is no way to query what certificates have been issued.</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/ca/" rel="tag">ca</a>, <a href="http://kurt.seifried.org/tag/infosec/" rel="tag">infosec</a>, <a href="http://kurt.seifried.org/tag/security/" rel="tag">security</a>, <a href="http://kurt.seifried.org/tag/ssl/" rel="tag">ssl</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="post-5 post type-post status-publish format-standard hentry category-information-security tag-infosec">
+<h3 id="post-5"><a href="http://kurt.seifried.org/2010/04/20/mapping-the-internet-scanning-every-web-server/" rel="bookmark">Mapping the Internet / scanning every web&nbsp;server</a></h3>
+<small>April 20, 2010</small>
+<div class="entry">
+<p>This is something I&#8217;ve always wanted to do, having a data set such as every ping-able IP, every server with port 80 exposed, lookups on every domain name or IP and so on are very useful. But the bandwidth and computation needed for this is often out of reach. Except now with services such as EC2 it is within reach, figure 1k data sent and received for an IP, a class A scan would only take 32 gigabytes in total. Figure 1 month of Small Linux instance machine time at Amazon and you&#8217;re looking at $63.60 (cheaper if you use a reserved instance or a spot instance!). So for a few thousand dollars you can now easily scan the entire Internet or create other similarly large data sets for a reasonable price.</p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/infosec/" rel="tag">infosec</a><br/> Posted in <a href="http://kurt.seifried.org/category/information-security/" rel="category tag">Information Security</a> | <a href="http://kurt.seifried.org/2010/04/20/mapping-the-internet-scanning-every-web-server/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+</div>
+<div id="sidebar">
+<ul>
+<li id="blog_subscription-3" class="widget widget_blog_subscription"><h2 class="widgettitle"><label for="subscribe-field">Email Subscription</label></h2>
+<form action="https://subscribe.wordpress.com" method="post" accept-charset="utf-8" id="subscribe-blog">
+<p>Enter your email address to subscribe to this blog and receive notifications of new posts by email.</p>
+<p>Join 14 other followers</p>
+<p><input type="text" name="email" style="width: 95%; padding: 1px 2px" placeholder="Enter your email address" value="" id="subscribe-field"/></p>
+<p>
+<input type="hidden" name="action" value="subscribe"/>
+<input type="hidden" name="blog_id" value="86342"/>
+<input type="hidden" name="source" value="http://kurt.seifried.org/category/information-security/"/>
+<input type="hidden" name="sub-type" value="widget"/>
+<input type="hidden" name="redirect_fragment" value="blog_subscription-3"/>
+<input type="hidden" id="_wpnonce" name="_wpnonce" value="321560f319"/> <input type="submit" value="Sign me up!"/>
+</p>
+</form>
+</li>
+<li id="wp_tag_cloud-2" class="widget wp_widget_tag_cloud"><h2 class="widgettitle">Tag Cloud</h2>
+<div style="overflow:hidden"><a href='http://kurt.seifried.org/tag/ami/' class='tag-link-126820 tag-link-position-1' title='1 topic' style='font-size: 8pt;'>ami</a>
+<a href='http://kurt.seifried.org/tag/auditing/' class='tag-link-84847 tag-link-position-2' title='1 topic' style='font-size: 8pt;'>auditing</a>
+<a href='http://kurt.seifried.org/tag/aws/' class='tag-link-144203 tag-link-position-3' title='2 topics' style='font-size: 13.25pt;'>aws</a>
+<a href='http://kurt.seifried.org/tag/beanstalk/' class='tag-link-1980937 tag-link-position-4' title='1 topic' style='font-size: 8pt;'>beanstalk</a>
+<a href='http://kurt.seifried.org/tag/bing/' class='tag-link-34399 tag-link-position-5' title='1 topic' style='font-size: 8pt;'>bing</a>
+<a href='http://kurt.seifried.org/tag/bitcoin/' class='tag-link-36507086 tag-link-position-6' title='1 topic' style='font-size: 8pt;'>bitcoin</a>
+<a href='http://kurt.seifried.org/tag/ca/' class='tag-link-23572 tag-link-position-7' title='1 topic' style='font-size: 8pt;'>ca</a>
+<a href='http://kurt.seifried.org/tag/chrome/' class='tag-link-367314 tag-link-position-8' title='1 topic' style='font-size: 8pt;'>chrome</a>
+<a href='http://kurt.seifried.org/tag/currency/' class='tag-link-123802 tag-link-position-9' title='1 topic' style='font-size: 8pt;'>currency</a>
+<a href='http://kurt.seifried.org/tag/dsk/' class='tag-link-435979 tag-link-position-10' title='1 topic' style='font-size: 8pt;'>dsk</a>
+<a href='http://kurt.seifried.org/tag/ebs/' class='tag-link-412792 tag-link-position-11' title='1 topic' style='font-size: 8pt;'>ebs</a>
+<a href='http://kurt.seifried.org/tag/ec2/' class='tag-link-315451 tag-link-position-12' title='1 topic' style='font-size: 8pt;'>ec2</a>
+<a href='http://kurt.seifried.org/tag/economics/' class='tag-link-657 tag-link-position-13' title='1 topic' style='font-size: 8pt;'>economics</a>
+<a href='http://kurt.seifried.org/tag/fedora/' class='tag-link-611 tag-link-position-14' title='1 topic' style='font-size: 8pt;'>Fedora</a>
+<a href='http://kurt.seifried.org/tag/gnome3/' class='tag-link-8792038 tag-link-position-15' title='1 topic' style='font-size: 8pt;'>gnome3</a>
+<a href='http://kurt.seifried.org/tag/hardware-2/' class='tag-link-9285985 tag-link-position-16' title='1 topic' style='font-size: 8pt;'>hardware</a>
+<a href='http://kurt.seifried.org/tag/hbr/' class='tag-link-564713 tag-link-position-17' title='1 topic' style='font-size: 8pt;'>hbr</a>
+<a href='http://kurt.seifried.org/tag/infosec/' class='tag-link-52624 tag-link-position-18' title='4 topics' style='font-size: 19.666666666667pt;'>infosec</a>
+<a href='http://kurt.seifried.org/tag/ipv6/' class='tag-link-10414 tag-link-position-19' title='2 topics' style='font-size: 13.25pt;'>ipv6</a>
+<a href='http://kurt.seifried.org/tag/iscsi/' class='tag-link-42965 tag-link-position-20' title='1 topic' style='font-size: 8pt;'>iscsi</a>
+<a href='http://kurt.seifried.org/tag/iscsi-target/' class='tag-link-6470038 tag-link-position-21' title='1 topic' style='font-size: 8pt;'>iscsi target</a>
+<a href='http://kurt.seifried.org/tag/json/' class='tag-link-72721 tag-link-position-22' title='1 topic' style='font-size: 8pt;'>json</a>
+<a href='http://kurt.seifried.org/tag/kerberos/' class='tag-link-649626 tag-link-position-23' title='1 topic' style='font-size: 8pt;'>kerberos</a>
+<a href='http://kurt.seifried.org/tag/memcache/' class='tag-link-2404263 tag-link-position-24' title='1 topic' style='font-size: 8pt;'>memcache</a>
+<a href='http://kurt.seifried.org/tag/microsoft/' class='tag-link-637 tag-link-position-25' title='1 topic' style='font-size: 8pt;'>microsoft</a>
+<a href='http://kurt.seifried.org/tag/openbsd/' class='tag-link-15262 tag-link-position-26' title='3 topics' style='font-size: 16.75pt;'>openbsd</a>
+<a href='http://kurt.seifried.org/tag/performance/' class='tag-link-1930 tag-link-position-27' title='5 topics' style='font-size: 22pt;'>performance</a>
+<a href='http://kurt.seifried.org/tag/programming/' class='tag-link-196 tag-link-position-28' title='2 topics' style='font-size: 13.25pt;'>programming</a>
+<a href='http://kurt.seifried.org/tag/python-2/' class='tag-link-27143169 tag-link-position-29' title='3 topics' style='font-size: 16.75pt;'>python</a>
+<a href='http://kurt.seifried.org/tag/pyton/' class='tag-link-3933214 tag-link-position-30' title='1 topic' style='font-size: 8pt;'>pyton</a>
+<a href='http://kurt.seifried.org/tag/sanitizing/' class='tag-link-2249863 tag-link-position-31' title='1 topic' style='font-size: 8pt;'>sanitizing</a>
+<a href='http://kurt.seifried.org/tag/security/' class='tag-link-801 tag-link-position-32' title='5 topics' style='font-size: 22pt;'>security</a>
+<a href='http://kurt.seifried.org/tag/selinux/' class='tag-link-1093416 tag-link-position-33' title='2 topics' style='font-size: 13.25pt;'>SELinux</a>
+<a href='http://kurt.seifried.org/tag/sendmail/' class='tag-link-151536 tag-link-position-34' title='1 topic' style='font-size: 8pt;'>sendmail</a>
+<a href='http://kurt.seifried.org/tag/simulators/' class='tag-link-24955 tag-link-position-35' title='1 topic' style='font-size: 8pt;'>simulators</a>
+<a href='http://kurt.seifried.org/tag/smuggling/' class='tag-link-303838 tag-link-position-36' title='1 topic' style='font-size: 8pt;'>smuggling</a>
+<a href='http://kurt.seifried.org/tag/spam/' class='tag-link-652 tag-link-position-37' title='3 topics' style='font-size: 16.75pt;'>spam</a>
+<a href='http://kurt.seifried.org/tag/ssd/' class='tag-link-248864 tag-link-position-38' title='1 topic' style='font-size: 8pt;'>ssd</a>
+<a href='http://kurt.seifried.org/tag/ssl/' class='tag-link-58302 tag-link-position-39' title='1 topic' style='font-size: 8pt;'>ssl</a>
+<a href='http://kurt.seifried.org/tag/storage/' class='tag-link-3386 tag-link-position-40' title='1 topic' style='font-size: 8pt;'>storage</a>
+<a href='http://kurt.seifried.org/tag/tablet/' class='tag-link-7939 tag-link-position-41' title='1 topic' style='font-size: 8pt;'>tablet</a>
+<a href='http://kurt.seifried.org/tag/testing/' class='tag-link-12 tag-link-position-42' title='1 topic' style='font-size: 8pt;'>testing</a>
+<a href='http://kurt.seifried.org/tag/tmp/' class='tag-link-71355 tag-link-position-43' title='1 topic' style='font-size: 8pt;'>tmp</a>
+<a href='http://kurt.seifried.org/tag/usability/' class='tag-link-753 tag-link-position-44' title='1 topic' style='font-size: 8pt;'>usability</a>
+<a href='http://kurt.seifried.org/tag/vmware/' class='tag-link-38600 tag-link-position-45' title='1 topic' style='font-size: 8pt;'>vmware</a>
+<a href='http://kurt.seifried.org/tag/webpad/' class='tag-link-1523589 tag-link-position-46' title='1 topic' style='font-size: 8pt;'>webpad</a>
+<a href='http://kurt.seifried.org/tag/wordpress/' class='tag-link-33 tag-link-position-47' title='1 topic' style='font-size: 8pt;'>Wordpress</a>
+<a href='http://kurt.seifried.org/tag/wp-super-cache/' class='tag-link-4732947 tag-link-position-48' title='1 topic' style='font-size: 8pt;'>WP-Super-Cache</a></div></li>
+<li id="pages-3" class="widget widget_pages"><h2 class="widgettitle">Pages</h2>
+<ul>
+<li class="page_item page-item-2"><a href="http://kurt.seifried.org/about/">About</a></li>
+<li class="page_item page-item-162"><a href="http://kurt.seifried.org/free-cloud-services/">Free cloud services</a></li>
+<li class="page_item page-item-302"><a href="http://kurt.seifried.org/gov-cloud-standards/">Gov Cloud Standards</a></li>
+<li class="page_item page-item-277"><a href="http://kurt.seifried.org/license-for-content-on-this-site/">License for content on this&nbsp;site</a></li>
+<li class="page_item page-item-115"><a href="http://kurt.seifried.org/linux-cloud-software-and-projects/">Linux Cloud Software and&nbsp;Projects</a></li>
+<li class="page_item page-item-96"><a href="http://kurt.seifried.org/professional-writing-samples/">Professional Writing Samples</a></li>
+<li class="page_item page-item-102"><a href="http://kurt.seifried.org/python-programming/">Python Programming</a></li>
+<li class="page_item page-item-254"><a href="http://kurt.seifried.org/ruby-ruby-on-rails-programming/">Ruby / Ruby on Rails&nbsp;Programming</a></li>
+<li class="page_item page-item-247"><a href="http://kurt.seifried.org/worth-reading/">Worth Reading</a></li>
+<li class="page_item page-item-176"><a href="http://kurt.seifried.org/worth-watching/">Worth Watching</a></li>
+</ul>
+</li>
+<li id="categories-2" class="widget widget_categories"><h2 class="widgettitle">Categories</h2>
+<ul>
+<li class="cat-item cat-item-79"><a href="http://kurt.seifried.org/category/hardware/">Hardware</a>
+</li>
+<li class="cat-item cat-item-15230 current-cat"><a href="http://kurt.seifried.org/category/information-security/" title="Information Security">Information Security</a>
+</li>
+<li class="cat-item cat-item-3374"><a href="http://kurt.seifried.org/category/kids/">kids</a>
+</li>
+<li class="cat-item cat-item-610"><a href="http://kurt.seifried.org/category/linux/">Linux</a>
+</li>
+<li class="cat-item cat-item-832"><a href="http://kurt.seifried.org/category/python/">Python</a>
+</li>
+<li class="cat-item cat-item-1"><a href="http://kurt.seifried.org/category/uncategorized/">Uncategorized</a>
+</li>
+</ul>
+</li>
+<li id="rss_links-3" class="widget widget_rss_links"><h2 class="widgettitle">RSS Feed</h2>
+<ul><li><a href="http://kurt.seifried.org/feed/" title="Subscribe to Posts">RSS - Posts</a></li></ul>
+</li>
+<li id="meta" class="widget widget_kubrick_meta"> <h2 class="widgettitle">Meta</h2>
+<ul>
+<li><a href="https://wordpress.com/start?ref=wplogin">Register</a></li> <li><a href="https://kurtseifried.wordpress.com/wp-login.php">Log in</a></li>
+<li><a href="http://validator.w3.org/check/referer" title="This page validates as XHTML 1.0 Transitional">Valid <abbr title="eXtensible HyperText Markup Language">XHTML</abbr></a></li>
+<li><a href="http://gmpg.org/xfn/"><abbr title="XHTML Friends Network">XFN</abbr></a></li>
+<li><a href="https://wordpress.com/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.com</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<hr/>
+<div id="footer">
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+<br/><a href="http://kurt.seifried.org/feed/">Entries (RSS)</a> and <a href="http://kurt.seifried.org/comments/feed/">Comments (RSS)</a>. </p>
+</div>
+</div>
+ 
+<div style="display:none">
+</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var actionbardata = {"siteID":"86342","siteName":"Kurt Seifried","siteURL":"http:\/\/kurt.seifried.org","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/void.gif' class='avatar avatar-36' height='36' width='36' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/kubrick","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2013%2F09%2F01%2Fcritical-infrastructure-and-the-internet-and-by-extensions-the-cloud%2F","themeURL":"","xhrURL":"http:\/\/kurt.seifried.org\/wp-admin\/admin-ajax.php","nonce":"c5d9519be6","isSingular":"","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"321560f319\" \/>","referer":"http:\/\/kurt.seifried.org\/category\/information-security\/","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/kurtseifried.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fkurtseifried.wordpress.com%2Fcategory%2Finformation-security%2F","i18n":{"view":"View Site","follow":"Follow","following":"Following","edit":"Edit","login":"Log In","signup":"Sign Up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Kubrick","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editFollows":"Manage Sites I Follow","editSubs":"Manage Subscriptions","viewReader":"View Site in the Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2013%2F09%2F01%2Fcritical-infrastructure-and-the-internet-and-by-extensions-the-cloud%2F\">Log in now.<\/a>"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s1.wp.com/_static/??-eJx9jEEOwiAQRS8kjqamdWM8C8KkDsKAM1A9vnTTuOru5f+XB59iXOaKXCEoeFzIYfkegx7g70rNlNhmYoVIL1R4N2z4tOwjyo5sfSI2DyuQrFaUTiYvKEK+R7Ztr+AqZV4LG3X7nm7nyzQOw3WcTuEH0yxJEw=='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script> <script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.async = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+<noscript>
+<p class="robots-nocontent"><img src="http://b.scorecardresearch.com/p?c1=2&c2=7518284&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1" alt="" style="display:none;" width="1" height="1"/></p>
+</noscript><script src="//stats.wp.com/w.js?55" type="text/javascript" async defer></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'86342','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'86342','v':'wpcom','tz':'-7','user_id':'0','subd':'kurtseifried'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1LVmwrVi5vQS5fVFtfdHBbPyw1VXIrU3hWLHhmcmw0bWUwNiVnR3N1V2dDZTM4MGFxVndRQl1HNkJtOEQ0dVBbbk9jP2g4T29lWFFNL1JxLTBRMVBJR09NTGdzXz04YlElWHd0VnZXLitYNDE1enBwZGJ8eDB0MkxQNXdWLzM2V3xDfHoyTW5wUj0lQXJ+WkJYWXhxd0JFbEFIXzFdbzYxMnBvMTdSdVBiVVFFVkxCb0ZEUXN6c2ZrTi85LDN8SX4lV1JHVjklZ2ZHNmdMTX5NK2twcm81ZHFCTFpvWlpLK34lNXhzT1ljaE1aNDEsJTJEdmlFTGRjeGVrY2RwMEQyflozdzRxak9FJT9ZV1pIdkNuSzFNMTZCeFt2JWFybk5sTVJqdA=='}]);
+_stq.push([ 'clickTrackerInit', '86342', '0' ]);
+	</script>
+<noscript><img src="http://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt=""/></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script></body>
+</html>

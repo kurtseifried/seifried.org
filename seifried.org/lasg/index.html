@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried - LASG</TITLE>
+<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.1  (Win32)">
+<META NAME="CREATED" CONTENT="20030201;253759">
+<META NAME="CHANGED" CONTENT="20030201;254622">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1>Linux Administrator's Security Guide</H1>
+<H1>Table of Contents</H1>
+<P>By Kurt Seifried <A HREF="/cdn-cgi/l/email-protection#69021c1b1d291a0c000f1b000c0d47061b0e"><span class="__cf_email__" data-cfemail="d5bea0a7a195a6b0bcb3a7bcb0b1fbbaa7b2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+Copyright Kurt Seifried 2001. <A HREF="license.html">License</A> is
+here. Chapters with listed sections are &quot;completed&quot;, the
+rest is still being rewritten.</P>
+<P>I will be speaking at <A HREF="http://www.csicon.net/">CSICON</A>,
+August 19-21, Calgary, Alberta, Canada</P>
+<P><FONT COLOR="#000000">Latest major update: </FONT><A HREF="introduction-to-security/"><FONT COLOR="#000000">Introduction
+to computer security</FONT></A></P>
+<HR>
+<H3><A HREF="preface/">Preface</A>
+</H3>
+<P><STRONG>About this book<BR>Acknowledgements<BR>Contacts and
+mailing lists<BR>Typographical conventions<BR>Errata and bugs</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="introduction-to-security/">Introduction to computer
+security</A></H3>
+<P><STRONG>What is computer security?<BR>Security Policy<BR>Acceptable
+Use Policy<BR>Privacy Policy<BR>Security as a process<BR>Defense in
+depth<BR>Technical problems</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="installation/">Installation</A>
+</H3>
+<P><STRONG>Verifying packages and files<BR>Installation
+media</STRONG><BR><STRONG>Automating installs<BR>Filesystem layout
+and structuring<BR>Hardening your installation</STRONG><BR><STRONG>Summary</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="system/index.html">Physical and console security</A></H3>
+<P><STRONG>Physical security<BR>Console security<BR>Summary</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="administration/">Administration</A>
+</H3>
+<P><STRONG>Overview<BR>Local tools<BR>WWW based tools<BR>Other
+network based tools</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="backups/">backups</A>
+</H3>
+<P><STRONG>Non-commercial backup programs for Linux<BR>Commercial
+backup programs for Linux<BR>Backup media</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="filesystem/">Filesystem and files</A>
+</H3>
+<P><STRONG>Basic file commands<BR>Secure file deletion<BR>Access
+control lists (ACL&rsquo;s)<BR>Critical system configuration
+files<BR>File encryption<BR>Filesystem encryption<BR>Hiding data </STRONG>
+</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="authentication/">Authentication</A>
+</H3>
+<P><STRONG>PAM<BR>Authentication services<BR>Passwords<BR>Cracking
+passwords<BR>Password storage</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="logging/">logging</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="attack-detection/">attack-detection</A>
+</H3>
+<P><STRONG>Baselines<BR>File system monitoring<BR>Network monitoring
+/ attack detection<BR>Intrusion Detection Papers<BR>Dealing with
+attacks<BR>Packet sniffers<BR>Packet sniffer detection</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="intrusion-testing/">intrusion-testing</A>
+</H3>
+<P><STRONG>Host scanners<BR>Network scanners<BR>Application level
+Scanners<BR>Exploits</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="firewall/">firewall</A>
+</H3>
+<P><STRONG>Firewalling concepts<BR><A HREF="firewall/iptables.html">Firewalling
+with IPTables (Linux Kernel 2.4 and 2.5)</A><BR>Firewalling with
+IPChains (Linux Kernel 2.2, 2.3, 2.4 and 2.5)<BR>Firewalling with
+IPFWADM (Linux Kernel 2.0)</STRONG></P>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="network/">network</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="network-servers/">network servers</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="software/">software</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="encryption/">encryption</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="users/">Limiting and monitoring users</A>
+</H3>
+<P><STRONG>Limiting users</STRONG><BR><STRONG>Monitoring users</STRONG></P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="viruses/">viruses</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="vpn/">vpn</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="kernel/">kernel</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="security-techniques/">security-techniques</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="checklists/">checklists</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="distributions/">distributions</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="appendices/">appendices</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="glossary/index.html">glossary</A>
+</H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="vendor-keys/">vendor keys</A></H3>
+<P>&nbsp;</P>
+<HR WIDTH=192 ALIGN=LEFT>
+<H3><A HREF="changelog/index.html">Changelog</A></H3>
+<P>&nbsp;</P>
+<HR>
+<P>Last updated on 1/10/2001
+</P>
+<P>Copyright Kurt Seifried 2001 <A HREF="/cdn-cgi/l/email-protection#fc97898e88bc8f99959a8e959998d2938e9b"><span class="__cf_email__" data-cfemail="2f445a5d5b6f5c4a46495d464a4b01405d48">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

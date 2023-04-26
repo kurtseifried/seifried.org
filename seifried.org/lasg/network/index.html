@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Network</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network security</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#264d5354526655434f40544f434208495441"><span class="__cf_email__" data-cfemail="345f4146407447515d52465d51501a5b4653">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Network security is a pretty broad topic, so I've broken it
+down into a couple of sections. In this area I cover the bottom 4
+or so layers (transport, network, datalink, physical) of the 7
+layer OSI protocol stack, the top 3 (application, presentation,
+session) are in the network server section and so forth (roughly
+speaking). I also cover some of the basic network configuration
+files, since an explanation is always useful.</p>
+<p>&nbsp;</p>
+<h2><a href="physical-protocols.html">Physical protocols</a></h2>
+<p>Physical protols such as PPP and Ethernet provide the
+foundation for TCP-IP. </p>
+<p>&nbsp;</p>
+<h2>TCP-IP security</h2>
+<p>TCP-IP was created in a time and place where security wasn't a
+very strong concern. Initially the 'Internet' (then called
+Arpanet) consisted of very few hosts, all were academic sites,
+big corporations or government in nature. Everyone knew everyone
+else, and getting on the Internet was a pretty big deal. The
+TCP-IP suite of protocol is remarkably robust (it hasn't failed
+horribly yet), but unfortunately it has no real provisions for
+security (i.e. authentication, verification, encryption and so
+on). Spoofing packets, intercepting packets, reading data
+payloads, and so is remarkably easy in today's Internet. The most
+common attacks are denial of service attacks since they are the
+easiest to execute and the hardest to defeat, followed by packet
+sniffing, port scanning, and other related activities.</p>
+<p>Hostnames don't always point at the right IP addresses and IP
+addresses don't always reverse lookup to the right hostname. Do
+not use hostname-based authentication if possible. Because DNS
+cache poisoning is relatively easy, relying on an IP address for
+authentication reduces the problem to one of spoofing, which is
+somewhat more secure but by no means truly secure. There are no
+mechanisms in wide spread use to verify who sent data and who is
+receiving it except by use of session or IP level encryption
+(IPSec/IPv6 and other VPN technologies are starting to gain
+momentum however).</p>
+<p>You can start by denying inbound data that claims to originate
+from your network(s), as this data is obviously spoofed. And to
+prevent your users, or people who have broken into your network,
+from launching spoofed attacks you should block all outbound data
+that is not from your IP addresses. This is relatively simple and
+easy to manage but the vast majority of networks do not do it (I
+spent about a year pestering my ISP before they started). If
+everyone on the Internet had egress filters (that is restricted
+outbound traffic to that which is from their internal IP
+addresses) spoofing attacks would be impossible, and thus tracing
+attackers back to source would be far easier. You should also
+block the reserved networks (127.*, 10.*, etc.). I have noticed
+many attacks from the Internet with packets labeled as from those
+IP ranges. if you use network address translation (like IPMASQ)
+and do not have it properly firewalled you could be easily
+attacked or used to relay an attack to a third party.</p>
+<p>If you must communicate securely with people, consider using
+VPN technology. The only available technology that has wide
+acceptance and is slated to become a the standard (in IPv6) is
+IPSec, it is an open standard supported by many vendors and most
+major vendors have actual working implementations native to their
+OS (although some are crippled to comply with US export laws).
+Please see Appendix B or the Encrypting Services and Data section
+for more details.</p>
+<p>&nbsp;</p>
+<h3>IPSec</h3>
+<p><a href="../vpn/index.html">IPSec is covered in it&#146;s own
+section.</a> I think it is the future of VPN technology
+(it&#146;s the most commonly supported standard as of today, and
+an integral part of IPv6).</p>
+<p>&nbsp;</p>
+<h3>IPv6</h3>
+<p>IPv6 provides no security per se, but it does have built in
+hooks for future security enhancements, IPSec support and so on.
+If used on a network it would of course make life more difficult
+for an attacker as IPv6 use is not yet widespread. If you want to
+learn more visit: <a href="http://www.bieringer.de/linux/IPv6/">http://www.bieringer.de/linux/IPv6/</a>.
+Linux currently supports IPv6 pretty much completely.</p>
+<p>&nbsp;</p>
+<h2>Attacking TCP-IP</h2>
+<p>TCP-IP was not built with security in mind and consequently
+suffers a wide variety of problems that can be exploited by
+attackers. From hijacked connections to spoofing and sending
+mangled packets, the limits are endless. </p>
+<p>&nbsp;</p>
+<h3>HUNT Project</h3>
+<p>The HUNT Project is a set of tools for manipulating TCP-IP
+connections (typically on an Ethernet LAN), that is it can reset
+connections, spy on them and do otherwise &#147;naughty&#148;
+things. It also includes a variety of ARP based attacks and other
+mischievous sources of fun, You can get HUNT at: <a href="http://lin.fsid.cvut.cz/~kra/index.html">http://lin.fsid.cvut.cz/~kra/index.html</a>
+</p>
+<p>&nbsp;</p>
+<h2>Basic config files and utilities</h2>
+<p>&nbsp;</p>
+<h3>/etc/inetd.conf</h3>
+<p>inetd.conf is responsible for starting services, typically
+ones that do not need to run continuously, or are session based
+(such as telnet, or ftpd). This is because the overhead of
+running a service constantly (like telnet) would be higher then
+the occasional start up cost (or firing in.telnetd up) when a
+user wants to use it. For some services (like DNS) that service
+many quick connections, the overhead of starting the service
+every few seconds would be higher then constantly running it.
+Also with services such as DNS and email time is critical, a few
+seconds delay starting an ftp session won't hurt much. The man
+page for inetd.conf covers the basics (&#147;man
+inetd.conf&#148;). The service itself is called inetd and is run
+at boot time, so you can easily stop/start/reload it by
+manipulating the inetd process. Whenever you make changes to
+inetd.conf you must restart inetd to make the changes effective,
+killall -1 inetd will restart it properly. Lines in inetd.conf
+can be commented out with a # as usual (this is a very simple and
+effective way of disabling services like rexec). It is advisable
+to disable as many services in inetd.conf as possible, typically
+the only ones in use will be ftp, pop and imap. Telnet and r
+services should be replaced with SSH and services like
+systat/netstat and finger give away far to much information.
+Access to programs started by inetd can be easily controlled by
+the use of TCP_WRAPPERS.</p>
+<p>&nbsp;</p>
+<h3>/etc/services</h3>
+<p>The services file is a list of port numbers, the protocol and
+the corresponding name. The format is:</p>
+<pre>service-name port/protocol aliases # optional comment</pre>
+<p>for example:</p>
+<pre>time 37/udp timserver
+rlp 39/udp resource # resource location
+name 42/udp nameserver
+whois 43/tcp nicname # usually to sri-nic
+domain 53/tcp
+domain 53/udp</pre>
+<p>This file is used for example when you run 'netstat -a', and
+of course not used when you run 'netstat -an'</p>
+<p>For a large services file please see <a href="http://seifried.org/security/ports/">http://seifried.org/security/ports/</a>
+</p>
+<p>&nbsp;</p>
+<h3>TCP_WRAPPERS</h3>
+<p>Using TCP_WRAPPERS makes securing your servers against outside
+intrusion is a lot simpler and painless then you would expect.
+TCP_WRAPPERS is controlled from two files:</p>
+<pre>/etc/hosts.allow
+/etc/hosts.deny</pre>
+<p>hosts.allow is checked first, and the rules are checked from
+first to last. If it finds a rule that explicitly allows you in
+(i.e., a rule allowing your host, domain, subnet mask, etc.) it
+lets you connect to the service. If it fails to find any rules
+that pertain to you in hosts.allow, it then goes to check
+hosts.deny for a rule denying you entry. Again it checks the
+rules in hosts.deny from first to last, and the first rule it
+finds that denies you access (i.e., a rule disallowing your host,
+domain, subnet mask, etc.) means it doesn't let you in. If it
+fails to find a rule denying you entry it then by default lets
+you. If you are paranoid like me the last rule (or only rule if
+you are going to a default policy of non-optimistic security)
+should be:<br>
+in hosts.deny:</p>
+<pre>ALL: 0.0.0.0/0.0.0.0</pre>
+<p>which means all services, all locations, so any service not
+explicitly allowed is then blocked (remember the default is to
+allow). You might also want to just default deny access to say
+telnet and leave ftp wide open to the world. To do this you would
+have:</p>
+<p>in hosts.allow:</p>
+<pre>in.telnetd: 10.0.0.0/255.255.255.0 # allow access from my internal network of 10.0.0.*
+in.ftpd: 0.0.0.0/0.0.0.0 # allow access from anywhere in the world</pre>
+<p>in hosts.deny:</p>
+<pre>in.telnetd: 0.0.0.0/0.0.0.0 # deny access to telnetd from anywhere</pre>
+<p>or if you wish to be really safe:</p>
+<pre>ALL: 0.0.0.0/0.0.0.0 # deny access to everything from everywhere</pre>
+<p>This may affect services such as ssh and nfs, so be
+careful!&nbsp;</p>
+<p>You may wish to simply list all the services you are using
+separately:</p>
+<pre>in.telnetd: 0.0.0.0/0.0.0.0
+ipop3d: 0.0.0.0/0.0.0.0</pre>
+<p>If you leave a service on that you shouldn't have in
+inetd.conf, and DO NOT have a default deny policy, you could be
+up the creek. It is safer (and a bit more work, but in the long
+run less work then rebuilding the server) to have default deny
+rules for firewalling and TCP_WRAPPERS, thus is you leave
+something on by accident, by default there will be no access to
+it. If you install something that users need access and you
+forget to put allow rules in, they will quickly complain that
+they can't get access and you will be able to rectify the problem
+quickly. Erring on the side of caution and accidentally denying
+something is a lot safer then leaving it open.&nbsp;</p>
+<p>The man pages for TCP_WRAPPERS are very good and available by:</p>
+<pre>man hosts.allow
+man hosts_allow</pre>
+<p>and/or (they are the same man page):</p>
+<pre>man hosts.deny
+man hosts_deny</pre>
+<p>One minor caveat with TCP_WRAPPERS that recently popped up on
+Bugtraq, TCP_WRAPPERS interprets lines in hosts.allow and
+hosts.deny in the following manner:</p>
+<p>1) strip off all \'s (line continuations), making all the
+lines complete (also note the max length of a line is about 2k,
+better to use multiple lines in some cases).</p>
+<p>2) strip out lines starting with #'s, i.e. all commented out
+lines. Thus:</p>
+<pre># this is a test
+# in.ftpd: 1.1.1.1 \
+in.telnetd: 1.1.1.1</pre>
+<p>this means the &quot;in.telnetd: 1.1.1.1&quot; line would be
+ignored as well.</p>
+<p>&nbsp;</p>
+<h2>What is running and who is it talking to?</h2>
+<p>You can&#146;t start securing services until you know what is
+running. For this task ps and netstat are invaluable; ps will
+tell you what is currently running (httpd, inetd, etc) and
+netstat will tell you what the status of ports are (at this point
+we&#146;re interested in ports that are open and listening, that
+is waiting for connections). We can take a look at the various
+config files that control network services.</p>
+<p>&nbsp;</p>
+<h3>ps </h3>
+<p>The program ps shows us process status (information available
+in the /proc virtual filesystem). The options most commonly used
+are &#147;ps -xau&#148;, which show pretty much all the
+information you&#146;d ever want to know. Please note: these
+options vary across UNIX systems, Solaris, SCO, etc all behave
+differently (which is incredibly annoying). The following is
+typical output from a machine (using &#147;ps &#150;xau&#148;).</p>
+<blockquote>
+<pre>USER PID %CPU %MEM SIZE RSS TTY STAT START TIME COMMAND
+bin 320 0.0 0.6 760 380 ? S Feb 12 0:00 portmap
+daemon 377 0.0 0.6 784 404 ? S Feb 12 0:00 /usr/sbin/atd
+named 2865 0.0 2.1 2120 1368 ? S 01:14 0:01 /usr/sbin/named -u named -g named -t /home/named
+nobody 346 0.0 18.6 12728 11796 ? S Feb 12 3:12 squid
+nobody 379 0.0 0.8 1012 544 ? S Feb 12 0:00 (dnsserver)
+nobody 380 0.0 0.8 1012 540 ? S Feb 12 0:00 (dnsserver)
+nobody 383 0.0 0.6 916 416 ? S Feb 12 0:00 (dnsserver)
+nobody 385 0.0 0.8 1192 568 ? S Feb 12 0:00 /usr/bin/ftpget -S 1030
+nobody 392 0.0 0.3 716 240 ? S Feb 12 0:00 (unlinkd)
+nobody 1553 0.0 1.8 1932 1200 ? S Feb 14 0:00 httpd
+nobody 1703 0.0 1.8 1932 1200 ? S Feb 14 0:00 httpd
+root 1 0.0 0.6 776 404 ? S Feb 12 0:04 init [3]
+root 2 0.0 0.0 0 0 ? SW Feb 12 0:00 (kflushd)
+root 3 0.0 0.0 0 0 ? SW Feb 12 0:00 (kswapd)
+root 4 0.0 0.0 0 0 ? SW Feb 12 0:00 (md_thread)
+root 64 0.0 0.5 736 348 ? S Feb 12 0:00 kerneld
+root 357 0.0 0.6 800 432 ? S Feb 12 0:05 syslogd
+root 366 0.0 1.0 1056 684 ? S Feb 12 0:01 klogd
+root 393 0.0 0.7 852 472 ? S Feb 12 0:00 crond
+root 427 0.0 0.9 1272 592 ? S Feb 12 0:19 /usr/sbin/sshd
+root 438 0.0 1.0 1184 672 ? S Feb 12 0:00 rpc.mountd
+root 447 0.0 1.0 1180 644 ? S Feb 12 0:00 rpc.nfsd
+root 458 0.0 1.0 1072 680 ? S Feb 12 0:00 /usr/sbin/dhcpd
+root 489 0.0 1.7 1884 1096 ? S Feb 12 0:00 httpd
+root 503 0.0 0.4 724 296 2 S Feb 12 0:00 /sbin/mingetty tty2
+root 505 0.0 0.3 720 228 ? S Feb 12 0:02 update (bdflush)
+root 541 0.0 0.4 724 296 1 S Feb 12 0:00 /sbin/mingetty tty1
+root 1372 0.0 0.6 772 396 ? S Feb 13 0:00 inetd
+root 1473 0.0 1.5 1492 1000 ? S Feb 13 0:00 sendmail: accepting connections on port 25
+root 2862 0.0 0.0 188 44 ? S 01:14 0:00 /usr/sbin/holelogd.named /home/named/dev/log
+root 3090 0.0 1.9 1864 1232 ? S 12:16 0:02 /usr/sbin/sshd
+root 3103 0.0 1.1 1448 728 p1 S 12:16 0:00 su -root 3104 0.0 1.3 1268 864 p1 S 12:16 0:00 -bash
+root 3136 0.0 1.9 1836 1212 ? S 12:21 0:04 /usr/sbin/sshd</pre>
+</blockquote>
+<p>The interesting ones are: portmap, named, Squid (and it&#146;s
+dnsserver, unlinkd and ftpget children processes), httpd,
+syslogd, sshd, rpc.mountd, rpc.nfsd, dhcpd, inetd, and sendmail
+(this server appears to be providing gateway services, email and
+NFS file sharing). The easiest way to learn how to read ps output
+is go over the ps man page and learn what the various fields are
+(most are self explanatory, such as %CPU, while some like SIZE
+are a bit obscure: SIZE is the number of 4k memory
+&#145;pages&#146; a program is using). To figure out what the
+running programs are a safe bet is &#145;man
+&lt;command_name&gt;&#146;; which almost always gives you the
+manual page pertaining to that service (such as httpd). You will
+notice that services like telnet, ftpd, identd and several others
+do not show up even though they are on. This is because they are
+run from inetd, the &#145;superserver&#146;. To find these
+services look at /etc/inetd.conf or your &#147;netstat
+&#150;vat&#148; output.</p>
+<p>&nbsp;</p>
+<h3>netstat </h3>
+<p>netstat tells us pretty much anything network-related that you
+can imagine. It is especially good at listing active connections
+and sockets. Using netstat we can find which ports on which
+interfaces are active. The following output is from a typical
+server using netstat &#150;vat.</p>
+<blockquote>
+<pre>Active Internet connections (including servers)
+Proto Recv-Q Send-Q Local Address Foreign Address State 
+tcp 0 0 24.108.11.200:80 205.253.183.122:3661 ESTABLISHED 
+tcp 0 0 0.0.0.0:1036 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:80 0.0.0.0:* LISTEN 
+tcp 0 0 10.0.0.10:53 0.0.0.0:* LISTEN 
+tcp 0 0 28.208.55.254:53 0.0.0.0:* LISTEN 
+tcp 0 0 127.0.0.1:53 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:139 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:25 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:2049 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:635 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:22 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:21 0.0.0.0:* LISTEN 
+tcp 0 0 0.0.0.0:111 0.0.0.0:* LISTEN 
+udp 0 0 127.0.0.1:1031 0.0.0.0:* 
+udp 0 0 0.0.0.0:1029 0.0.0.0:* 
+udp 0 0 0.0.0.0:800 0.0.0.0:* 
+udp 0 0 0.0.0.0:1028 0.0.0.0:* 
+udp 0 0 10.0.0.10:53 0.0.0.0:* 
+udp 0 0 28.208.55.254:53 0.0.0.0:* 
+udp 0 0 127.0.0.1:53 0.0.0.0:* 
+udp 0 0 10.1.0.1:138 0.0.0.0:* 
+udp 0 0 10.1.0.1:137 0.0.0.0:* 
+udp 0 0 10.0.0.10:138 0.0.0.0:* 
+udp 0 0 10.0.0.10:137 0.0.0.0:* 
+udp 0 0 0.0.0.0:138 0.0.0.0:* 
+udp 0 0 0.0.0.0:137 0.0.0.0:* 
+udp 0 0 0.0.0.0:2049 0.0.0.0:* 
+udp 0 0 0.0.0.0:635 0.0.0.0:* 
+udp 0 0 0.0.0.0:514 0.0.0.0:* 
+udp 0 0 0.0.0.0:111 0.0.0.0:* 
+raw 0 0 0.0.0.0:1 0.0.0.0:* 
+raw 0 0 0.0.0.0:6 0.0.0.0:*</pre>
+</blockquote>
+<p>Numeric output is in my opinion easier to read (once you
+memorize /etc/services). The interesting fields for us are the
+first field, type of service, the fourth field which is the IP
+address of the interface and the port, the foreign address (if
+not 0.0.0.0.* means someone is actively talking to it), and the
+port state. The first line is a remote client talking to the web
+server on this machine (port 80). We then see the www server
+listening on 0.0.0.0:80 which means all interfaces, port 80,
+followed by the DNS server running on all 3 interfaces, a samba
+server (139), a mail server (25), an NFS server (2049) and so on.
+You will notice the ftp server (21) listed, even though it is run
+out of inetd, and not currently in use (i.e. no one is actively
+ftping in), it is listed in the netstat output. This makes
+netstat especially useful for finding out what is active on a
+machine, making an inventory of active and inactive network
+related software on the server much easier. ****** netstat -p
+option now</p>
+<p>&nbsp;</p>
+<h3>lsof</h3>
+<p>lsof is a handy program similar in idea to ps, except that it
+prints out what files/etc are open, which can include network
+sockets. Unfortunately your average lsof puts out a lot of
+information, so you will need to use grep or redirect it through
+less (&#147;lsof | less&#148;) to make it easier to read.</p>
+<blockquote>
+<pre>squid 9726 root 4u inet 78774 TCP localhost:2074-&gt;localhost:2073 (ESTABLISHED)
+squid 9726 root 5u inet 78777 TCP localhost:2076-&gt;localhost:2075 (ESTABLISHED)
+squid 9726 root 6u inet 78780 TCP localhost:2078-&gt;localhost:2077 (ESTABLISHED)
+squid 9726 root 7w CHR 1,3 6205 /dev/null
+squid 9726 root 14u inet 78789 TCP host1:3128 (LISTEN)
+squid 9726 root 15u inet 78790 UDP host1:3130&nbsp;
+squid 9726 root 16u inet 78791 UDP host1:3130
+squid 9726 root 12u inet 167524 TCP host1:3128-&gt;host2:3630 (ESTABLISHED)
+squid 9726 root 17u inet 167528 TCP host1:3424-&gt;www.example.org:http (SYN_SENT)</pre>
+</blockquote>
+<p>This example shows that we have Squid running, listening on
+ports 3128 and 3130, the last two lines show an open connection
+from an internal host to the Squid server and the resulting
+action Squid has taken to fulfill the request (going to
+www.example.org). host1 is the Squid server and host2 is the
+client machine making the request. This is an invaluable tool for
+getting a precise image of what is going on network wise with
+your server. You can get lsof with some distributions. Please
+note that versions of lsof compiled for kernel version 2.0.x will
+not work with kernel 2.2.x and vice versa, as there were too many
+changes. The primary site for lsof is at: <a href="ftp://vic.cc.purdue.edu/pub/tools/unix/lsof/">ftp://vic.cc.purdue.edu/pub/tools/unix/lsof/</a>.</p>
+<p>&nbsp;</p>
+<h2>Encryption of network traffic (non VPN)</h2>
+<h3>SSL</h3>
+<p>There are a number of sources for information on SSL.
+Generally where SSL is applicable it is in the individual
+resource (i.e. WWW). For a good FAQ go here: <a href="http://www2.psy.uq.edu.au/~ftp/Crypto/">http://www2.psy.uq.edu.au/~ftp/Crypto/</a>.
+OpenSSL is an OpenSource implementation of the SSL libraries that
+is available form: <a href="http://www.openssl.org/">http://www.openssl.org/</a>.
+</p>
+<p>&nbsp;</p>
+<h2>Routing security</h2>
+<p>There are a variety of routing software packages available for
+Linux. Most of them support the newer routing protocols which
+have a much higher degree of security then the older protocols
+such as RIP.</p>
+<p>&nbsp;</p>
+<h3>routed</h3>
+<p>routed is one of the standard routing packages available for
+Linux. It supports RIP (about the oldest routing protocol still
+in service), and that&#146;s it. RIP is very simple, routers
+simply broadcast their routing tables to neighboring routers,
+resulting (in theory) in a complete routing table that contains
+entries for every destination on the Internet. This method is
+fundamentally insecure, and very inefficient outside of small
+secure networks (in which case it probably is not needed).
+Securing it is really not possible, you can firewall ports 520
+and 521 which RIP uses to transfer data, however this can result
+in routes you want not getting through, and attackers can still
+spoof routes. Running this service is a very bad idea.</p>
+<p>&nbsp;</p>
+<h3>gated</h3>
+<p>gated is a more advanced piece of routing software then
+routed. It supports RIP versions 1 and 2, DCN HELLO, OSPF version
+2, EGP version 2, and BGP versions 2 through 4. Currently the
+most popular routing protocol seems to be BGP (Border Gateway
+Protocol), with OSPF gaining popularity (OSPF has built in
+security, is very efficient, and quite a bit more
+complicated).&nbsp;</p>
+<p>&nbsp;</p>
+<h3>MRT</h3>
+<p>MRT (Multi-threaded Routing Toolkit) is a routing daemon and
+test toolkit that can handle IPv4 and IPv6. You can get it at: <a href="http://www.mrtd.net/">http://www.mrtd.net/</a>.</p>
+<p>&nbsp;</p>
+<h3>zebra</h3>
+<p>zebra is much more featured then gated, and sports a nice
+Cisco style command line interface. It runs as a daemon, and is
+multi threaded for performance, each protocol (RIP, OSPF, etc.)
+has it&#146;s own configuration, and you can run multiple
+protocols simultaneously (although this could lead to
+confusion/problems). There is a master configuration port, and a
+port for each protocol:</p>
+<pre>zebrasrv	2600/tcp		# zebra service
+zebra		2601/tcp		# zebra vty
+ripd		2602/tcp		# RIPd vty
+ripngd		2603/tcp		# RIPngd vty
+ospfd		2604/tcp		# OSPFd vty
+bgpd		2605/tcp		# BGPd vty
+ospf6d		2606/tcp		# OSPF6d vty</pre>
+<p>I would advise firewalling these ports. Access is controlled
+by a login password, and access to command functions requires
+another password (using the same syntax as Cisco,
+&#147;enable&#148;). You can download zebra from: <a href="http://www.zebra.org/">http://www.zebra.org/</a>.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#22495750566251474b44504b47460c4d5045"><span class="__cf_email__" data-cfemail="d8b3adaaac98abbdb1beaab1bdbcf6b7aabf">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

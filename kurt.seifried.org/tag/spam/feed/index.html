@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>spam &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/spam/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:29 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>spam &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Fedora 16 with SELinux running WordPress with Akismet</title>
+		<link>http://kurt.seifried.org/2013/06/17/fedora-16-with-selinux-running-wordpress-with-akismet/</link>
+		<comments>http://kurt.seifried.org/2013/06/17/fedora-16-with-selinux-running-wordpress-with-akismet/#respond</comments>
+		<pubDate>Tue, 18 Jun 2013 02:29:13 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[SELinux]]></category>
+		<category><![CDATA[spam]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=168</guid>
+		<description><![CDATA[So you have WordPress and Akismet to get rid of spam. But for some reason Akismet is not working: You can test if you have a valid key and connectivity from the command line with either wget: wget --post-data 'key=YOURKEYGOESHERE&#38;blog=http://example.org'\ http://rest.akismet.com/1.1/verify-key or using curl: curl -d 'key=YOURKEYGOESHERE' -d 'blog=http://example.org' \ http://rest.akismet.com/1.1/verify-keyd If it works you [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=168&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So you have WordPress and Akismet to get rid of spam. But for some reason Akismet is not working:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png"><img class="size-full wp-image-169 alignnone" title="WordPress-Akismet-fail" alt="WordPress with Akismet failing" src="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png?w=450" srcset="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png 419w, http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png?w=150 150w, http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png?w=300 300w" sizes="(max-width: 419px) 100vw, 419px"   /></a></p>
+<p>You can test if you have a valid key and connectivity from the command line with either wget:</p>
+<pre style="padding-left:30px;">wget --post-data 'key=YOURKEYGOESHERE&amp;blog=http://example.org'\
+http://rest.akismet.com/1.1/verify-key</pre>
+<p>or using curl:</p>
+<pre style="padding-left:30px;">curl -d 'key=YOURKEYGOESHERE' -d 'blog=http://example.org' \
+http://rest.akismet.com/1.1/verify-keyd</pre>
+<p>If it works you should receieve a file called &#8220;verify-key&#8221; containing the word &#8220;valid&#8221;</p>
+<p>If that doesn&#8217;t work then you have problems outside the scope of this article.</p>
+<p>But if you can retrieve the key than chances are your SELinux configuration is limiting what the httpd server can do.</p>
+<p>Luckily the fix is simple: allow httpd to make outgoing connections:</p>
+<pre style="padding-left:30px;">setsebool -P httpd_can_network_connect on</pre>
+<p>But wait a minute you say. Now my httpd server can connect to anything, attackers can use it to attack other systems potentially (especially if you allow CGI scripts and arbitrary WordPress plugins or themes which can contain PHP code).</p>
+<p>So we need to limit what systems the httpd server can connect to. The good news here is that IPTables supports this.</p>
+<p>In the case of Akissmet you&#8217;d want to add something like this to your /etc/sysconfig/iptables file:</p>
+<pre style="padding-left:30px;">-A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 66.135.58.61 -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 66.135.58.62 -j ACCEPT 
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 72.223.69.89 -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 72.223.69.88 -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -j REJECT</pre>
+<p>This should allow only existing inbound connections (e.g. web clients) and outgoing connections to Akismet (you may want to add any other services you use of course).</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/168/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/168/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=168&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/06/17/fedora-16-with-selinux-running-wordpress-with-akismet/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png" medium="image">
+			<media:title type="html">WordPress-Akismet-fail</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Is Microsoft spamming anyone else about robots.txt blocking Bing?</title>
+		<link>http://kurt.seifried.org/2013/06/05/is-microsoft-spamming-anyone-else-about-robots-txt-blocking-bing/</link>
+		<comments>http://kurt.seifried.org/2013/06/05/is-microsoft-spamming-anyone-else-about-robots-txt-blocking-bing/#comments</comments>
+		<pubDate>Wed, 05 Jun 2013 19:52:02 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Information Security]]></category>
+		<category><![CDATA[bing]]></category>
+		<category><![CDATA[microsoft]]></category>
+		<category><![CDATA[spam]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=294</guid>
+		<description><![CDATA[So Microsoft spammed me about my robots.txt again: from: Jyoti Bhagavatula (HCL America Inc) &#60;v-jyotib@microsoft.com&#62; to: &#8220;dnsadmin@SEIFRIED.ORG&#8221; &#60;dnsadmin@seifried.org&#62; date: Wed, Jun 5, 2013 at 11:11 AM subject: Robots.txt blocking Bing crawler: http://www.seifried.org/robots.txt Hello, I am contacting you on behalf of the Bing Search engine (http://www.bing.com/) in regards to your robots.txt file: http://www.seifried.org/robots.txt Our customers have alerted us that your website [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=294&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So Microsoft spammed me about my robots.txt again:</p>
+<blockquote><p>from: Jyoti Bhagavatula (HCL America Inc) &lt;v-jyotib@microsoft.com&gt;</p>
+<p>to: &#8220;dnsadmin@SEIFRIED.ORG&#8221; &lt;dnsadmin@seifried.org&gt;<br />
+date: Wed, Jun 5, 2013 at 11:11 AM</p>
+<p>subject: Robots.txt blocking Bing crawler: <a href="http://www.seifried.org/robots.txt" rel="nofollow">http://www.seifried.org/robots.txt</a></p>
+<p>Hello,</p>
+<p>I am contacting you on behalf of the Bing Search engine (<a href="http://www.bing.com/" target="_blank">http://www.bing.com/</a>) in regards to your robots.txt file:</p>
+<p><a href="http://www.seifried.org/robots.txt" target="_blank">http://www.seifried.org/robots.txt</a></p>
+<p>Our customers have alerted us that your website was partially absent from our results and we have discovered that you are blocking our crawler, named BingBot, via a disallow directive in your robots.txt file:</p>
+<p><b><i>User-agent: msnbot</i></b></p>
+<p><b><i>Disallow: /</i></b></p>
+<p><b><i>User-agent: bingbot</i></b></p>
+<p><b><i>Disallow: /</i></b></p>
+<p>We would be pleased if you could edit your robots.txt file to allow our crawler to fetch and index your content properly, which will in turn increase traffic to your site via our search results, by including the following section:</p>
+<pre><b><i>User-agent: Bingbot</i></b></pre>
+<p><b><i>Disallow: </i></b></p></blockquote>
+<p><b><i></i></b>I find this pretty annoying, they don&#8217;t take the time to even look at my website and see that the contact email is pretty obviously kurt@seifried.org, instead they spam my DNS WHOIS email contact. Secondly, I&#8217;ve already told them several times I don&#8217;t want to let them index my site, first via robots.txt, and secondly in email replies to the spam they send me.</p>
+<p>Is anyone else getting this emails?</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/294/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/294/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=294&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/06/05/is-microsoft-spamming-anyone-else-about-robots-txt-blocking-bing/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>New techniques in spam from the Harvard Business Review (HBR)</title>
+		<link>http://kurt.seifried.org/2013/03/01/new-techniques-in-spam-from-the-harvard-business-review-hbr/</link>
+		<comments>http://kurt.seifried.org/2013/03/01/new-techniques-in-spam-from-the-harvard-business-review-hbr/#respond</comments>
+		<pubDate>Sat, 02 Mar 2013 06:41:55 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[hbr]]></category>
+		<category><![CDATA[spam]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=265</guid>
+		<description><![CDATA[No this isn&#8217;t about an article in the Harvard Business Review (HBR), this is actually about spam from the Harvard Business Review. A long time ago I signed up for a year since I got one of those &#8220;get the magazine for $19.95 a year&#8221; offers and figured why not. I then cancelled at the [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=265&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>No this isn&#8217;t about an article in the Harvard Business Review (HBR), this is actually about spam from the Harvard Business Review. A long time ago I signed up for a year since I got one of those &#8220;get the magazine for $19.95 a year&#8221; offers and figured why not. I then cancelled at the end since I didn&#8217;t find the magazine terribly interesting or forward looking (it seems to mostly reflect an entrenched view of business/law that while useful for existing managers is not terribly education, unlike say the Economist which I still read).</p>
+<p>So what&#8217;s this new spam technique from the Harvard Business Review? Well they sent me an email, informing me that I had not completed an order at their online store and that my shopping cart still had items in it. This is a pretty clever social engineering technique, they&#8217;re prompting you and leading you to believe that you had meant to renew your Harvard Business Review subscription and obviously got distracted or something so you might want to finish the process and send them some money. Except I hadn&#8217;t been shopping on their web site (my subscription lapsed a few years ago).</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png"><img class="aligncenter size-full wp-image-267" alt="Harvard-Business-Review-Spam-Email" src="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=450&#038;h=431" width="450" height="431" srcset="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=450&amp;h=431 450w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=150&amp;h=144 150w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=300&amp;h=288 300w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png 666w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>So I went to unsubscribe (who knows, they might actually stop emailing me), but that part of the process was also engineered to make it difficult, first step: make the person enter their email address rather then filling the form (and they know the email address, I mean they just spammed me):</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png"><img class="aligncenter size-full wp-image-268" alt="Harvard-Business-Review-Spam-Email-Unsubscribe" src="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=450&#038;h=187" width="450" height="187" srcset="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=450&amp;h=187 450w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=150&amp;h=62 150w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=300&amp;h=125 300w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=768&amp;h=319 768w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png 808w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>But then the piece de resistance:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png"><img class="aligncenter size-full wp-image-269" alt="Harvard-Business-Review-Spam-Email-Unsubscribe-10-Days" src="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=450&#038;h=123" width="450" height="123" srcset="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=450&amp;h=123 450w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=150&amp;h=41 150w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=300&amp;h=82 300w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=768&amp;h=210 768w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png 808w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>Up to 10 days to remove you from a mailing list. What. The. Fuck? So yeah, the moral of the story is use the &#8220;spam&#8221; button in your mail client and deep six all the crap Harvard Business Review is going to try sending you.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/265/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/265/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=265&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/03/01/new-techniques-in-spam-from-the-harvard-business-review-hbr/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png" medium="image">
+			<media:title type="html">Harvard-Business-Review-Spam-Email</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png" medium="image">
+			<media:title type="html">Harvard-Business-Review-Spam-Email-Unsubscribe</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png" medium="image">
+			<media:title type="html">Harvard-Business-Review-Spam-Email-Unsubscribe-10-Days</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

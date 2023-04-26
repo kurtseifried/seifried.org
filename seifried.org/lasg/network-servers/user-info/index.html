@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>User information</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#92f9e7e0e6d2e1f7fbf4e0fbf7f6bcfde0f5"><span class="__cf_email__" data-cfemail="c8a3bdbabc88bbada1aebaa1adace6a7baaf">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>There are a variety of services that can provide information
+about local users to other local users, and other machines. These
+can be useful if you want to find out which user connected to a
+machine, or see when they last logged in. Of course these are
+great services for attackers since they can glean a lot of
+information from them.</p>
+<h2><a name="Ident server software">Ident server software</a></h2>
+<p>The ident service is used to map users/processes to ports in
+use. For example most IRC servers attempt to find out who is
+connecting to them by doing an ident lookup, which basically
+consists of asking the ident server on the client computer what
+information it has about a port number, and the response can
+range from nothing (if no-one is using that particular port) to a
+username, groupname, process id, and other interesting
+information. The default setting in most distributions is that
+identd is on (it is polite to run it, irc servers and newer
+versions of sendmail check identd responses), and will only hand
+out the username. The primary use of identd is to allow remote
+systems some means of tracking down users that are connecting to
+their servers, irc, telnet, mail, or other, for authentication
+purposes (not a good idea since it is very easy to fake). The
+local university here in Edmonton requires you to run identd if
+you want to telnet into any of the main shell servers, primarily
+so they can track down compromised accounts quickly.&nbsp;</p>
+<p>Running identd on your machine will help other administrators
+when tracking down problems, as they can not only get the IP
+address and time of a problem, but using identd can look up the
+user name. In this way it is a two edged sword, while it gives
+out information useful for tracking down malicious users
+(definitely people you want to boot off of your servers) it can
+also be used to gain information about users on your system,
+leading to their accounts being compromised. Running identd on
+servers only makes sense if they are hosting shell accounts/etc.</p>
+<p>Identd runs on port 113 using tcp, and typically you will only
+need if you want to IRC (many irc networks require an identd
+response), or be nice to systems running daemons (such as
+tcp_wrapped telnet, or sendmail) that do identd lookups on
+connections.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 113
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 113
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 113</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 113
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 113
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 113</pre>
+<h2><a name="Identd">Identd</a></h2>
+<p>Identd supports quite a few features, and can be easily set to
+run as a non-root user. Depending on your security policies you
+may not want to give out very much information, or you might want
+to give out as much as possible. Simply tack the option on in
+inetd.conf, after in.identd (the defaults are -l -e -o).</p>
+<p>-p port<br>
+-a address<br>
+Can be used to specify which port and address it binds to (in the
+case of a machine with IP&#146;s aliased, or multiple
+interfaces), this is generally only useful if you want internal
+machines to connect, since external machines will probably not be
+able to figure out what port you changed it to.</p>
+<p>-u uid<br>
+-g gid<br>
+Are used to set the user and group that identd will drop its
+privileges to after connecting to the port, this will result in
+it being far less susceptible to compromising system security. As
+for handling the amount of information it gives out:</p>
+<p>-o<br>
+Specifies that identd will not return the operating system type,
+and simply say &quot;UNKNOWN&quot;, a very good option.</p>
+<p>-n<br>
+Will have identd return user numbers (i.e. UID) and not the
+username, which still gives them enough information to tell you
+and allow you to track the user down easily, without giving
+valuable hints to would be attackers.</p>
+<p>-N<br>
+Allows users to make a ~/.noident file, which will force identd
+to return &quot;HIDDEN-USER&quot; instead of information. This
+allows users the option of having a degree of privacy, but a
+malicious user will use this to evade identification.</p>
+<p>-F format<br>
+Enables you to specify far more information than is standard,
+everything from user name and number to the actual PID, command
+name, and command name and arguments that were given! This I
+would recommend only for internal use, as it is a lot of
+information that attackers would find useful.</p>
+<p>In general I would advise running identd on servers with user
+shell accounts, and otherwise disabling it, primarily due to the
+number of denial of service attacks it is susceptible to. Running
+identd will make life a lot easier for other administrators when
+tracking down attacks originating from your site, which will
+ultimately make your life easier.&nbsp;</p>
+<h2><a name="Other Identd daemons">Other Identd daemons</a></h2>
+<p>There are also other versions of identd available, some with
+security enhancements (I do not endorse these as I have yet to
+test them):</p>
+<p><a href="http://www.tildeslash.org/nullidentd.html">http://www.tildeslash.org/nullidentd.html</a>
+- null identd<br>
+<a href="http://www.ajk.tele.fi/~too/sw/">http://www.ajk.tele.fi/~too/sw/</a>
+- fake identd<br>
+<a href="http://p8ur.op.het.net/midentd/">http://p8ur.op.het.net/midentd/</a>
+- midentd</p>
+<p>&nbsp;</p>
+<h2><a name="Finger server software">Finger server software</a></h2>
+<p>Finger is one of those things most admins just disable and
+ignore. It is a useful tool on occasion, but if you want to allow
+other admins to figure out which of your users is currently
+trying to crack their machines, use identd. Finger lets out way
+to much info, and is a favorite tool for initial probes and data
+gathering on targets. There have also been several nasty DOS
+attacks released, basically consisting of sending hundreds of
+finger requests and in certain configurations just watching the
+server croak. Please don't run finger. Many distributions ship
+with it enabled, but to quote inetd.conf from Red Hat:</p>
+<pre># Finger, systat and netstat give out user information which may be
+# valuable to potential &quot;system crackers.&quot; Many sites choose to disable&nbsp;
+# some or all of these services to improve security.</pre>
+<p>If you still have the urge that you absolutely must run it use
+-u to deny finger @host requests that are only ever used to
+gather information for future attacks. Disable finger, really.
+Fingerd has also been the cause of a few recent and very bad
+denial of service attacks, especially if you run NIS with large
+maps, DO NOT, repeat NOT run fingerd. Finger runs on port 79, and
+cfingerd runs on port 2003, both use tcp.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 79
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 79
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 79</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 79
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 79
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 79</pre>
+<p>&nbsp;</p>
+<h2><a name="PFinger">PFinger</a></h2>
+<p>PFinger is similar to Cfingerd in that it is a secure
+replacement for the stock fingerd. You can get PFinger from: <a href="http://www.xelia.ch/unix/pfinger/">http://www.xelia.ch/unix/pfinger/</a>.</p>
+<p>&nbsp;</p>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#f49f818680b487919d92869d9190da9b8693"><span class="__cf_email__" data-cfemail="b5dec0c7c1f5c6d0dcd3c7dcd0d19bdac7d2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;NNTP</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#19726c6b6d596a7c707f6b707c7d37766b7e"><span class="__cf_email__" data-cfemail="ea819f989eaa998f838c98838f8ec485988d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>NNTP (network news transfer protocol) is useful for sharing
+large amounts of information among many servers. It is also
+useful for holding discussions and forums on topics like
+cryptography.</p>
+<h2><a name="NNTP server software">NNTP server software</a></h2>
+<h2><a name="INN">INN</a></h2>
+<p>The usenet server INN has had a long and varied history, for a
+long period there were no official releases and it seemed to be
+in a state of limbo. However, it is back for good now it would
+seem. The server software is responsible for handling a
+potentially enormous load, if you take a full newsfeed the server
+must process several hundred articles per second, some several
+kilobytes in size. It must index these articles, write them to
+disk, and hand them out to clients that request them. INN itself
+is relatively secure, since it handles data with a directory and
+generally doesn't have access outside of that, however as with
+any messaging system if you use it for private/confidential
+material you must be careful. INN is currently maintained by ISC
+and is available at: <a href="http://www.isc.org/products/INN/">http://www.isc.org/products/INN/</a>
+</p>
+<p>One of the main security threats with INN is resource
+starvation on the server. If someone decides to flood your server
+with bogus articles or there is a sudden surge of activity you
+might be in trouble if capacity is lacking. INN has had several
+bad security holes in past, but with today's environment the
+programmers seem to have chased down and eliminated all of them
+(none have surfaced recently). It is highly recommended (for more
+than security reasons alone) that you place the news spool on a
+separate disk system, let alone partition. You might also wish to
+use ulimit to restrict the amount of memory available so that it
+cannot bring the server to it's knees.&nbsp;</p>
+<p>As for access, you should definitely not allow public access.
+Any news server that is publicly accessible will be quickly
+hammered by people using it to read news, send spam and the like.
+Restrict reading of news to your clients/internal network and if
+you are really worried force people to login. Client access to
+INN is controlled via the nnrp.access file. You can specify IP
+address(s), domain names and domains (such as *.example.org), as
+well as there access levels (read and post), the newsgroups they
+do or don't have access to and you can also specify a username
+and password. However, because the password is linked to the
+host/domain it gets somewhat messy.&nbsp;</p>
+<p>example of nnrp.access:</p>
+<pre>*:: -no - : -no- :!*
+# denies access from all sites, for all actions (post and read), to all groups.
+*.example.org::Read Post:::*
+# hosts in example.org have full access to all groups
+*.otherexample.org::Read:::*, !me.*
+# hosts in otherexample.org have read access to everything but the me hierarchy
+*.otherexample.org:Read Post:myname:mypassword:*
+# give me access from my AOL account using a username and password</pre>
+<p>If you are going to run a news server I highly recommend the <a href="http://www.ora.com/catalog/musenet/">O'Reilly book
+&quot;Managing Usenet&quot;</a>. Usenet is similar to Sendmail, a
+total beast to get running smoothly and keep happy.</p>
+<p>News should be firewalled as most servers typically server an
+internal group, and access connections from one or two upstream
+feeds:</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 119
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 119
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 119</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 119
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 119
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 119</pre>
+<h2><a name="Diablo">Diablo</a></h2>
+<p>Diablo is free software aimed at backbone news transport, that
+is to say accepting articles from other NNTP servers and feeding
+them on to other servers, it is not aimed at use by end users for
+reading or posting. You can get Diablo at: <a href="http://www.openusenet.org/diablo/">http://www.openusenet.org/diablo/</a>
+</p>
+<h2><a name="DNews">DNews</a></h2>
+<p>A commercial NNTP server for various platforms. Available
+from: <a href="http://netwinsite.com/dnews.htm">http://netwinsite.com/dnews.htm</a>.</p>
+<h2><a name="Cyclone">Cyclone</a></h2>
+<p>Cyclone is a commercial NNTP server aimed at backbone news
+transport, that is to say accepting articles from other NNTP
+servers and feeding them on to other servers, it is not aimed at
+use by end users for reading or posting. You can get Cyclone at: <a href="http://discussion.openwave.com/cyclone/cyclone.html">http://discussion.openwave.com/cyclone/cyclone.html</a>
+</p>
+<h2><a name="Typhoon">Typhoon</a></h2>
+<p>Typhoon is a commercial NNTP server aimed at end user news
+access, that is to say allowing users to post and read articles.
+You can get Typhoon at: <a href="http://discussion.openwave.com/breeze/typhoon.html">http://discussion.openwave.com/breeze/typhoon.html</a>
+</p>
+<p>Breeze</p>
+<p><a href="http://discussion.openwave.com/breeze/breeze.html">http://discussion.openwave.com/breeze/breeze.html</a></p>
+<p>twister</p>
+<p><a href="http://discussion.openwave.com/twister/twister.html">http://discussion.openwave.com/twister/twister.html</a>
+</p>
+<p>&nbsp;</p>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#cba0beb9bf8bb8aea2adb9a2aeafe5a4b9ac"><span class="__cf_email__" data-cfemail="7b100e090f3b081e121d09121e1f5514091c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

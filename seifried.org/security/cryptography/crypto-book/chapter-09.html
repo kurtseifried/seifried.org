@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 9 - Encrypting files and drives in Windows 95, 98, NT and 2000</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 9 - Encrypting files and drives in Windows 95, 98, NT
+and 2000</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#640f1116102417010d02160d01004a0b1603"><span class="__cf_email__" data-cfemail="d5bea0a7a195a6b0bcb3a7bcb0b1fbbaa7b2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<h4>Overview</h4>
+<p>Do you have files on your computer that you wouldn't want your
+spouse to read, or perhaps your main competitor. Chances are if
+you use your computer for work or general usage the answer is
+yes. Also what happens if you want to send a file to someone, or
+let them download it from you, but you only have access to a
+public site (like a free web hosting company). The answer is to
+encrypt the file, and fire it off. For Windows you have several
+choices, PGP, and GnuPG, as well as Guardbot for web based file
+transfers. If you work with files that are sensitive (such as
+spreadsheets containing sensitive financial data) the constant
+hassle of encrypting and decrypting the file (as well as the fact
+a decrypted copy will be stored on the filesystem, leaving a
+window of opportunity for an attacker) can get tedious. If this
+is the case you will want to use software such as EFS (available
+in Windows 2000), PGPdisk or BestCrypt to create an encrypted
+file which you can use like a drive. The advantage of this is you
+only authenticate once to access say the &quot;X:&quot; drive,
+and there is a lesser chance the the file will be stored in an
+unencrypted format on the disk (it might be placed in the swap
+file). This allows you to easily keep a set of files encrypted,
+but easily accessible to work on. </p>
+<h5>PGP</h5>
+<p>Pretty Good Privacy used to be command line driven with no
+GUI, and now the command line is an install time option (in other
+words PGP integrates itself quite well with windows and you
+generally won't need the command line to use it). PGP is
+available for free for non-commercial usage, and there are two
+commercial versions available from Network Associates (who also
+distribute the free version). Commercial PGP was historically
+only available in the US and Canada, however it was recently
+granted an export license which should help it's acceptance in
+other countries. The free version of PGP comes in two flavors,
+one with and one without <a href="appendix-e.html">patented RSA</a>
+components. If you are within the US or Canada you can use the
+free version of PGP <a href="appendix-a.html#PGP-Freeware">from
+here</a>. If you are outside the US or Canada you can get the <a href="appendix-a.html#PGP-Freeware">International version of PGP
+here</a>, or potentially buy a commercial copy soon of either <a href="appendix-a.html#PGP-Personal-Privacy">PGP Personal privacy</a>
+or <a href="appendix-a.html#PGP-Desktop-Security">PGP Desktop
+Security</a> (has some extra bells and whistles). Once you have
+downloaded the software simply double click on it to install, you
+will be lead through a rather normal Windows software install,
+however when you get to the components choice box you should
+uncheck anything you do not plan to use, especially support for
+mailers you do not have since PGP will be unable to find them,
+and the install will complain. Also if you do not need the VPN
+client, do no install it, it has a tendency to cause networking
+issues (small glitch like problems). The install will prompt you
+to either import an existing keyring (which if you are new to PGP
+you will not have), or create a new set of keys. I would advise
+using a 1024 or 2048 bit keylength for &quot;daily&quot; use,
+4096 bit keys are slow to use and realistically if an attacker
+can factor a 2048 bit key in a reasonable amount of time they
+have probably found some flaw in PGP. On the other hand if you
+are storing sensitive files, or transmitting them often, and have
+a long time horizon in which you need to keep the data secret, a
+larger key is appropriate. You should send your keys to the
+keyserver when prompted to do so, as it will make it possible for
+other people to get your keys without having to go to you (so for
+example if I receive email from you, and I see it is PGP signed,
+I can retrieve your key from a keyserver and verify the
+signature, and in turn encrypt my reply to you).</p>
+<p>If you want to find someone else's key either right click on
+the PGP tray icon and choose &quot;PGPKeys&quot; or go to the
+Windows Start menu and select &quot;PGPKeys&quot;. Once in
+PGPKeys you select &quot;Server&quot;, &quot;Search&quot;, select
+a keyserver (ldap://certserver.pgp.com is a default so many
+people use it), and enter the email address you are searching
+for, it should be in the User ID of their key (since email
+addresses area relatively unique identifier). You will be present
+with a list of keys matching your criteria, simply right click on
+the key you wish to have, and choose &quot;Import&quot;, and that
+is it. When you use this key to verify digitally signed files
+from the person the PGP software might complain about it being an
+untrusted key, by default foreign keys are untrusted unless they
+are signed by someone you trust (such as a friend, or yourself).
+To get rid of this (i.e. I and my boss exchange a lot of
+encrypted files), sign their key with a non exportable signature,
+in &quot;PGPKeys&quot; simple right click on the key, choose
+&quot;Sign&quot;, do NOT check the box saying &quot;Allow
+signature to be exported. Others may rely upon your
+signature&quot;, and then choose the key to sign it with, and
+enter your password. You should never sign a key with an
+exportable signature unless you have met face to face with the
+person, proven your ID to each other, and then signed your keys. </p>
+<p>When signing and decrypting files you will be prompted for
+your password, which can be annoying, PGP can cache the password,
+however be careful. If you enter your password and then leave
+your email client running and leave the computer unattended
+someone could use it and send email from you that is digitally
+signed (thus impersonating you). If you turn on the password
+saving feature you should be careful to always shutdown your mail
+client when you leave the computer unattended. To set the cache
+time simply go to the PGP settings (in Outlook it is
+&quot;Tools&quot;, &quot;PGP&quot;, &quot;Options&quot;, then the
+&quot;General&quot; tab), and simply set the cache time to an
+appropriate length. If you want to be safe do not cache the
+signing passphrase, this way you can decrypt encrypted files with
+your private key and not have to enter the password for your
+private key constantly, but you will be prompted for your
+password when you try to sign a file. </p>
+<p>To encrypt or decrypt files simply right click on them in
+Windows (on the desktop, or in the file explorer), and choose
+&quot;PGP&quot; followed by &quot;Encrypt&quot;, &quot;Decrypt
+and Verify&quot;, or whichever option you want to use. One use of
+this is to sign files, this creates a file with the signature
+(i.e. filename.asc), copy it to a safe location, and you can use
+it later to check if the file was modified (say you have a
+spreadsheet with a lot of data and are paranoid about someone
+changing it). </p>
+<p>A better long term solution is to use PGPdisk, which allows
+you to create an encrypted drive (actually it is a file that is
+mounted so you can easily access it). PGPdisk only comes with the
+commercial versions of PGP, which means you need to buy either <a href="appendix-a.html#PGP-Personal-Privacy">PGP Personal privacy</a>
+or <a href="appendix-a.html#PGP-Desktop-Security">PGP Desktop
+Security</a>. During the install make sure &quot;PGPdisk for
+Windows&quot; is selected, once you reboot simply go to the Start
+menu, PGP, and select PGPdisk, you will be presented with
+&quot;New&quot;, &quot;Mount&quot;, &quot;Unmount&quot; and
+&quot;Prefs&quot;. To create a new encrypted volume simply click
+&quot;New&quot;, you will be prompted for a filename and location
+(probably your &quot;C:&quot; drive), this file actually contains
+the encrypted data, but Windows can mount it, like a floppy disk,
+so that you access it by simply going to the drive letter you
+assign (like &quot;X:&quot;), hit save and you will be prompted
+for the file size to create, and the drive letter to assign to it
+(such as &quot;X:&quot;), after this you will be prompted for the
+passphrase to protect it, and once this is done it will ask for
+some random data (since Windows doesn't have a good random number
+generating facility programs usually ask for random keyboard or
+mouse input). It then brings up the format screen (and since
+Windows thinks it is a harddrive it asks if you really want to do
+this), and once the format is complete it mounts the drive and
+you can use it. The one thing I don't like about PGPdisk (at
+least version 6.0.2), is that there is no option to automatically
+mount the drive at boot time (which would prompt you for the
+passphrase of course, but it would be nice to automate it
+somewhat). The Mount and Unmount buttons allow you to mount and
+un-mount existing encrypted files as drives, and aren't terribly
+interesting. The Prefs button on the other hand has some neat
+features, you can specify an inactivity timeout, so if you don't
+use the encrypted volume for say 10 minutes it un-mounts it, and
+you can also specify a hot key to do this (should the FBI burst
+in suddenly), and you can have it un-mount the volume when the
+computer &quot;sleeps&quot; (halfway powers down). I would advise
+using all these if you are concerned about the safety of your
+data, especially in an office environment.</p>
+<h5>GnuPG</h5>
+<p>GnuPG for Windows is planned however not yet available (well
+it is, but it's not terribly user friendly yet).</p>
+<h5>BestCrypt</h5>
+<p><a href="appendix-a.html#BestCrypt">BestCrypt</a> is a disk
+encrypting program similar to PGPdisk. It allows you to create a
+fake drive, say &quot;X:&quot; that is actually an encrypted
+file, mounted as a filesystem to ease access. BestCrypt has
+several significant advantages over PGP and EFS however, it is
+available for Windows and Linux, and the source code is
+available! This will allow you to dual boot a machine between
+Windows and Linux, and share an encrypted filesystem for example,
+something you cannot do with any other products. The other huge
+advantage over PGP and EFS is you can validate the source code
+(this is of interest for companies that plan to roll out a few
+thousand copies and want to make sure it does what it claims to).
+To add insult to injury there are several version of BestCrypt
+that are free, for DOS, Windows 3.x and Linux (nice of them).
+BestCrypt is easy to use, simply download it, double click to
+install, you might need to reboot (once I had to, once I did not,
+strange). Simply start up the BestCrypt control panel, choose the
+drive you want the data to reside on (probably &quot;C:&quot;),
+then choose &quot;Container&quot; and &quot;New&quot;, a good
+filename is like &quot;my-encrypted-stuff&quot; (realistically an
+attacker will find it, and since it's encrypted this isn't a huge
+concern). You will be able to choose the algorithm you want, I
+would recommend Blowfish over DES (a 56 bit algorithm) and GOST
+(BestCrypt's own algorithm, which isn't as well tested as
+Blowfish or DES). You then choose a size, and set a passphrase to
+access the container, at this point the container is created and
+you can now mount the container (right click on the container),
+choose mount, a drive letter (like &quot;X:&quot;) and the option
+to mount at logon (makes sense if you plan to use it often). The
+first time you try to mount a container it will complain that it
+is not formatted, you can at this point format it. One feature
+BestCrypt has that PGPdisk lacks is the ability to automatically
+mount the encrypted volume(s) when you login (and prompts your
+for your password of course), so you don't have to keep mounting
+them manually each time you reboot. Like PGPdisk BestCrypt has
+options to specify an inactivity timeout, simple go to the
+BestCrypt control panel, &quot;Options&quot; and then
+&quot;Timeout&quot;.</p>
+<h5>Scramdisk</h5>
+<p><a href="appendix-a.html#Scramdisk">Scramdisk</a> is a free,
+OpenSource disk encryption program for Windows, written by an
+anonymous programmer (although (s)he cklaims to be from Britain).
+The source code is available online, as well as binary packages.
+Scramdisk supports a variety of algorithms, 3DES, Blowfish and
+IDEA notably. The install is rather simple, uncompress the
+program and the VXD (virtual device driver that allows you to
+mount a file as a filesystem, just as PGP and BestCrypt do), copy
+the VXD to the appropriate location (double click the install and
+it will error out the first time, and tell you where to put the
+VXD). Then run the install and reboot. The obvious advantage of
+this product is that it is completely free, and OpenSource, so if
+you have the resources you can ensure it meets your safety
+requirements.</p>
+<h5>EFS</h5>
+<p>It would appear that Microsoft is starting to take security
+seriously in Windows 2000. Unfortunately with their past track
+record and general implementation strategies the new Encrypting
+File System (EFS) appears to have some severe limitations and
+flaws. Because Microsoft is an American company they come under
+US cryptographic export law, meaning the US / Canadian version of
+EFS uses strong crypto, but the foreign versions use weak crypto
+(and I haven't heard of MS applying for an export license).
+Additionally EFS is an integral part of the filesystem, meaning
+you cannot simply copy a container file (like PGP or BestCrypt
+use) to another machine, and is somewhat more difficult to backup
+properly. EFS is also closed source, so you don't know if
+Microsoft has made a mistake (like they did in PPTP, LanMAN
+hashes, password storage in NT 4, etc.). Another MAJOR problem
+with EFS is that the administrator can set it so that your data
+can be retrieved without your permission. This is ostensibly so
+that if you die your files can retrieved, however if you do not
+control your workstation, chances are (especially in today's
+business environment where users are heavily monitored) that EFS
+is configured so files can be retrieved. The only good thing
+about EFS is the ease of use, and that it is free (it ships with
+the system). Simply right click on the file or folder you wish to
+encrypt, you can also create encrypted drives. Unlike PGP or
+BestCrypt individually encrypted files and folders can be
+accessed transparently by programs with no need to constantly
+encrypt and decrypt files. I would only use EFS as a last resort
+if nothing else is available (or if I wanted to be able to easily
+decrypt the data if I forget my password, which defeats the
+primary purpose). <a href="appendix-a.html#EFS">EFS</a> can also
+be used from the command line with the command
+&quot;cipher&quot;. EFS is also only available on NTFS drives,
+but if you are at all security conscious you will be using NTFS
+and <strong>NOT</strong> FAT or FAT32.</p>
+<h5>Guardbot</h5>
+<p>Another new possibility is <a href="appendix-a.html#Guardbot">Guardbot</a>,
+which password protects www pages. Essentially there are two
+components, an applet that encrypts the data, using DES (56 bit
+keyspace), and an applet that will decrypt the data with the
+password you provide. The advantage of this over traditional
+server based methods of control (such as htaccess in Apache) is
+that the user manages it fully, and can protect each file
+individually without much setup. To fully take advantage of the
+keyspace available your password must contain upper and lower
+case letters, numbers (and punctuation marks, but this can
+confuse users) of around 10 letters, however since people tend to
+choose less then random passwords a longer password then this is
+advisable. This program would be useful for getting files to
+other people cheaply (simply sign up for some free web space,
+post the file up, and get the password to the other person
+securely).</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-08.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-10.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

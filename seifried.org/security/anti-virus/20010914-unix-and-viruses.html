@@ -1,0 +1,520 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="system-var1-name" content="system-var1-value">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<meta name="user-var1-name" content="user-var1-value">
+<title>Kurt Seifried - Information security / Anti virus / Unix and viruses</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>UNIX and viruses </h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#f79c828583b784929e91859e9293d9988590"><span class="__cf_email__" data-cfemail="43283631370330262a25312a26276d2c3124">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>There's been talk about UNIX viruses, and more specifically
+Linux viruses. Recently a trojan was released for Linux called
+&quot;Remote shell trojan&quot;, and widespread reports likened
+it to Code Red. Nothing could be further from the truth. This
+&quot;Remote shell trojan&quot; is actually a virus, and a poorly
+done one at that. Many of these articles seem to have gotten a
+hold of virus experts, which is good, but it seems these virus
+experts generally have little knowledge of UNIX, which isn't
+surprising as most viruses and anti-virus software is written for
+Windows (only in the last year or two have many anti-virus
+vendors ported their products to UNIX platforms). First of all
+let's define the problem, and some of the more important terms,
+since some of the articles I have seen seem to mix things in
+strange ways. A virus is a piece of software that can infect data
+and applications, often replicating itself, it may or may not be
+harmless (intentionally or otherwise). For example some viruses
+append themselves to executable files, and these files can be
+later spread when users share files. Other viruses (like the
+Melissa virus) would simply rifle the contents of your email
+address book, and then send itself to all the people listed in
+it, severely overloading mail servers in the process. </p>
+<p>Viruses need to be run by a user, and there are many, many
+ways to trick a user into executing a file, simply attaching it
+to email and saying it is a new game works most of the time. With
+Windows there is a wide variety of ways to get code executed
+(ActiveX, JavaScript, autorun.inf, and so on), especially since
+Microsoft has chosen to mix data and program files together (i.e.
+macros in Word or Excel - who uses them except for virus writers
+anymore?) and given little ability to disable features (you
+cannot reliably disable macros, or fine tune access to JavaScript
+or Java for example). Once run by the user the virus typically
+replicates itself, in the past this was accomplished by attaching
+itself to executable files, when you traded those files with a
+friend they would get infected as well. With the spread of the
+Internet, it become relatively easy to put files up for download
+that were infected, while major sites tend to scan the software
+they offer, the types of software many people want (i.e.
+copyrighted software) is usually not carried by reputable sites
+(imagine that). As well the explosion of email has eased the
+spread of viruses, and with the large number of Windows users
+possessing mail software that can be made to automatically run
+applications, the spread of viruses via email has exploded. </p>
+<p>Getting back to basics however, viruses have to be run by
+users to do anything. In general home users are their own
+administrator, however with Windows 95/98 there is no distinction
+between the user and the administrator, and additionally there is
+absolutely no file security. This means that anyone running any
+software can do anything to a Windows 95/98 box, from installing
+extra software to formatting the hard drive. Additionally, the
+vast majority of Windows users do not have up to date anti-virus
+software (if at all), as compared to corporate environments which
+usually have anti virus software with automated update methods.
+Home users running various UNIX platforms typically have a root
+account (like administrator in NT), and a user account, and most
+UNIX versions make it very clear that root should not be used for
+normal access. When you are logged in as a user, on most UNIX
+platforms, you can do very little (if at all) to harm the system.
+Typically the only areas a user can actually write data to are
+the /tmp directory, and their home directory. Directories with
+configuration files (such as /etc) or binaries (/bin, /sbin) are
+typically protected from users (I haven't seen a modern UNIX that
+doesn't). So even if a user does run an infected file, chances
+are it cannot do to much damage. There are of course exceptions
+to the rule, several major ftp sites have been broken into, and
+various popular software packages have been modified, however
+these are usually caught quite quickly when someone checks the
+file checksums or signatures (which oddly enough most Windows
+sites do not seem to bother with).</p>
+<p>As far as corporate environments go, they tend to be heavily
+homogenous, with virtually all of the desktop machines running
+the same version of windows, hopefully NT. NT does support file
+permissions, and typically users do not have administrative
+rights to their local machine (this tends to increase support
+costs because users are prone to errors). Unfortunately the
+default file permissions for NT (both server and workstation) are
+everyone (literally a group called everyone) has full control
+(meaning they can change permissions as well as modify files) for
+the entire system. Tightening up these permissions is problematic
+since many popular software packages require write access to
+system directories. Windows 95/98 makes a rather poor desktop
+because the user can easily manipulate it (it has no concept of
+file permissions or defining user roles), you can protect the
+surface with user policies (such as removing network neighborhood
+from the desktop) but you cannot protect the underlying system
+effectively. Most corporations invest in anti-virus software, and
+do keep it relatively up to date, but when email viruses can
+spread around the globe in a matter of hours (as opposed to days,
+weeks and months in the days before the Internet and mass access
+to email) getting software updates in time is challenging (almost
+impossible one might say). On the other hand UNIX platforms in
+corporate environments tend to be servers, which are reasonably
+well protected (and I can guarantee user access is limited), or
+desktops for engineers, scientists and other &quot;serious&quot;
+types. One disadvantage typically is that the environment in a
+corporation tends to be more uniform, so if a virus does manage
+to slip in chances are it will run rampant quite quickly.</p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top">Feature / OS</td>
+<td valign="top">Windows 95 / 98</td>
+<td valign="top">NT 4.0 / Windows 2000</td>
+<td valign="top">Linux / UNIX in general</td>
+</tr>
+<tr>
+<td valign="top">Filesystem security</td>
+<td valign="top">No</td>
+<td valign="top">Yes - ACL's, but many programs such as
+Microsoft Office, Corel, etc. require read/write access
+to sensitive directories, disabling this access can break
+some programs.</td>
+<td valign="top">Yes - User / Group / Other, most
+important directories and files are protected by default
+against users.</td>
+</tr>
+<tr>
+<td valign="top">Memory protection</td>
+<td valign="top">Not really</td>
+<td valign="top">Yes, has problems</td>
+<td valign="top">Yes, some problems</td>
+</tr>
+<tr>
+<td valign="top">Chroot for network services</td>
+<td valign="top">No</td>
+<td valign="top">Minor, usually unused</td>
+<td valign="top">Yes, some problems (if the process is
+chrooted, but still running as root it can probably break
+out)</td>
+</tr>
+<tr>
+<td valign="top">Run processes as an unprivileged user</td>
+<td valign="top">No</td>
+<td valign="top">Yes, has problems</td>
+<td valign="top">Yes</td>
+</tr>
+<tr>
+<td valign="top">Software Installation</td>
+<td valign="top">Done by users typically</td>
+<td valign="top">Should be done by administrators only,
+but many done by users</td>
+<td valign="top">Almost always done by administrators,
+users can install software into their own directories
+(typically)</td>
+</tr>
+<tr>
+<td valign="top">Anti-Virus scanning software</td>
+<td valign="top">Yes</td>
+<td valign="top">Yes</td>
+<td valign="top">Yes</td>
+</tr>
+<tr>
+<td valign="top">File integrity tools</td>
+<td valign="top">Yes</td>
+<td valign="top">Yes</td>
+<td valign="top">Yes (including many free ones)</td>
+</tr>
+<tr>
+<td valign="top">Infection vectors</td>
+<td valign="top">Email, HTML, Java, JavaScript, foreign
+software, removable media, data files (such as Microsoft
+Word, Excel)</td>
+<td valign="top">Email, HTML, Java, JavaScript, foreign
+software, removable media, data files (such as Microsoft
+Word, Excel)</td>
+<td valign="top">Email (mostly as attached files),
+JavaScript, Java, foreign software</td>
+</tr>
+<tr>
+<td valign="top">Overall resistance to viruses</td>
+<td valign="top">No resistance, with anti-virus software
+decent resistance</td>
+<td valign="top">Some resistance, with anti-virus
+software decent resistance</td>
+<td valign="top">Good resistance, anti-virus software
+adds little (good for protecting clients machines
+however, such as email users).</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>There is some good news (not a whole lot though). If a user
+runs a program as a normal user account chances are it cannot
+write to system binaries. This significantly decreases the
+effectiveness of viruses delivered via email or other data
+sources since they can only modify a users files and not infect
+the system. The reason this is so effective in Windows is that
+default file permissions in NT are everybody full control (and
+many sites do not tighten this), and of course Windows 9x has no
+file permissions. The flip side of this is that most Linux
+machines have at least one (or many) local root exploits.
+Examples include Perl, mail, Sendmail, the Linux kernel itself,
+and much more. Unless an administrator keeps the machines up to
+date a sophisticated virus could exploit a weakness and modify
+system files, or install trojans and backdoors. Unfortunately
+most machines are not kept up to date very well, and even if they
+are there is a window of opportunity between vulnerabilities
+being reported, and vendor upgrades being issued (although Linux
+has some of the lowest averages, in some cases &lt;24 hours).
+This makes writing an effective virus for Linux harder, however
+it is not much more difficult then writing a virus for Linux.</p>
+<p>The best defenses against viruses are as follows:</p>
+<ul type="disc">
+<li>Do not run software or other executable content from
+untrusted sources. This includes Java and JavaScript in
+webpages and documents, rpm's and dpkgs from unknown
+sites, and compiling and installing untrusted source
+code. </li>
+<li>If possible check the GnuPG or PGP signature on the RPM
+file or the detached signature for tarballs and dpkg. You
+must get the GnuPG/PGP securely, using a public keyserver
+is not terribly secure, copying them off of a vendors
+CDROM (such as SuSE) is an example of how to do it
+securely. &quot;rpm --checksig&quot; to verify rpm's. To
+verify MD5 signatures &quot;md5sum&quot; is used, the
+signatures must be gained from a trusted source, secure
+web pages are a good example.</li>
+<li>Download software from official sites or official mirror
+sites. While it's nice that people mirror software and
+make it available there is an issue of trust (and since
+most people do not check package signatures it is trivial
+for attackers to setup a site and merrily let people
+download software). </li>
+<li>Make regular backups, preferably several copies and store
+them on write protected media.</li>
+<li>Acquire an antivirus scanner and use it properly (more on
+this in the next article). </li>
+</ul>
+<p>Essentially it boils down to normal &quot;best
+practices&quot;, keeping software up to date, not running
+untrusted code, and so forth. As time goes on and Linux starts to
+make inroads to the desktop platform it will become a more and
+more popular target for viruses. Currently there are design
+decisions that will affect the longterm effectsof viruses on
+Linux. Already network clients such as Xchat (and IRC client)
+have been found to improperly handle URL's that suers click.
+While not a virus problem per se it is indicative of forthcoming
+problems (and new vectors for infection). Like Windows the tight
+integration of WWW content in other programs will lead to
+problems as Java and Javascript vulnerabilities (among others)
+come into play.</p>
+<p>So back to &quot;Remote shell trojan&quot;. In order to be
+infected by it you must run a binary infected by it, as root.
+Most binary Linux software is typically signed by the vendors
+that produce it, and a quick check of the signature would reveal
+if the package were changed or not. In addition this &quot;Remote
+shell trojan&quot; cannot replicate across networks, it cannot
+send itself out as an email attachment, or hunt for and infect
+network shares. On the other hand the Code Red worm will infect
+any NT or 2000 machine that has a default configuration without
+sufficient security updates (estimates run from 300,000 machines
+and up were infected by Code Red). While the number of UNIX, and
+Linux viruses will of course increase, but I doubt we will see
+the explosion that the Windows world has been suffering in recent
+years. The argument that &quot;the increasing popularity of Linux
+(and UNIX in general) will mean more viruses&quot; is correct but
+only in a limited way. The general usage habits and layout of the
+system will defeat the majority of viruses quite effectively.</p>
+<p>&nbsp;</p>
+<h2>The problem with anti-virus scanners</h2>
+<p>A virus scanner doesn't do you any good if it's not somewhere
+along the path the virus takes to get into your network, onto
+your machine and then executed. When deploying antivirus software
+there are a number of factors to consider:</p>
+<ul type="disc">
+<li>Software updates are a requirement, old antivirus
+software is useless antivirus software in today's age of
+email viruses spreading globally in under 24 hours, the
+more platforms you have running the software the more
+platforms that have to be upgraded regularly </li>
+<li>Antivirus software takes up resources, everytime it runs
+it requires memory and CPU time, if it is scanning a lot
+of information the load can be significant </li>
+<li>Antivirus software must not generate false positives or
+damage uninfected data, if this happens users will
+probably do their best to disable it (or order you too) </li>
+<li>Antivirus software has a very hard time scanning any
+content that is encrypted, and in many cases fails to
+scan content if it is encoded in any format, even simple
+base 64 </li>
+</ul>
+<p>The most obvious place to install antivirus software is on
+user's workstations. The benefits of this are numerous:</p>
+<ul type="disc">
+<li>The workstation is the &quot;end of the line&quot;, this
+is where software is run, and virus scanners should catch
+it </li>
+<li>The information is decoded and then processed, at which
+point it can properly be scanned </li>
+<li>The workload is kept off of the server and generally
+speaking workstations have enough extra capacity to run
+antivirus software </li>
+<li>You do not have to worry about data &quot;sneaking&quot;
+in, for example on floppy disk or CD-ROM's, it will be
+scanned </li>
+</ul>
+<p>There are also problems with placing the antivirus software on
+workstations:</p>
+<ul type="disc">
+<li>Users are more likely to be able to disable the software
+or otherwise prevent it from functioning properly </li>
+<li>Updates require more effort and time since there are more
+seats to manage </li>
+</ul>
+<p>Antivirus software should be loaded when possible onto
+workstations, especially for mobile users with laptops.
+Consideration should also be given to purchasing Antivirus
+software for people that telecommute from home, even if you do
+not load antivirus onto corporate desktops it is extremely
+important to load it on user's home machines. The reason for this
+is that home machines will be accessing the Internet and are
+probably not protected by any form of antivirus software at the
+ISP's end. Additionally since users are wont to use the same
+passwords for home machines and machines at work, as well as
+logging in to machines at work it is important to make sure these
+machines are not compromised. </p>
+<p>Another obvious place to filter for viruses is on your
+mailserver(s). Currently email is one of the &quot;best&quot;
+infection vectors for viruses since the spread of a virus via
+email can take place in several hours and hit many thousands of
+email systems and hundreds of thousands if not millions of email
+clients. The majority of text based email clients for Linux are
+relatively secure, although pine has had some issues in past. GUI
+mailers such as Netscape support Java and JavaScript, making them
+vulnerable to email borne viruses, the language and scripting
+support in other mail clients varies. There are several (3 I know
+of) software packages for Sendmail and Postfix that allow them to
+scan email that is being delivered locally on the server for
+viruses. Both Sendmail and Postfix have the capability to scan
+content that is in transit (i.e. email not being delivered
+locally), which means in future you can use Linux as a very cheap
+mail gateway scanner which will sanitize email before it even
+gets to the &quot;Real&quot; email server. The advantages are:</p>
+<ul type="disc">
+<li>All email being handled locally will be scanned, along
+with attachments, i.e. the packets are reassembled into
+actuall email meaning an attacker won't gain anything by
+intentionally fragmenting the packets (a normal tactic to
+pass data through network scanners) </li>
+<li>Users won't be able to avoid having their email scanned </li>
+<li>Scanning is centralized, updates are easier </li>
+</ul>
+<p>However the disadvantages are also significant:</p>
+<ul type="disc">
+<li>Many email scanners can be avoided by encoding your
+content or manipulating mail headers </li>
+<li>Load on the server can be significant </li>
+<li>Very few solutions scan outgoing email for viruses (you
+don't want to infect your business partners do you?) </li>
+<li>An attacker can send large amounts of virus laden email,
+if you have any sort of alert system (email, pager, etc.)
+it can get very annoying </li>
+</ul>
+<p>The last method is to use a product like Trend Micro VirusWall
+which scans network traffic for viruses and acts as a proxy for a
+number of services. The problem with these is that they are
+relatively easy to bypass for sophisticated attackers, so if
+someone targets a virus specifically at you they can probably get
+it through. In one case NAI's add-on antivirus product for their
+firewall actually opened it up to a remote attack where you could
+gain root (i.e. full administrative) access to the firewall
+running the software. Obviously having an attacker in control of
+your virus scanning firewall is a bad thing. However if they work
+as advertised it allows you to scan all traffic coming into and
+leaving your network from a few gateway locations (most corporate
+networks have one or two access points). Of course if someone
+manages to get a virus into the company (say an infected
+diskette) it can then spread like wildfire since there is no
+internal protection. To summarize the benefits:</p>
+<ul type="disc">
+<li>Control of all incoming and outgoing content be it email,
+ftp or www </li>
+<li>Centralized administration of perhaps one or two scanners
+</li>
+</ul>
+<p>And the disadvantages that are present:</p>
+<ul type="disc">
+<li>Any content that is encrypted or encoded will probably
+make it past the scanner </li>
+<li>Most of these products still have a ways to go before
+they are bullet proof (one allowed remote attackers to
+gain full access of the server) </li>
+<li>Depending on placement you may miss content, for example
+home users using VPN software to tunnel in, dial up lines
+</li>
+<li>You will not be able to scan internal traffic much,
+meaning once a virus gets in it can spread quickly </li>
+</ul>
+<p>Probably the best solution is to use a combination of
+workstation and server antivirus software. Incoming email should
+definately be scanned for viruses, especially if you have many
+clients using Windows mail programs (especially Outlook).
+Software needs to be placed on workstations since users can
+(usually) browse the web and download content, if users visit
+secure (https) sites then any gateway scanning will be
+ineffective since the content is encrypted. Users are also in the
+habit of using removable media such as floppy disks, cdroms, zip
+disks and so forth which they may also be using on unprotected
+home machines. Antivirus software should be installed on file
+servers if possible, and scans of user's files should take place
+in real time if possible (although I know of none that currently
+do this apperently there is work being done by Samba and Linux
+programmers to make this possible), barring this a daily or twice
+daily scan will help significantly. Scanning backups is also a
+good idea, as new viruses may make it into your network before
+your antivirus software is updated. As always multiple layers of
+defense that have no single point of failure are the best
+practice.</p>
+<p>Software being disabled, intentionally or accidentally is a
+problem. Sometimes users will simply start right-clicking on
+stuff int he taskbar to free up memory, or do a ps listing and
+kill off commands that don't look critical. Sometimes software
+just stops working, i.e. fails to start at boot time, or is not
+called properly by a helper program such as AMaViS which scans
+email. If possible you should disable the users ability to
+disable the software. On a unix workstation make sure the files
+are owned by a special user (vscan, or perhaps root), this way
+the user cannot kill the process or otherwise disable it (unless
+of course the user has local root access). If you must give the
+user local root access consider something like a
+&quot;hidden&quot; cron job to restart the process, in case the
+user accidentally (or otherwise) disables it. You should also
+make it clear in your security policy that disabling security
+related software (virus scanners, firewalls, etc.) is a strict
+no-no. You can also back this up by periodic testing of the
+software. You don't need to send a live virus (this is always a
+bad idea), instead you can send one of a number of test
+signatures, for example eicar.com (I would put the signatures in
+this webpage except it would set off programs like Norton
+Anti-Virus). You can find eicar.com online at many sites, it's
+about 60bytes in size (i.e. tiny).</p>
+<p>Software not being updated properly (or at all) is another
+major problem. If you can automate the process you should do so,
+at least make it so you can download the update once to an
+internal server and then have all the clients update from it
+quickly. The speed at which a modern virus propagates (especially
+via email) is nothing short of amazing. Once you update the
+software you may need to reboot the machine (this is primarily a
+Windows issue and not needed in most UNIX systems). In most cases
+you will probably need to restart the scanner software so it
+rereads it configuration and data files, a simple kill -HUP will
+usually do the trick. In some cases virus scanners have a main
+data file and then a directory for updates (consisting of
+individual files for various new signatures/etc.) in some cases
+software that uses the anti virus scanner to scan email may not
+pick up on the updates directory, meaning any new viruses will
+slip past easily. In this extreme case you may want to ensure
+this doesn't happen by sending a live virus through the virus
+scanner, be careful however because if you virus scanner doesn't
+pick it up, and the virus manages to get loose accidentally you
+are in deep trouble.</p>
+<p>Bypassing software is another problem. If you install an
+antivirus firewall, and scan all traffic to and from the Internet
+it is still possible for users to slip a virus in (intentionally
+or not). The simplest problem would be an SSL based website, the
+virus scanner can't scan encrypted content, so the virus will get
+past, encrypted email is another example of this problem. If you
+have a dial in pool of modems you better make sure there is a
+virus scanning firewall in between them and the network (having a
+firewall in between is also a good idea, preferably one that
+requires authentication). If users are allowed to use removable
+media (floppy disks, CD-ROMs, zip disks, etc.) then they can
+inadvertently introduce a virus onto the network. The best way to
+deal with this class of problems is to put antivirus scanning
+packages on workstations, firewalls, email servers and so on.
+Preventing users from using removable media is another option and
+can also prevent information leakage/theft (i.e. users copies
+critical files to floppy, takes it home, accidentally leaves them
+exposed and someone copies them). In UNIX you can easily address
+this problem by setting proper file permissions in the /dev/
+directory, however it is trivial for users to email files out, so
+this is not perfect (but you can at least keep copies of outgoing
+email for inspection). </p>
+<p>Lastly even with all of the above in place it is possible for
+a virus to sneak in and stay resident. If possible you should
+conduct &quot;sweeps&quot; (i.e. scan all the files) on
+workstations and servers periodically, weekends at 2 am are a
+good time to do this. I have seen several universities now with
+public kiosks equipped with ancient 486's painted bright red
+running Linux and anti virus software, the user put a floppy disk
+in the drive, hits enter and the disk is scanned. This type of
+service is ideal since it is anonymous and easily accessible,
+there is a certain amount of stigma attached to having a virus
+and it can be very embarrassing (how can you be so stupid as to
+have got a virus on your computer?). There is also work being
+done by companies like Norton to develop a web based virus scan,
+you simply go to a web page, download a small program and it
+scans your system for common viruses (i.e. the current ones).
+There was even talk of making this a requirement for
+customers/etc of various online services, however the idea of
+having to submit to a mandatory scan by third party software,
+over which you have no real control, is rather unappealing to
+most users.</p>
+<p>Like any security technology antivirus software needs to be
+planned out, implemented carefully and most importantly
+maintained properly. Failure to do so will render it useless,
+perhaps worse then useless because you believe you are protected
+when in fact you are not. Antivirus software is also not a
+complete solution on it's own, it is simply part of an overall
+security framework, it is complimented by firewalls, IDS systems,
+access controls and so on.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

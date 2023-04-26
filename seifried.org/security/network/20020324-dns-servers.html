@@ -1,0 +1,363 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Title Here</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>DNS server infrastructure</h1>
+<p>by Kurt Seifried, <a href="/cdn-cgi/l/email-protection#95fee0e7e1d5e6f0fcf3e7fcf0f1bbfae7f2"><span class="__cf_email__" data-cfemail="85eef0f7f1c5f6e0ece3f7ece0e1abeaf7e2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>It's funny to see the Internet sneaking up on businesses and
+becoming a critical component, without many people seeming to
+realize it. Many businesses now rely heavily on email as a
+messaging system, the use of web servers to distribute corporate
+data and allow access to a variety of services. All these
+services rely on DNS. DNS is the directory to the Internet, it
+maps names such as seifried.org to IP addresses such as 1.2.3.4.
+To see a fortune 100 company, such as Microsoft, suffer a
+multi-day outage because their DNS infrastructure is not up to
+the task is disturbing indeed. </p>
+<h2><strong>DNS Security and availability</strong></h2>
+<p>In the past we've run several articles on DNS security, and by
+and large most organizations have begun to pay attention to these
+issues and address them. However a significant part of security
+is availability. While preventing an attacker from accessing
+sensitive data is definitely a security goal, allowing an
+attacker to deny access to that resource, for everybody, can be a
+significant problem. Even if your webservers are in tip-top
+shape, the firewalls are doing their job, and your backend
+application servers and databases are in perfect order it doesn't
+matter if an attacker manages to take out your DNS servers.
+Without DNS servers no-one on the Internet will be able to find
+your servers, would you be able to remember 199.81.203.50,
+153.2.228.50 or 56.0.78.101? Of course not, but you can remember
+fedex.com, ups.com and usps.com. Worse yet without your DNS
+servers internal services may not work properly, email deliveries
+can fail and access to servers will timeout as DNS queries fail.</p>
+<h2><strong>How DNS works</strong></h2>
+<p>The first step is to contact a DNS registrar such as Network
+Solutions and pony up $35 for a DNS name (good for one year). If
+you forget to pay your registration fees your DNS name will be
+taken out of the database and DNS will stop working (this has
+happened to Microsoft in the past). So make sure you document
+somewhere when your DNS fees need to be renewed. While you can
+pay up to 10 years in advance I would not recommend it, making
+DNS renewal a yearly ritual is probably better then leaving it
+for 10 years (at which point your contact with the Internic may
+have retired) and hoping that the reminder gets to the right
+person.</p>
+<p>Once this is done you can register up to 6 DNS servers for a
+domain name. NetBSD for example has six servers listed, if five
+fail in some manner DNS queries will still work (albeit slowly,
+since clients will have to try several servers before finding the
+working one). This is your first line of defense against an
+attacker, since hopefully no attacker will be able to take out
+all the root servers you can use them to do limited load
+balancing, but more importantly to list multiple servers. </p>
+<p>The DNS client will then query one of the DNS servers listed
+by the Internic, so having numerous servers spread out (different
+locations, backbone providers, etc.) will provide a good degree
+of redundancy. The cost to host several machines at a major
+co-location provider to host DNS services is trivial compared to
+the cost of having an extended outage for most organizations. At
+a bare minimum you'll need a 1U rack mount server with enough ram
+to handle the database in memory (in most cases 512 megs will be
+plenty), you may additionally want to place a firewall in front
+of it to prevent attacks directly on the firewall. </p>
+<p>By having several sets of DNS servers at different provides a
+much more robust system, an attacker must take out more then one
+target, however if all your DNS servers are running at 100%
+capacity and an attacker takes one server out that may cause
+enough added load on the other server to make them unresponsive.
+Ideally a single server should be able to handle the full load,
+realistically you should be able to lose at least one, and
+probably two servers without overloading the remaining servers.
+Microsoft, like a wounded gazelle, was attacked, most likely the
+chokepoint router was targeted, which would have the effect of
+blocking access to the four DNS servers behind it. It doesn't
+matter how powerful and fast and well secured those four DNS
+servers were, the router in front of it was most likely dead
+(traceroute response was very sporadic).</p>
+<p>Below is a table listing public information about various
+major companies DNS configuration. This information was gleaned
+by using:</p>
+<pre>whois <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="f19489909c819d94df9e8396b186999e9882df829e9c9481839e8798959483df929e9c">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+dig -t ns example.org
+traceroute foo.example.org</pre>
+<p>Microsoft has made some serious improvements in their DNS
+configuration, by dint of outsourcing some of it to Akamai, how
+is extremely experienced at this sort of thing (oddly enough the
+Akamai server handling Microsoft's DNS appears to be running
+Linux). I also expect to see Microsoft do some reorganization of
+their own servers in the future. The following companies rely
+very heavily on the Internet, from providing simple product
+information to product updates, critical security fixes, and so
+forth. In general they are doing a good job, most have DNS
+servers in three or more separate locations. This chart reflect
+data from Jan. 31 of 2001. </p>
+<p>&nbsp;</p>
+<table border="1">
+<tr>
+<td valign="top"><font size="2">Name</font></td>
+<td valign="top"><font size="2">Servers by whois listing</font></td>
+<td valign="top"><font size="2">servers by dig -t ns</font></td>
+<td valign="top"><font size="2">traceroute results </font></td>
+<td valign="top"><font size="2">Comments</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Caldera</font></td>
+<td valign="top"><font size="2">NS.CALDERASYSTEMS.COM
+216.250.130.1<br>
+NS2.CALDERASYSTEMS.COM 216.250.130.254</font></td>
+<td valign="top"><font size="2">NS.CALDERASYSTEMS.COM
+216.250.130.1<br>
+NS2.CALDERASYSTEMS.COM 216.250.130.254</font></td>
+<td valign="top"><font size="2">Both pass through
+208.46.255.178 (1 and 2 more hops)</font></td>
+<td valign="top"><font size="2">One site with a
+chokepoint router, vulnerable to attack.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Debian</font></td>
+<td valign="top"><font size="2">SAMOSA.DEBIAN.ORG
+209.249.97.234<br>
+SAENS.DEBIAN.ORG 216.66.54.50<br>
+NS1.LDSOL.COM 62.161.210.241<br>
+NS2.CISTRON.NL 195.64.68.28<br>
+OPEN.HANDS.COM 195.224.53.39</font></td>
+<td valign="top"><font size="2">SAMOSA.DEBIAN.ORG
+209.249.97.234<br>
+SAENS.DEBIAN.ORG 216.66.54.50<br>
+NS1.LDSOL.COM 62.161.210.241<br>
+NS2.CISTRON.NL 195.64.68.28<br>
+OPEN.HANDS.COM 195.224.53.39</font></td>
+<td valign="top"><font size="2">Systems widely spread</font></td>
+<td valign="top"><font size="2">Well distributed servers.</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">FreeBSD</font></td>
+<td valign="top"><font size="2">NS1.ROOT.COM
+209.102.106.178<br>
+WHO.CDROM.COM 204.216.27.3<br>
+NS1.CRL.COM 165.113.1.36<br>
+NS2.CRL.COM 165.113.61.37<br>
+NS1.IAFRICA.COM 196.7.0.139<br>
+NS2.IAFRICA.COM 196.7.142.133</font></td>
+<td valign="top"><font size="2">NS1.ROOT.COM
+209.102.106.178<br>
+WHO.CDROM.COM 204.216.27.3<br>
+NS1.CRL.COM 165.113.1.36<br>
+NS2.CRL.COM 165.113.61.37<br>
+NS1.IAFRICA.COM 196.7.0.139<br>
+NS2.IAFRICA.COM 196.7.142.133</font></td>
+<td valign="top"><font size="2">Systems widely spread</font></td>
+<td valign="top"><font size="2">Very well distributed
+servers on major links/systems</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">IBM</font></td>
+<td valign="top"><font size="2">NS.WATSON.IBM.COM
+198.81.209.2<br>
+NS.ALMADEN.IBM.COM 198.4.83.35<br>
+NS.AUSTIN.IBM.COM 192.35.232.34<br>
+NS.ERS.IBM.COM 204.146.173.35</font></td>
+<td valign="top"><font size="2">NS.WATSON.IBM.COM
+198.81.209.2<br>
+NS.ALMADEN.IBM.COM 198.4.83.35<br>
+NS.AUSTIN.IBM.COM 192.35.232.34<br>
+NS.ERS.IBM.COM 204.146.173.35<br>
+INTERNET-SERVER.ZURICH.ibm.com 195.212.119.252</font></td>
+<td valign="top">&nbsp;</td>
+<td valign="top"><font size="2">Very well distributed
+servers on major links/systems</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Kernel.org</font></td>
+<td valign="top"><font size="2">NS2.KERNEL.ORG
+209.10.41.242<br>
+NS1.KERNEL.ORG 209.10.217.83</font></td>
+<td valign="top"><font size="2">NS2.KERNEL.ORG
+209.10.41.242<br>
+NS1.KERNEL.ORG 209.10.217.83</font></td>
+<td valign="top"><font size="2">Both pass through
+209.10.12.53 (2 and 3 more hopes)</font></td>
+<td valign="top"><font size="2">Probably one site with a
+chokepoint router, vulnerable to attack., would also
+affect transmeta.com</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Mandrake</font></td>
+<td valign="top"><font size="2">MOSEISLEY.MANDRAX.ORG
+63.209.80.226<br>
+DAGOBAH.MANDRAX.ORG 63.209.80.227</font></td>
+<td valign="top"><font size="2">MOSEISLEY.MANDRAX.ORG
+63.209.80.226<br>
+DAGOBAH.MANDRAX.ORG 63.209.80.227</font></td>
+<td valign="top"><font size="2">Both pass through
+209.244.10.46</font></td>
+<td valign="top"><font size="2">One site with a
+chokepoint router, vulnerable to attack</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Microsoft</font></td>
+<td valign="top"><font size="2">DNS4.CP.MSFT.NET
+207.46.138.11<br>
+DNS5.CP.MSFT.NET 207.46.138.12<br>
+DNS6.CP.MSFT.NET 207.46.138.20<br>
+DNS7.CP.MSFT.NET 207.46.138.21<br>
+Z1.MSFT.AKADNS.COM 216.32.118.104</font></td>
+<td valign="top"><font size="2">DNS4.CP.MSFT.NET
+207.46.138.11<br>
+DNS5.CP.MSFT.NET 207.46.138.12<br>
+DNS7.CP.MSFT.NET 207.46.138.21<br>
+DNS6.CP.MSFT.NET 207.46.138.20<br>
+Z1.MSFT.AKADNS.COM 216.32.118.104<br>
+Z2.MSFT.AKADNS.COM 32.96.80.17<br>
+Z6.MSFT.AKADNS.COM 207.229.152.20<br>
+Z7.MSFT.AKADNS.COM 213.161.66.158</font></td>
+<td valign="top"><font size="2">DNS*.CP..MSFT.NET servers
+pass through 207.46.190.117</font></td>
+<td valign="top"><font size="2">Very robust
+infrastructure provided by Akamai</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">NetBSD</font></td>
+<td valign="top"><font size="2">NS1.BERKELEY.EDU
+128.32.136.9<br>
+NS2.BERKELEY.EDU 128.32.136.12<br>
+UUCP-GW-1.PA.DEC.COM 16.1.0.18<br>
+UUCP-GW-2.PA.DEC.COM 16.1.0.19</font></td>
+<td valign="top"><font size="2">NS1.BERKELEY.EDU
+128.32.136.9<br>
+NS2.BERKELEY.EDU 128.32.136.12<br>
+UUCP-GW-1.PA.DEC.COM 16.1.0.18<br>
+UUCP-GW-2.PA.DEC.COM 16.1.0.19</font></td>
+<td valign="top"><font size="2">Systems spread at two
+locations</font></td>
+<td valign="top"><font size="2">Two servers each at two
+stable locations, acceptable</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Novell</font></td>
+<td valign="top"><font size="2">NS.NOVELL.COM 137.65.1.1<br>
+NS.UTAH.EDU 128.110.124.120<br>
+NS1.WESTNET.NET 128.138.213.13</font></td>
+<td valign="top"><font size="2">NS.NOVELL.COM 137.65.1.1<br>
+NS.UTAH.EDU 128.110.124.120<br>
+NS1.WESTNET.NET 128.138.213.13</font></td>
+<td valign="top"><font size="2">Systems spread at three
+locations</font></td>
+<td valign="top"><font size="2">Three servers at widely
+seperated locations, good</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">OpenBSD</font></td>
+<td valign="top"><font size="2">ZEUS.THEOS.COM
+199.185.137.1<br>
+CVS.OPENBSD.ORG 199.185.137.3<br>
+NS.SIGMASOFT.COM 198.144.202.98<br>
+CS.COLORADO.EDU 128.138.243.151<br>
+NS.EUNET.CH 146.228.10.16</font></td>
+<td valign="top"><font size="2">ZEUS.THEOS.COM
+199.185.137.1<br>
+CVS.OPENBSD.ORG 199.185.137.3<br>
+NS.SIGMASOFT.COM 198.144.202.98<br>
+CS.COLORADO.EDU 128.138.243.151<br>
+NS.EUNET.CH 146.228.10.16</font></td>
+<td valign="top"><font size="2">Systems widely spread</font></td>
+<td valign="top"><font size="2">Very robust
+infrastructure</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Red Hat</font></td>
+<td valign="top"><font size="2">NS1.REDHAT.COM
+199.183.24.210<br>
+NS2.REDHAT.COM 216.148.218.250<br>
+NS3.REDHAT.COM 63.240.14.66</font></td>
+<td valign="top"><font size="2">NS1.REDHAT.COM
+199.183.24.210<br>
+NS2.REDHAT.COM 216.148.218.250<br>
+NS3.REDHAT.COM 63.240.14.66</font></td>
+<td valign="top"><font size="2">Systems spread at three
+locations</font></td>
+<td valign="top"><font size="2">Three servers at widely
+seperated locations, good</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">Sun</font></td>
+<td valign="top"><font size="2">NS.SUN.COM 192.9.9.3<br>
+NS-BRM.SUN.COM 192.18.99.5<br>
+NS.USEC.SUN.COM 192.9.48.3</font></td>
+<td valign="top"><font size="2">NS.SUN.COM 192.9.9.3<br>
+NS-BRM.SUN.COM 192.18.99.5<br>
+NS.USEC.SUN.COM 192.9.48.3</font></td>
+<td valign="top"><font size="2">Systems spread at three
+locations</font></td>
+<td valign="top"><font size="2">Three servers at widely
+seperated locations, good</font></td>
+</tr>
+<tr>
+<td valign="top"><font size="2">SuSE</font></td>
+<td valign="top"><font size="2">NS.SUSE.DE
+194.112.123.193<br>
+NS1.SUSE.COM 202.58.118.2<br>
+NS2.SUSE.COM 202.58.118.4</font></td>
+<td valign="top"><font size="2">NS.SUSE.DE
+194.112.123.193<br>
+NS1.SUSE.COM 202.58.118.2<br>
+NS2.SUSE.COM 202.58.118.4</font></td>
+<td valign="top"><font size="2">*.SUSE.COM servers pass
+through 198.32.128.81</font></td>
+<td valign="top"><font size="2">three servers at two
+stable locations, however two chokepoints</font></td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>Two vendors stand out as having particularly poor DNS
+infrastructure. Caldera by far has the worst, with only two DNS
+servers hosted at the same site, in fact this is the site that
+hosts most of their servers, email, ftp and so on. Essentially
+they have a network link to their offices with all their
+infrastructure based their, if someone were to flood a router on
+that link they could likely take out Caldera entirely (DNS,
+email, secondary email, ftp, etc.). Another vendor with a poor
+DNS infrastructure is Mandrake, while not nearly as bad as
+Caldera it is far from perfect. Mandrake appears to host two DNS
+servers with Level3 (a major provider), and while it is unlikely
+they can be simply flooded, it appears that they are not
+firewalled from the Internet, meaning that an attack on the DNS
+server themselves is possible (they are running several services
+not related to DNS on the servers). </p>
+<p>And neither of these companies are alone, according to an
+article in TheRegister (URL below) about 25% of fortune 1000
+companies are vulnerable in similar ways to Microsoft (and
+Caldera / Mandrake). However as you can see from the table it is
+possible to do it correctly, many major companies (such as IBM
+and Novell) as well as mid sized companies (Red Hat and SuSE) and
+even several free community efforts (such as OpenBSD and NetBSD)
+have solid DNS infrastructure. This is not a network task that
+should be put off, if you do not have DNS servers in at least two
+(or preferably three or more) separate locations then you should
+start on this immediately. While I do not advise completely
+outsourcing your DNS (the provider may not have properly secured
+DNS servers, etc.) co-locating machines at a major ISP is a
+reasonable solution. One thing to remember is that zone transfers
+are not encrypted, so some form of VPN (such as IPSec) is
+recommended to secure the path between your primary DNS servers
+and backup servers. It can be done properly, and should be done
+properly, because your companies reliance on the Internet is not
+going to decrease anytime soon.</p>
+<p>&nbsp;</p>
+<p><strong>Reference Links:</strong></p>
+<p>MS DNS mess matched by 25% of Fortune 1000 - <a href="http://www.theregister.co.uk/content/6/16410.html">http://www.theregister.co.uk/content/6/16410.html</a></p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 3/24/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

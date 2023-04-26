@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>ca &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/ca/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:40 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>ca &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Verisign certificate authority finally fixes (part of the) domain verification problem</title>
+		<link>http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/</link>
+		<comments>http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/#respond</comments>
+		<pubDate>Tue, 20 Apr 2010 07:35:48 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Information Security]]></category>
+		<category><![CDATA[ca]]></category>
+		<category><![CDATA[infosec]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[ssl]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=7</guid>
+		<description><![CDATA[So a few months ago I decided to see how easy it was to buy an SSL certificate for a domain I didn&#8217;t own. It turns out that it was very easy because at least one large certificate authority (CA), RapidSSL (owned by Verisign) allowed a large number of email addresses to be used for [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=7&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So a few months ago I decided to see how easy it was to buy an SSL certificate for a domain I didn&#8217;t own. It turns out that it was very easy because at least one large certificate authority (CA), RapidSSL (owned by Verisign) allowed a large number of email addresses to be used for verification (such as ssladministrator@, it@, etc.).</p>
+<p>The original article is available here: <a title="Breach of trust" href="http://www.linux-magazine.com/w3/issue/114/054-055_kurt.pdf">http://www.linux-magazine.com/w3/issue/114/054-055_kurt.pdf</a>. I also contacted the Mozilla/Firefox people through the <a title="mozilla.dev.security.policy" href="http://groups.google.com/group/mozilla.dev.security.policy/topics">mozilla.dev.security.policy</a> mailing list to let them know about it and to show the proof (the <a href="http://groups.google.com/group/mozilla.dev.tech.crypto/msg/8f9ccde899d5c088">emails from RapidSSL to me</a>). Betanews ran a nice article (<a title="Security researcher: 'Trivially easy' to buy SSL certificate for domain you don't own" href="http://www.betanews.com/article/Security-researcher-Trivially-easy-to-buy-SSL-certificate-for-domain-you-dont-own/1270072287">http://www.betanews.com/article/Security-researcher-Trivially-easy-to-buy-SSL-certificate-for-domain-you-dont-own/1270072287</a>), and not much else happened for a while.</p>
+<p>Things finally got rolling when a Bugzilla report was filed (<a title="Bug 556468  - Investigate incident with RapidSSL that issued SSL certificate for portugalmail.pt  " href="https://bugzilla.mozilla.org/show_bug.cgi?id=556468">Bug 556468</a>, which was basically a copy of an older bug <a title="Bug 477783  - Equifax not conforming to Mozilla CA Certificate Policy (7)  " href="https://bugzilla.mozilla.org/show_bug.cgi?id=477783">Bug 477783</a> concerning Equifax doing basically the same thing). A Verisign representative confirmed they had removed a bunch of problematic email addresses they allowed, but ssladmin@ was still valid (this turned out to be a mistake as you&#8217;ll soon see).</p>
+<p>Fast forward about two weeks and someone has copied my article and thrown in a few screen shots and submitted it to Slashdot (<a title="Become an SSLAdmin In a Few Easy Steps" href="http://news.slashdot.org/story/10/04/18/1218212/Become-an-SSLAdmin-In-a-Few-Easy-Steps">http://news.slashdot.org/story/10/04/18/1218212/Become-an-SSLAdmin-In-a-Few-Easy-Steps</a>) personally I don&#8217;t mind if people copy my work and build off of it, but when they protray it as their own original work with no credit or original source mentioned that is a bit annoying.</p>
+<p>Although annoying it had the benefit of showing the world that by using the ssladmin@ email address (remember, the one Verisign didn&#8217;t remove) which resulted in the rather quick disabling of it:</p>
+<blockquote><p>VeriSign will be removing the following generic approver email options for GeoTrust and RapidSSL as of tonight or tomorrow night:</p>
+<p>&#8211; ssladmin, sysadmin, and info</p></blockquote>
+<p>So I guess in the end it worked, certificates are hopefully a little more secure now but the sad thing is I spent several dozen hours basically holding vendors feet to the fire for something they should have been doing all along.</p>
+<p>Oh and there is no way to find out if a certificate authority has issued a certificate for your domain to someone else. Unlike DNS/etc. there is no way to query what certificates have been issued.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/7/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/7/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=7&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

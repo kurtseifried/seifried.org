@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Security / Security Advisories / KSSA-002 Red Hat 7.2 GnuPG signed RPM verification fails on distribution files</title>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" cellpadding="2" width="100%">
+<tr>
+<td valign="top" colspan="2"><h1><strong>Kurt Seifried
+Security Advisory 002 (KSSA-002)</strong></h1>
+<p>Created by Kurt Seifried, <a href="/cdn-cgi/l/email-protection#1a716f686e5a697f737c68737f7e3475687d"><span class="__cf_email__" data-cfemail="18736d6a6c586b7d717e6a717d7c36776a7f">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a> </p>
+</td>
+</tr>
+<tr>
+<td valign="top"><ul type="disc">
+<li><a href="http://seifried.org/security/advisories/">Advisories</a></li>
+<li><a href="http://seifried.org/security/anti-virus/">Anti-virus</a></li>
+<li><a href="http://seifried.org/security/articles/">Articles</a></li>
+<li><a href="http://seifried.org/security/basic/">Basic
+security</a></li>
+<li><a href="http://seifried.org/security/best-practices/">Best
+practices</a></li>
+<li><a href="http://seifried.org/security/books/">Books</a></li>
+<li><a href="http://seifried.org/security/cryptography/">Cryptography</a></li>
+<li><a href="http://seifried.org/security/ids/">Intrusion
+Detection</a></li>
+<li><a href="http://seifried.org/security/keys/">Encryption
+keys</a></li>
+<li><a href="http://seifried.org/security/network/">Network</a></li>
+<li><a href="http://seifried.org/security/os/">Operating
+system</a></li>
+<li><a href="http://seifried.org/security/policy/">Policy</a></li>
+<li><a href="http://seifried.org/security/ports/">Ports</a></li>
+<li><a href="http://seifried.org/security/products/">Products</a></li>
+<li><a href="http://seifried.org/security/social/">Social</a></li>
+<li><a href="http://seifried.org/security/technical/">Technical</a></li>
+<li><a href="http://seifried.org/security/weekly-column/">Weekly
+column</a></li>
+<li><a href="http://seifried.org/security/www-auth/">WWW
+authentication</a></li>
+<li><a href="http://seifried.org/security/">Main page</a></li>
+<li><a href="./">Back</a></li>
+</ul>
+</td>
+<td valign="top"><a href="http://seifried.org/security/advisories/kssa-002.html">http://seifried.org/security/advisories/kssa-002.html
+</a><p><strong>Title: </strong></p>
+<p>Red Hat 7.2 GnuPG signed RPM verification fails on
+distribution files</p>
+<p><strong>Issue date:</strong></p>
+<p>Oct 23, 2001</p>
+<p><strong>History of advisory:</strong></p>
+<p>Oct 23, 2001 While downloading Red Hat 7.2 Kurt
+Seifried noticed various packages were not GnuPG signed.</p>
+<p><strong>Author:</strong></p>
+<p>Kurt Seifried <a href="/cdn-cgi/l/email-protection#a3c8d6d1d7e3d0c6cac5d1cac6c78dccd1c4"><span class="__cf_email__" data-cfemail="63081611172310060a05110a06074d0c1104">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p><strong>Credits:</strong></p>
+<p>N/A</p>
+<p><strong>Overview:</strong></p>
+<p>Red Hat 7.2 distribution files on popular ftp sites
+such as ftp.ibiblio.org and mirrors.hpcf.upr.edu are not
+signed. It is unlikely that this is an attack as the
+number of sites involved makes it likely someone would
+have noticed and notified the community. Either Red Hat
+did not sign these packages, or someone subverted the
+distribution process before the files got to various
+sites. For Red Hat 7.1 please note that all files were
+correctly signed with the Red Hat GnuPG security key.</p>
+<p><strong>Vendor Contact:</strong></p>
+<p><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="addec8ced8dfc4d9d4eddfc8c9c5ccd983cec2c0">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></p>
+<p><strong>Impact:</strong></p>
+<p>An attacker can create RPM's that will not appear any
+different from the real ones, as they do not need to be
+signed. Finding the MD5 sums of the files in trusted
+locations is very difficult (I cannot find any lists). </p>
+<p><font color="#000000"><strong>Details:</strong></font></p>
+<p><font color="#000000">Red Hat has released Red Hat
+7.2, a much anticipated release. Typically all the rpm
+distribution files are signed, making it very easy to
+verify their correctness. Since numerous packages are not
+signed it becomes trivial for an attacker to replace
+packages on a distribution site with no-one being able to
+easily verify that they have been subverted. An attacker
+would not even need to modify or add files to the
+package, instead they could add a preinstall,
+postinstall, preuninstall or postuninstall script that
+would be capable of compromising the system since these
+scripts run with root privileges. Packages include
+rpmdb-redhat and redhat-release. </font></p>
+<p><strong>Solutions and workarounds:</strong></p>
+<p>None available. Red Hat needs to sign the packages
+properly with GnuPG. </p>
+<p><strong>References:</strong></p>
+<p>N/A</p>
+<hr>
+<p>Permission is granted for copying and circulating this
+Bulletin to the Internet community for the purpose of
+alerting them to problems, if and only if, the bulletin
+is not edited or changed in any way, is attributed to
+Kurt Seifried, and provided such reproduction and/or
+distribution is performed for non-commercial purposes.</p>
+<p>Any other use of this information is prohibited. Kurt
+Seifried is not liable for any misuse of this information
+by any third party.</p>
+<hr>
+<p>Last updated 10/23/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

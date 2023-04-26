@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / IDS / Honeypotting with VMware - basics</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Honeypotting with VMware - basics</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#73180601073300161a15011a16175d1c0114"><span class="__cf_email__" data-cfemail="c2a9b7b0b682b1a7aba4b0aba7a6ecadb0a5">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Honeypots are becoming more common as security professionals
+attempt to conduct more detailed research on current &quot;state
+of the art&quot; practices among attackers. Honeypots are also
+invaluable for learning about an attackers motivations, their
+habits and patterns of behavior. Unfortunately setting up a
+proper honeypot is a non-trivial task, and correctly configuring
+network sensors to capture all data, as well as the resulting
+forensics tasks can be rather daunting. The good news is that
+there are a number of tools and techniques that can make life
+much easier for some honeypot administrators. </p>
+<h2>What is VMware?</h2>
+<p>VMware is essentially a set of software products, the
+workstation version installs onto Windows or Linux and allows you
+to run numerous Intel based operating systems on top of it. There
+is also a server line of products aimed at allowing people to run
+large numbers of operating systems on a single physical machine,
+one version of which provides it's own base operating system.
+Essentially this allows you to run multiple Intel based operating
+systems on a single physical machine. This alone would be reason
+enough for many honeypot administrators to celebrate, but there
+are other reasons as well to use VMware that will become evident.
+VMware is capable of running all versions of Windows, Linux, most
+of the BSD family, Solaris for Intel, Novell NetWare, and a
+number of other operating systems are unsupported but can be made
+to work. </p>
+<p>In this article I will refer to the base operating system that
+is running VMware as the host, and the operating system running
+within VMware as the guest. </p>
+<p>&nbsp;</p>
+<h2>Virtual disks vs. raw disk partitions</h2>
+<p>Virtual disks are a set of files that VMware presents as a
+&quot;real&quot; harddrive to the guest operating system, raw
+disk partitions are a &quot;real&quot; partition on a
+&quot;real&quot; harddrive that the guest operating system is
+given access to. There are several advantages and disadvantages
+to either approach, largely depending on what your goals for the
+honeypot are. If your purpose is quick research or primarily as
+an early warning device and you do not plan to prosecute it is
+acceptable to use virtual disks. They allow for easy copying and
+recreation of a honeypot once it has been compromised and are the
+simplest to install. However if the guest operating system is
+sufficiently damaged you will not be able to access it very
+easily, and since it uses a custom file format you will not be
+able to examine it easily with common forensics tools such as TCT
+or EnCase. The major advantage of virtual disks is convenience,
+however you will lose much of any ability to perform forensics. </p>
+<p>For deeper forensics, and especially if you plan to prosecute
+the best option is to use raw disk partitions. I would recommend
+using a physically separate harddrive from the host operating
+system's harddrive, this will ease partitioning and make
+potential cross contamination less likely. There is one primary
+piece of advice I feel compelled to offer: use a separate
+harddrive and put it in a drive tray to make removal as easy as
+possible. If you use drive trays you will be able to quickly swap
+the drive into a forensics system, although it is unlikely that
+the attacker will be able to break into a properly secured VMware
+host machine it is possible. </p>
+<p>Setup and installation on a raw disk partition is relatively
+straight forward and well documented (especially the problems you
+are likely to run in to under Windows). By using an entire disk
+you make life much easier for yourself, cloning the drive can be
+accomplished by simply dd'ing the contents to an identical drive,
+and handling of evidence will be simplified if the only contents
+of the harddrive are related to the incident at hand and not
+several installations. </p>
+<h2>Forensics preparation </h2>
+<p>Probably the most important piece of preparation that can be
+done is to zero the partitions that the guest operating system
+data resides upon. For raw partitions simply zero the partition
+as you normally would. For virtual disks things are a bit more
+complex, VMware only makes the files as large as is necessary,
+growing them as more data is added, thus it is possible for
+contamination from existing data on the drive the virtual disks
+reside on. To complicate matters if you have multiple virtual
+disks (i.e. multiple guest operating systems) on a single
+partition as they grow and contract they may use hard disk areas
+previously used by other guest operating systems. Probably the
+simplest way to deal with this is to partition the drive so that
+each guest operating system's virtual disk files reside on a
+separate partition, and of course these partitions should be
+zeroed before use. </p>
+<p>A handy little wiping utility is available from IBM for free
+at:<br>
+<a href="http://www.storage.ibm.com/hdd/support/download.htm#Wipe">http://www.storage.ibm.com/hdd/support/download.htm#Wipe</a>
+<br>
+simply unpack it to a floppy disk and then use &quot;wipe x&quot;
+where x is the device number (0-7). </p>
+<p>For UNIX systems simply use dd to wipe the disk, with a
+command such as:</p>
+<blockquote>
+<pre>dd bs=1000k if=/dev/zero of=/dev/partitionname</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2>Examining data in memory</h2>
+<p>Volatile memory is one of the leading problems for forensics.
+Worms such as CodeRed are memory resident and do write themselves
+to the harddrive, if you turn the system off they disappear. One
+of the major advantages to Honeypotting with VMware is the
+ability to get ahold of data in memory and examine it. </p>
+<p>&nbsp;</p>
+<h3>Encouraging data to the hard disk</h3>
+<p>One technique is to give the guest operating system a minimal
+amount of memory (say 32 megabytes, or maybe even less), thus
+forcing it to use a swap file or partition, this will
+&quot;encourage&quot; data to be temporarily stored on the drive,
+giving you a much better chance long term of having data to
+examine. To &quot;protect&quot; the data written to a swap
+partition make the swap partition large, i.e. several hundred
+megabytes, in order to reduce the risk of it reusing space. For
+Windows simply create a separate partition (say &quot;D&quot;) of
+several hundred megabytes and place the swap file there, make
+sure that your maximum swap file size is smaller then the
+partition or the system may experience difficulties. This may
+appear suspicious but can often be explained away as a cautious
+admin not wanting the system to crash due to memory constraints. </p>
+<p>&nbsp;</p>
+<h3>Suspending the OS</h3>
+<p>This is one of my favorite features of VMware, the ability to
+suspend the guest operating system, externally. Unlike a laptop
+system that supports hibernation the VMware suspend command works
+on any operating system (not all support laptop hibernation), and
+can be used easily on a compromised or heavily damaged system.
+When using suspend an image of what is in memory is written to an
+external file, one potential problem with using suspend or
+hibernation on a &quot;real&quot; system is that the disk may be
+full, preventing the ram image from being written properly. The
+memory image is placed in the configuration directory you
+specified for your guest operating system, for example a VMware
+guest system running Linux called &quot;Red Hat Linux would
+result in the file:</p>
+<blockquote>
+<pre>V:\Red Hat Linux/Red Hat Linux</pre>
+</blockquote>
+<p>This file can be accessed with a variety tools, ranging from
+notepad to a hex editor. I highly recommend using
+&quot;strings&quot; and &quot;grep&quot; to extract information
+quickly. </p>
+<p>The other major benefit of this capability is that you can
+take a snapshot of a compromised system, copy the files or
+partitions that comprise the guest operating system, and at your
+leisure run the operating system in the future repeatedly,
+allowing you to examine what is taking place. In effect it is
+like recording a TV show, you can hit play and rewind repeatedly
+to look for details. </p>
+<p>&nbsp;</p>
+<h2>Identifying VMware systems</h2>
+<p>Against most attackers a VMware system will not raise any
+suspicion, most will take the system at face value and assume it
+is running on it's own dedicated hardware like a
+&quot;normal&quot; system. Unfortunately there are a number of
+ways to identify systems running under VMware. </p>
+<p>&nbsp;</p>
+<h3>VMware tools</h3>
+<p>Of course one dead giveaway is if the system is running VMware
+tools, under windows this will show up in &quot;Add/Remove
+programs&quot;, the Program Files directory and so forth. For
+UNIX there are Xfree86 patches to improve performance, as well as
+a complete Xfree86 server optimized for VMware guest operating
+systems, both of which can be identified by attackers. Much more
+obvious traces are also left, such as /etc/rc.d/init.d/dualconf,
+&quot;Copyright (C) 1998-99, VMware Inc.&quot; and the
+/etc/vmware-tools/ directory. It is advisable to avoid installing
+VMware tools on VMware honeypots if at all possible. </p>
+<p>&nbsp;</p>
+<h3>AMD 1 gigahertz with 32 megabytes of ram?</h3>
+<p>One problem with VMware is the inability to hide the CPU type
+effectively, an astute attacker is likely to wonder why a server
+with 32 megabytes of ram has a 1 gigahertz AMD CPU. Unfortunately
+this is what will happen, and hiding this fact from an attacker
+is difficult. An attacker can simply &quot;cat
+/proc/cpuinfo&quot; for example under Linux, and among other
+things they will be told the speed, approximately, in MHz.
+Removing /proc support in Linux is one way to deal with this, but
+there are other ways to query cpu speed, and in other operating
+systems hiding the cpu type and speed is not so easy. </p>
+<p>&nbsp;</p>
+<h3>Computer BIOS</h3>
+<p>One way to identify VMware systems is by their BIOS, there are
+a number of free windows utilities that can query the BIOS for
+information and even extract a copy of the BIOS from the VMware
+system. The good news is that from within Windows NT/2000 you
+cannot easily access the BIOS and send commands as direct access
+to the hardware is blocked. You can however easily query the BIOS
+for information from within the guest operating system you will
+be given the following information:</p>
+<blockquote>
+<pre>BIOS ID: unknown
+BIOS Date: 10/16/01
+BIOS Signon: unknown
+BIOS Type: PhoenixBIOS 4.0 Release 6.0 licensed to Intel
+Super I/O: unknown
+Chipset: Intel 440BX/ZX rev 1</pre>
+</blockquote>
+<p>Which is quite different then the actual BIOS in use on the
+host operating system. </p>
+<p>As well there are a number of utilities to make a copy of the
+bios, BIOS Wizard is available for free and can easily make a
+copy of the system bios, considering that the BIOS VMware uses is
+relatively unique it becomes quite easy to check a signature of
+the BIOS file to see if it is a VMware BIOS. Unfortunately there
+is almost no way to hide this information from a savvy attacker,
+making it an Achilles' heel for VMware honeypot systems. Both
+these utilities are available from: <a href="http://www.bioscentral.com/misc/downloads.htm">http://www.bioscentral.com/misc/downloads.htm</a>.
+There is a utility for Linux and BSD at: <a href="http://www.cgsecurity.org/">http://www.cgsecurity.org/</a>.
+</p>
+<p>&nbsp;</p>
+<h2>Potential legal pitfalls</h2>
+<p>Since VMware proxies system calls and provides access to the
+hardware mediated through the host operating system it is
+critical that the host operating system be secure. It is likely
+that a defense lawyer will argue that the evidence was tainted by
+the host operating system, or perhaps directly modified from the
+host operating system without trace, among several possible
+problems. Access to the host operating system must be strictly
+controlled and activities logged, it is also probably a good idea
+to establish that common activities on the guest operating system
+can not or do not taint potential evidence, e.g. disk
+defragmentation would rearrange the virtual disk files, modifying
+the data. Access to other guest systems must also be regulated,
+if you are planning to use the results of a VMware honeypot as
+evidence it is probably best to only run one guest operating
+system per machine, although it is unlikely that guest operating
+systems could conflict or modify each other the potential does
+exist for a defense lawyer to cast doubt. </p>
+<p>One major factor that could also cause a case to fall apart is
+if the guest operating system was given access to the host
+operating system's file system. This can be done via VMware, or
+could also be accomplished via network file sharing protocols
+such as SMB (Windows) or NFS (UNIX), ftp, http, peer to peer file
+sheering applications and so on. The host operating system must
+be secured, and access tightly limited. It is also advisable to
+turn on as much logging and auditing as possible on the host
+operating system in case any question do arise. </p>
+<p>&nbsp;</p>
+<h2>Summary</h2>
+<p>VMware is an invaluable tool for investigators wishing to
+deploy honeypots for research purposed, or as early warning
+devices. But like most complex tools it can end up creating a lot
+of unneeded work, or even maiming your foot if you are not
+careful. Fortunately VMware is relatively straightforward to use,
+and there are a number of simple techniques that will make life
+much easier when performing a forensic analysis of a honeypot
+running under VMware. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 15/2/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

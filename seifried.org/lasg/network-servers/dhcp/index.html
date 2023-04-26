@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;DHCP</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#650e1017112516000c03170c00014b0a1702"><span class="__cf_email__" data-cfemail="85eef0f7f1c5f6e0ece3f7ece0e1abeaf7e2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>DHCPD is something all network admins should use. It allows
+you to serve information to clients regarding their network
+settings/etc, typically meaning that the only client setup needed
+for networking is leaving the defaults and turning the machine
+on. It also allows you to reconfigure client machines easily (say
+move from using 10.0.1.0 to 10.0.2.0, or a new set of DNS
+servers). In the long run (and short run even) DHCP will save you
+enormous amounts of work, money and stress. I run it at home with
+only 8 client machines and have found life to be much easier.
+DHCPD is maintained by the ISC and is at: <a href="http://www.isc.org/dhcp.html">http://www.isc.org/dhcp.html</a>.</p>
+<p>I also highly recommend you run DHCPD version 2.x (3.x is in
+testing), it's got a lot of new features, and is easier to setup
+and work with. The absolute latest version(s) of this tend to be
+a bit neurotic however, be warned it is beta software. Definitely
+firewall DHCPD off from the Internet. DHCP traffic should only be
+on local segments, possibly forwarded to a DHCP server on another
+segment, but the only DHCP traffic you would see coming over the
+Internet would be an attack/DOS (they might reserve all your
+IP's, thus leaving your real clients high and dry). If you are
+forwarding DHCP traffic over the Internet, DON'T. This is a
+really bad idea for a variety of reasons (primarily performance /
+reliability, but security as well).</p>
+<p>I recommend the DHCPD server be only a DHCP server, locked up
+somewhere (if you rely on DHCP for your network and the DHCP
+server fails your network is in serious trouble), allowed to do
+it's job quietly. If you need to span subnets (i.e., you have
+multiple ethernet segments, only one of which has a DHCP server
+physically connected to it) use a DHCP relay (NT has one built
+in, the DHCP software for Linux has this capability, etc.). There
+are also several known problems with NT and DHCP, NT RAS has a
+rather nasty habit of sucking up IP addresses like crazy (I have
+seen an NT server grab 64 and keep them indefinitely), because it
+is trying to reserve IP's for the clients that will be dialing
+in/etc This may not seem like a real problem but it can (and has)
+lead to resource starvation (specifically the pool of IP
+addresses can be exhausted). Either turn NT's RAS off or put it
+on it&#146;s own subnet, the MAC address it sends to the DHCP
+server is very strange (and spells out RAS in the first few
+bytes) and is not easy to map out.</p>
+<p>DHCPD should definitely be firewalled from external hosts as
+there is no reason an external host should be querying your DHCP
+server for IP&#146;s/etc, in addition to this making it available
+to the outside world could result in an attacker starving the
+DHCP server of addresses assuming you use a dynamic pool(s) of
+addresses, you could be out of luck for your internal network,
+and learning about the structure of your internal network. DHCP
+runs on port 67, udp because the amounts of data involved are
+small and a fast response is critical.</p>
+<pre>ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 67
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 67
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 67</pre>
+<p>or</p>
+<pre>ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 67
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 67
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 67</pre>
+<h2><a name="DHCP servers">DHCP servers</a></h2>
+<h2><a name="ISC DHCPD">ISC DHCPD</a></h2>
+<p><strong>Chroot'ing DHCPD</strong></p>
+<p>DHCPD consists of 2 main executables:<br>
+· dhcpd - the DHCP&nbsp;<br>
+· dhcrelay - a DHCP relay (to relay requests to a central DHCP
+server since DHCP is based on broadcasts, which typically don't
+(and shouldn't) span routers/etc.&nbsp;</p>
+<p>DHCPD requires 2 libraries:<br>
+· /lib/ld-linux.so.2&nbsp;<br>
+· /lib/libc.so.6&nbsp;</p>
+<p>A config file:<br>
+· /etc/dhcpd.conf - configuration info, location of boot files,
+etc.&nbsp;</p>
+<p>And a few other misc. files:<br>
+· /etc/dhcpd.leases - a list of active leases&nbsp;<br>
+· a startup file, you can modify the one it comes with or roll
+your own</p>
+<p>The simplest way to setup dhcpd chroot'ed is to simply install
+dhcpd (latest one preferably) and move/edit the necessary files.
+A good idea is to create a directory (such as /chroot/dhcpd/),
+preferably on a separate filesystem from /, /usr, etc
+(symlinks...), and then create a file structure under it for
+dhcpd. The following is an example, simply replace /chroot/dhcpd/
+with your choice. You must of course execute these steps as root
+for it to work.</p>
+<pre># Install bind so we have the appropriate files
+#
+rpm -i dhcpd-2.0b1pl0-1.i386.rpm
+#
+# Create the directory structure
+#
+cd /chroot/dhcpd/ # or wherever
+mkdir ./etc
+mkdir ./usr/sbin
+mkdir ./usr
+mkdir ./var/dhcpd
+mkdir ./var
+mkdir ./lib
+#
+# Start populating the files
+#
+cp /usr/sbin/dhcpd ./usr/sbin/dhcpd
+cp /etc/dhcpd.conf ./etc/dhcpd.conf
+cp /etc/rc.d/init.d/dhcpd ./etc/dhcpd.init
+cp /etc/rc.d/init.d/functions ./etc/functions
+#
+# Now to get the latest libraries, change as appropriate
+#
+cp /lib/ld-linux.ld-linux.so.2 ./lib/&nbsp;
+cp /lib/libc.so.6 ./lib/
+#
+# And create the necessary symbolic links so that they behave
+# Remember that dhcpd thinks /chroot/dhcpd/ is /, so use relative links</pre>
+<p>Then modify or create your startup script.</p>
+<p>Once this is done simply remove the original startup file and
+create a symlink from where it was pointing to the new one, and
+dhcpd will behave 'normally' (that is it will be automatically
+started at boot time), while in fact it is separated from your
+system. You may also wish to remove the 'original' DHCPD files
+laying about, however this is not necessary.</p>
+<p>If you have done the above properly you should have a
+/chroot/dhcpd/ (or other dir if you specified something
+different) that contains everything required to run dhcpd.<br>
+And a ps -xau should show something like:</p>
+<pre>USER PID %CPU %MEM SIZE RSS TTY STAT START TIME COMMAND
+root 6872 0.0 1.7 900 532 p0 S 02:32 0:00 ./usr/sbin/dhcpd -d -q&nbsp;
+root 6873 0.0 0.9 736 288 p0 S 02:32 0:00 tee ./etc/dhcpd.log</pre>
+<h2><a name="Moreton Bay DHCP Server">Moreton Bay DHCP Server</a></h2>
+<p><a href="http://www.moretonbay.com/dhcpd/">http://www.moretonbay.com/dhcpd/</a></p>
+<p>&nbsp;</p>
+<p><a href="../index.html">Back</a></p>
+<p>&nbsp;</p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#c4afb1b6b084b7a1ada2b6ada1a0eaabb6a3"><span class="__cf_email__" data-cfemail="1f746a6d6b5f6c7a76796d767a7b31706d78">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

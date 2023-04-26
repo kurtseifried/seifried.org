@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 8.0 Some notes on WWW servers and WWW proxy servers</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>8.0 Some notes on WWW servers and WWW proxy servers</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#660d1314122615030f00140f030248091401"><span class="__cf_email__" data-cfemail="ea819f989eaa998f838c98838f8ec485988d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>There are many different webservers, all supporting the same
+basic functionality (that is to say making information available
+via HTTP and the HTTPS protocols). Some webserver products
+however have quirks, or additional features that may be of use
+when conducting web based authentication.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>8.1 Apache based</strong></p>
+<p>Apache is one of the more popular web servers, with over 50%
+of the market in non-secure web serving and a good chunk of the
+secure market. There are a variety of non-commercial and
+commercial based Apache servers capable of secure webserving
+(generally the non-commercial ones cannot legally be used in the
+USA due to the RSA patent). Apache has a large number of features
+to help handle user sessions and otherwise track them using Perl,
+Java servlets and other methods. The following is a list of URL's
+covering the various techniques:</p>
+<p><a href="http://perl.apache.org/embperl/Embperl.pod.6.html">http://perl.apache.org/embperl/Embperl.pod.6.html</a></p>
+<p><a href="http://www.apache.org/docs/mod/mod_usertrack.html">http://www.apache.org/docs/mod/mod_usertrack.html</a></p>
+<p><a href="http://java.apache.org/jservssi/">http://java.apache.org/jservssi/</a><br>
+<a href="http://java.apache.org/jservssi/parameterprop.html">http://java.apache.org/jservssi/parameterprop.html</a><br>
+<a href="http://java.apache.org/jservssi/dist/ApacheJSSI-1.1.2/docs/parameterprop.html">http://java.apache.org/jservssi/dist/ApacheJSSI-1.1.2/docs/parameterprop.html</a></p>
+<p><strong>8.1.1 Apache-SSL</strong></p>
+<p>Apache-SSL has no substantial authentication features not
+included in the standard Apache.</p>
+<p><a href="http://www.apache-ssl.org/">http://www.apache-ssl.org/</a></p>
+<p><strong>8.1.2 Apache mod-ssl</strong></p>
+<p>Apache mod-ssl has no substantial authentication features not
+included in the standard Apache.</p>
+<p><a href="http://www.modssl.org/">http://www.modssl.org/</a></p>
+<p><strong>8.1.3 Raven</strong></p>
+<p>Raven has no substantial authentication features not included
+in the standard Apache.</p>
+<p><a href="http://www.covalent.net/products/ssl/">http://www.covalent.net/products/ssl/</a>
+</p>
+<p><strong>8.1.4 Red Hat Secure Server</strong></p>
+<p>Red Hat Secure Server was originally based on Apache and had
+no substantial authentication features not included in the
+standard Apache.</p>
+<p><a href="http://www.redhat.com/">http://www.redhat.com/</a></p>
+<p>Red Hat purchased Stronghold and has phased out this product. </p>
+<p><strong>8.1.5 Stronghold</strong></p>
+<p>Stronghold has no substantial authentication features not
+included in the standard Apache.</p>
+<p><a href="http://www.c2.net/products/sh3/">http://www.c2.net/products/sh3/</a>
+</p>
+<p>Stronghold was purchased by Red Hat.</p>
+<p><strong>8.2 Netscape </strong></p>
+<p><strong>8.2.1 Netscape Enterprise</strong></p>
+<p><a href="http://home.netscape.com/enterprise/v3.6/">http://home.netscape.com/enterprise/v3.6/</a>
+</p>
+<p><strong>8.3 Roxen</strong></p>
+<p>Roxen supports setting a user session cookie (configured
+through the www interface on a per virtual server basis). Roxen
+also has RXML, a very powerful scripting language that has
+features to track the user through a session. Roxen has several
+excellent PDF documents on these features at their website (click
+on Documentation).</p>
+<p><a href="http://www.roxen.com/">http://www.roxen.com/</a></p>
+<p><strong>8.4 Zeus</strong></p>
+<p>Zeus has a distributed authentication and content module that
+allows you to host authentication and / or content on another
+machine. The authentication portion is a rather a simple protocol
+which send the name, password, a cookie, and so on, and receives
+a reply either specifying that the user is allowed in, not
+allowed in, or tell the user that they need to put a password in.
+An example server is given in Perl (about 100 lines of code, not
+to tricky) which reads authorization data from a text file,
+however you could write one that uses a MySQL database for
+example. To read the documentation on this feature either open up
+the help on the initial page and go to the &quot;Documentation
+index&quot;, then choose &quot;Web Server&quot;,
+&quot;Modules&quot;, &quot;distributed&quot;, or go to a server
+configuration page, choose modules, then &quot;distributed&quot;
+and the documentation page will be available also.</p>
+<p>http://localhost:9090/apps/web/docs/modules/distributed/index.html</p>
+<p>Zeus can also use any Java servlets written for Apache Jserv
+&quot;out of the box&quot;. So the following items should work
+with no particular problems:</p>
+<p><a href="http://java.apache.org/jservssi/">http://java.apache.org/jservssi/</a><br>
+<a href="http://java.apache.org/jservssi/parameterprop.html">http://java.apache.org/jservssi/parameterprop.html</a><br>
+<a href="http://java.apache.org/jservssi/dist/ApacheJSSI-1.1.2/docs/parameterprop.html">http://java.apache.org/jservssi/dist/ApacheJSSI-1.1.2/docs/parameterprop.html</a></p>
+<p><a href="http://www.zeus.com/">http://www.zeus.com/</a></p>
+<p><strong>8.5 Novell</strong></p>
+<p>Novell uses Netscape FastTrack server for their web serving
+requirement, and with Novell 5.1 they ship IBM WebSphere
+Application Server 3.0 for NetWare, Standard Edition. </p>
+<p><a href="http://www.nwconnection.com/dec.99/websphered9/index.html">http://www.nwconnection.com/dec.99/websphered9/index.html</a></p>
+<p><strong>8.5.1 Novell BorderManager</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.novell.com/products/bordermanager/">http://www.novell.com/products/bordermanager/</a>
+</p>
+<p><strong>8.5.2 Novell ICS</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.novell.com/products/ics/">http://www.novell.com/products/ics/</a>
+</p>
+<p>Novell ICS has been split off as part of a new company called
+Volera.</p>
+<p><strong>8.6 IBM Websphere</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www-4.ibm.com/software/webservers/">http://www-4.ibm.com/software/webservers/</a></p>
+<p><strong>8.7 Volera</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.volera.com/">http://www.volera.com/</a></p>
+<p>Volera is a combination of Novell ICS and other technology
+from Nortel and Accenture. </p>
+<p><strong>8.8 Squid</strong></p>
+<p>No notes yet</p>
+<p><a href="http://www.squid-cache.org/Doc/FAQ/FAQ-17.html">http://www.squid-cache.org/Doc/FAQ/FAQ-17.html</a>
+</p>
+<p><a href="http://www.squid-cache.org/">http://www.squid-cache.org/</a>
+</p>
+<p><strong>8.9 Achilles</strong></p>
+<p>Achilles proxies HTTP SSL connections allowing you to easily
+examine and modify the contents of an &quot;encrypted&quot;
+session. It is very useful for testing online authentication
+systems over HTTP SSL to see exactly what is going on. </p>
+<p><a href="http://www.digizen-security.com/">http://www.digizen-security.com/</a>
+</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-7.html">Back</a> | <a href="section-9.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

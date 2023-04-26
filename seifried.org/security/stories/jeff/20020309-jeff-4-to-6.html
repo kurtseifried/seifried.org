@@ -1,0 +1,474 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - The Story of Jeff: Part IV, V & VI</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>The Story of Jeff: Part IV, V &amp; VI</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#abc0ded9dfebd8cec2cdd9c2cecf85c4d9cc"><span class="__cf_email__" data-cfemail="2b405e595f6b584e424d59424e4f0544594c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<h2>The Story of Jeff: Part IV</h2>
+<hr>
+<p>&nbsp;</p>
+<p>What's in the cards for a network administrator trying to
+document what is installed on the network, and to deploy a
+software management system? Well, in Jeff's case nothing but bad
+luck, of course.</p>
+<p>Far too many network administrators concentrate on their
+networks and systems. While this is hardly a firing offense,
+there is a bigger picture. The week that has passed since our
+last episode now comes to a close with Jeff at his workstation
+composing a triumphant email.</p>
+<blockquote>
+<p><code>To: <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="6d0419401e190c0b0b4005080c091e2d0c0e00080e021f1d4304030e">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script><br>
+From: <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="4e242b28280e2f2d232b2d213c3e6027202d">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script><br>
+Subject: Software updates - we did it!</code></p>
+<p><code>Well the software is installed and working, updates
+have been rolled out onto the network over the week, and
+we'll be completing the upgrades over the next week. Your all
+invited to the main conference room at noon for food and
+drinks.</code></p>
+</blockquote>
+<p><br>
+</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #8</b></font></td>
+</tr>
+<tr>
+<td>Giving thanks is nice, but giving material benefits
+&#151; like food &#151; is nicer.</td>
+</tr>
+</table>
+<p>As lunch rolls around, we see the main conference room
+steadily filling up. The support desk group has launched a
+surprise raid on the buffet table, gaining vegetables and cheese
+early in the fight, but the operations team is holding steady at
+the cold meat platter. The senior staff has set up a strong
+defensive perimeter around the cold drinks tub and tense
+negotiations are taking place.</p>
+<table border="0" cellpadding="10" cellspacing="0">
+<tr>
+<td valign="top"><b>Jeff:</b></td>
+<td valign="top">OK folks, I'd just like to say thanks
+again, and enjoy the food.</td>
+</tr>
+<tr>
+<td valign="top"><b>Cindy:</b></td>
+<td valign="top">Hey Jeff, I've been meaning to talk to
+you. Got a minute?</td>
+</tr>
+<tr>
+<td valign="top"><b>Jeff:</b></td>
+<td valign="top">What's up?</td>
+</tr>
+<tr>
+<td valign="top"><b>Cindy:</b></td>
+<td valign="top">I've been reviewing the phone system
+logs. I do this regularly to see who is calling the help
+desk the most often and for how long, and I noticed
+something strange. . . .</td>
+</tr>
+<tr>
+<td valign="top"><b>Jeff:</b></td>
+<td valign="top"><i>(I hope it's not 1-900 numbers.)</i> <br>
+Like what?</td>
+</tr>
+<tr>
+<td valign="top"><b>Cindy:</b></td>
+<td valign="top">An external number that isn't shown
+dialed all our numbers sequentially&#151;</td>
+</tr>
+<tr>
+<td valign="top"><b>Jeff:</b></td>
+<td valign="top"><i>(Ah, the pizza guy is here.)</i><br>
+I'm sure it's just a glitch. I wouldn't worry about it.</td>
+</tr>
+<tr>
+<td valign="top"><b>Cindy:</b></td>
+<td valign="top">Well, OK. . . hey, you ordered pizza!</td>
+</tr>
+<tr>
+<td valign="top"><b>Jeff:</b></td>
+<td valign="top">Yeah!</td>
+</tr>
+<tr>
+<td valign="top"><b>Support Team:</b></td>
+<td valign="top">PIZZA!!! </td>
+</tr>
+<tr>
+<td valign="top"><b>Pizza Guy:</b></td>
+<td valign="top">Please don't hurt me!</td>
+</tr>
+</table>
+<p><br>
+</p>
+<p>After a few hours, the happily fed IT staff have wandered back
+to their respective cubicles, content with their pizza and life
+in general. Not far away in a quiet wiring closet, a set of
+lights on an old terminal server start to blink and then, in a
+soft glow, stay on for several hours before blinking out. </p>
+<blockquote>
+<p><code>To: <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ea839ec7999e8b8c8cc7828f8b8e99aa8b89878f8985989ac4838489">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script><br>
+From: <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="e288878484a283818f87818d9092cc8b8c81">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script><br>
+Subject: Windows 2000</code></p>
+<p><code>I have deployed a single Windows 2000 server to
+start the creation of our ADS tree, this ensures that one of
+you doesn't accidentally do it. Anyone deploying Windows 2000
+server will please contact me first so we can integrate it
+into the existing system (of which their isn't much). I have
+a meeting with HR planned and following that their will be a
+technical meeting on Tuesday at 2pm. </code></p>
+</blockquote>
+<p><br>
+</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #9</b></font></td>
+</tr>
+<tr>
+<td>If you're going to deploy Windows 2000 &#151; and you
+know you will &#151; start planning now. Deploy a single
+server to act as the root of the ADS tree and to
+&quot;hold&quot; your domain name. ADS will come to
+depend on this, and changing it later is a nightmare.</td>
+</tr>
+</table>
+<p>Sighing mightily, Jeff trundles out of the HR meeting with a
+dated org chart of the company. As he has quickly discovered,
+running an IT department involves much more then purely technical
+issues.</p>
+<p>Jeff pushes the paper aside. On a fresh sheet, he begins to
+make a stripped-down organization chart of the company, and on
+another sheet, a list of what each organization is responsible
+for. Planning the deployment of a directory service is never easy
+going, and Jeff knows it will rapidly deepen into a quagmire if
+he doesn't first figure out the layout of the directory. </p>
+<p>Meanwhile, in another building at Acme Corp., Cindy, the
+support lead, is puzzling over a list of telephone logs and on
+another screen viewing the scripts used to parse them. She
+crumples up a sheet of notepaper and kicks her chair back,
+wondering what to do next.</p>
+<p><br>
+</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #10</b></font></td>
+</tr>
+<tr>
+<td>If you think an attacker might be prowling inside
+your network, use something else than email to notify
+others, or else you might notify the attacker as well.</td>
+</tr>
+</table>
+<p>As Cindy walks over to building 6 she gazes across to the
+proving grounds, a scarred and ugly stretch of land pierced by
+numerous small and large craters. Among other material, here rest
+the remains of Acme Corp. products that didn't meet the rigid
+safety specifications.</p>
+<p>Knocking on Jeff's door, she considers the words she must
+choose.</p>
+<p>&nbsp;</p>
+<hr>
+<h2>The Story of Jeff: Part V</h2>
+<hr>
+<p>&nbsp;</p>
+<p>Jeff hears a knock on his door and answers it. He lets Cindy
+into his office, wondering what's up. </p>
+<p>&quot;Have a seat.&quot; For some legroom, Cindy nudges a
+piece of debris away from the area in front of her chair. </p>
+<p>&quot;Jeff, I think we have a problem. . .&quot; she starts,
+hoping to phrase it so he won't take it the wrong way. &quot;You
+remember those phone logs I mentioned at the party?&quot;</p>
+<p>&quot;Yes, what about them?&quot; How nice it would be to go
+home and sleep. </p>
+<p>&quot;Well, it appears that someone dialed all our phone
+numbers, and that someone has also been using a dial-in port on
+one of our terminal servers.&quot;</p>
+<p>&quot;What terminal servers?&quot; A pall of worry flashes
+across Jeff's face. &quot;No one ever mentioned this to me!&quot;</p>
+<p>&quot;We have some terminal servers for dial-in access, and it
+appears a Russian phone number has been using them, a lot.&quot;</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #11</b></font></td>
+</tr>
+<tr>
+<td>The technique that Jeff ignored until too late is
+known as wardialing. An attacker somehow gains access to
+a set of company phone numbers, and then uses a
+specialized tool to dial each of these numbers with a
+modem. Most of the time, the wardialing utility will
+reach a voice number. But occasionally, an attacker will
+find a bank of modems (often used for remote employee
+access), and attempt to exploit weaknesses in the host
+system.</td>
+</tr>
+</table>
+<p>&quot;What do you mean by a lot?&quot; asks Jeff. The lack of
+internal security around here seems epidemic. </p>
+<p>&quot;Well, it's been in use for about six hours in the last
+two days. I think we have been broken into by a Russian hacker; I
+mentioned this to you several days ago at the pizza party.&quot;</p>
+<p>&quot;Hindsight is 20/20 &#151; what do you think we should do
+now?&quot; </p>
+<p>&quot;Well Jeff, we could unplug the terminal server from the
+network to block access.&quot;</p>
+<p>&quot;No, I don't think that's such a good idea. He's probably
+compromised a number of internal machines and can get in over the
+Internet at this point. Arghhh!&quot; Leaning back, he rubs his
+temples and wonders for a moment if taking this job was such a
+great idea after all. </p>
+<p>Cindy tries again. &quot;At a bare minimum, we should probably
+monitor what he is doing, and maybe we could slow down his access
+&#151; literally, crank the modems down to 9600 or
+something.&quot; </p>
+<p>Jeff considers for a moment and nods in agreement. &quot;Let's
+not make him suspicious. I'll see what I can do about monitoring
+his access, and then this weekend at 5 p.m. we'll shut down the
+terminal server and the Internet access, and start cleaning out
+the infected systems. While we're at it, I think we should
+conduct a physical sweep of all offices and look for people with
+modems attached to their computers.&quot; </p>
+<p>Pondering this for a moment, Jeff swings his gaze down a
+haphazard pile of unopened software packages, industry gimmes, on
+the floor next to his desk.</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #12</b></font></td>
+</tr>
+<tr>
+<td>If Jeff's predecessor had exercised more foresight,
+Jeff wouldn't have to worry about hindsight. Be careful
+who knows the numbers of your modem banks. If possible,
+get numbers on a different exchange from those used by
+the rest of the company. Require better authentication
+than a simple username password system. Consider
+dial-back authentication. Set firm policies for remote
+access. Lastly, do as Cindy did, and pay attention to the
+phone logs.</td>
+</tr>
+</table>
+<p>Cindy sighs. &quot;This is going to make life miserable for
+the tech staff. I think we should offer performance bonuses to
+make up for this.&quot;</p>
+<p>&quot;I'll see what I can do. . . I agree, it won't be pretty
+if we make the troops do a forced march over the weekend. For
+now, I'll set up a box with some demo monitoring software I got
+from a vendor, and I'll order some new firewalls. I've already
+had the tech team sorting some of the wiring out, and we should
+be able to segment our network a bit. I've also decided we should
+reset all the user account passwords &#151; with the new password
+policy, users will have to choose a reasonably secure
+password.&quot; </p>
+<p>&quot;Wow, you're going to be a pretty unpopular guy come
+Monday, you know.&quot; Cindy grins to herself.</p>
+<p>&quot;Yeah I know, but it's got to be done. Hopefully this
+will let us get ahead of the curve.&quot; </p>
+<p>Cindy gets up and stretches her neck. &quot;Well, it can't get
+much worse, Jeff. At least we've got the software upgrade system
+in place and protected. You know, with the way our network
+servers have been put together we're probably better off just
+doing fresh installations on all the file, print and application
+servers, which are probably the ones with the most holes.
+Luckily, I was able to get the NT PDC and BDCs set up properly
+behind their own firewalls.&quot; </p>
+<p>&quot;Yeah, I was wondering who did that, Cindy. I think you
+may have saved our collective bacon. Where did you get the idea
+for that?&quot;</p>
+<p>&quot;My niece is into computers, and she made that suggestion
+the last time there was a &quot;take your daughter to work
+day.&quot; She's also the one that wrote the scripts to monitor
+call activity.&quot;</p>
+<p>&quot;Wow, how much did that cost us?&quot;</p>
+<p>&quot;Nothing &#151; unless you count the sushi we had for
+lunch after she wrote them.&quot; </p>
+<p>&quot;Well, I guess we've done what we can for now. We'll call
+a staff meeting tomorrow in person, and avoid using the email
+system to discuss this. What a pain.&quot;</p>
+<p>Cindy nods, exiting in a hurry. She grabs her coat and starts
+towards her car, taking a quick detour to look in on the terminal
+server. &quot;I'll get you yet,&quot; she murmurs.</p>
+<p>Has Cindy been taking her medication? Will Jeff manage to
+convince the tech team to work a full weekend? And why hasn't
+anyone let the cat out yet? These questions and more will be
+answered next week.</p>
+<p>&nbsp;</p>
+<hr>
+<h2>The Story of Jeff: Part VI</h2>
+<hr>
+<p>&nbsp;</p>
+<p>A brightly lit server room. Fans humming quietly, a glass wall
+at one end; on the other side we see a table with several people
+sitting around it. Scattered on the table are several pads of
+paper, pencils, pagers and a laptop. We see Jeff, eyes a healthy
+shade of bloodshot pink accented by dark bags underneath. Lifting
+a cup of cold coffee to his lips, he grimaces and takes a deep
+gulp, swallowing it hurriedly.</p>
+<p>Cindy sits to his left, makeup long since removed, hair tied
+up with a loose piece of cat 5. She rubs her eyes and yawns
+softly. Andy looks at his notes with watery eyes and then glances
+around the table before speaking.</p>
+<p>&quot;OK folks, we found seven workstations with Back Orifice
+2000 installed, and cleaned them off. We installed antivirus on
+every single server and workstation, so we shouldn't have to
+worry about that again. We've changed everyone's passwords to a
+random 8-digit string and set it so they have to change it.
+Cindy, you guys are ready for it?&quot;</p>
+<p>Cindy nods her head in assent. &quot;I've got the entire
+helpdesk staff on for tomorrow to answer the phone. We've also
+left printed instructions taped to each monitor for how to call
+the helpdesk and get the new password. Basically, they phone up,
+identify themselves, we ask a personal question from info HR has
+on file, we then give them their password. </p>
+<p>&quot;We also have a list of all user accounts, and any
+accounts that people haven't phoned about by Friday we'll disable
+&#151; this should help us weed out old accounts. We'll also be
+able to create a mapping of usernames to people, so when people
+leave the company we can quickly remove their access.&quot;</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #13</b></font></td>
+</tr>
+<tr>
+<td>If you don't have some way in place for HR to get
+access revoked for employees that have just been fired or
+have quit, then you should start working on one. </td>
+</tr>
+</table>
+<p>Jeff looks relieved. &quot;Good work, I hadn't thought of
+that. OK, so we've got software up to date, systems cleaned up .
+. . but the modem pool is still exposed, for example. Anyone have
+any ideas about that?&quot;</p>
+<p>Andy glances around and decides to step forward. &quot;Well, I
+did see a product a few months ago, I can't remember where, but
+it should solve our problems. It's called TeleWall. You plug it
+in before your PBX and it's a firewall for phone lines.&quot;</p>
+<p>Jeff ponders this. &quot;Hmm, can we block based on the phone
+number it's from, and what time it is?&quot;</p>
+<p>Andy grins. &quot;You bet. You also can't get around it with
+*6l to block caller ID. It can also tell what kind of phone call
+it is, voice or data or fax, and we can do a lot of logging
+independent of the terminal server. It handles 24 lines, so
+that's perfect for our dial-in pool.&quot; </p>
+<p>Yawning loudly, Jeff rubs his eyes. Then he sighs. &quot;OK.
+If it's not too expensive I guess we should get one. We can then
+block that little weasel completely and get his phone
+number.&quot;</p>
+<table border="1" cellpadding="5" cellspacing="0" bordercolor="#000099">
+<tr>
+<td bgcolor="#000099"><font color="#FFFFFF"><b>Lesson #14</b></font></td>
+</tr>
+<tr>
+<td>You wouldn't put a server or workstation online
+without a firewall, yet we regularly expose phone lines
+and phone equipment to the world with absolutely no
+protection. You should consider a phone firewall, as
+there are many ways for internal and external adversaries
+to abuse your phone system &#151; by using the fax line
+to make long distance phone calls, for example. </td>
+</tr>
+</table>
+<p>Cindy groans. &quot;Can I please go home. . . . I have no
+feeling in the back of my head anymore. I think my brain feel
+asleep.&quot; </p>
+<p>Jeff is silent for a moment. &quot;No, I can feel mine and it
+hurts. We have one last area to cover and then we can leave.
+Andy, what do you think about implementing security policies on
+the Windows machines? I think we should prevent users from
+accessing the network control panel, which is how those seven
+workstations got infected. </p>
+<p>&quot;We should also look at only allowing certain programs to
+run on the machines that the data entry people use. We need to
+get a list of software that these people use, and we also need to
+figure out which parts of their workstations users do not need
+access to.&quot;</p>
+<p>Andy nods his head. &quot;Agreed. The main issue will be
+replicating the security policies between servers, but I think we
+can do it more reliably than using Microsoft's replicate service.
+We'll get some complaints from those power users, but I expect
+we'll save money on the helpdesk in the long run.&quot;</p>
+<p>&quot;Agreed, now can we please go home?&quot; Standing now,
+Cindy looks around for her purse and starts to think about a hot
+bath.</p>
+<p>&quot;Definitely, get a good night's sleep. I'll be making a
+presentation to the board, and I think we're in good shape.&quot;
+Jeff stands up, knocking over a few empty coffee cups in the
+process before getting oriented and heading for the door.</p>
+<p>Monday dawns bright and sunny. The birds twitter and chirp
+happily, blissfully unaware of the painful transition going on
+inside Acme Corp.'s main building. At the helpdesk we see phones
+ringing and a group of harried-looking techs.</p>
+<p>&quot;Hello, this is the helpdesk.&quot;</p>
+<p>&quot;You guys changed my password. I demand you change it
+back!&quot;</p>
+<p>&quot;I'm sorry, but we can't do that. If you can give me your
+name and the username you use, we can tell you what your new
+password is.&quot;</p>
+<p>&quot;I don't want a new password! I want my old one.&quot;</p>
+<p>&quot;I'm sorry sir, but that's not possible. It's a new
+company policy &#151; it's to prevent unauthorized access to your
+account.&quot;</p>
+<p>&quot;Hrmph. Fine, my name is Joe Bloggs and my username is
+joebloggs.&quot;</p>
+<p>&quot;Thank you, and what are the last four digits of your
+social security number?&quot;</p>
+<p>&quot;Uhmm . . . let me check . . . oh yes, 1-2-3-4.&quot;</p>
+<p>&quot;Thanks. Your new password is Qh3ghe5d. Once you log in,
+you will be prompted to change your password, so you can set it
+to whatever you like as long as it is eight letters or more and
+has upper-case letters and numbers.&quot;</p>
+<p>&quot;That's not very nice, you know, changing our passwords
+without warning.&quot;</p>
+<p>&quot;I'm sorry sir, but it came from the head of IT.&quot;</p>
+<p>&quot;Well, all right . . . thanks.&quot; <i>Click.</i></p>
+<p>In another, more peaceful part of the building, Andy hangs up
+the phone and stretches. Getting up, he walks over to Jeff's
+office and knocks on the door.</p>
+<p>&quot;Come in.&quot;</p>
+<p>&quot;OK, I ordered the TeleWall. It'll be here by tomorrow 10
+a.m., so we can probably have it set up by noon. We should look
+at ordering some more so we can cover all our phone lines.&quot; </p>
+<p>&quot;Yeah, we should be able to afford that. Thank god for
+the budget increase.&quot;</p>
+<p>The sun sets, the birds fall asleep, and before you could
+finish compiling a Linux kernel on a 386/20, the land starts to
+brighten again. Several hours later, in a dusty wiring closet,
+the sound of sneezing and a power screwdriver emanates. Andy
+wipes his forehead, happy to have the unit plugged in and wired
+up. Closing the door, he walks to his office and fires up the
+control program.</p>
+<p>Hunting around his desk, he pulls out a manual and starts to
+read the instructions. After several hours of tinkering and
+fiddling, Andy decides to call it a day. He has configured the
+TeleWall to log all incoming phone numbers to the modem pool and
+block any voice and fax calls, as well as any outbound calls from
+the modem pool.</p>
+<p>In a dark apartment somewhere in Moscow, Karl is frowning. He
+looks at his printed list of passwords, frowns, and types it in
+again.</p>
+<blockquote>
+<p><code>Username: joebloggs<br>
+Password: ****<br>
+Invalid entry, please try again<br>
+Username:<br>
+</code></p>
+</blockquote>
+<p>Will Karl fall into the freshly planted Venus flytrap? Does
+Jeff survive yet another board meeting? How securely is the third
+tape rack on the back wall of the server room secured?</p>
+<p><strong>Reference links:</strong></p>
+<p>TeleWall from SecureLogix<br>
+<a href="http://telewall.securelogix.com/" target="_blank">http://telewall.securelogix.com/</a>
+<br>
+</p>
+<hr>
+<p><a href="./">Back</a> </p>
+<p>Last Updated on 03/10/2002</p>
+<p>Copyright Kurt Seifried, <a href="/cdn-cgi/l/email-protection#7a110f080e3a091f131c08131f1e5415081d"><span class="__cf_email__" data-cfemail="d6bda3a4a296a5b3bfb0a4bfb3b2f8b9a4b1">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

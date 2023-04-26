@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Limiting and monitoring users</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Limiting and monitoring users</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#650e1017112516000c03170c00014b0a1702"><span class="__cf_email__" data-cfemail="95fee0e7e1d5e6f0fcf3e7fcf0f1bbfae7f2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>Many security problems arise from the simple fact that you
+must allow user access to your systems. In some cases users can
+be malicious (i.e. internal attacker, university students, etc.)
+or they may accidentally expose their password to an attacker or
+simply use a weak password (like their username). In any event it
+is all to possible for users to attack a system, so it is
+advisable to monitor users, and limit the amount of damage they
+can do. </p>
+<p>&nbsp;</p>
+<h2><a name="Limiting users">Limiting users</a></h2>
+<p>Users require resources like CPU time, memory and drive space
+to do their work. On many systems it is possible for users to hog
+resources, reducing the usefulness of the system to other users
+or in some cases actually bringing the server to a slow halt or
+crashing it. Users can also inadvertently use up more resources
+then they mean to, limiting their resources can prevent several
+classes of problems. Programs can crash. generating huge core
+dumps, or go crazy and user up all the available memory.
+Something to remember: global limits apply to root, so be
+careful! If you do not allow root to run enough processes for
+example cron jobs may fail or you may not even be able to log in
+to fix any problems. </p>
+<p>&nbsp;</p>
+<h3>PAM</h3>
+<p>Almost all Linux distributions ship with PAM support making it
+universally available. PAM limits provide a single standardized
+interface to setting user limits, instead of having to write
+complex shell configuration files (such as /etc/profile) you
+simply edit the &quot;limits.conf&quot; file. As well applying
+limits selectively through the command shell is very difficult,
+whereas with PAM applying limits globally, on groups or on
+individual users is quite simple. Documentation is available on
+PAM usually in the &quot;/usr/share/doc/&quot; tree. To enable
+PAM limits you need to add a line such as:</p>
+<blockquote>
+<pre>session		required	/lib/security/pam_limits.so</pre>
+</blockquote>
+<p>to the appropriate Pam configuration file (i.e.
+/etc/pam.d/sshd). You can then define limits, typically these are
+in &quot;/etc/security/limits.conf&quot; or a similar location.
+Because most of these limits are enforced by the shell the system
+cannot log all violations of limits (i.e. you will be notified in
+syslog when a user exceeds the number of times they are allowed
+to login, however you will not receive a warning if the user
+tries to use more disk space then they are allowed to). </p>
+<p>The available limits are:</p>
+<blockquote>
+<p><b>core</b> -- Limits the core file size (KB); usually set
+to 0 for most users to prevent core dumps.<br>
+<b>data</b> -- Maximum data size (KB).<br>
+<b>fsize</b> -- Maximum file size (KB).<br>
+<b>memlock</b> -- Maximum locked-in-memory address space
+(KB).<br>
+<b>nofile</b> -- Maximum number of open files.<br>
+<b>rss</b> -- Maximum resident set size (KB).<br>
+<b>stack</b> -- Maximum stack size (KB).<br>
+<b>cpu</b> -- Maximum CPU time (MIN).<br>
+<b>nproc</b> -- Maximum number of processes.<br>
+<b>as</b> -- Address space limit.<br>
+<b>maxlogins</b> -- Maximum number of logins for this user or
+group.<br>
+<b>priority</b> -- The priority to run user process with.</p>
+</blockquote>
+<p>For example you can limit the amount of memory that user
+&quot;bob&quot; is allowed to use:</p>
+<blockquote>
+<pre>user		hard	memlock		4096</pre>
+</blockquote>
+<p>This would place a hard (absolute) limit of 4 megabytes on
+memory usage for &quot;bob&quot;. Limits can be placed on users
+by listing the user name, groups by using the syntax
+&quot;@group&quot; or globally by using &quot;*&quot;.</p>
+<p>core files can be created when a program crashes. They have
+been used in security exploits, overwriting system files, or by
+containing sensitive information (such as passwords). You can
+easily disable core dumps using PAM, and generally speaking most
+users will not notice, however if you have software developers
+they may complain.</p>
+<blockquote>
+<pre>*		hard	core		0</pre>
+</blockquote>
+<p>fsize is generally a good idea to set, many users will have a
+large filesystem quota (i.e. tens of megabytes to several hundred
+or several gigabytes), however if they are allowed to create a
+single file that is abnormally large they can easily hog disk I/O
+resources (i.e. create a large file and copy/delete the copy
+repeatedly). Setting this limit globally can also prevent an
+attacker from trying to fill up the partitions your log files are
+stored on, for example if you only have a single / partition an
+attacker can easily fill it up by generating a lot of log events.
+</p>
+<blockquote>
+<pre>@notroot	hard	data		102400</pre>
+</blockquote>
+<p>Of course limiting CPU time is one of the classic
+administrative tasks, this is very useful for preventing run-away
+processes from eating up all the cpu time, and it ensures that if
+a user leaves something running in background (such as a packet
+sniffer) it will eventually be killed. Limiting CPU time will
+have several side effects however, once of which will be limiting
+the amount of time a user can spend logged in (eventually they
+will run out of CPU time and the session will be killed), this
+can lead to problems if users spend long periods logged in. As
+well depending on the CPU(s) present in your machine the limits
+can vary greatly (one minute on a 386 is quite a bit different
+then one minute on a 1.3 GHz Athalon). </p>
+<blockquote>
+<pre>@students	hard	cpu		2</pre>
+</blockquote>
+<p>Limiting the number of times a user can login is strongly
+advised, for most situations users should not need to log in to a
+server more then once, and allowing them to do so let's them use
+more resources then you might intend. As well it can be used to
+detect suspicious activity, if users know they can only login
+once then attempts to log in multiple times can be viewed as
+suspicious activity (i.e. an attacker with a stolen password
+trying to access the account). </p>
+<blockquote>
+<pre>@users		hard	maxlogins	1</pre>
+</blockquote>
+<p>Additionally when someone violated this limit it will be
+logged in syslog:</p>
+<blockquote>
+<pre>Apr 15 15:09:26 stench PAM_unix[9993]: (sshd) session opened for user test by (uid=0)
+Apr 15 15:09:32 stench pam_limits[10015]: Too many logins (max 1) for test</pre>
+</blockquote>
+<p>Soft limit violations will not be logged (i.e. a soft limit of
+1 and a hard limit of 2). </p>
+<p>&nbsp;</p>
+<h3>Bash</h3>
+<p>Bash has built in limits, accessed via &#147;ulimit&#148;. Any
+hard limits cannot be set higher, so if you have limits defined
+in /etc/profile, or in the users .bash_profile (assuming they
+cannot edit/delete .bash_profile) you can enforce limits on users
+with Bash shells. This is useful for older Linux distributions
+that lack PAM support (however this is increasingly rare and PAM
+should be used if possible). You must also ensure that the user
+cannot change their login shell, if they use &quot;chsh&quot; to
+change their shell to ksh for example the next time they login
+they will have no limits (assuming you cave not put limits on
+ksh). Documentation is available on ulimit, log in using bash and
+issue:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="65170a0a1125160017130017">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /root]# <strong>help ulimit</strong>
+ulimit: ulimit [-SHacdflmnpstuv] [limit]
+    Ulimit provides control over the resources available to processes
+    started by the shell, on systems that allow such control.  If an
+    option is given, it is interpreted as follows:
+    
+        -S      use the `soft' resource limit
+        -H      use the `hard' resource limit
+        -a      all current limits are reported
+        -c      the maximum size of core files created
+        -d      the maximum size of a process's data segment
+        -f      the maximum size of files created by the shell
+        -l      the maximum size a process may lock into memory
+        -m      the maximum resident set size
+        -n      the maximum number of open file descriptors
+        -p      the pipe buffer size
+        -s      the maximum stack size
+        -t      the maximum amount of cpu time in seconds
+        -u      the maximum number of user processes
+        -v      the size of virtual memory
+    
+    If LIMIT is given, it is the new value of the specified resource.
+    Otherwise, the current value of the specified resource is printed.
+    If no option is given, then -f is assumed.  Values are in 1024-byte
+    increments, except for -t, which is in seconds, -p, which is in
+    increments of 512 bytes, and -u, which is an unscaled number of
+    processes.</pre>
+</blockquote>
+<p>To disallow core files (by setting the maximum size to 0) for
+example you would add:</p>
+<blockquote>
+<pre>ulimit -Hc 0</pre>
+</blockquote>
+<p>To set limits globally you would need to edit
+&quot;/etc/profile&quot;, of course this will also affect root,
+so be careful! To set limits on groups you would need to add
+scripting to &quot;/etc/profile&quot; that would check for the
+user's membership in a group and then apply the statements,
+however doing this with PAM is recommended as it is a lot
+simpler.</p>
+<p>&nbsp;</p>
+<h3>Quota</h3>
+<p>Quota allows you to enforce user and group limits on disk
+usage. Quotas are most often used to prevents users from hogging
+disk space that is shared with other users (i.e.
+&quot;/home&quot;). There are several benefits to using quota
+instead of PAM/shell limitations; the first being that you can
+apply it selectively to disk systems, i.e. you can place a limit
+on /home/ but not on /tmp/. Additionally you can place limits on
+the number of inodes used as well as space, running out of inodes
+is as bad as running out of space since you won't be able to
+create new files. To see how much space a disk has (in
+kilobytes):</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="e4968b8b90a4978196928196">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /]# <strong>df -k</strong>
+Filesystem           1k-blocks      Used Available Use% Mounted on
+/dev/hda2              2925900    948936   1828336  35% /
+/dev/hda1                49743      2485     44690   6% /boot</pre>
+</blockquote>
+<p>And to show inode usage:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="a5d7cacad1e5c1ccc9c1ca">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /]# df -i
+Filesystem            Inodes   IUsed   IFree IUse% Mounted on
+/dev/hda2             371680   58737  312943   16% /
+/dev/hda1              12880      27   12853    1% /boot</pre>
+</blockquote>
+<p>Quota support must be compiled into the kernel (this is the
+default with most vendors), and the tools must be installed,
+usually in a package called &quot;quota&quot;. Once you have done
+this you need to edit your &quot;/etc/fstab&quot; file and add
+either the keyword &quot;grpquota&quot; or &quot;usrquota&quot;
+in the options:</p>
+<blockquote>
+<pre>LABEL=/		/		ext2    defaults		1 1
+LABEL=/home	/home		ext2    defaults,grpquota	1 2</pre>
+</blockquote>
+<p>Then for each filesystem that you have enabled quotas on you
+must create two files in the root of the filesystem:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="55273a3a2115313c39313a">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /]# <strong>touch /home/quota.user </strong>
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="2a5845455e6a4e43464e45">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /]# <strong>touch /home/quota.group </strong></pre>
+</blockquote>
+<p>These files should only be accessible to root. You will then
+need to reboot the system.</p>
+<p>Typically you will only need to place quota on filesystems
+directly writeable to the user, usually this is:</p>
+<blockquote>
+<pre>/tmp
+/var/tmp
+/home</pre>
+</blockquote>
+<p>To edit user and group quotas you use the program
+&quot;edquota&quot;, for example:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="82f0ededf6c2e6ebeee6ed">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /]# <strong>edquota -u </strong><em><strong>username</strong></em></pre>
+</blockquote>
+<p>This will then let you edit the appropriate quota.user or
+quota.group file (these files should not be edited directly!).
+The editor uses vi by default and the data looks like:</p>
+<blockquote>
+<pre>Quotas for user username: 
+/dev/hda1: blocks in use: 255, limits (soft = 5120, hard = 10240) 
+         inodes in use: 123, limits (soft = 1000, hard = 1500)</pre>
+</blockquote>
+<p>Soft limits will generate warnings and hard limits will stop
+the user from using more disk space or inodes. Documentation on
+this can be found in &quot;man quota&quot; or in the Quota
+mini-howto available at: <a href="http://www.linux.com/howto/mini/Quota.html">http://www.linux.com/howto/mini/Quota.html</a>.
+</p>
+<p>&nbsp;</p>
+<h2><a name="Monitoring users">Monitoring users</a></h2>
+<p>Monitoring users may be a requirement of your security policy,
+or you may have discovered an account that has been compromised
+and you wish to monitor the attacker when they use it.
+Unfortunately while this used to be relatively easy there are now
+a number of new issues that make monitoring users problematic.
+The increased usage of encrypted protocols like SSH and SSL mean
+you can no longer simply run a packet sniffer and monitor the
+attacker. The change in Linux's tty's to pseudo terminals has
+&quot;broken&quot; many older software packages as well.
+Typically the best way to monitor users is transparently, packet
+sniffers are ideal for this as you need not make any changes on
+the server at all. The second best is to use some form of
+monitoring on the server, this used to be possible with ttysnoop
+however ttysnoop does not appear to be actively maintained
+anymore. While you can use tricks like shell logging this will be
+obvious to a skilled attacker as the first thing they usually do
+is disable shell logging. If you are monitoring legitimate users
+you should inform them (this is a legal requirement in some
+countries and states). If you are monitoring an attacker and
+intend to use the log files as evidence you should probably
+consult a lawyer to make sure it is done correctly. </p>
+<p>&nbsp;</p>
+<h3>sshsniff</h3>
+<p>This is actually a really useful tool I stumbled across. It
+allows you to monitor all traffic going in and coming out of a
+process, such as an interactive shell. The bad news is that it
+does not appear to be completely reliable. While testing it
+sshsniff reliably captured keystrokes sent to the shell and the
+replies, however when files were cat'ed, i.e. &quot;cat
+/etc/passwd&quot; the file was not always displayed on the
+monitoring shell:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="067263757246756374706374">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> test]$ ???\033???[???Acat /etc/passwd???
+--- SIGCHLD (Child exited) ---
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="374352444377445245415245">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> test]$ ???\033???[???Acat /etc/passwd???
+--- SIGCHLD (Child exited) ---
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="c0b4a5b3b480b3a5b2b6a5b2">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> test]$ ???\033???[???Acat /etc/passwd???
+
+[pid 1417]
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:
+daemon:x:2:2:daemon:/sbin:
+adm:x:3:4:adm:/var/adm:
+lp:x:4:7:lp:/var/spool/lpd:
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:
+operator:x:11:0:operator:/root:
+games:x:12:100:games:/usr/games:
+ftp:x:14:50:FTP User:/home/ftp:/bin/true
+nobody:x:99:99:Nobody:/:
+rpc:x:32:32:Portmapper RPC user:/:/bin/false
+postfix:x:89:89::/var/spool/postfix:/bin/true
+test:x:500:500::/home/test:/bin/bash
++++ exited (status 0) +++
+
+[pid 1380]
+--- SIGCHLD (Child exited) ---</pre>
+</blockquote>
+<p>sshsniff is not perfect but it is able to bind to any PID and
+not just terminals, making it very flexible. You can download it
+from: <a href="http://www.psychoid.lam3rz.de/exploits.html">http://www.psychoid.lam3rz.de/exploits.html</a>.
+One note there is a file called col.c that contains an entry for
+/etc/passwd, it does not appear to be used but it does raise some
+questions. If you plan to use this code I strongly suggest you
+audit it.</p>
+<p>&nbsp;</p>
+<h3>dsniff</h3>
+<p>With protocols like SSH and SSL being widely deployed simple
+packet sniffers are no longer as useful as they once were. So
+people started writing more complex packet sniffers, like dsniff.
+dsniff is capable of doing man in the middle attacks against SSL
+and SSH. If you control the server then you can easily proxy
+connections (as you have access to the secret keys on the server)
+and thus decrypt the attackers SSH session and monitor what is
+going on. dsniff is not capable of dealing with all version of
+the SSH protocol however, so forcing only protocol 1 support on
+the server can solve this, in your sshd_config file:</p>
+<blockquote>
+<pre>Protocol 1</pre>
+</blockquote>
+<p>is specified and not:</p>
+<blockquote>
+<pre>Protocol 2,1</pre>
+</blockquote>
+<p>dsniff is available from: <a href="http://www.monkey.org/~dugsong/dsniff/">http://www.monkey.org/~dugsong/dsniff/</a>
+</p>
+<p>&nbsp;</p>
+<h3>Firewalling</h3>
+<p>One new capability in Linux 2.4 that should prove quite useful
+is the ability to filter some types of outgoing packet based on
+who owns the process that created them. Of course this is not
+100% effective as some types of packets are not owned ny anyone
+specifically (i.e. ICMP responses). Using the various flags:</p>
+<blockquote>
+<pre>--uid-owner
+--gid-owner
+--pid-owner
+--sid-owner</pre>
+</blockquote>
+<p>which are discussed in more detail in the firewall section,
+documentation is available via &quot;man iptables&quot;.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#046f7176704477616d62766d61602a6b7663"><span class="__cf_email__" data-cfemail="7f140a0d0b3f0c1a16190d161a1b51100d18">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

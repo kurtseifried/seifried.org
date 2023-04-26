@@ -1,0 +1,600 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Python Performance Part 1 | Kurt Seifried</title>
+<link rel="pingback" href="http://kurt.seifried.org/xmlrpc.php"/>
+<script src='https://r-login.wordpress.com/remote-login.php?action=js&amp;host=kurt.seifried.org&amp;id=86342&amp;t=1480695554&amp;back=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-1%2F%3Freplytocom%3D44' type="text/javascript"></script>
+<script type="text/javascript">
+		/* <![CDATA[ */
+			if ( 'function' === typeof WPRemoteLogin ) {
+				document.cookie = "wordpress_test_cookie=test; path=/";
+				if ( document.cookie.match( /(;|^)\s*wordpress_test_cookie\=/ ) ) {
+					WPRemoteLogin();
+				}
+			}
+		/* ]]> */
+		</script>
+<link rel='dns-prefetch' href='//s2.wp.com'/>
+<link rel='dns-prefetch' href='//s1.wp.com'/>
+<link rel='dns-prefetch' href='//s0.wp.com'/>
+<link rel='dns-prefetch' href='//kurtseifried.wordpress.com'/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Feed" href="http://kurt.seifried.org/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Comments Feed" href="http://kurt.seifried.org/comments/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Python Performance Part&nbsp;1 Comments Feed" href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/feed/"/>
+<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1473172720h&ver=4.6.1-RC1-38499"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">img.wp-smiley,img.emoji{display:inline!important;border:none!important;box-shadow:none!important;height:1em!important;width:1em!important;margin:0 .07em!important;vertical-align:-0.1em!important;background:none!important;padding:0!important;}</style>
+<link rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJx9jtEKwjAMRX/IGibTPYnf0nbBdW220KQM/95W8UVlLyH3cg4JbGz8uiguClQMp3IPi0AKEQVmVLY+mlc6epED/MczJqs4Gl5Fv9Ke5teMtSe22gjCMVhMSBXb04gvH6utU31x98zGlTbOcUYRUyeFQkaneujXe9fAxUEsLgcfQfSRsIE3unZ93w3deRhO8xOHmHVX' type='text/css' media='all'/>
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='kubrick-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/kubrick/ie.css?m=1273203575h&#038;ver=4.6.1-RC1-38499' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJx9i8sKgCAQAH8oWwSjOkTfYmLLhrrig34/u0Rdus3ADBAELmQ45Ad6k3MHZxRNig0FfBXRVaTWoGXh2OhCHD4idqcp/a3Jbo6xIUKrXnpPq1+kGmalplGq4wKxyTcd' type='text/css' media='all'/>
+<link rel='stylesheet' id='print-css-3-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h' type='text/css' media='print'/>
+<link rel='stylesheet' id='all-css-4-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/actionbar/actionbar.css,/wp-content/themes/h4/global.css?m=1479929846j' type='text/css' media='all'/>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFj+sKwjAMhV/IrHib+kN8ltrFkdqbTevQpzcD/aEOhUDIyZfDiRoSUDCudsjKSl0q5tuzNZZn6hcAnvqsCzaewgs2MRQMZWR9PJJDqIxZ96KJ0SlOcCly8cgs0MT2PRKFK+HwF7NYkjZnyMh0/3L1FZKrPQVWGZ080MGY4WOSq4Pfz1dtu14sd5utfQAruHB+'></script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1377793621h' type='text/css' media='all'/>
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kurtseifried.wordpress.com/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"/>
+<link rel='prev' title='Linux iSCSI server&nbsp;(target)' href='http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/'/>
+<link rel='next' title='Python Performance Part&nbsp;2' href='http://kurt.seifried.org/2010/05/31/python-performance-part-2/'/>
+<meta name="generator" content="WordPress.com"/>
+<link rel="canonical" href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/"/>
+<link rel='shortlink' href='http://wp.me/pmsC-T'/>
+<meta name='robots' content='noindex,follow'/>
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=json&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-1%2F&amp;for=wpcom-auto-discovery"/><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=xml&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-1%2F&amp;for=wpcom-auto-discovery"/>
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Python Performance Part 1"/>
+<meta property="og:url" content="http://kurt.seifried.org/2010/05/31/python-performance-part-1/"/>
+<meta property="og:description" content="Python Performance Part 2 Python Performance Part 3 Python Performance Part 4 If you&#8217;ve been programming in Python chances are you have run into a situation where your code takes a lot longer…"/>
+<meta property="article:published_time" content="2010-05-31T08:24:46+00:00"/>
+<meta property="article:modified_time" content="2010-05-31T19:21:20+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png"/>
+<link rel='openid.server' href='http://kurtseifried.wordpress.com/?openidserver=1'/>
+<link rel='openid.delegate' href='http://kurtseifried.wordpress.com/'/>
+<link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried"/>
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com"/>
+<style type='text/css'><!--
+body { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgcolor.gif"); }
+#page { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgwide.gif") repeat-y top !important; border: none; }
+#header { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickheader.gif") no-repeat bottom center; }
+#footer { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickfooter.gif") no-repeat bottom; border: none;}
+#header { margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px; }
+#headerimg { margin: 7px 9px 0; height: 192px; width: 740px; }
+#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: ; }
+#headerimg h1 a, #headerimg .description { display:  }
+
+	--></style><meta name="application-name" content="Kurt Seifried"/><meta name="msapplication-window" content="width=device-width;height=device-height"/><meta name="msapplication-tooltip" content="Just another blog from just another guy (kurt@seifried.org)"/><meta name="msapplication-task" content="name=Subscribe;action-uri=http://kurt.seifried.org/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="title" content="Python Performance Part&nbsp;1 | Kurt Seifried on WordPress.com"/>
+<meta name="description" content="Python Performance Part 2 Python Performance Part 3 Python Performance Part 4 If you&#039;ve been programming in Python chances are you have run into a situation where your code takes a lot longer to run than it probably should, and if you haven&#039;t used Python I&#039;m going to show you how easy it ease to&hellip;"/>
+<link rel="amphtml" href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/amp/"/><style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body class="single single-post postid-55 single-format-standard mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page">
+<div id="header">
+<div id="headerimg" onclick=" location.href='http://kurt.seifried.org';" style="cursor: pointer;">
+<h1><a href="http://kurt.seifried.org/">Kurt Seifried</a></h1>
+<div class="description">Just another blog from just another guy (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ef849a9d9baf9c8a86899d868a8bc1809d88">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)</div>
+</div>
+</div>
+<hr/>
+<div id="content" class="widecolumn">
+<div class="navigation">
+<div class="alignleft">&laquo; <a href="http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/" rel="prev">Linux iSCSI server&nbsp;(target)</a></div>
+<div class="alignright"><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/" rel="next">Python Performance Part&nbsp;2</a> &raquo;</div>
+</div>
+<div class="clear post-55 post type-post status-publish format-standard hentry category-python tag-performance tag-python-2" id="post-55">
+<h2>Python Performance Part&nbsp;1</h2>
+<small class="single-by"></small>
+<div class="entry">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/">Python Performance Part 2</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/">Python Performance Part 3</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/">Python Performance Part 4</a></p>
+<p>If you&#8217;ve been programming in Python chances are you have run into a situation where your code takes a lot longer to run than it probably should, and if you haven&#8217;t used Python I&#8217;m going to show you how easy it ease to write high performance and scalable code that will run fast.</p>
+<p>These articles do not cover why you should use Python (it&#8217;s cool, it ships standard on every Linux distribution, all the kids at Google use it, etc.). These articles will specifically cover how you can speed up Python performance (parallelization, code profiling, performance measuring, etc.) and include code examples (for brevity I will use pseudo code for some of the longer examples). I will also cover some Python internals so that you will understand why speeding up code doesn&#8217;t always work as expected (and what you can do about this). Please note that older versions of Python (e.g. 2.4.3 as shipped with Red Hat Enterprise and CentOS) do not support some of the things discussed in these articles. The reference platform used for this article is Fedora 12 (Python 2.6.4, Beanstalkd 1.4.2, memcached 1.4.4 and MySQL 5.1.41 basically).</p>
+<p><strong>A (super) quick introduction to Python threading</strong></p>
+<p>You have two basic modules that provide threading capabilities in Python. The first (and oldest) module is &#8220;thread&#8221; [THREAD] which provides low-level primitives such as creating a thread, exiting and some lock primitives so you can use shared resources safely. You don&#8217;t want to use this module for reasons I will shortly explain. The second module is &#8220;threading&#8221; [THREADING] and it builds upon the low level primitives (similar to SocketServer, HTTPServer, etc.) provided by &#8220;thread&#8221;. In Python the main program runs as a single thread, from this thread you can create additional child threads (these run within the same process space and thus have shared memory). The main trick is that you need the main thread to keep running while the children threads are doing their thing, if the main thread exits than all the child threads get killed off unceremoniously, potentially leaving a mess. This is why you don&#8217;t want to use &#8220;thread&#8221;, as you will need to create your own spinlock to hold the main thread open while the children threads run. With the &#8220;threading&#8221; module the system provides the join() method which &#8220;blocks the calling thread until the thread whose join() method is called is terminated.&#8221;</p>
+<p>It should be noted that in many cases the main thread will continue running until threads started using the threading Thread.start() are done but there are no guarantees so I strongly suggest you use the join() method or create your own spinlock (especially if using older versions of Python).</p>
+<p><strong>Basic Threading Pattern</strong></p>
+<p>The basic threading pattern in Python (and most languages) is to take a bunch of work and split it up among different threads (insightful, yes?). The idea is that instead of doing things sequentially (one at a time) you do them in parallel (more than one at a time). For many tasks this works well, especially if the tasks are largely bound by IO (Input and Output) delays (especially for network related stuff).</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="404"></col>
+<col width="245"></col>
+<tbody>
+<tr valign="TOP">
+<td width="404">web_get_parallel.py – (no join())</td>
+<td width="245">Comment</td>
+</tr>
+<tr valign="TOP">
+<td width="404"><!--[if gte mso 9]&gt;  Normal 0   false false false        MicrosoftInternetExplorer4  &lt;![endif]--><!--[if gte mso 9]&gt;   &lt;![endif]--></p>
+<pre>#!/usr/bin/env python
+import urllib2
+from threading import Thread
+hosts = ["http://lwn.net/", "http://seifried.org/", "http://google.com/"]
+
+def getURL(URL):
+    urllib2.urlopen(URL)
+    print "got URL: " + URL
+
+for item in hosts:
+    t = Thread(target=getURL, args=(item,))
+    t.start()
+</pre>
+</td>
+<td width="245"># list of web pages to get# define a get URL function# loop through the list of URLs# define a thread</p>
+<p># start the thread</td>
+</tr>
+</tbody>
+</table>
+<p>But is this really faster than doing the work sequentially?</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="404"></col>
+<col width="245"></col>
+<tbody>
+<tr valign="TOP">
+<td width="404">web_get_sequential.py</td>
+<td width="245">Comment</td>
+</tr>
+<tr valign="TOP">
+<td width="404"><!--[if gte mso 9]&gt;  Normal 0   false false false        MicrosoftInternetExplorer4  &lt;![endif]--><!--[if gte mso 9]&gt;   &lt;![endif]--></p>
+<pre>#!/usr/bin/env python
+import urllib2
+hosts = ["http://lwn.net/", "http://seifried.org/", "http://google.com/"]
+
+def getURL(URL):
+    urllib2.urlopen(URL)
+    print "got URL: " + URL
+
+for item in hosts:
+    urllib2.urlopen(item)
+    print "got URL: " + URL
+</pre>
+</td>
+<td width="245"># list of web pages to get# define a get URL function# loop through the list of URLs# get the URL</td>
+</tr>
+</tbody>
+</table>
+<p>So based on this the parallel threaded example (not using join()) takes about a 0.5 seconds according to the UNIX &#8220;time&#8221; command, and the sequential version takes 6 seconds. This is obviously not right, assuming the sequential one takes about the same amount of time to get each URL (best case) then the parallel version should take 2 seconds (6/3 = 2).</p>
+<p>So why is it only taking 0.5 seconds? Probably because the main thread exited before the children are done running (which means we didn&#8217;t finish our work). So let&#8217;s fix that:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="404"></col>
+<col width="245"></col>
+<tbody>
+<tr valign="TOP">
+<td width="404">web_get_parallel.py (with join())</td>
+<td width="245">Comment</td>
+</tr>
+<tr valign="TOP">
+<td width="404">
+<pre>#!/usr/bin/env python
+import urllib2
+from threading import Thread
+thread_list = []
+hosts = ["http://lwn.net/", "http://seifried.org/", "http://google.com/"]
+
+def getURL(URL):
+    urllib2.urlopen(URL)
+    print "got URL: " + URL
+
+for item in hosts:
+    t = Thread(target=getURL, args=(item,))
+    t.start()
+    thread_list.append(t)
+
+for thread in thread_list:
+    thread.join()
+</pre>
+</td>
+<td width="245"># list of web pages to get# define a get URL function# loop through the list of URLs# define a thread</p>
+<p># start the thread</p>
+<p># loop through the list of threads</p>
+<p># join each thread</td>
+</tr>
+</tbody>
+</table>
+<p>Great, the code now takes about 2.5 seconds, and we are actually getting the web pages correctly! As you can see this is a significant speed, taking only as long as the slowest web page (probably my site), and the sequential example taking the time it takes to get all the pages in total (we&#8217;ll cover how to measure performance properly later in this series).</p>
+<p><strong>Why Threading Helps Performance</strong></p>
+<p>The reason that we get such a significant speed up in this case is that the program is spending the majority of its time waiting for the remote web servers to respond with web pages that it has requested and about 1% (in other words not very much) of the time is spent creating and sending those requests. When a python thread does something IO related (reading or writing a file, sending a network request, waiting for a response, etc.) it essentially goes to sleep, at which point a different thread is given a chance to execute (so instead of simply waiting around the program can do other work as well). Additionally because threads share memory space the program won&#8217;t use much more memory (whereas if you split the work between different processes each one would have it&#8217;s own memory leading to much duplication). A final advantage of memory sharing is that variables and objects can be accessed by multiple threads; there is no need to engineer inter-process communications (although with the multiprocessing module this is trivial, more on this later in the fourth article of this series).</p>
+<p>But what happens if we have a much larger workload (instead of 3 domains to get we have 3 million) and a much more complex workload (we have to get the web pages, extract data from them and process the data for example). If we try to start up 3 million threads to handle each domain individually I can pretty much guarantee you are not going to increase performance.</p>
+<p><strong>Advanced Threading pattern</strong></p>
+<p>So starting up one thread per task is probably not the most optimal way to go, especially if the workload is large or if it varies. But how can we efficiently divvy up the workload among a (possibly indeterminate) number of threads? Taking the total number of things to do and dividing by the number of threads and then assigning that many things to each thread is not optimal. What if one thread gets saddled with URL&#8217;s that all take much longer than average to download? We are then left with one thread still running while the rest are finished their work and waiting idly. Also the amount of work may not be known in advance, or we want to be able to add more work. We may be reading URL&#8217;s from a database or a file and not know in advance how many we have.</p>
+<p>This is where Python work queues come in [WORKQUEUE]. A work queue provides a way to handle and share multiple objects, you put items into a queue and then retrieve them, the queue ensures that objects are entered correctly and removed correctly (so with multiple threads accessing a queue you don&#8217;t need to worry about locking and so on, you simply write to the queue or read from it and it works). Queues in Python can be FIFO (first in, first out, think of a pipe), LIFO (last in first out, think of a stack) and priority based (you can assign priorities to objects and then make sure that higher priority items are processed before lower priority items and so on).</p>
+<p>Queue syntax is very simple: you create a queue, then you put objects into it and get objects out of it. This allows you to use the producer/consumer pattern [Producer-consumer problem]. The following example has a producer thread that reads the URL entries into a queue, and a group of worker threads that pull an item from the queue, process it and then repeat until the queue is empty at which time they exit. In order to ensure that the main thread runs for a long enough time to let the producer and consumer child threads finish their work we&#8217;ll simply use the thread.join() method to hold the main thread open until all the children have exited.</p>
+<table border="1" cellspacing="0" cellpadding="4" width="665">
+<col width="435"></col>
+<col width="212"></col>
+<tbody>
+<tr valign="TOP">
+<td width="435">web_get_producer_consumer_basic_pattern.py</td>
+<td width="212"></td>
+</tr>
+<tr valign="TOP">
+<td width="435">
+<pre>#!/usr/bin/env python
+
+import urllib2
+import sys
+import Queue
+from threading import Thread
+
+host_list = ["http://lwn.net/", "http://seifried.org/", "http://google.com/", "http://yahoo.com/", "http://gmail.com/"]
+
+thread_list = []
+URL_work_queue = Queue.Queue()
+number_of_consumer_threads = 3
+
+def putURL(URL_list):
+    for URL_item in URL_list:
+        URL_work_queue.put(URL_item)
+
+def getURL(thread_id):
+    while 1:
+        try:
+            URL_toget = URL_work_queue.get(block=False)
+        except Queue.Empty:
+            print "thread exiting, id: " + str(thread_id)
+            sys.exit()
+        urllib2.urlopen(URL_toget)
+        print "got URL: " + URL_toget
+
+# fill the queue with work and block until we are done filling the queue
+
+producer_thread = Thread(target=putURL, args=(host_list,))
+producer_thread.start()
+producer_thread.join()
+
+# we can now start consumers
+
+for i in range(number_of_consumer_threads):    
+    t = Thread(target=getURL, args=(i,))
+    t.start()
+    thread_list.append(t)
+
+for thread in thread_list:
+    thread.join()
+</pre>
+</td>
+<td width="212"></td>
+</tr>
+</tbody>
+</table>
+<p>This pattern is efficient and can easily be extended to have multiple sets of threads and queues connecting them. Generally speaking I try to break the work tasks up into computationally intensive pieces (such as parsing a web page for content) and IO intensive tasks (such as requesting a web page or reading or writing a file). This allows tasks that do not require a lot of computation to quickly yield the GIL lock (more on this in the next article) allowing another thread to run (you want to do IO, especially network IO in parallel as much as possible since it is so slow). If we were to download the web page and process it within the same thread for example we would be limiting the number of simultaneous downloads since we&#8217;d be processing web pages when we could also be downloading them.</p>
+<p>Now as for code quality the above code has a number of significant problems (mostly architecturally but one or two implementation-wise) that will be addressed in the later articles of this series.</p>
+<p><strong>Work Queues</strong></p>
+<p>As you can see work queues provide an ideal mechanism for linking pools of threads. Implementing queues from scratch in other languages such as C or Java is an incredibly complex task, what if two threads try to write to the queue at the same time, how do you sure that two separate objects are created properly, or if multiple threads are reading from the queue how do you ensure that objects are handed out properly? The good news is that in Python due to its providing low level primitives like threads and queues, and the Global Interpreter Lock (GIL) you really don&#8217;t have to care or spend much time making sure you get it right since it&#8217;s built in.</p>
+<p><strong>Appendix</strong></p>
+<p>[THREAD]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/thread.html">http://docs.python.org/library/thread.html</a></span></p>
+<p>[THREADING]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/threading.html">http://docs.python.org/library/threading.html</a></span></p>
+<p>[WORKQUEUE ]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/queue.html">http://docs.python.org/library/queue.html</a></span></p>
+<p>[Producer-consumer problem]</p>
+<p><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Producer-consumer_problem">http://en.wikipedia.org/wiki/Producer-consumer_problem</a></span></p>
+<div id="_mcePaste" style="position:absolute;left:-10000px;top:532px;width:1px;height:1px;overflow:hidden;"><!--[if gte mso 9]&gt;  Normal 0   false false false        MicrosoftInternetExplorer4  &lt;![endif]--><!--[if gte mso 9]&gt;   &lt;![endif]--> <!--[if gte mso 10]&gt; &lt;!   /* Style Definitions */  table.MsoNormalTable 	{mso-style-name:&quot;Table Normal&quot;; 	mso-tstyle-rowband-size:0; 	mso-tstyle-colband-size:0; 	mso-style-noshow:yes; 	mso-style-parent:&quot;&quot;; 	mso-padding-alt:0in 5.4pt 0in 5.4pt; 	mso-para-margin:0in; 	mso-para-margin-bottom:.0001pt; 	mso-pagination:widow-orphan; 	font-size:10.0pt; 	font-family:&quot;Times New Roman&quot;; 	mso-ansi-language:#0400; 	mso-fareast-language:#0400; 	mso-bidi-language:#0400;} --> <!--[endif]--></p>
+<p class="TableContents">#!/usr/bin/env python</p>
+<p class="TableContents">import urllib2</p>
+<p class="TableContents">from threading import Thread</p>
+<p class="TableContents">hosts = [&#8220;<a href="http://lwn.net/&#038;#8221" rel="nofollow">http://lwn.net/&#038;#8221</a>;, &#8220;<a href="http://seifried.org/&#038;#8221" rel="nofollow">http://seifried.org/&#038;#8221</a>;, &#8220;<a href="http://google.com/&#8221;%5D" rel="nofollow">http://google.com/&#8221;%5D</a></p>
+<p class="TableContents">
+<p class="TableContents">def getURL(URL):</p>
+<p class="TableContents">urllib2.urlopen(URL)</p>
+<p class="TableContents">print &#8220;got URL: &#8221; + URL</p>
+<p class="TableContents">
+<p class="TableContents">for item in hosts:</p>
+<p class="TableContents">t = Thread(target=getURL, args=(item,))</p>
+<p><span style="font-size:12pt;font-family:&amp;"> t.start()</span></p>
+</div>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-86342-55-58419f023a70c' data-src='//widgets.wp.com/likes/#blog_id=86342&amp;post_id=55&amp;origin=kurtseifried.wordpress.com&amp;obj_id=86342-55-58419f023a70c' data-name='like-post-frame-86342-55-58419f023a70c'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts'>
+<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>
+<p class="clear">Tags: <a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/python-2/" rel="tag">python</a></p>
+<p class="postmetadata alt">
+<small>
+This entry was posted on May 31, 2010 at 2:24 AM and is filed under <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a>. You can follow any responses to this entry through the <a href='http://kurt.seifried.org/2010/05/31/python-performance-part-1/feed/'>RSS 2.0</a> feed.
+You can <a href="#respond">leave a response</a>, or <a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/trackback/" rel="trackback">trackback</a> from your own site.
+</small>
+</p>
+</div>
+</div>
+ 
+<h3 id="comments">5 Responses to &#8220;Python Performance Part&nbsp;1&#8221;</h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1 highlander-comment" id="comment-44">
+<cite>s7v7nislands</cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-44" title="">June 1, 2010 at 3:17 AM</a> | <a class='comment-reply-link' href='/2010/05/31/python-performance-part-1/?replytocom=44#respond' onclick='return addComment.moveForm("comment-44", "44", "respond", "55")'>Reply</a> </small>
+<p>I test the no join version using python 2.6.5 in gentoo, It just like join version.</p>
+<p>in python doc:<br/>
+The entire Python program exits when no alive non-daemon threads are left.</p>
+<p>so you need calll t.setDaemon(True) before t.start(), the no join version will exit like you say.</p>
+<p>sorry for poor english.</p>
+</li> 
+<li class="comment byuser comment-author-kurtseifried bypostauthor odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-45">
+<cite><a href='http://kurtseifried.wordpress.com/' rel='external nofollow' class='url'>kurtseifried</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-45" title="">June 1, 2010 at 2:20 PM</a> | <a class='comment-reply-link' href='/2010/05/31/python-performance-part-1/?replytocom=45#respond' onclick='return addComment.moveForm("comment-45", "45", "respond", "55")'>Reply</a> </small>
+<p>Yes, the point was to specifically show that you need to somehow keep the main thread running (if it exits, everything gets killed).</p>
+</li> 
+<li class="comment even thread-even depth-1 highlander-comment" id="comment-182">
+<cite><a href='http://www.lenshood.org' rel='external nofollow' class='url'>Lens Hood</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-182" title="">January 28, 2011 at 12:07 AM</a> | <a class='comment-reply-link' href='/2010/05/31/python-performance-part-1/?replytocom=182#respond' onclick='return addComment.moveForm("comment-182", "182", "respond", "55")'>Reply</a> </small>
+<p>:*: I am really thankful to this topic because it really gives great information &#8220;-`</p>
+</li> 
+<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-640">
+<cite><a href='http://twitter.com/Direvius' rel='external nofollow' class='url'>Alexey Lavrenuke (@Direvius)</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-640" title="">September 16, 2013 at 4:28 AM</a> | <a class='comment-reply-link' href='/2010/05/31/python-performance-part-1/?replytocom=640#respond' onclick='return addComment.moveForm("comment-640", "640", "respond", "55")'>Reply</a> </small>
+<p>&#8220;Implementing queues from scratch in other languages such as C or Java is an incredibly complex task&#8221; &#8212; why implement a queue from scratch? BlockingDeque and BlockingQueue solve the problem. And they are in the standard Java library. And GIL is not an advantage at all.</p>
+</li> 
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-4693">
+<cite><a href='https://hoelzle.work/2016/01/python-performance/' rel='external nofollow' class='url'>Python Performance &#8211; work in progress</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-4693" title="">April 7, 2016 at 2:01 PM</a> | <a class='comment-reply-link' href='/2010/05/31/python-performance-part-1/?replytocom=4693#respond' onclick='return addComment.moveForm("comment-4693", "4693", "respond", "55")'>Reply</a> </small>
+<p>[&#8230;] I recently ran into some performance issues while testing a python program that scans multiple logs simultaneously. While search for the culprit(s) of the bad performance, I stumbled upon a blog series about python performance. [&#8230;]</p>
+</li> 
+</ol>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+<div id="respond" class="comment-respond">
+<h3 id="reply-title" class="comment-reply-title">Leave a Reply to <a href="#comment-44">s7v7nislands</a> <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2010/05/31/python-performance-part-1/#respond">Cancel reply</a></small></h3> <form action="http://kurt.seifried.org/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+<input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="644ee5962f"/><input type="hidden" name="_wp_http_referer" value="/2010/05/31/python-performance-part-1/?replytocom=44"/>
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest"/>
+<div class="comment-form-field comment-textarea">
+<label for="comment">Enter your comment here...</label>
+<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+<div id="comment-form-identity" class="comment_registration">
+<div id="comment-form-nascar">
+<p>Please log in using one of these methods to post your comment:</p>
+<ul>
+<li>
+<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+<span></span>
+</a>
+</li>
+<li>
+</ul>
+</div>
+<div id="comment-form-guest" class="comment-form-service selected">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank"> <img src="" alt="Gravatar" width="25" class="no-grav"/>
+</a> </div>
+<div class="comment-form-fields">
+<div class="comment-form-field comment-form-email">
+<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+<div class="comment-form-input"><input id="email" name="email" type="email" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-author">
+<label for="author">Name <span class="required">(required)</span></label>
+<div class="comment-form-input"><input id="author" name="author" type="text" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-url">
+<label for="url">Website</label>
+<div class="comment-form-input"><input id="url" name="url" type="url" value=""/></div>
+</div>
+</div>
+</div>
+</div>
+<div id="comment-form-wordpress" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="WordPress.com Logo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value=""/>
+<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-twitter" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Twitter picture" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value=""/>
+<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-facebook" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Facebook photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value=""/>
+<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-googleplus" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Google+ photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value=""/>
+<p class="comment-form-posting-as pa-googleplus"><strong></strong> You are commenting using your Google+ account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-load-service" class="comment-form-service">
+<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+<p>Connecting to %s</p>
+</div>
+</div>
+<script type="text/javascript">
+var highlander_expando_javascript = function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+}
+jQuery(document).ready( highlander_expando_javascript );
+</script>
+<div id="comment-form-subscribe">
+<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog" style="display: inline;">Notify me of new posts via email.</label></p></div>
+<p class="form-submit">
+<input name="submit" type="submit" id="comment-submit" value="Post Comment"/>
+<input type='hidden' name='comment_post_ID' value='55' id='comment_post_ID'/>
+<input type='hidden' name='comment_parent' id='comment_parent' value='44'/>
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="789136b5da"/></p>
+<input type="hidden" name="genseq" value="1480695554"/>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="227"/></p> </form>
+</div> 
+<div style="clear: both"></div>
+</div>
+<hr/>
+<div id="footer">
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+<br/><a href="http://kurt.seifried.org/feed/">Entries (RSS)</a> and <a href="http://kurt.seifried.org/comments/feed/">Comments (RSS)</a>. </p>
+</div>
+</div>
+ 
+<div style="display:none">
+</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/kurtseifried.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?action=logout&_wpnonce=724fd47a24","homeURL":"http:\/\/kurt.seifried.org\/","postID":"55","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"1","userIsLoggedIn":"","isJetpack":"0","text_direction":"ltr"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s2.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1479964158j'></script>
+<script type='text/javascript' src='https://s1.wp.com/wp-content/mu-plugins/akismet-3.0/_inc/form.js?m=1404442431h'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var actionbardata = {"siteID":"86342","siteName":"Kurt Seifried","siteURL":"http:\/\/kurt.seifried.org","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/void.gif' class='avatar avatar-36' height='36' width='36' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/kubrick","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-1%2F","themeURL":"","xhrURL":"http:\/\/kurt.seifried.org\/wp-admin\/admin-ajax.php","nonce":"c5d9519be6","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"321560f319\" \/>","referer":"http:\/\/kurt.seifried.org\/2010\/05\/31\/python-performance-part-1\/?replytocom=44","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/kurtseifried.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fkurtseifried.wordpress.com%2F2010%2F05%2F31%2Fpython-performance-part-1%2F%3Freplytocom%3D44","postID":"55","shortlink":"http:\/\/wp.me\/pmsC-T","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/kurt.seifried.org\/55","i18n":{"view":"View Site","follow":"Follow","following":"Following","edit":"Edit","login":"Log In","signup":"Sign Up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Kubrick","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editFollows":"Manage Sites I Follow","editSubs":"Manage Subscriptions","viewReader":"View Site in the Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-1%2F\">Log in now.<\/a>"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJx9jEEOwjAMBD9EalBRywXxlpBY4BI7wUkK/J70QMWpt9XO7sArGReloBSYMnicyWF6d1PewR/ialKoN5IMgR6Y4Vmx4t2KD6i/MYkL1TfYRC4yt6NRTOHTMcmG0frGzdUqsM0FtSUTZ1SlRbZ2WwZXKMpiWFNbX/h8OI5D35+GcT99AYXhVt0='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script> <iframe src='http://widgets.wp.com/likes/master.html?ver=20160429#ver=20160429' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.async = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+<noscript>
+<p class="robots-nocontent"><img src="http://b.scorecardresearch.com/p?c1=2&c2=7518284&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1" alt="" style="display:none;" width="1" height="1"/></p>
+</noscript><script src="//stats.wp.com/w.js?55" type="text/javascript" async defer></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'86342','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'86342','v':'wpcom','tz':'-7','user_id':'0','post':'55','subd':'kurtseifried'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V+ZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWUvaXV2SXw2VHdNNCU/NEpFXz1BLGxlbi1tLUZ1XUttSnYueD9dbHo4MV8sW1I0eXhJdWh4S35hUk8sUzlMdGkvUG0zfnp8LlZPaTZFLGlkKzZSeEU5dD9beUpyX3FrSVItR2dqWENIZHdhZXdreFNnN3oxMXQtKzBmMFNmLm9kP01kQjZENQ=='}]);
+_stq.push([ 'clickTrackerInit', '86342', '55' ]);
+	</script>
+<noscript><img src="http://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt=""/></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script></body>
+</html>

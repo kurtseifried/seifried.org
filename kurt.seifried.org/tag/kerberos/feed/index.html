@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>kerberos &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/kerberos/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:46 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>kerberos &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Google Chrome and Kerberos on Linux</title>
+		<link>http://kurt.seifried.org/2012/11/24/google-chrome-and-kerberos-on-linux/</link>
+		<comments>http://kurt.seifried.org/2012/11/24/google-chrome-and-kerberos-on-linux/#comments</comments>
+		<pubDate>Sun, 25 Nov 2012 04:54:34 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Information Security]]></category>
+		<category><![CDATA[Linux]]></category>
+		<category><![CDATA[chrome]]></category>
+		<category><![CDATA[kerberos]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=241</guid>
+		<description><![CDATA[So we all know you can enable Kerberos by adding the &#8220;&#8211;auth-server-whitelist&#8221; to the command line: google-chrome --auth-server-whitelist="*.example.org" But you can also make it permanent. Simply create a directory (in Linux) called /etc/opt/chrome/policies/managed/ and within it drop a json file such as example-corp.json with the following contents: { "AuthServerWhitelist": "*.example.org", "AuthNegotiateDelegateWhitelist": "*.example.org" } And voila, [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=241&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So we all know you can enable Kerberos by adding the &#8220;&#8211;auth-server-whitelist&#8221; to the command line:</p>
+<pre style="padding-left:30px;">google-chrome --auth-server-whitelist="*.example.org"</pre>
+<p>But you can also make it permanent. Simply create a directory (in Linux) called /etc/opt/chrome/policies/managed/ and within it drop a json file such as example-corp.json with the following contents:</p>
+<pre style="padding-left:30px;">{ "AuthServerWhitelist": "*.example.org",
+"AuthNegotiateDelegateWhitelist": "*.example.org" }</pre>
+<p>And voila, no need to fiddle the command line options every time you start Chrome. Plus as an administrator you can simply deploy that file automatically across all your workstations and not have to bother the users, things will just work.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/241/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/241/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=241&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/11/24/google-chrome-and-kerberos-on-linux/feed/</wfw:commentRss>
+		<slash:comments>3</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

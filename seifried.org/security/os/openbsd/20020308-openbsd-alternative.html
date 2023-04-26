@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - OpenBSD - a secure alternative</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>OpenBSD - a secure alternative</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#0d66787f794d7e68646b7f64686923627f6a"><span class="__cf_email__" data-cfemail="4d26383f390d3e28242b3f24282963223f2a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>So you want to build a firewall, but aren't quite sure what to
+use? You might want to consider OpenBSD, an secure offshoot of
+the BSD family. From the beginning OpenBSD's entire purpose has
+been to be a secure operating system. In order to achieve this,
+the OpenBSD founder (Theo de Raadt) started a code audit project,
+pretty much every single line of code in OpenBSD has been
+checked, and many problems were found, and fixed. In addition to
+this OpenBSD is based out of Canada, which allows for the
+inclusion of strong cryptography software with the OS. One prime
+example is the planned addition of OpenSSH, based off of SSH
+1.2.12, in the next release of OpenBSD (2.7, this winter or so).
+OpenBSD also has a slightly better network stack then Linux (at
+least 2.2.x Linux), applications such as Network Flight Recorder,
+which take large volumes of data off of the network simply do not
+work well under most operating systems. Many of the commercial
+IDS systems use OpenBSD as their OS of choice.</p>
+<p><b>Getting started</b></p>
+<p>You can buy OpenBSD on CDROM, and this is probably a good
+choice for several reasons. One you are getting the OS on trusted
+media, you can verify the package signatures, and be sure that
+nothing strange has been done to the software. You also do not
+need to download OpenBSD, which depending on your network
+connection can be tricky (I'm lucky, my ISP has a 10 meg peer
+link to the UofA which hosts ftp.openbsd.org). Also by buying the
+OpenBSD CD's you are supporting their effort, which is a nice
+thing to do. Once you have OpenBSD you can boot off the CD, or
+create a bootable floppy disk and use this. Simply write the file
+image &quot;floppy25.fs&quot; onto a floppy disk using dd under
+Linux/etc:</p>
+<pre>dd if=floppy25.fs of=/dev/fd0</pre>
+<p>Or under Windows use &quot;rawrite.exe&quot;, or
+&quot;ntrw.exe&quot; under NT (NT complains loudly if you use
+rawrite.exe). These are available in the &quot;tools&quot;
+directory (please see links at the bottom of the page).</p>
+<p><b>Installation</b></p>
+<p>I'm going to assume we're installing on an Intel based PC,
+however OpenBSD supports a variety of architectures such as
+PowerPC, Alpha and Sparc among others if you want to use
+something more &quot;exotic&quot;. For first time installers I
+would recommend giving up an entire harddrive to OpenBSD, this
+simplifies matters considerably. Simply boot off of the CDROM or
+floppy disk, choose Install, when it asks you which harddrive to
+use (for example on a machine with one IDE HD it will offer
+&quot;wd0&quot;), choose your harddrive, and answer
+&quot;yes&quot; to using the entire drive. You will then be
+dumped into the label editor, a somewhat traumatic experience if
+you've never used one before. The portion of the harddrive you
+want to use with OpenBSD will be in the &quot;c&quot; portion,
+and within that portion you will create the partitions you want.
+Minimally you will need one partition for data (/) and one for
+swap. Use &quot;d&quot; to delete existing portions if you want
+to clear the HD up a bit, and then create partitions with
+&quot;a&quot;, you should end up with something like:</p>
+<pre>16 partitions:
+#	size	offset	fstype	[fsize	bsize	cpg]
+  a:  8200000	    63	4.2BSD	  1024	 8192	  6
+  b:   221777    8200063	  swap
+  c:  8421840	     0	unused	     0       0</pre>
+<p>Blocks are measured in 512 byte blocks, not 1024 byte blocks,
+so if your HD appears twice as large as normal, this is why (my
+example is a Western Digital Caviar 24300). Then hit q to quit
+and save changes. You probably don't want to edit the disk labels
+by hand using ed, so say no, and then yes to &quot;Are you really
+sure that you're ready to proceed?&quot;, at this point the
+partitions will be formatted.</p>
+<p>Configuring the network is a straightforward process, you
+assign it a hostname and so on, and then configure the individual
+interfaces. If you want to use dhcp on an interface, you can, or
+you can set them statically, following this you set the default
+gateway and nameservers, if one of your interfaces uses dhcp and
+is assigned this OpenBSD will &quot;suggest&quot; these, making
+life simple. The next step is to set the root password, the
+standard &quot;choose a good password&quot; lecture applies here
+of course.</p>
+<p>You then get to choose what to install from, my preferred
+method is ftp, however you can also install from http, tae,
+CDROM, NFS or a local harddrive. If you choose ftp you will be
+asked for a proxy/etc (you don't need to use on of course), and
+then whether to use active ftp or not (this is nice since many
+firewalls and ftp servers do strange things). You can as for a
+list of potential servers, simply choose one &quot;close&quot; to
+you, of you can use your own server (what I do), and you can then
+login anonymously or with an account. The install then logs into
+the FTP server and gets a list of available packages you can
+install. I would recommend installing misc25.tar.gz,
+comp25.tar.gz, and man25.tar.gz if this is your first install,
+the man pages will really help, and the ability to compile
+software (like ssh, which will be included in 2.6) is nice. I
+wouldn't bother to install X on a machine destined to be a
+firewall. After this you will need to set the timezone, and will
+be asked if the machine is going to run X or not (it doesn't do
+the X configuration during install). After this it will populate
+the /dev/ directory, and then dump you to a root prompt. Type in
+&quot;halt&quot; and hit any key when it tells you to. Don't
+forget to take the floppy disk and/or CDROM out.</p>
+<p><b>Configuration</b></p>
+<p>This is something I hated at first, simply because OpenBSD is
+&quot;different&quot; from what I am used to, but after a few
+hours I must say it grew on me, and I now wish Linux did things
+the OpenBSD way. Log in to your machine using the root account,
+if you do not know how to navigate using sh, or edit files using
+vi I suggest you check the resources and come back. First you
+will need to enable IP forwarding, by default OpenBSD will not
+pass packets between interfaces, which is a good idea for
+security. Edit the /etc/sysctl.conf file and uncomment the line:</p>
+<pre>#net.inet.ip.forwarding=1 # 1=Permit forwarding (routing) or packets</pre>
+<pre>net.inet.ip.forwarding=1 # 1=Permit forwarding (routing) or packets</pre>
+<p>Then edit /etc/rc.conf and turn on IP Filtering and IP NAT.</p>
+<pre>ipfilter=NO
+ipnat=NO		# for &quot;YES&quot; ipfilter must also be &quot;YES&quot;</pre>
+<p>To:</p>
+<pre>ipfilter=YES	# ipfiltering?
+ipnat=YES		# for &quot;YES&quot; ipfilter must also be &quot;YES&quot;</pre>
+<p>You will also need to edit the IP filter rules and IP NAT
+table. For now we will allow any and all data traffic, you can
+always add rules later. Put the following into /etc/ipf.rules:</p>
+<pre>pass out from any to any
+pass in from any to any</pre>
+<p>Assuming de0 is your external interface, and 192.168.0.0 is
+your internal protected network you will want something like this
+in /etc/ipnat.rules:</p>
+<pre>map de0 192.168.0.0/24 -&gt; de0/32 portmap tcp/udp 10000:20000
+map de0 192.168.0.0/24 -&gt; de0/32</pre>
+<p>This means map traffic going through de0 (the external
+interface) from 192.168.0.0/24 (the internal network, so
+obviously this traffic is bound for the Internet) to the IP
+addresses associated with de0 (you can set this to 1.2.3.4/32 for
+example). I prefer to use the interface/netmask because many
+machines I administer are on DHCP networks, so it takes some
+guess work out of the equation.</p>
+<p>Reboot and you should be able to reach the Internet from your
+internal protected network. There is more extensive documentation
+at OpenBSD's website, and the various man pages (man ipnat, man
+ipf, and so on) also contain good information.</p>
+<p><b>Securing the machine</b></p>
+<p>On a firewall machine you should disable as much as possible.
+Turning off inetd and portmap (pretty much the only services
+installed and on by default in OpenBSD) will plug most of your
+holes. You should then install SSH so that your remote logins are
+encrypted. To disable inetd and portmap simply edit /etc/rc.conf:</p>
+<pre>portmap=YES # almost always needed
+inetd=YES # almost always needed</pre>
+<p>And set them to:</p>
+<pre>portmap=NO # almost always needed
+inetd=NO # almost always needed</pre>
+<p>Doing this will leave no externally available network daemons
+running, apart from SSH of course. Use &quot;netstat -an&quot; to
+list open sockets (i.e. the ones in state &quot;LISTEN&quot;).
+One note, you will see port 514 open, this is the port used by
+syslog, and unless you change syslog so that it runs in
+&quot;INSECURE&quot; mode, it will only use this port to SEND
+messages, it does not listen to it. Do not run syslog in
+&quot;INSECURE&quot; unless you are using OpenBSD as a remote
+logging box and are aware of the potential problems.</p>
+<p><b>SSH</b></p>
+<p>Since SSH is not yet included with OpenBSD I thought it would
+be prudent to cover installation of it. Start by getting the
+ports file (ports.tar.gz) from your favorite OpenBSD site, then
+unpack it to /usr, and start the SSH compile:</p>
+<pre>cd /usr
+tar -zxf ~/ports.tar.gz
+cd ports/security/ssh/
+make USA_RESIDENT=YES
+make install</pre>
+<p>You should of course use &quot;make USA_RESIDENT=NO&quot; if
+you are not in the US. This is due to the patents on RSA. By
+default SSH is turned on, if for some reason it isn't simply edit
+/etc/rc.conf:</p>
+<pre>sshd=YES # run sshd if it exists</pre>
+<p>And reboot to ensure everything works.&nbsp;If it doesn't take
+the typical trouble shooting methods of reading the boot up
+messages, followed by pinging hosts from other hosts on the same
+network, then pinging the external interface from an internal
+host, and so on. Generally speaking most errors will be a typo or
+something left out, and not &quot;broken&quot; software.</p>
+<p><b>Summary</b></p>
+<p>OpenBSD provides a very stable network operating system that
+is extremely secure. It is the only operating system I have seen
+that is widely available and includes strong crypto (IPSec, etc.)
+built into the basic distribution. It's network performance is
+also ahead of most other systems, especially in the areas of
+network sniffing (see the Anzen research paper for some startling
+results). I would highly recommend OpenBSD for firewall and IDS
+based systems.&nbsp;</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://www.anzen.com/research/research_perform.html">http://www.anzen.com/research/research_perform.html</a></p>
+<p><a href="ftp://ftp.openbsd.org/pub/OpenBSD/2.5/tools/">ftp://ftp.openbsd.org/pub/OpenBSD/2.5/tools/</a></p>
+<p><a href="ftp://ftp.openbsd.org/pub/OpenBSD/2.5/i386/floppy25.fs">ftp://ftp.openbsd.org/pub/OpenBSD/2.5/i386/floppy25.fs</a></p>
+<p><a href="http://www.openbsd.org/">http://www.openbsd.org/</a></p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 15/2/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

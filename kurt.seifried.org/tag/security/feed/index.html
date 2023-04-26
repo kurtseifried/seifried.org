@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>security &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/security/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:33 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>security &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>VMware update insecurity</title>
+		<link>http://kurt.seifried.org/2013/04/16/vmware-update-insecurity/</link>
+		<comments>http://kurt.seifried.org/2013/04/16/vmware-update-insecurity/#respond</comments>
+		<pubDate>Tue, 16 Apr 2013 17:24:47 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[vmware]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=279</guid>
+		<description><![CDATA[So the good news is VMware has a built in updater, and even better the server it uses to query for information is SSL/TLS enabled. The bad news is they are using Akamai with an insecure configuration: A quick note: Akamai is a huge content delivery network (CDN) used by many vendors to deliver content and software [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=279&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So the good news is VMware has a built in updater, and even better the server it uses to query for information is SSL/TLS enabled. The bad news is they are using Akamai with an insecure configuration: <a href="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png"><img class="aligncenter size-large wp-image-281" alt="vmware-update-overall-grade" src="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=450&#038;h=246" width="450" height="246" srcset="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=450&amp;h=246 450w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=897&amp;h=492 897w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=150&amp;h=82 150w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=300&amp;h=164 300w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=768&amp;h=421 768w" sizes="(max-width: 450px) 100vw, 450px" /></a> A quick note: Akamai is a huge content delivery network (CDN) used by many vendors to deliver content and software updates to end customers. Some pretty insecure configurations of SSL and TLS are supported by Akamai for the simple fact that there is still a lot of old software/clients out there, which Akamai&#8217;s customers want to support. As you can see here if you query <a href="https://www.ssllabs.com/ssltest/analyze.html?d=softwareupdate.vmware.com">https://www.ssllabs.com/ssltest/analyze.html?d=softwareupdate.vmware.com</a> they use an Akamai certificate: <a href="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png"><img class="aligncenter size-large wp-image-280" alt="vmware-update-akamai" src="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=450&#038;h=265" width="450" height="265" srcset="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=450&amp;h=265 450w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=150&amp;h=89 150w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=300&amp;h=177 300w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=768&amp;h=454 768w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png 816w" sizes="(max-width: 450px) 100vw, 450px" /></a> Nothing wrong so far, but when you look at the versions of the SSL protocol that are supported they have left SSL 2.0 enabled, and they have also left weak ciphers including several 40 bit ones enabled: <a href="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png"><img class="aligncenter size-large wp-image-282" alt="vmware-update-weak-ciphers" src="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=450&#038;h=297" width="450" height="297" srcset="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=450&amp;h=297 450w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=150&amp;h=99 150w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=300&amp;h=199 300w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=768&amp;h=509 768w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png 817w" sizes="(max-width: 450px) 100vw, 450px" /></a> This makes an SSL downgrade attack trivial for an attacker as 40 bit keys can be broken in near real time now with even a remotely powerful computer that has a GPU.  Using this an attacker can man in the middle your upgrade session and tell the client no updates are available (forcing you to remain on an older version with security issues), or potentially send you a malicious update. I haven&#8217;t looked at the guts of the VMware updater, for all I know they may use additional protections like secure signing of the update software itself, but let&#8217;s hope they do, because the communication channels it is sent over are not very secure. The good news is that fixing this is easy, VMware just needs to make sure their updater software supports TLS and secure ciphers (which if they&#8217;re using an even moderately up to date library won&#8217;t be a problem), and they need to update their Akamai configuration to exclude SSL 2.0 and the weak ciphers.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/279/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/279/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=279&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/04/16/vmware-update-insecurity/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=450" medium="image">
+			<media:title type="html">vmware-update-overall-grade</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=450" medium="image">
+			<media:title type="html">vmware-update-akamai</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=450" medium="image">
+			<media:title type="html">vmware-update-weak-ciphers</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>How not to post log information, or why I shred every piece of paper I touch</title>
+		<link>http://kurt.seifried.org/2012/07/04/how-not-to-post-log-information-or-why-i-shred-every-piece-of-paper-i-touch/</link>
+		<comments>http://kurt.seifried.org/2012/07/04/how-not-to-post-log-information-or-why-i-shred-every-piece-of-paper-i-touch/#respond</comments>
+		<pubDate>Wed, 04 Jul 2012 21:09:35 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[sanitizing]]></category>
+		<category><![CDATA[security]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=207</guid>
+		<description><![CDATA[So this thread just came to my attention: http://comments.gmane.org/gmane.mail.postfix.user/227441 I use postfix2.5.5 rpm to run postfix as relay server since from last many day my application team of SAP software started complaining for the smtp email failuer pls find the below longs ++++++++++++++++++++++++++++++++++++++++++++ Email 1 Feb  6 10:41:22 D1SNX682RL postfix/smtpd[3693]: connect from unknown[155.14.132.36] Feb  6 10:41:23 [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=207&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So this thread just came to my attention: <a href="http://comments.gmane.org/gmane.mail.postfix.user/227441">http://comments.gmane.org/gmane.mail.postfix.user/227441</a></p>
+<div style="padding-left:30px;">I use postfix2.5.5 rpm to run postfix as relay server</div>
+<div style="padding-left:30px;">since from last many day my application team of SAP software started complaining for the smtp email failuer</div>
+<div style="padding-left:30px;">pls find the below longs</div>
+<div style="padding-left:30px;">++++++++++++++++++++++++++++++++++++++++++++</div>
+<div style="padding-left:30px;">
+<p style="padding-left:30px;">Email 1</p>
+<p style="padding-left:30px;">Feb  6 10:41:22 D1SNX682RL postfix/smtpd[3693]: connect from unknown[155.14.132.36]<br />
+Feb  6 10:41:23 D1SNX682RL postfix/smtpd[3693]: 20C453E00C0: client=unknown[155.14.132.36]<br />
+Feb  6 10:41:23 D1SNX682RL postfix/cleanup[10313]: 20C453E00C0: warning: header Subject: RE: RE: RE: RE: RE:// FOLLOW UP // HBL SCREENSHOT //  FINAL SI &amp; HBL // E.R FREMANTLE 087 // HIBLOW from unknown[155.14.132.36]; from=&lt;<a href="mailto:MANILA_DOCS &lt;at&gt; APL.COM">MANILA_DOCS &lt;at&gt; APL.COM</a>&gt; to=&lt;<a href="mailto:crm_email_archive_apl &lt;at&gt; apl.com">crm_email_archive_apl &lt;at&gt; apl.com</a>&gt; proto=ESMTP helo=&lt;<a href="http://nol.com.sg/">nol.com.sg</a>&gt;<br />
+Feb  6 10:41:23 D1SNX682RL postfix/cleanup[10313]: 20C453E00C0: message-id=&lt;<a href="mailto:ADR37000000104995 &lt;at&gt; nol.com.sg">ADR37000000104995 &lt;at&gt; nol.com.sg</a>&gt;<br />
+Feb  6 10:44:27 D1SNX682RL postfix/smtpd[3693]: lost connection after DATA (437492 bytes) from unknown[155.14.132.36]<br />
+Feb  6 10:44:27 D1SNX682RL postfix/smtpd[3693]: disconnect from unknown[155.14.132.36]</p>
+<p>Followed by:</p>
+</div>
+<p style="padding-left:30px;">please at least remove from this site , there is security audit going on in my organisation i dont want to maintain this thread , please remove this .</p>
+<p>Whoops. You may have noticed in my previous posting &#8220;<a href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/">Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication</a>&#8221; I took the time to sanitize all the IPs and hostnames presented in the examples. It was a bit of a chorse (running search and replace is simple, but reading the results three times to ensure nothing was missed is tedious), but it&#8217;s worth it. Would the information aid an attacker? A little bit. There are other ways to find this out as well (error messages from servers, etc.).</p>
+<p>But the reason I do it is simple: if you ALWAYS sanitize information then you won&#8217;t run into a situation where you decided not to sanitize the information and later turned out to be wrong. This is exactly why I shred every single piece of paper I touch before throwing it out. Do I need to shred the envelopes my bills come in? They have no personal information/etc., they could conceivably be used to determine which banks/companies I deal with, and how much I deal with them, but I&#8217;m not overly worried about that (anyone taking the time to go through all my trash can find this out other ways). No the reason I shred everything, including envelopes is so that I never have to worry about throwing something away sensitive. Also I don&#8217;t have to spend any time/effort deciding if something needs shredding or not, it all automatically goes into a pile, and when I&#8217;m bored I feed the shredder (I actually find it oddly fun&#8230;).</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/207/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/207/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=207&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/07/04/how-not-to-post-log-information-or-why-i-shred-every-piece-of-paper-i-touch/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Creating temporary files securely</title>
+		<link>http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/</link>
+		<comments>http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/#comments</comments>
+		<pubDate>Wed, 14 Mar 2012 20:29:14 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[auditing]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[tmp]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=165</guid>
+		<description><![CDATA[Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to use them, creating security vulnerabilities in their applications. So in alphabetical order here is a list of programming languages and how to create a [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=165&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to use them, creating security vulnerabilities in their applications. So in alphabetical order here is a list of programming languages and how to create a temporary file securely. If I&#8217;m wrong, please let me know. Note: when searching for a secure temporary file creation function/method/etc. looking for &#8220;mkstemp&#8221; is a quick way to find most of them. Please note a lot of sites (e.g. <a href="http://rosettacode.org/wiki/Secure_temporary_file" rel="nofollow">http://rosettacode.org/wiki/Secure_temporary_file</a>) contain old/wrong information.</p>
+<h2>O_CREAT and O_EXCL (and similar)</h2>
+<p>When opening a temporary file in C you MUST use O_CREAT and O_EXCL together to ensure that the file is only created if the file does not exist. Otherwise between the time you check for the existence of a file and the time you create the file an attacker may be able to create a file with the same name. The good news here is that virtually every secure temporary file creation function/library does this or an equivalent option. To quote mkstemp():</p>
+<blockquote><p>The mkstemp() function shall replace the contents of the string pointed to by template by a unique filename, and return a file descriptor for the file open for reading and writing. The function thus prevents any possible race condition between testing whether the file exists and opening it for use.</p></blockquote>
+<h2><strong>Why &#8220;unique&#8221; names are not enough, but are generally not a huge problem</strong></h2>
+<p>People often think that creating a file with a &#8220;unique&#8221; name in /tmp (e.g. &#8220;/tmp/myprogram-output.log&#8221;) is sufficient to safely create a temporary file. However if you create the file with a known or easily guessed name (e.g. a static name set in the source code or a config file) an attacker can create the file first and then your application will be unable to, creating a denial of service condition potentially.</p>
+<p>However the names don&#8217;t have to be terribly unique. For example if you use mkstemp() with 10 random characters (the default) gives on the order of 839,299,365,868,340,224 possible file names. Any attacker able to create enough files to force a collision of the name would be able to fill up the /tmp directory in any event (unless you have an absurdly large /tmp directory that is several exabytes in size, which won&#8217;t be a problem for some time).</p>
+<h2>Unexpected temporary files</h2>
+<p>It should also be noted that many programs create temporary files. Text editors and other file editors may create temporary file saves in /tmp or /var/tmp and so on.</p>
+<h2>The problem with $TMP, $TEMP, $TMPDIR, $TEMPDIR and so on</h2>
+<p>One note: if you&#8217;re going to use environmental variables you&#8217;d better make sure you sanitize them and ensure they aren&#8217;t overly long. User controlled environmental variables are just that, user controlled. I can&#8217;t find a good set of libraries or code to sanitize these variables before use, if anyone knows of such a thing please contact me (<a href="mailto:kurt@seifried.org">kurt@seifried.org</a>).</p>
+<h2>Better list for lots of other languages:</h2>
+<p>Please see <a href="http://rosettacode.org/wiki/Secure_temporary_file">http://rosettacode.org/wiki/Secure_temporary_file</a></p>
+<h2><strong>Bash</strong></h2>
+<p>Simply use &#8220;mktemp&#8221; (&#8220;man mktemp&#8221; for details). Use &#8220;-d&#8221; or &#8220;&#8211;directory&#8221; for creating directories.</p>
+<h2><strong>C</strong></h2>
+<p>use mkstemp() (&#8220;man mkstemp&#8221; for details) for files</p>
+<p>use mkdtemp() (&#8220;man mkdtemp&#8221; for details) for directories</p>
+<p>tmpfile() is another option &#8211; Creates a temporary binary file, open for update (wb+ mode &#8212; see fopen for details). The filename is guaranteed to be different from any other existing file.</p>
+<h2><strong>C++</strong></h2>
+<p>use mkstemp() (&#8220;man mkstemp&#8221; for details)</p>
+<p>use mkdtemp() (&#8220;man mkdtemp&#8221; for details) for directories</p>
+<p>tmpfile() is another option &#8211; Creates a temporary binary file, open for update (wb+ mode &#8212; see fopen for details). The filename is guaranteed to be different from any other existing file.</p>
+<p>On Windows use GetTempPath() and GetTempFileName () (same names in C#)</p>
+<h2><strong>C#</strong></h2>
+<p>Path.GetTempFileName() <a href="http://msdn.microsoft.com/en-us/library/system.io.path.gettempfilename(v=vs.80).aspx">http://msdn.microsoft.com/en-us/library/system.io.path.gettempfilename(v=vs.80).aspx</a></p>
+<h2><strong>Cocoa</strong></h2>
+<p><a href="http://stackoverflow.com/questions/215820/how-do-i-create-a-temporary-file-with-cocoa">http://stackoverflow.com/questions/215820/how-do-i-create-a-temporary-file-with-cocoa</a></p>
+<h2>Google Go (golang)</h2>
+<p>So ioutil.TempDir and ioutil.TempFile automatically appends a uint32 and has default permissions of 0600. Well done.</p>
+<p><a href="http://golang.org/pkg/io/ioutil/#TempDir">http://golang.org/pkg/io/ioutil/#TempDir</a></p>
+<p>Use this and you&#8217;re safe. Just a note: io.TempDir returns the value of the temporary directly (e.g. /tmp).</p>
+<h2><strong>Java</strong></h2>
+<p>use java.io.File.createTempFile() &#8211; some interesting info at <a href="http://www.veracode.com/blog/2009/01/how-boring-flaws-become-interesting/">http://www.veracode.com/blog/2009/01/how-boring-flaws-become-interesting/</a></p>
+<p>for directories there is a helpful posting at <a href="http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java">http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java</a></p>
+<p><strong style="color:#2b6fb6;font-size:1.5em;">Java 7</strong></p>
+<p>for files use java.io.File.createTempFile()</p>
+<p>for directories use createTempDirectory()</p>
+<p><a href="http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html">http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html</a></p>
+<p><strong style="color:#2b6fb6;font-size:1.5em;">Lisp</strong></p>
+<p><a href="http://stackoverflow.com/questions/1384972/common-lisp-function-or-idiom-for-creating-a-temporary-file-name">http://stackoverflow.com/questions/1384972/common-lisp-function-or-idiom-for-creating-a-temporary-file-name</a></p>
+<h2>nodejs</h2>
+<p><a href="http://stackoverflow.com/questions/7055061/nodejs-temporary-file-name">http://stackoverflow.com/questions/7055061/nodejs-temporary-file-name</a></p>
+<h2><strong>Perl</strong></h2>
+<p>use mkstemp()</p>
+<p><a href="http://perldoc.perl.org/File/Temp.html#MKTEMP-FUNCTIONS">http://perldoc.perl.org/File/Temp.html#MKTEMP-FUNCTIONS</a></p>
+<h2><strong>Python</strong></h2>
+<p>Simply use &#8220;mkstemp&#8221; for files and &#8220;mkdtemp&#8221; for directories from the &#8220;tempfile&#8221; module:</p>
+<p><a href="http://docs.python.org/library/tempfile.html#tempfile.mkstemp">http://docs.python.org/library/tempfile.html#tempfile.mkstemp</a></p>
+<h2><strong>QT</strong></h2>
+<p>use QTemporaryFile for files:</p>
+<p><a href="http://qt-project.org/doc/qt-4.8/qtemporaryfile.html">http://qt-project.org/doc/qt-4.8/qtemporaryfile.html</a></p>
+<p>use  for QTemporaryDir directories:</p>
+<p><a href="http://qt-project.org/doc/qt-5.0/qtemporarydir.html">http://qt-project.org/doc/qt-5.0/qtemporarydir.html</a></p>
+<h2><strong>Ruby</strong></h2>
+<p>use Tempfile for files:</p>
+<p><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tempfile/rdoc/Tempfile.html#method-c-new">http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tempfile/rdoc/Tempfile.html#method-c-new</a></p>
+<p>use tmpdir for directories (require &#8216;tmpdir&#8217; and then you can &#8220;Dir.mktmpdir&#8221;):</p>
+<p><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tmpdir/rdoc/index.html" rel="nofollow">http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tmpdir/rdoc/index.html</a></p>
+<h2>Making per user /tmp directories</h2>
+<p>Using PAM you can also make per user /tmp directories using polyinstantiation <a href="http://www.ibm.com/developerworks/linux/library/l-polyinstantiation/">http://www.ibm.com/developerworks/linux/library/l-polyinstantiation/</a></p>
+<p>If you have a system with many users (e.g. a shell server or web host) this is a great way to avoid the whole /tmp mess at the system level rather than trying to ensure your applications are properly written.</p>
+<h2>Monitoring /tmp for activity</h2>
+<p>So how can we be sure our changes work and temporary directories and files are being created safely? Conversely how can we monitor /tmp to watch for programs that use /tmp improperly or in unsafe ways? Linux has an <a href="http://en.wikipedia.org/wiki/Inotify">inotify </a>subsystem that allows you to monitor a file(s) or directory(s) (including recursively) for file and directory related activity (creation, deletion, modification, etc.). The downside of inotify is that, as far as I can tell, there is no way to list which process was responsible (so if you have a large application and multiple applications running it may be difficult to track down which one specifically created the file/etc.</p>
+<p>To use inotify use either the &#8220;inotify-tools&#8221; or &#8220;pyinotify&#8221; programs, I prefer pynitofy, the output is really easy to read:</p>
+<pre style="padding-left:30px;"># /usr/bin/pyinotify /tmp/
+&lt;Event dir=True mask=0x40000100 maskname=IN_CREATE|IN_ISDIR \
+name=foo.ooCHP2tb1adt path=/tmp pathname=/tmp/foo.ooCHP2tb1adt wd=1 &gt;</pre>
+<p>You can also use SELinux, running permissive mode simply disable all access to /tmp and then run your application(s). The log files will show any accesses of /tmp including the process information.</p>
+<h2>Auditing for /tmp file vulnerabilities</h2>
+<p>It&#8217;s not hard, mostly I just do:</p>
+<pre style="padding-left:30px;">find ./ -type f -exec grep /tmp {} +</pre>
+<p>and if they wrote the code using the above techniques it is probably safe, if it is written any other way it&#8217;s probably wrong.</p>
+<h1>Which directory should you use?</h1>
+<p>You should be using /var/run/something/ or /run/something/ that is setup in advance and secured for the users/groups that require it.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/165/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/165/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=165&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/feed/</wfw:commentRss>
+		<slash:comments>3</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Spotting counterfeit money</title>
+		<link>http://kurt.seifried.org/2010/04/22/spotting-counterfeit-money/</link>
+		<comments>http://kurt.seifried.org/2010/04/22/spotting-counterfeit-money/#respond</comments>
+		<pubDate>Thu, 22 Apr 2010 08:55:40 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[currency]]></category>
+		<category><![CDATA[infosec]]></category>
+		<category><![CDATA[security]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=19</guid>
+		<description><![CDATA[It&#8217;s about time but Canada will be moving to a plastic/polymer bill based instead of paper/linen based bills in 2011 or so. Back in 2004 counterfeit bills peaked (&#8220;The prevalence of counterfeiting in Canada and its impact on direct victims and society&#8220;) and prior to that the majority of it was $50 and $100 bills [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=19&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>It&#8217;s about time but Canada will be moving to a plastic/polymer bill based instead of paper/linen based bills in 2011 or so. Back in 2004 counterfeit bills peaked (&#8220;<a title="The prevalence of counterfeiting in Canada and its impact on direct victims and society" href="http://www.bank-banque-canada.ca/en/banknotes/education/pdf/prevalence_victim_impact2010.pdf">The prevalence of counterfeiting in Canada and its impact on direct victims and society</a>&#8220;) and prior to that the majority of it was $50 and $100 bills being counterfeited by one guy (<a href="http://en.wikipedia.org/wiki/Wesley_Weber">Wesley Weber</a>) who managed to put enough fake $100 bills into circulation that even now in 2010 most retailers won&#8217;t accept $100 bills.</p>
+<p>Probably the easiest way to defeat counterfeiters is the move to plastic/polymer notes, this is a combination of the ease of checking the bills (the feel/etc. will be entirely different than current notes, even in a dark nightclub a waitress should be able to tell the difference) and the difficulty in getting the stock and printing on it (at least for now&#8230;.). I remember one local store that had a counterfeit %40 pinned to the wall, it was literally 20 lb copier paper printed in an ink jet and looked more like monopoly money than real currency (the reds were saturated and bloby).</p>
+<p>But in the meantime we&#8217;ll have to stick to the old fashioned methods of checking currency (security strip embedded in the paper, micro print, reflective metal patch, etc.). For more information on the Canadian security features see the <a title="Canadian Journey series notes" href="http://www.bankofcanada.ca/en/banknotes/counterfeit/security_features.html">Bank of Canada page</a> and for American money check out <a title="newmoney.gov" href="http://www.newmoney.gov/newmoney/Splashpage.aspx">newmoney.gov</a> (way higher production values!).</p>
+<p>One thing you will note is a common and consistent set of features used to prevent counterfeiting of banknotes:</p>
+<ul>
+<li>embedded metal strip in the printing stock with the value of the bill printed on the strip (prevent people from running these off on a copier or bleaching a $20 bill and reprinting it as a $100 bill)</li>
+<li>metal reflective patches that refract light differently depending on the angle you view it at (like a soap bubble)</li>
+<li>micro print, and lots of it (in the background, in the numbers, on the faces, etc.)</li>
+<li>raised ink (and embedded braille dots for the blind)</li>
+<li>water marks (printing embedded in the paper as opposed to on the paper)</li>
+<li>UV fluorescence under black light</li>
+<li>iodine pens, since bills are mostly linen and not paper iodine doesn&#8217;t mark the bill significantly</li>
+</ul>
+<p>Hopefully this will inspire and encourage web browsers and other software makers to come up with a common set of features to help users identify the legitimacy of online web sites (my next post).</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/19/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/19/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=19&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/04/22/spotting-counterfeit-money/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Verisign certificate authority finally fixes (part of the) domain verification problem</title>
+		<link>http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/</link>
+		<comments>http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/#respond</comments>
+		<pubDate>Tue, 20 Apr 2010 07:35:48 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Information Security]]></category>
+		<category><![CDATA[ca]]></category>
+		<category><![CDATA[infosec]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[ssl]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=7</guid>
+		<description><![CDATA[So a few months ago I decided to see how easy it was to buy an SSL certificate for a domain I didn&#8217;t own. It turns out that it was very easy because at least one large certificate authority (CA), RapidSSL (owned by Verisign) allowed a large number of email addresses to be used for [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=7&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So a few months ago I decided to see how easy it was to buy an SSL certificate for a domain I didn&#8217;t own. It turns out that it was very easy because at least one large certificate authority (CA), RapidSSL (owned by Verisign) allowed a large number of email addresses to be used for verification (such as ssladministrator@, it@, etc.).</p>
+<p>The original article is available here: <a title="Breach of trust" href="http://www.linux-magazine.com/w3/issue/114/054-055_kurt.pdf">http://www.linux-magazine.com/w3/issue/114/054-055_kurt.pdf</a>. I also contacted the Mozilla/Firefox people through the <a title="mozilla.dev.security.policy" href="http://groups.google.com/group/mozilla.dev.security.policy/topics">mozilla.dev.security.policy</a> mailing list to let them know about it and to show the proof (the <a href="http://groups.google.com/group/mozilla.dev.tech.crypto/msg/8f9ccde899d5c088">emails from RapidSSL to me</a>). Betanews ran a nice article (<a title="Security researcher: 'Trivially easy' to buy SSL certificate for domain you don't own" href="http://www.betanews.com/article/Security-researcher-Trivially-easy-to-buy-SSL-certificate-for-domain-you-dont-own/1270072287">http://www.betanews.com/article/Security-researcher-Trivially-easy-to-buy-SSL-certificate-for-domain-you-dont-own/1270072287</a>), and not much else happened for a while.</p>
+<p>Things finally got rolling when a Bugzilla report was filed (<a title="Bug 556468  - Investigate incident with RapidSSL that issued SSL certificate for portugalmail.pt  " href="https://bugzilla.mozilla.org/show_bug.cgi?id=556468">Bug 556468</a>, which was basically a copy of an older bug <a title="Bug 477783  - Equifax not conforming to Mozilla CA Certificate Policy (7)  " href="https://bugzilla.mozilla.org/show_bug.cgi?id=477783">Bug 477783</a> concerning Equifax doing basically the same thing). A Verisign representative confirmed they had removed a bunch of problematic email addresses they allowed, but ssladmin@ was still valid (this turned out to be a mistake as you&#8217;ll soon see).</p>
+<p>Fast forward about two weeks and someone has copied my article and thrown in a few screen shots and submitted it to Slashdot (<a title="Become an SSLAdmin In a Few Easy Steps" href="http://news.slashdot.org/story/10/04/18/1218212/Become-an-SSLAdmin-In-a-Few-Easy-Steps">http://news.slashdot.org/story/10/04/18/1218212/Become-an-SSLAdmin-In-a-Few-Easy-Steps</a>) personally I don&#8217;t mind if people copy my work and build off of it, but when they protray it as their own original work with no credit or original source mentioned that is a bit annoying.</p>
+<p>Although annoying it had the benefit of showing the world that by using the ssladmin@ email address (remember, the one Verisign didn&#8217;t remove) which resulted in the rather quick disabling of it:</p>
+<blockquote><p>VeriSign will be removing the following generic approver email options for GeoTrust and RapidSSL as of tonight or tomorrow night:</p>
+<p>&#8211; ssladmin, sysadmin, and info</p></blockquote>
+<p>So I guess in the end it worked, certificates are hopefully a little more secure now but the sad thing is I spent several dozen hours basically holding vendors feet to the fire for something they should have been doing all along.</p>
+<p>Oh and there is no way to find out if a certificate authority has issued a certificate for your domain to someone else. Unlike DNS/etc. there is no way to query what certificates have been issued.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/7/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/7/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=7&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/04/20/verisign-certificate-authority-finally-fixes-part-of-the-domain-verification-problem/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 8 - Encrypting email in Linux, BSD, and other Unices</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 8 - Encrypting email in Linux, BSD, and other Unices</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#442f3136300437212d22362d21206a2b3623"><span class="__cf_email__" data-cfemail="244f5156506457414d42564d41400a4b5643">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<h4>Overview</h4>
+<p>Email is the killer application that made the Internet grow at
+first (the second killer application would probably be the web
+which makes sharing information on a one to many basis easy).
+Currently several billion messages a day are passed over the
+Internet. It is no longer uncommon to get 20 or even 200 emails a
+day for some people, a number that would have been quite amazing
+a few years ago. The percentage of email that is actually
+readable by an attacker, or that can be manipulated while in
+transit with little chance of discover is close to 100%. </p>
+<p>There are two main issues with email encryption, this first is
+digitally signing email, the second is encrypting email. With
+digital signatures on an email you can prove the sender identity,
+and that the message was not tampered with while in transit.
+Imagine if you were to send a price quote via email to someone,
+and someone tampered with the numbers (say raised them to a
+larger amount then their quote), thus getting that contract
+(because they appear to have the cheaper price). The other aspect
+is encryption of sensitive messages, you would not write down the
+results of a medical exam and send it to someone on a postcard,
+nor should you send it via unencrypted email. Even if no
+malicious attacker reads it when it is sent, chances are that
+message will be stored in a back-up of server data, and at some
+point in the future someone could read it. If the message were
+encrypted however this would be much more difficult.</p>
+<p>With UNIX you have two main choices for signing and encrypting
+email. The first is an X.509 digital certificate (which work well
+in Netscape and a few other mailers), and the second is PGP or
+GnuPG (which work well with the text based mailers like pine),
+and there is a web based encrypted mail service available.</p>
+<h5>X.509 Certificates</h5>
+<p>X.509 digital certificates are extremely easy to use, and most
+mail clients have built in support, so there is no need to get a
+software package such as PGP and install it at both ends. X.509
+certificates from Verisign cost $14.95 US a year, and must be
+renewed on a yearly basis. If you are in a sufficiently large
+company, and you are primarily concerned about intra-company
+email, you can also buy Certificate Authority software and issue
+certificates to your own employees (the initial cost is quite
+high, and maintenance is expensive, however it can be more
+economical and easier to control then relying on a third party
+such as Verisign). </p>
+<p>The certificate can be stored on the client machines, however
+this is a really bad idea (it's so bad in fact I decided to put
+this at the very beginning of the explanation). You can easily
+generate an X.509 certificate, take the file and load it into a
+client machine (typically the mail program or www program can
+make use of it). This however makes the assumption that only one
+person will be using the workstation, and that the machine cannot
+be misused by others. This is really only useful on a home PC
+(that is secure), or if you lock your office door and never let
+anyone in and have a secured PC. In other words digital
+certificates loaded onto client machines are almost useless, in
+fact they can be worse then useless because they are usually not
+protected sufficiently (i.e. with a passphrase) so an attacker
+can steal the certificate and impersonate the user. The better
+solution is to store the X.509 certificate on a smartcard
+(unfortunately most UNIX systems have poor smart card support in
+this respect), this allows a much more secure method of
+generating and storing certificates, as well as being far more
+portable. The main problem currently with smartcards is the lack
+of smartcard readers on computers (although some companies like
+Siemens ship them as a relatively standard option) and the cost
+of a good smartcard and reader ($100.00 USD is not out of
+question). There are also a wide variety of smartcards, ranging
+from ones that simply store data (and are not secure) to ones
+with built in random number generators, encryption chips,
+storage, and have been built to be tamper resistant (these cards
+cost $25 USD each typically). </p>
+<p>To get a certificate simply go to <a href="appendix-a.html#Thawte-Personal-Certificate">Thawte</a> or <a href="appendix-a.html#VeriSign-Digital-ID">Verisign</a> (please
+note Verisign just purchases Thawte), and follow the instructions
+online. The process is rather simple, you prove your identity to
+them (via name, birthday, SIN number, etc.), pay for the
+certificate (via credit card, online), and then you generate the
+certificate locally (a private and public key pair), and then
+send the public key to them. They take the public key, add your
+information (name, email address and so on), and then sign it
+with their private key. In this way anyone with a common mail
+client can verify your key is legitimate, since most mail clients
+will have Verisign's and Thawte's public keys built into them. If
+you want real security I would advise buying a smartcard and
+smartcard reader. </p>
+<p>Netscape with X.509 certificates</p>
+<p>In Netscape mail you administer certificates by going to
+&quot;Communicator&quot;, &quot;Tools&quot;, &quot;Security
+Info&quot;, &quot;Certificates&quot;, &quot;Yours&quot;. From
+here you can get a certificate (you are directed to Netscape's
+site where there is a link to Verisign which appears broken),
+from <a href="appendix-a.html#VeriSign-Digital-ID">Verisign</a>
+or <a href="appendix-a.html#Thawte-Personal-Certificate">Thawte</a>,
+following the same procedure as usual, and you can also import an
+existing certificate (for example if you had one in Windows but
+moved over to Linux). </p>
+<p>Outlook, Outlook Express with X.509 certificates</p>
+<p>In Outlook you can administer certificates, and request new
+ones. Simple go to &quot;Tools&quot;, &quot;Options&quot;,
+&quot;Security&quot; and you can then choose &quot;Digital
+IDs&quot;, from here you can import, export, and remove
+certificates from Internet Explorer. You can also choose
+&quot;Get Digital IDs&quot; which will take you to a Microsoft
+webpage with links to the various certificate issuing
+authorities. </p>
+<h5>PGP</h5>
+<p>Pretty Good Privacy was one of the original programs that made
+email encryption possible, however it was difficult to use, had
+to be installed by the user (unlike email clients shipping with
+X.509 support), and was generally a pain to use. Unfortunately
+this is still mostly true in the UNIX world. If you are going to
+use PGP I would advise using GnuPG instead. GnuPG is 100%
+compatible, and completely unencumbered by patents or licensing
+issues. If you need to use PGP you can get <a href="appendix-a.html#PGP-Freeware">PGP Freeware</a> or <a href="appendix-a.html#PGP-International">PGP International</a>.</p>
+<h5>GnuPG</h5>
+<p>GnuPG is a GPL'ed application that is fully compatible with
+PGP. You can sign and encrypt data in GnuPG, verify and decrypt
+it in PGP and vice versa. The other advantage is that GnuPG is
+not export restricted (made in Germany) and uses no patented
+algorithms making licensing issues non-existent. <a href="appendix-a.html#GnuPG">GnuPG</a> is available as source and
+as binary packages for most popular unices. </p>
+<h5>pgp4pine</h5>
+<p>pgp4pine uses pine's built in filter functionality to provide
+encryption, decryption, signing and verification of email.
+pgp4pine also works with GnuPG, you can get <a href="appendix-a.html#pgp4pine">pgp4pine</a> as source code or
+binary packages for a variety of systems.</p>
+<h5>Hushmail</h5>
+<p><a href="appendix-a.html#Hushmail">Hushmail</a> is a new
+contender in the web based email wars. It however offers
+something that none of the other web based email sites offer, and
+that is signed and encrypted email to other Hushmail users.
+Hushmail uses a java applet that is downloaded to your PC with
+your keypair, when you send and receive email within Hushmail it
+is signed and encrypted, providing for a high degree of security
+despite it's web based nature. Hushmail is a free and easy
+solution to use, and has the added advantage of being much more
+portable then X.509 certificates or PGP (you don't even need a
+mail client, you only need a Java and SSL capable web browser).
+The primary problem with Hushmail is proving your identity, as
+far as I know Hushmail does not check the users identity, so
+unless you establish the persons identity through some other
+channel like a face to face meeting where you verify each other's
+key fingerprints, you could be dealing with anyone (this problem
+is endemic however, as impersonating someone to get an X.509
+certificate in their name is not impossible). The Hushmail Java
+applet source code is also available, so you can compile it and
+verify that this is indeed the binary that Hushmail is using (so
+you can inspect the code for problems, etc.). </p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-07.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-09.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

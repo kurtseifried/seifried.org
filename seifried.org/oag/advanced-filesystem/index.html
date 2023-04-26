@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - OAG - OpenBSD Administrator's Guide / Advanced filesystem management</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Advanced filesystem management</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#12796760665261777b74607b77763c7d6075"><span class="__cf_email__" data-cfemail="513a2423251122343837233834357f3e2336">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>Please note: these are advanced filesystem management tricks.
+You may break things. You may break your system. These tricks
+(usually) work on my test systems (please note I mostly test this
+under VMWare so that I can &quot;refresh&quot; the OS quickly if
+it does break horribly, this will not be so easy on a real
+system). </p>
+<p>&nbsp;</p>
+<h2>Making /etc a separate partition</h2>
+<p>This is a question I've seen quite a few times, it's
+dangerous, but useful. You can't make /etc a separate partition
+with setting things up first, for one thing when the system boots
+there won't be an /etc/fstab to read and figure out how to mount
+anything. This means that portions of /etc must exist at boot
+time. The trick is, on most UNIX systems, you can mount a
+partition over a non-empty directory. This means that by leaving
+a &quot;stub&quot; /etc partition containing the necessary boot
+files you can easily boot the system and then have it mount a
+different partition onto /etc. </p>
+<p>&nbsp;</p>
+<p>The reasons for doing this are numerous, for one thing you
+could conceivably mount your /etc over NFS, although what
+circumstances would lead to this are beyond my imagination. A
+more common reason is out of security concerns, by mounting /etc
+as a partition you can prevent hard links to files in /etc, you
+can mount it read only (although you will be unable to change
+system configuration or user passwords unless you remount the
+partition writeable), and so on. Mounting /etc as a ramdisk is
+another conceivable desire, this would speed up access, however
+is lookups of usernames/etc are an issue you may consider running
+something like the name service cache daemon. </p>
+<p>For this example the stub /etc/ resides on /dev/wd0a, and the
+/etc partition we wish to mount is on /dev/wd0d. </p>
+<p>Step one is making sure you have enough files in the stub /etc
+to run the system, this is pretty easy, simply leaving all the
+files in there from the installation will typically do. The next
+step is to create and format a different partition, such as
+&quot;/dev/wd0d&quot;, it need not be very large, a few megabytes
+will suffice. Backup the stub /etc using tar, make sure you
+preserve file permissions and symbolic links:</p>
+<blockquote>
+<pre># <strong>cd /etc</strong>
+# <strong>tar -cvpf /etc.tar *</strong></pre>
+</blockquote>
+<p>Now mount the partition you wish to host /etc on in a
+different directory and untar the files onto it:</p>
+<blockquote>
+<pre># <strong>mount /etc2</strong>
+# <strong>cd /etc2</strong>
+# <strong>tar -xvf /etc.tar</strong></pre>
+</blockquote>
+<p>Now simply modify the fstab file in the stub /etc directory on
+/dev/wd0a so that it mounts /dev/wd0d as /etc:</p>
+<blockquote>
+<pre>/dev/wd0d /etc ffs rw 1 2</pre>
+</blockquote>
+<p>You can now manually mount /etc. or simply reboot the system
+for the changes to take effect.</p>
+<p>Of course this creates a new problem, how do you access the
+stub partition? Unmounting the /dev/wd0d /etc to access /etc on
+/dev/wd0a is one option, but things may break since files are
+suddenly missing or changes such as adding users are no longer
+there. One solution is to simply create a directory such as
+/etc-real and in it create hard links to the files in the stub
+/etc, since hard links point to the file inode even if the
+&quot;real&quot; files are inaccessible you can access them via
+the hard links. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 18/7/2002</p>
+<p>Copyright Kurt Seifried 2002 <a href="/cdn-cgi/l/email-protection#c5aeb0b7b185b6a0aca3b7aca0a1ebaab7a2"><span class="__cf_email__" data-cfemail="0e657b7c7a4e7d6b67687c676b6a20617c69">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Network / Problems with the FTP protocol</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Problems with the FTP protocol</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a1cad4d3d5e1d2c4c8c7d3c8c4c58fced3c6"><span class="__cf_email__" data-cfemail="8de6f8fff9cdfee8e4ebffe4e8e9a3e2ffea">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>FTP used to be the king of the Internet, if you wanted to
+download something you went to your favorite ftp server or used
+Archie to find the file. Even today the number of ftp servers is
+staggering, and many ftp sites contain several hundred gigabytes
+of online archives (take a look at your local sunsite). FTP was
+built to be an extremely flexible protocol, and therein lie many
+of it's problems. The FTP protocol not only allows you to
+transfer files from an ftp server to your machine but from one
+ftp server to another ftp server directly. </p>
+<h3>PASV verses ACTIVE</h3>
+<p>The FTP protocol actually uses two channels for
+communications, a control channel and a data channel. The control
+channel uses tcp port 21, clients connect to it from a local port
+(on Windows for example this is between 1024 and ~5000 or so) and
+then send and receive information. When you request a file it is
+send over the data channel which can behave in one of two ways:</p>
+<p>With active ftp the client specifies to the server how the
+transfer will be done. The client chooses a local port and tells
+the server to send data to it. The server initiates a connection
+from port 20 to the client and sends the data. The problems with
+this are numerous, the primary one being the firewalls must allow
+incoming connections from port 20 to a large selection of ports
+on internal machines. This allows attackers to easily scan
+internal machines by initiating connections from port 20. </p>
+<p>With passive mode ftp the client asks the server for a file
+and the server specifies how the transfer will be done. The
+server chooses a port (typically 1024 to ~5000, incremented by
+one for each new connection) and then tells the client to connect
+to that port and receive the file. This has one major advantages
+over active mode ftp, since the client initiates the connection
+you do not need to put holes in your firewall to allow incoming
+connections. However there is a major disadvantage as well.</p>
+<h3>pasvagg.pl</h3>
+<p>pasvagg.pl was written by H D Moore of DigitalDefense, and
+it's very elegant in it's simplicity. pasvagg.pl allows you to
+steal files that people are trying to download from an ftp
+server. Because the server opens a port and then waits for the
+client to connect there is a windows of opportunity for an
+attacker to connect and receive the files instead of the real
+user. While several ftp servers do make sure that only the client
+IP that requested the file can actually receive it, many do not.
+pasvagg.pl connects to the ftp server, finds out how many
+connections per second the ftp server is making, and then starts
+connecting to ports higher up in an attempt to connect to them
+before the real user does. This allows you to steal files without
+having to know usernames, passwords or any other details, and can
+be done randomly with a good chance of success. Unfortunately
+there is nothing the client can do to protect themselves, it is
+reliant on the server to protect data transfers. </p>
+<h3>The solution?</h3>
+<p>There are several possible workarounds:</p>
+<p>The FTP server could remember which host requested the file
+and only allow that machine to download it, unfortunately this
+breaks the FTP standard according to various FTP related RFC's
+(this is because of multi-homed hosts). However breaking the
+standard will not affect the majority of hosts since they are not
+multi-homed (i.e. they only have one network interface). </p>
+<p>The FTP server could use active mode ftp, however this will
+not work through many firewalls since the server must initiate
+the connection, so the server will no longer be able to talk to
+many clients.</p>
+<p>Lastly the FTP server can choose random ports instead of
+incrementing them by one for every connection. This will make
+life for an attacker significantly harder but it is still
+possible for an attacker to guess a port and grab files before
+the real client gets them (and if the attacker can continually
+try several dozen or hundred ports they are virtually guaranteed
+to grab files).</p>
+<p>Unfortunately there is no easy solution that will solve all
+problems without either breaking standards compliance, or
+creating other serious problems.</p>
+<h3>Other attacks</h3>
+<p>Probably the most popular FTP attack in past was the FTP
+&quot;bounce&quot; attack. By misusing the PORT command an
+attacker could use an ftp server to connect to other machines.
+This allows for all sorts of malicious activity from simple port
+scanning to moving files around. One program that makes use of
+this is the Nmap port scanner, using the bounce attack it can use
+an ftp server to proxy the scan, making it harder to trace back
+and possibly avoiding firewalls in some configurations. Other
+common problems include misconfigured FTP servers that allow for
+people to upload and download files from the same directory, thus
+turning your ftp server into a global /tmp directory for people
+to share data with each others (usually &quot;warez&quot;). This
+of course ignores all the root hacks that have been found over
+the years in various ftp daemons (including OpenBSD's). </p>
+<h3>FTP alternatives</h3>
+<p>With all these problems in the FTP protocol and various FTP
+servers one wonders if it's worth trying to fix at all.
+Personally I think FTP is great for public downloads, i.e. things
+like software distribution. I do not think FTP is a suitable
+solution when authentication is required, or the files being
+transferred are at all sensitive. Luckily several solutions
+exist, two of which I use:</p>
+<p>Rsync is excellent for doing large data transfers and
+synchronizing large data structures (like ftp sites). If you need
+to mirror an ftp site this is often a preferred method, and can
+easily be used over SSH. </p>
+<p>The SSH protocol has several ways for transfering data, scp is
+suitable for quickly copying files around (similar in function to
+rcp), and there is also sftp support now in OpenSSH. Using
+scp/sftp is by far more secure then ftp or virtually any other
+file transfer method and allows for strong user authentication.</p>
+<h3>Secure FTP servers</h3>
+<p>In the last few years virtually every ftp server has been hit
+with a variety of problems ranging from remote root hacks to
+denial of service attacks. Even OpenBSD's ftpd had a remote root
+hack in it. Currently vsftpd (Very Secure FTPD) is the only ftp
+server I know of specifically designed with security as it's main
+goal.</p>
+<h3>Interview with H D Moore</h3>
+<p>H D Moore (of <a href="http://www.digitaldefense.net/">http://www.digitaldefense.net/</a>)
+is the author of pasvagg.pl which exploits passive ftp and can
+&quot;steal&quot; files that users are downloading.</p>
+<p>&nbsp;</p>
+<p><strong>Kurt: </strong>What gave you the idea for the FTP
+passive attack?</p>
+<p><strong>H D Moore: </strong>At the time I was doing a
+comparison of different vulnerability scanners. I was going over
+the CyberCop report and one of the vulnerabilities it reported
+was the&nbsp; &quot;Sequential FTP Passive Port&quot;.&nbsp;
+After digging around for a few minutes, I realized that nobody
+had ever written an exploit for it, so the &quot;Passive
+Aggression&quot; script was born. </p>
+<p><strong>Kurt: </strong>Do you have any suggestions on how
+server admins can avoid your passive ftp attack?</p>
+<p><strong>H D Moore: </strong>The more popular Unix FTP ftp
+servers already prevent this attack by default.&nbsp; A
+connection to a data port by anyone other than the address
+connected to the control port that requested it is dropped and
+logged.&nbsp; The newer versions of ProFTPD and WU-FTPD are
+immune, but any server that allows FXP transfers or
+&quot;bounce&quot; scanning are vulnerable to this exploit. </p>
+<p><strong>Kurt: </strong>What do you think of FTP in general? </p>
+<p><strong>H D Moore: </strong>To be plain, FTP sucks.&nbsp; It
+forces you to send your username and password in clear text as
+well as require a separate &quot;data&quot; channel for the
+actual transfer. Under &quot;active&quot; FTP, your client is
+forced to open up a port to allow the server to connect
+back.&nbsp; This is the other side of the &quot;Passive
+Aggression&quot; exploit, sending the client a different file
+than the one they requested.&nbsp; To do this you would need to
+know the client's IP, but the port number is normally static
+(tcp/20) for root-owned processes under linux as well as most
+non-unix clients.&nbsp; By repeatedly trying to connect to a
+client's ftp data port, you are almost gauranteed to be able to
+replace the file they are trying to download with your own.&nbsp;
+Uploads are just as fun, by finding the server data port
+(passive) during an upload request, you could force the system to
+accept your file instead of the client's. These types of attacks
+are easy when the server allows anonymous connections or the
+attacker has account on the system, because they can determine
+the next passive port by repeatedly sending the &quot;PASV&quot;
+command and using the next number as the target.&nbsp; Network
+backups and daily mirroring jobs are one of the easiest targets,
+because of the timing/race condition which is part of the attack.</p>
+<p><strong>Kurt: </strong>What alternatives would you reccomend?</p>
+<p><strong>H D Moore: </strong>For quick and dirty file transfers
+which dont require a bit of security, netcat is your
+friend.&nbsp; Using netcat you perform a network tar:</p>
+<blockquote>
+<pre>host1 &gt; nc -l -p &lt;port&gt; | tar -zxv
+host2 &gt; tar -zcv &lt;directory&gt; | nc host1 &lt;port&gt; -vv </pre>
+</blockquote>
+<p>This is exactly what the FTP protocol does, except you dont
+need to send your password across the network to do it. You also
+have all the features of a unix shell / pipe combination. If you
+have a command-line encryption utility, you can use it send your
+files encrypted across the network. Port hijacking is still an
+issue and you do need shell access to each machine to do this,
+but it does negate the need for an FTP server on local machines. </p>
+<p>For a secure transfer protocol, I recommend scp, part of the
+OpenSSH package.&nbsp; There are FREE windows clients available,
+as well as Full-Featured GUI applications by companies like
+F-Secure.&nbsp; SCP does incur an encryption overhead, but for
+most cases it is fast enough.&nbsp; For admins that dont want to
+provide shell access to thier users just to allow them to do
+secure file transfers, there is a scp-only shell you can install
+which provides SCP functionality but no shell access.&nbsp; The
+URL escapes me, but I am sure you can find it on Freshmeat.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://cui.unige.ch/eao/www/TechInternet/ftp-attack.html">http://cui.unige.ch/eao/www/TechInternet/ftp-attack.html</a>
+</p>
+<p><a href="http://www.cert.org/advisories/CA-1997-27.html">http://www.cert.org/advisories/CA-1997-27.html</a></p>
+<p><a href="ftp://ftp2.netscape.com/">ftp://ftp2.netscape.com/</a>
+- Netscape ftp server</p>
+<p><a href="http://www.wu-ftpd.org/rfc/">http://www.wu-ftpd.org/rfc/</a>
+- FTP related RFC's</p>
+<p><a href="http://rsync.samba.org/">http://rsync.samba.org/</a>
+- Rsync</p>
+<p><a href="http://www.openssh.org/">http://www.openssh.org/</a>
+- OpenSSH</p>
+<p><a href="http://www.wu-ftpd.org/">http://www.wu-ftpd.org/</a>
+- WuFTPD</p>
+<p><a href="http://www.proftpd.net/">http://www.proftpd.net/</a>
+- ProFTPD</p>
+<p><a href="ftp://ferret.lmh.ox.ac.uk/pub/linux/">ftp://ferret.lmh.ox.ac.uk/pub/linux/</a>
+- vsftpd </p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 9/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Firewalling with IPFWADM</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Firewalling with IPFWADM</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#9cf7e9eee8dceff9f5faeef5f9f8b2f3eefb"><span class="__cf_email__" data-cfemail="3b504e494f7b485e525d49525e5f1554495c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2>IPFWADM</h2>
+<p>If you are still using ipfwadm it is time to upgrade from 2.0
+to a 2.2 kernel. Seriously, stop reading and upgrade to at least
+a 2.2 kernel or preferably a 2.4 kernel. </p>
+<p>Ipfwadm is a solid packet filter for Linux, although it lacks
+a lot of features available in IPChains. Ipfwadm only supports 3
+targets for a packet: accept, deny or reject, whereas ipchains
+rules can be targeted at 6 built-in targets, or a user defined
+target. Ipfwadm is really only appropriate for a simple IP-level
+firewall, IP masquerading and if you plan to use FreeS/WAN (which
+currently does not support kernel 2.2.x). The basic options are:
+specify a direction (in, out, or both, useful with the interface
+flag), input rules, output rules, forwarding rules (say you have
+multiple interfaces, also covers the masquerading rules) and
+masquerade rules which control the behavior of masquerading
+(timeouts, etc). You can insert, append and delete rules, set
+default policies, and list all the rules. Other then that it is
+very similar to ipchains, with some minor variations. The
+following is a script appropriate for a server bridging 2
+networks (10.0.0.x on eth0, 10.0.0.1 and 192.168.0.x on eth1,
+192.168.0.1) with a mail server running.</p>
+<blockquote>
+<pre>#!/bin/bash
+#
+# Flush all the rule sets first
+#
+ipfwadm -f -I
+ipfwadm -f -O
+ipfwadm -f -F
+#
+# Allow forwarding between the two networks and otherwise deny it for security
+#
+ipfwadm -F -a accept -P all -S 10.0.0.0/24 -i eth0 -D 192.168.0.0/24
+ipfwadm -F -a accept -P all -S 192.168.0.0/24 -i eth1 -D 10.0.0.0/24
+ipfwadm -F -p deny
+#
+# And of course we have to allow those packets in
+#
+ipfwadm -I -a accept -P tcp -S 10.0.0.0/24 -i eth0 -D 192.168.0.0/24
+ipfwadm -I -a accept -P tcp -S 192.168.0.0/24 -i eth1 -D 10.0.0.0/24
+#
+# Let them access the mail server port on the server but nothing else
+#
+ipfwadm -I -a accept -P tcp -S 10.0.0.0/24 -i eth0 -D 10.0.0.1 25
+ipfwadm -I -a accept -P tcp -S 192.168.0.0/24 -i eth0 -D 192.168.0.1 25
+ipfwadm -I -p deny</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2>Rule creation / scripts</h2>
+<p>&nbsp;</p>
+<h3 align="left">The ipfwadm dotfile module home page</h3>
+<p>From the site:</p>
+<blockquote>
+<p>The ipfwadm dotfile module is intended to make setting up <a href="http://ipmasq.cjb.net/">IP Masquerade</a> and basic
+firewalling on a small network easier for Linux users who
+aren't professional network administrators. It utilizes
+Jesper Pedersen's <a href="http://www.imada.ou.dk/~blackie/dotfile/">Dotfile
+Generator</a> to provide a GUI shell around the <a href="http://www.xos.nl/linux/ipfwadm/">ipfwadm</a> command.
+It also automates some of the confusing and obscure details
+of firewall and IP Masquerade configuration. </p>
+</blockquote>
+<p><a href="ftp://ftp.rubyriver.com/pub/jhardin/ipfwadm/ipfwadm.html">ftp://ftp.rubyriver.com/pub/jhardin/ipfwadm/ipfwadm.html</a>
+</p>
+<p>&nbsp;</p>
+<h3>Kfirewall</h3>
+<p>From the site:</p>
+<blockquote>
+<p>Kfirewall is an GUI application for X, using the KDE/QT
+widgets. You need to have KDE installed on your system, and
+qt-devel-1.44 installed. You can find the KDE packages at <a href="ftp://ftp.kde.org">ftp://ftp.kde.org</a> and the QT
+packages at <a href="ftp://ftp.troll.no">ftp://ftp.troll.no</a>.
+</p>
+</blockquote>
+<p><a href="http://kfirewall.kila.intratech.no/">http://kfirewall.kila.intratech.no/</a>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 27/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#bed5cbcccafecddbd7d8ccd7dbda90d1ccd9"><span class="__cf_email__" data-cfemail="1d76686f695d6e78747b6f74787933726f7a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

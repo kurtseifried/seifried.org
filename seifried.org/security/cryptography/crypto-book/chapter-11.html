@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 11 - Encrypting UNIX client logins (NIS, NDS, etc.)</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 11 - Encrypting UNIX client logins (NIS, NDS, etc.)</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#ea819f989eaa998f838c98838f8ec485988d"><span class="__cf_email__" data-cfemail="b9d2cccbcdf9cadcd0dfcbd0dcdd97d6cbde">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<h4>Overview</h4>
+<p>There are several protocols that UNIX systems can use to share
+user data and authenticate users remotely. The most popular, by
+far, method of sharing account information within a UNIX
+environment is NIS or NIS+, with NFS integrating nicely for file
+sharing. Another option (especially if your system supports PAM)
+is to use SMB authentication (i.e. what Microsoft uses with NT
+Server 4.0), as tying it in to an existing infrastructure (as
+opposed to building something new) can save costs and trouble. An
+emerging option is to authenticate via Novell Directory Services,
+NDS has been ported to Tru64, Linux, FreeBSD and a number of
+other platforms. Client side software used to be available for
+Linux (specifically Caldera and Red Hat), and I am not sure of
+client side software for other UNIX platforms.</p>
+<h5>NIS / NIS+</h5>
+<p>Network Information Service (formerly known as Yellow Pages)
+provides account data (names, passwords, etc.) in a relatively
+convenient, but insecure manner. The data is moved across the
+network in it's native fashion, meaning usernames go across as
+clear text, and the password hashes are sent without any
+additional protection (thus if you use shadow passwords to
+protect the passwords, using NIS negates that rather quickly).
+NIS+ provides an additional layer of security in the form of DES
+encryption (56 bits) which will prevent any casual attackers, but
+not a determined attacker. NIS+ has traditionally been a pain to
+setup, however there has been much work on it in the last year or
+two (especially in the Linux camp), so installation and
+configuration is much easier then in past.</p>
+<p><a href="http://www.linuxdoc.org/HOWTO/NIS-HOWTO.html">http://www.linuxdoc.org/HOWTO/NIS-HOWTO.html</a>
+- </p>
+<p><a href="http://www.ora.com/catalog/nfs/">http://www.ora.com/catalog/nfs/</a>
+- Managing NFS and NIS</p>
+<h5>SAMBA / SMB</h5>
+<p>Server Message Block is the protocol used by Windows to move
+data around for authenticating users (among other things). You
+have to explicitly disable NT Lanman encrypted passwords (granted
+the encryption is not perfect, it is much better then nothing)
+when installing the SMB PAM modules, so please do not. You can
+also get the modules in binary format for a variety of Linux
+systems.</p>
+<p><a href="http://rpmfind.net/linux/RPM/pam_smb.html">http://rpmfind.net/linux/RPM/pam_smb.html</a></p>
+<p><a href="http://www.csn.ul.ie/~airlied/pam_smb/">http://www.csn.ul.ie/~airlied/pam_smb/</a></p>
+<h5>NDS</h5>
+<p>NDS client support is available for Caldera Linux, the package
+is called &quot;nwclient&quot; (nwclient-xxx-xxx.i386.rpm for
+example). Novell supports several levels of signature of network
+packets (please note that the more you use, the slower things
+will be). There are 4 levels of packet signatures:</p>
+<ul type="disc">
+<li>Level 0 - Server will not sign packets</li>
+<li>Level 1 - Server will sign packets if the client requests
+it</li>
+<li>Level 2 - Server signs packets by default, but will talk
+to clients that do not</li>
+<li>Level 3 - Server signs all packets, will not talk to
+clients that do no sign packets</li>
+</ul>
+<p>Obviously the highest level of security is Level 4, but this
+may seriously degrade network performance. For most network
+enabling Level 3 on the server, and then enabling sensitive
+clients (such as administrative machines) should be sufficient.
+Use MONITOR.NLM to go to &quot;Server Parameters&quot; and choose
+the NCP category. You can also set it at the console (or using
+rconsole of course) with:</p>
+<p>SET NCP PACKET SIGNATURE OPTION=4</p>
+<p>or to whichever level you desire.</p>
+<p><a href="http://www.caldera.com/">http://www.caldera.com/</a> </p>
+<p align="center">[ <a href="chapter-10.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-12.html">Forwards</a>]</p>
+<p align="center">&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

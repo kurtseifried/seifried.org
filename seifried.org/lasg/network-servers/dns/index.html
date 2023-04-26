@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;DNS</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#d8b3adaaac98abbdb1beaab1bdbcf6b7aabf"><span class="__cf_email__" data-cfemail="82e9f7f0f6c2f1e7ebe4f0ebe7e6acedf0e5">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>DNS is an extremely important service for IP networks. I would
+not hesitate to say probably the MOST important network service
+(without it no one can find anything else). It also requires
+connections coming in from the outside world, and due to the
+nature and structure of DNS the information DNS servers claim to
+have may not be true. The main provider of DNS server software
+(named, the de facto standard) is currently looking at adding a
+form of DNS information authentication (basically using RSA to
+cryptographically sign the data, proving it is 'true'). If you
+plan to administer DNS servers I would say that O&#146;Reilly and
+Associates &#147;DNS &amp; BIND&#148; is required reading.</p>
+<h2><a name="DNS servers">DNS servers</a></h2>
+<h2><a name="Bind">Bind</a></h2>
+<p>Most distributions are finally shipping bind 8.x, however none
+(to my knowledge) have shipped it setup for non-root, chroot'ed
+use by default. Making the switch is easy however:</p>
+<p>-u<br>
+specifies which UID bind will switch to once it is bound to port
+53 (I like to use a user called 'named' with no login
+permissions, similar to 'nobody').</p>
+<p>-g<br>
+specifies which GID bind will switch to once it is bound to port
+53 (I like to use a group called 'named', similar to 'nobody').</p>
+<p>-t<br>
+specifies the directory that bind will chroot itself to once
+started. /home/named is a good bet, in this directory you should
+place all the libraries and config files bind will require.&nbsp;</p>
+<p>An even easier way of running bind chroot'ed is to download
+the bind-chroot package, available as a contrib package for most
+distributions, and install it. Before installation you will need
+a user and group called named (which is what the bind server
+changes it UID/GID to), simply use groupadd and useradd to create
+the user/group. Some packages uses holelogd to log bind
+information to /var/log/messages (as bind would normally do). If
+this isn&#146;t available you will have to install it by hand,
+which is a chore. In addition to this the default configuration
+file for bind is usually setup securely (i.e., you cannot query
+bind for the version information).</p>
+<p>Another aspect of bind is the information it contains about
+your network(s). When a person queries a DNS server for
+information, they typically send a small request for one piece of
+information. For example what is the IP address for
+www.seifried.org? And there are domain transfers, where a DNS
+server requests all the information for say seifried.org, and
+grabs it and can then make it available to other (in the case of
+a secondary DNS server). This is potentially very dangerous, it
+can be as or more dangerous then shipping a company phone
+directory to anyone that calls up and asks for it. Bind version 4
+didn't really have much security, you could limit transfers to
+certain server, but not selectively enough to be truly useful.
+This has changed in Bind 8, documentation is available at <a href="http://www.isc.org/bind.html">http://www.isc.org/bind.html</a>.
+To make a long story short in Bind 8 there are global settings
+and most of these can also be applied on a per domain basis. You
+can easily restrict transfers AND queries, log queries, set
+maximum data sizes, and so on. Remember, when restricting zone
+queries you must secure ALL name servers (master and the
+secondaries), as you can transfer zones from a secondary just as
+easily as a master.</p>
+<p>Here is a relatively secure named.conf file (stolen from the
+bind-chroot package at <a href="ftp://ftp.tux.org/">ftp://ftp.tux.org/</a>):</p>
+<pre>options {
+// The following paths are necessary for this chroot
+directory &quot;/var/named&quot;;
+dump-file &quot;/var/tmp/named_dump.db&quot;; // _PATH_DUMPFILE
+pid-file &quot;/var/run/named.pid&quot;; // _PATH_PIDFILE
+statistics-file &quot;/var/tmp/named.stats&quot;; // _PATH_STATS
+memstatistics-file &quot;/var/tmp/named.memstats&quot;; // _PATH_MEMSTATS
+// End necessary chroot paths
+check-names master warn; /* default. */
+datasize 20M;
+};</pre>
+<pre>zone &quot;localhost&quot; {
+type master;
+file &quot;master/localhost&quot;;
+&nbsp;&nbsp;&nbsp; check-names fail;
+&nbsp;&nbsp;&nbsp; allow-update {&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; none;&nbsp;
+&nbsp;&nbsp;&nbsp; };
+&nbsp;&nbsp;&nbsp; allow-transfer {&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any;&nbsp;
+&nbsp;&nbsp;&nbsp; };
+};</pre>
+<pre>zone &quot;0.0.127.in-addr.arpa&quot; {
+type master;
+file &quot;master/127.0.0&quot;;
+&nbsp;&nbsp;&nbsp; allow-update {&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; none;&nbsp;
+&nbsp;&nbsp;&nbsp; };
+&nbsp;&nbsp;&nbsp; allow-transfer {&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; any;&nbsp;
+&nbsp;&nbsp;&nbsp; };
+};</pre>
+<pre>// Deny and log queries for our version number except from localhost
+zone &quot;bind&quot; chaos {
+type master;
+file &quot;master/bind&quot;;
+&nbsp;&nbsp;&nbsp; allow-query {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; localhost;&nbsp;
+&nbsp;&nbsp;&nbsp; };
+};</pre>
+<pre>zone &quot;.&quot; {
+type hint;
+file &quot;named.zone&quot;;
+};</pre>
+<pre>zone &quot;example.org&quot; {
+type master;
+file &quot;zones/example.org&quot;;
+&nbsp;&nbsp;&nbsp; allow-transfer {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.2.1.1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.3.1.1;
+&nbsp;&nbsp;&nbsp; };
+};</pre>
+<p>DNS runs on port 53, using both udp and tcp, udp is used for
+normal domain queries (it's lightweight and fast), tcp is used
+for zone transfers and large queries (say dig www.microsoft.com).
+Thus firewalling tcp is relatively safe and will definitely stop
+any zone transfers, but the occasional DNS query might not work.
+It is better to use named.conf to control zone transfers.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 53
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 53
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 53</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 53
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 53
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 53</pre>
+<p>would block zone transfers and large queries, the following
+would block normal queries (but not zone transfers, so if locking
+it down remember to use both sets of rules)</p>
+<pre>ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 53
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 53
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 53</pre>
+<p>or</p>
+<pre>ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 53
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 53
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 53</pre>
+<p><strong>Chroot'ing DNS</strong></p>
+<p><a href="http://www.etherboy.com/dns/chrootdns.html">http://www.etherboy.com/dns/chrootdns.html</a></p>
+<h5><a name="Dents">Dents</a></h5>
+<p>Dents is a GPL DNS server, currently in testing stages
+(release 0.0.3). Dents is being written from the ground up with
+support for SQL backends, integration with SNMP, uses CORBA for
+it&#146;s internals. All in all it should give Bind a serious run
+for the money, I plan to test and evaluate it, but until then
+you&#146;ll just have to try it yourself. Dents is available at: <a href="http://www.dents.org/">http://www.dents.org/</a>.</p>
+<p><a href="../index.html">Back</a></p>
+<p>&nbsp;</p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#563d2324221625333f30243f333278392431"><span class="__cf_email__" data-cfemail="deb5abacaa9eadbbb7b8acb7bbbaf0b1acb9">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

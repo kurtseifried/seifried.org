@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 4 - Public Key Infrastructure (PKI) explained</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 4 - Public Key Infrastructure (PKI) explained</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#c7acb2b5b387b4a2aea1b5aea2a3e9a8b5a0"><span class="__cf_email__" data-cfemail="afc4dadddbefdccac6c9ddc6cacb81c0ddc8">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>Encryption is primarily composed of public / private key
+systems in the modern world. The main problems with any system to
+distribute public keys are:</p>
+<ul type="disc">
+<li>How do you know this is in fact the right key for the
+party you wish to communicate with</li>
+<li>How do you know the information associated with the key
+is correct (i.e. name, email address, etc.)</li>
+<li>How do you know the key has not been revoked (i.e. if it
+is stolen the owner would want people to stop using it)</li>
+</ul>
+<p>Since you cannot meet every single person you wish to
+communicate with and verify all the details there is a need for a
+solution. Public Key Infrastructure allows for distribution (and
+to some degree management) of public keys, thus allowing people
+to encrypt/decrypt, sign and verify data from other people.
+Typically you have trusted 3rd parties (such as Verisign) that
+have a set of keys that are preinstalled in software (such as web
+browsers and email clients. Using these keys the third party
+supposedly checks up on the identity of organizations or people
+and then signs their public keys, you can verify that signature
+since the keys required to do so are built into your software
+(and if you cannot trust your software you've got bigger
+problems). These 3rd parties also typically run servers that
+maintain copies of the keys so you can search them, for say
+&quot;John Parker&quot; entries, and also allow the owner of the
+key to issue a &quot;revocation&quot; (meaning the key is no
+longer valid). In a nutshell if Alice trusts Bob, Bob can then
+verify the identities of Charles and David, Alice can then verify
+that Charles and David's keys have been okayed by Bob, and use
+them with a relative degree of safety. Of course the real world
+is far from perfect. Obtaining encryption keys signed by another
+party is easy, you can either steal them (most people run Windows
+and have little or no security enabled), or steal someone's
+identity and use their personal information to create and
+register keys without their knowledge (and as digital signature
+laws come into being this will be a serious problem as the
+rewards for fraud grow). An excellent paper on these and more
+problems is available:</p>
+<h5><font color="#000066" face="Verdana,Arial,Helvetica,Geneva,sans-serif">Ten Risks of
+PKI: What You're Not Being Told About Public Key Infrastructure</font></h5>
+<p><em><strong>C. Ellison and B. Schneier</strong></em><br>
+Computer Security Journal, v 16, n 1, 2000, pp. 1-7. <br>
+<a href="http://www.counterpane.com/pki-risks.html">http://www.counterpane.com/pki-risks.html</a></p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-03.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-05.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

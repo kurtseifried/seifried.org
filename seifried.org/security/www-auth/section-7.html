@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 7.0 Some notes on browsers</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>7.0 Some notes on browsers</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#93f8e6e1e7d3e0f6faf5e1faf6f7bdfce1f4"><span class="__cf_email__" data-cfemail="563d2324221625333f30243f333278392431">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>There are many browsers, each with their own idiosyncrasies
+and &quot;features&quot;. Some papers of interest:</p>
+<p>Sotiris Ioannidis and Steven M. Bellovin, &quot;Building a
+Secure Web Browser&quot;, Usenix Conference, June 2001</p>
+<p><a href="http://www.research.att.com/~smb/papers/sub-browser.ps">http://www.research.att.com/~smb/papers/sub-browser.ps</a><br>
+<a href="http://www.research.att.com/~smb/papers/sub-browser.pdf">http://www.research.att.com/~smb/papers/sub-browser.pdf</a></p>
+<p><strong>7.1 Microsoft</strong></p>
+<p>Microsoft Internet Explorer is one of the most popular
+browsers (well maybe not, but it's one of the most prolific). As
+such there are some &quot;features&quot; it possesses that you
+should be aware of if you have users that will be using it to
+access your web site (and authenticate to it).</p>
+<p><strong>7.1.1 Microsoft Internet Explorer 4.x</strong></p>
+<p>This browser is largely obsolete now with the wide acceptance
+of 5.x and the release of 6.0.</p>
+<p><a href="http://www.microsoft.com/windows/ie/default.htm">http://www.microsoft.com/windows/ie/default.htm</a><br>
+<a href="http://www.microsoft.com/windows/ieak/default.asp">http://www.microsoft.com/windows/ieak/default.asp</a>
+</p>
+<p><strong>7.1.2 Microsoft Internet Explorer 5.x and 6.x</strong></p>
+<p>MSIE 5.x offers a lot of new features for browsing content
+offline, and remembering form input and passwords. This of course
+makes life much more difficult from a security perspective since
+by default when you enter username and password (using HTTP) it
+prompts you if you wish to save them, many people will, or worse
+yet public access machines might. The next time you go to that
+page it automatically logs you in. In addition to this there is a
+feature to remember form input, so even if you secure the pages
+via a CGI there is a good chance the username and password put
+into the form will be remembered. Users at home, and users of
+public terminals (libraries, kiosks, etc.) have to assume that
+these &quot;features&quot; are enabled. This rules out the usage
+of HTTP based authentication (typically used to secure
+directories), since there is a good chance it will be cached, and
+there is no work around available for it. Using forms to accept
+data, and a CGI program to process the input and grant/deny
+access is a better solution, even though MSIE can cache form
+input, there is a better chance this feature will be disabled,
+and if not there is a work around. You can disable this in the
+form by putting: &quot;AUTOCOMPLETE=&quot;OFF&quot;&quot; in the
+form tag, such as:</p>
+<blockquote>
+<pre>&lt;FORM method=post action=&quot;submit.asp&quot; AUTOCOMPLETE=&quot;OFF&quot;&gt; </pre>
+</blockquote>
+<p>This is covered at:</p>
+<p><a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/Author/dhtml/reference/properties/autocomplete.asp">http://msdn.microsoft.com/library/default.asp?url=/workshop/Author/dhtml/reference/properties/autocomplete.asp</a>
+</p>
+<p>Also MSIE associates the form data with the URL, so by
+manipulating the URL you can prevent the browser from prompting a
+user with the last username and password used (although that data
+might still be stored internally). Simply build a welcome screen
+(with a warning banner &quot;no unauthorized users&quot; and a
+login button), they hit the login button and a CGI script
+generates a page with a long, unique URL (based on time, client
+address, random string, hash it all using MD5 or something) and
+cache that URL for a few minutes in a table (giving the user
+several minutes to login). Flush the URL from the table once used
+or expired and the chances of someone going to the login screen,
+and getting the same URL (and hence the browser providing them
+the data in a friendly manner) are remote. This method also
+effectively prevents people from bookmarking the actual login
+screen where data is entered (not a great security feature but a
+minor help), and depending on exact configuration could also
+significantly slow down brute force password guessing attacks.</p>
+<p><a href="http://www.microsoft.com/windows/ie/default.htm">http://www.microsoft.com/windows/ie/default.htm</a><br>
+<a href="http://www.microsoft.com/windows/ieak/en/default.asp">http://www.microsoft.com/windows/ieak/en/default.asp</a><br>
+<a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/author/behaviors/reference/behaviors/userData.asp">http://msdn.microsoft.com/library/default.asp?url=/workshop/author/behaviors/reference/behaviors/userData.asp</a>
+<br>
+<a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/author/behaviors/reference/behaviors/savesnapshot.asp">http://msdn.microsoft.com/library/default.asp?url=/workshop/author/behaviors/reference/behaviors/savesnapshot.asp</a>
+<br>
+<a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/author/persistence/overview.asp">http://msdn.microsoft.com/library/default.asp?url=/workshop/author/persistence/overview.asp</a>
+</p>
+<p>Of course some users may complain about the &quot;save
+password&quot; check box not being available, this can be due to
+users not logging in properly to their workstations and is
+covered in detail at:</p>
+<p><a href="http://support.microsoft.com/support/kb/articles/q137/3/61.asp">http://support.microsoft.com/support/kb/articles/q137/3/61.asp</a>
+</p>
+<p>For IE 6.0 MS has created &quot;smart tags&quot;, these are
+html hyperlinks inserted into the document on the client side.
+You should be able to prevent them with the following tag in each
+document that you wish to &quot;protect&quot;:</p>
+<blockquote>
+<pre>&lt;meta name=&quot;MSSmartTagsPreventParsing&quot; content=&quot;TRUE&quot;&gt;</pre>
+</blockquote>
+<p>All references to this tag have been obliterated from the
+Microsoft site. Url's such as:</p>
+<p><a href="http://www.microsoft.com/windows/ie/preview/smarttags/default.asp">http://www.microsoft.com/windows/ie/preview/smarttags/default.asp</a>
+</p>
+<p>no longer work.</p>
+<p><strong>7.2 Netscape</strong></p>
+<p><strong>7.2.1 Netscape Navigator / Communicator 4.x</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.netscape.com/">http://www.netscape.com/</a><br>
+<a href="http://developer.netscape.com/">http://developer.netscape.com/</a>
+</p>
+<p><strong>7.2.2 Netscape Navigator / Communicator 6.x</strong></p>
+<p>No notes yet.</p>
+<p><strong>7.3 Mozilla </strong></p>
+<p><strong>7.3.1 Mozilla 0.9x</strong></p>
+<p>No notes yet</p>
+<p><a href="http://www.mozilla.org/">http://www.mozilla.org/</a>
+</p>
+<p><strong>7.4 Opera</strong></p>
+<p><strong>7.4.1 Opera 3.60</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.opera.com/">http://www.opera.com/</a></p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-6.html">Back</a> | <a href="section-8.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

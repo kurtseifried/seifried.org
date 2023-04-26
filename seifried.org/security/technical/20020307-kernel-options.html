@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - Technical / Kernel options</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>System and Network Security - Kernel Options</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#375c4245437744525e51455e525319584550"><span class="__cf_email__" data-cfemail="ee859b9c9aae9d8b87889c878b8ac0819c89">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2002</p>
+<hr>
+<p>&nbsp;</p>
+<p>When you ask most network and system administrators about
+system and network security, they'll respond, &quot;We have a
+firewall&quot; or &quot;We use SSL encryption.&quot; This is all
+fine and good. However, there are often some things they have
+missed - not that it is really their fault, since these
+additional options are not very well documented in most cases.
+Almost all Unix-based operating systems have the capability to
+modify various kernel options while the system is running. I'll
+be concentrating on Linux, *BSD and Solaris. </p>
+<p>All three have different facilities for modifying kernel
+configuration on the fly. Solaris uses ndd and generally
+manipulates /dev/ entries; Linux uses the /proc interface; and
+BSD uses sysctl to &quot;get or set kernel state&quot; (quote
+from man sysctl). For my examples I will be using Solaris 8.0 on
+an Ultrasparc, Red Hat 7.0 and OpenBSD 2.8, both on Intel
+platforms. </p>
+<h3>Where to Find and How to Set the Options</h3>
+<p>BSD's sysctl is probably the easiest to use. Simply execute</p>
+<blockquote>
+<pre>sysctl -a</pre>
+</blockquote>
+<p>to get a listing of all the options available, and what their
+current settings are. &quot;man sysctl&quot; also tells you what
+type of data it is and whether (and how) you can modify it. </p>
+<p>In Linux, you will need to </p>
+<blockquote>
+<pre>cat /proc/foo/bar</pre>
+</blockquote>
+<p>for each setting to see what it is set to. For a list of all
+the possible options, get a copy of the kernel source code
+(usually in /usr/src/linux). The file
+&quot;Documentation/networking/ip-sysctl.txt&quot; lists their
+defaults and so on. Another useful file in the Linux kernel
+source is &quot;Documentation/proc.txt,&quot; which covers /proc
+in general. </p>
+<p>In Solaris, ndd lets you &quot;get and set driver
+configuration parameters.&quot; It only applies to
+network-related items right now. Solaris also lets you query all
+the options available. Simply run</p>
+<blockquote>
+<pre>ndd /dev/foo</pre>
+</blockquote>
+<p>where &quot;foo&quot; is one of: arp, ip, ip6, tcp, tcp6, udp,
+udp6, rawip, rawip6, hme (or other network interfaces). There are
+probably some I missed, but these will give you a good start.
+Then enter a &quot;?&quot; at the prompt to list all the options
+you can fiddle with. You can also issue the &quot;?&quot; with
+the device to get a list of options.</p>
+<blockquote>
+<pre>ndd /dev/tcp ?</pre>
+</blockquote>
+<h3>Routing Data</h3>
+<p>So, why would you want to modify the kernel on the fly - what
+good could it possibly do you from a security point of view? A
+simple example would be the need to route packets on a system. In
+almost all operating systems, this is disabled by default.
+Enabling it by default would create a large security risk in many
+environments. Requiring someone to build a new kernel capable of
+routing packets would be extremely troublesome, so instead most
+operating systems have the capability built in, just disabled by
+default. In Linux this would be accomplished by:</p>
+<blockquote>
+<pre>echo &quot;1&quot; &gt; /proc/sys/net/ipv4/ip_forward</pre>
+</blockquote>
+<p>In OpenBSD, with:</p>
+<blockquote>
+<pre>sysctl -w net.inet.ip.forwarding=1</pre>
+</blockquote>
+<p>And in Solaris:</p>
+<blockquote>
+<pre>ndd -set /dev/ip ip_forwarding 0</pre>
+</blockquote>
+<p>As you can see, the exact syntax varies but the general idea
+is the same.</p>
+<h3>Source Routed Packets</h3>
+<p>Generally speaking, the only people that would want to source
+route packets are hostile attackers. Source routing can be useful
+for sliding packets around firewalls and IDS systems or targeting
+specific machines. The default in Linux is to disable source
+routed packets in the kernel, and many firewalls also allow you
+to block source routed packets, however it is just as easy to
+block them at the OS level.</p>
+<p>In Linux, simply have a bash script.</p>
+<blockquote>
+<pre>for i in /proc/sys/net/ipv4/conf/*/accept_source_route 
+do
+	echo 0 &gt; $i
+done</pre>
+</blockquote>
+<p>This will do all the interfaces - lo, eth0, ppp0, etc.</p>
+<p>In OpenBSD, you would:</p>
+<blockquote>
+<pre>sysctl -w net.inet.ip.sourceroute=0</pre>
+</blockquote>
+<p>However, this is disabled by default, so you shouldn't need to
+take care of it.</p>
+<p>In Solaris,</p>
+<blockquote>
+<pre>ndd -set /dev/ip ip_forward_src_routed 0</pre>
+</blockquote>
+<p>This will also set ip_forward_source_routed to 0 on /dev/tcp,
+/dev/udp and other appropriate devices (tcp6, ip6, etc.).</p>
+<p>And now for some OS-specific options.</p>
+<h3>Solaris</h3>
+<p>Solaris has some of the coolest options, in my opinion. You
+can add and remove privileged ports arbitrarily. For example, to
+make port 2049 (udp) privileged:</p>
+<blockquote>
+<pre>ndd -set /dev/udp udp_extra_priv_ports_add 2049</pre>
+</blockquote>
+<p>You can also make ports non-privileged, but remember that if
+you do so, some security implications arise. For example, if you
+have port 2049 as a privileged port, but you then remove that
+privileged status, it is possible for a local user to run an NFS
+service should the &quot;real&quot; one crash or otherwise be
+disabled. You should be cautious in making ports non-privileged.
+Most services now drop root immediately once they have bound to
+the privileged port, or only run a small control program as root
+- Apache, Bind, Postfix, etc. </p>
+<p>Also, in Solaris you can set the following in /etc/system.</p>
+<blockquote>
+<pre>set noexec_user_stack = 1
+set noexec_stack_user_stack_log = 1</pre>
+</blockquote>
+<p>This should provide some protection against malicious code,
+although I wouldn't bet the farm on it, as there are ways to
+avoid this type of thing, assuming it works properly.</p>
+<h3>Linux</h3>
+<p>Linux has a nice option for multihomed hosts. If you have a
+Linux box set up as a router for a reasonably small network
+(i.e., it's not a core router), then you can use reverse path
+filtering to prevent IP spoofing. While you can also do this with
+a firewall, it requires less effort and maintenance to do it with
+the kernel option. The default is to set it to 1, which is
+reasonably safe. For more security you may wish to set it to 2;
+however, this will have a performance hit and there are some
+situations in which your network may be configured in such a way
+that having strict reverse path checking breaks.</p>
+<blockquote>
+<pre>for i in /proc/sys/net/ipv4/conf/*/rp_filter
+do
+	echo 1 &gt; $i
+done</pre>
+</blockquote>
+<h3>OpenBSD</h3>
+<p>In OpenBSD you can easily modify the behavior of TCP and UDP.
+You can set the port ranges for outgoing connections, which will
+allow you to build very tight firewall rules if you wish to do
+so. The sysctl properties (and their defaults) are:</p>
+<blockquote>
+<pre>net.inet.ip.portfirst = 1024
+net.inet.ip.portlast = 49151
+net.inet.ip.porthifirst = 49152
+net.inet.ip.porthilast = 65535</pre>
+</blockquote>
+<p>To set net.inet.ip.portfirst to a higher number, simply:</p>
+<blockquote>
+<pre>sysctl -w net.inet.ip.portfirst = 10240</pre>
+</blockquote>
+<h2>Summary</h2>
+<p>As you might now realize, there are many hidden or poorly
+documented security features available in most operating systems.
+While the majority of people can't be bothered to take basic
+security measures, there is a growing population of
+administrators who are willing to do whatever it takes to harden
+their networks and make them less vulnerable to security
+incidents. Hopefully vendors will better document these features,
+if enough demand appears - which is doubtful. So if you find
+anything interesting, share it with your peers.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 03/08/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>sendmail &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/sendmail/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:49 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>sendmail &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication</title>
+		<link>http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/</link>
+		<comments>http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/#comments</comments>
+		<pubDate>Mon, 14 May 2012 06:59:39 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[sendmail]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=182</guid>
+		<description><![CDATA[So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&#8217;t want to have to request that the email limit be increased on each server (as [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=182&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&#8217;t want to have to request that the email limit be increased on each server (as they come up and down a lot as demand requires).</p>
+<p>So my obvious thought was to run an EC2 instance that would act as an email relay for all these servers. Easy enough, install a host with Sendmail, and allowing relaying. The trick here is that I don&#8217;t want to have to edit the access file every time a new host comes up or leaves as the level of IP address churn is quite high. So we enable email authentication, and pre-load EC2 images with the credentials to relay email through the server and we&#8217;re done.</p>
+<p>So, foolishly, I thought I&#8217;d skip SMTP, and go straight to TLS encrypted SMTP (port 465), and require authentication. This way all the communications, email, authentication credentials and so on are well protected.I setup the Sendmail server, and tested it using Thunderbird, TLS+auth worked perfectly. However on the Sendmail client server side it did not work well, in fact I was unable to get it working at all, so if anyone knows how I&#8217;d love to hear from you.</p>
+<h2><strong>Setting up the Sendmail Server with encryption and authentication</strong></h2>
+<p>You&#8217;ll need to install sendmail and sasl:</p>
+<pre style="padding-left:30px;">yum install sendmail-cf cyrus-sasl-plain cyrus-sasl-md5 
+cyrus-sasl-gssapi cyrus-sasl-lib cyrus-sasl-devel cyrus-sasl</pre>
+<p>and enable / start it:</p>
+<pre style="padding-left:30px;">systemctl enable saslauthd.service
+systemctl enable sendmail.service
+systemctl start saslauthd.service
+systemctl start sendmail.service</pre>
+<p>Then you&#8217;ll need to edit /etc/mail/sendmail.mc, make sure these two lines are not commented out (they are by default):</p>
+<pre style="padding-left:30px;">TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl</pre>
+<p>and then enable submission:</p>
+<pre style="padding-left:30px;">DAEMON_OPTIONS(`Port=submission, Name=MSA, M=Ea')dnl</pre>
+<p>Then you&#8217;ll need to enable encryption certificates:</p>
+<pre style="padding-left:30px;">define(`confCACERT_PATH', `/etc/pki/tls/certs')dnl
+define(`confCACERT', `/etc/pki/tls/certs/CA_bundle.pem')dnl
+define(`confSERVER_CERT', `/etc/pki/tls/certs/server.crt')dnl
+define(`confSERVER_KEY', `/etc/pki/tls/private/server.key')dnl</pre>
+<p>and you&#8217;re basically done. Simply rebuild the sendmail configuration and restart it:</p>
+<pre style="padding-left:30px;">/etc/mail/make
+systemctl restart sendmail.service</pre>
+<p>You&#8217;ll then need to ensure port 587 is not firewalled (either on the local system or in your EC2 security groups), and you&#8217;ll have to create local accounts with passwords so the clients can authenticate against them (e.g. create a user called &#8220;mail-relay&#8221; with a password and lock the account down).</p>
+<p>You can easily test the server using an email client such as Thunderbird.</p>
+<h2><strong>Setting up the Sendmail Client Server with encryption and authentication</strong></h2>
+<p>First you&#8217;re going to need Sendmail and the syrus-sasl-plain rpms installed. The really annoying part is if you don&#8217;t install the cyrus-sasl-plain package email connections will fail, but the log files are less than helpful when this occurs:</p>
+<pre style="padding-left:30px;">May 20 23:22:48 ip-10-242-49-173 sendmail[9890]: q4L3MmFP009890: 
+client.example.org [10.1.2.3] (may be forged) did not issue 
+MAIL/EXPN/VRFY/ETRN during connection to MSA</pre>
+<p>To install the rpms simply:</p>
+<pre style="padding-left:30px;">yum install sendmail-cf cyrus-sasl-plain</pre>
+<p>So now to setup the client. This is woefully documented and there is a ton of conflicting information. To start with install the same sendmail and sasl packages as above. Then you&#8217;ll need a standard SMART_HOST entry line, but with the added options of telling it to use port 587 (submission) and a link to the file with the authentication information:</p>
+<pre style="padding-left:30px;">define(`SMART_HOST', `smarthost.example.org')dnl
+define(`RELAY_MAILER_ARGS', `TCP $h 587')
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')
+FEATURE(`authinfo',`Hash -o /etc/mail/authinfo.db')dnl</pre>
+<p>You&#8217;ll also need to create an /etc/mail/authinfo file with contents such as:</p>
+<pre style="padding-left:30px;">AuthInfo:smarthost.example.org "U:user_name" "P:password_here" "M:PLAIN"</pre>
+<p>and build it using the makemap program:</p>
+<pre style="padding-left:30px;">makemap hash /etc/mail/authinfo &lt; /etc/mail/authinfo</pre>
+<p>You can then restart sendmail and it should work, the log file from the client sendmail server:</p>
+<pre style="padding-left:30px;">May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq005188: from=ec2-user, 
+size=297,, nrcpts=1, msgid=&lt;201205140651.q4E6p1aq003188@ip-10-10-10-10.ec2.internal&gt;, 
+relay=root@localhost
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3189]: q4E6p12W003189: 
+from=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt;, size=577,, nrcpts=1, 
+msgid=&lt;201205140651.q4E6p1aq003188@ip-10-10-10-10.ec2.internal&gt;, 
+proto=ESMTP, daemon=MTA, relay=localhost.localdomain [127.0.0.1]
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq003188: 
+to=kurt@seifried.org, ctladdr=ec2-user (1000/1000), delay=00:00:00, 
+xdelay=00:00:00, mailer=relay, pri=30297, relay=[127.0.0.1] [127.0.0.1], 
+dsn=2.0.0, stat=Sent (q4E6p12W003189 Message accepted for delivery)
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3191]: STARTTLS=client, 
+relay=smarthost.example.org., version=TLSv1/SSLv3, verify=FAIL, 
+cipher=DHE-RSA-AES256-SHA, bits=256/256
+
+May 14 02:51:02 ip-10-10-10-10 sendmail[3191]: q4E6p52W003189: 
+to=&lt;kurt@seifried.org&gt;, ctladdr=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt; 
+(1000/1000), delay=00:00:01, xdelay=00:00:01, mailer=relay, pri=120577, 
+relay=smarthost.example.org. [1.2.3.4], dsn=2.0.0, stat=Sent 
+(q4E6p1ZE001355 Message accepted for delivery)</pre>
+<p>And on the server:</p>
+<pre style="padding-left:30px;">May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: STARTTLS=server, 
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), 
+version=TLSv1/SSLv3, verify=NO, cipher=DHE-RSA-AES256-SHA, bits=256/256
+
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: AUTH=server, 
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), 
+authid=email-client, mech=PLAIN, bits=0
+
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: q4E6nmgg001349: 
+from=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt;, size=795,, nrcpts=1, 
+msgid=&lt;201205140649.q4E6nmdE003182@ip-10-10-10-10.ec2.internal&gt;, 
+proto=ESMTP, daemon=MSA, relay=ec2-1-2-3-4.compute-1.amazonaws.com 
+[1.2.3.4] (may be forged)
+
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: STARTTLS=client, 
+relay=aspmx.l.google.com., version=TLSv1/SSLv3, verify=FAIL, 
+cipher=RC4-SHA, bits=128/128
+
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: q4E6nmgg001349: 
+to=&lt;kurt@seifried.org&gt;, delay=00:00:01, xdelay=00:00:01, mailer=esmtp, 
+pri=120795, relay=aspmx.l.google.com. [173.194.68.26], dsn=2.0.0, 
+stat=Sent (OK 1336912345 gs11si19555555aaa.999)</pre>
+<p>As you can see the email comes in, and is then handed off to gmail.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/182/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/182/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=182&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

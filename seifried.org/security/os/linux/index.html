@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Linux</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Linux security</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#b0dbc5c2c4f0c3d5d9d6c2d9d5d49edfc2d7"><span class="__cf_email__" data-cfemail="610a1413152112040807130804054f0e1306">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p><a href="20020324-securing-linux-step-by-step.html">Securing
+Linux Step By Step</a></p>
+<blockquote>
+<p>A 100+ clide presentation on securing Linux now available
+in HTML format for free.</p>
+</blockquote>
+<p><a href="redhat/">Red Hat Linux</a></p>
+<p><a href="20011005-linux-port-behavior.html">Linux Firewalling
+and Port Behavior</a></p>
+<blockquote>
+<p><font size="2">I'm feeling clever today. I rebuilt my
+gateway server, and decided to go gung-ho when it came to
+firewalling - a default deny policy for input, output and
+forward chains. Needless to say, this breaks a lot of things.
+Well, it breaks basically everything, until you start putting
+in rules to allow packets through. Using a default deny
+policy in Linux is tricky because the firewall in kernel 2.2
+is not stateful. (It is stateful in 2.4, but that is still in
+a test series and several months off from release.) With a
+stateful firewall you can make simple rules: &quot;If you see
+an outgoing connection, let the incoming packets associated
+with it through.&quot; If your firewall is not stateful, you
+will have to create many rules to allow services to work for
+clients. This can be annoying if you really want to lock your
+firewall down. Here's what it comes down to: Creating a
+really tight firewall in Linux is a pain. </font></p>
+</blockquote>
+<p><a href="19990908-network-encryption.html">Linux and network
+encryption</a></p>
+<blockquote>
+<p><font size="2"><b>September 8, 1999 &#150; A</b>nd now for
+the last in my three part mini-series on Linux encryption;
+network encryption. We've covered the basics, and filesystem
+encryption, however these systems are absolutely no good if
+you log into your server via telnet, and then provide the
+password to mount your encrypted home directory. There are
+also several file encryption systems that do not lend
+themselves well to networking, and many file sharing methods
+that provide no encryption at all. Encrypting the data that
+moves across your network is a simple and effective answer
+(ok, it's probably not simple, but you get the idea).</font></p>
+</blockquote>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 9/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Firewalling with IPChains</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Firewalling with IPChains</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#2e455b5c5a6e5d4b47485c474b4a00415c49"><span class="__cf_email__" data-cfemail="4a213f383e0a392f232c38232f2e6425382d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2>IPCHAINS</h2>
+<p>IPChains contains several new features as compared to ipfwadm;
+you can create chains of rules (hence the name) and link them
+together, making administration of firewalls far easier. IPChains
+supports more targets then ipfwadm; you can point a rule at:
+ACCEPT, DENY, REJECT, MASQ, REDIRECT, or RETURN or a user defined
+chain. As such it is very powerful, for example I could redirect
+all packets bound for port 80 (www traffic) going through my
+gateway machine to be redirected to local port 3128, the Squid
+proxy server. You can also use this in conjunction with quality
+of service routing, the example given in ipfwadm's documentation
+is that of prioritizing traffic going over a PPP link, you can
+give telnet traffic a much higher priority then say ftp, reducing
+latency problems caused by a saturated link. Typically I create
+an /etc/rc.d/init.d/ipchains-sh (or wherever appropriate) and
+call it immediately before the networking is brought up, this
+leaves a NO time in which the server is vulnerable.&nbsp;</p>
+<p>The following script is appropriate for a gateway with 2
+interfaces running, the reason I have used the DENY instead of
+REJECT target is so that the packet is dropped and not responded
+to in any way, this slows down network scans (as they wait for
+the packet to timeout instead of receiving a response) and gives
+away less information. I would also advise against logging data
+unless you have a significant amount of drive space available,
+for each packet I send (several bytes) many bytes of drive space
+is used up to create a log entry, making it easy to overwhelm
+syslog and/or your drive space on a fast connection. </p>
+<blockquote>
+<pre>#!/bin/bash
+#
+# This script sets up firewall rules appropriate for a server with 2 interfaces&nbsp;
+# running as a gateway
+# This script needs to be edited if you plan to use it.
+# We assume the internal machines call all talk to the gateway, so no rules block
+# internal traffic
+#
+# A couple of variables
+#
+# ETH0 is the IP address on ETH0 (the external interface)
+# ETH0NET is the network&nbsp;
+# ETH0NETMASK is the network mask
+# TRUSTEDHOST1 is a trusted host (for webmin/ssh)
+# TRUSTEDHOST2 is a trusted host (for webmin/ssh)
+# ETH1IP is the IP address on ETH1 (internal interface)
+# ETH1NET is the network
+# ETH1NETMASK is the network mask
+#
+ETH0IP=1.1.1.1
+ETH0NET=1.1.1.0
+ETH0NETMASK=24
+TRUSTEDHOST1=1.5.1.1
+TRUSTEDHOST2=1.5.1.2
+ETH1IP=10.0.0.1
+ETH1NET=10.0.0.0
+ETH1NETMASK=24
+#
+PATH=/sbin
+# FLUSH ALL RULES
+ipchains -F input
+ipchains -F output
+ipchains -F forward
+# ANTI-SPOOFING&nbsp;
+ipchains -A input -p all -j DENY -s 10.0.0.0/8 -i eth0 -d 0.0.0.0/0
+ipchains -A input -p all -j DENY -s 127.0.0.0/8 -i eth0 -d 0.0.0.0/0
+ipchains -A input -p all -j DENY -s 192.168.0.0/16 -i eth0 -d 0.0.0.0/0
+ipchains -A input -p all -j DENY -s 172.16.0.0/16 -i eth0 -d 0.0.0.0/0
+ipchains -A input -p all -j DENY -s $ETH0IP -i eth0 -d 0.0.0.0/0
+# ICMP FIRST
+ipchains -A input -p icmp -j ACCEPT -s $ETH0NET/$ETH0NETMASK -i eth0 -d 0.0.0.0/0
+ipchains -A input -p icmp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0
+# SSH
+ipchains -A input -p tcp -j ACCEPT -s $TRUSTEDHOST1 -i eth0 -d 0.0.0.0/0 22
+ipchains -A input -p tcp -j ACCEPT -s $TRUSTEDHOST2 -i eth0 -d 0.0.0.0/0 22
+# BLOCKING 1:1023
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 1:1023
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 1:1023
+# BLOCKING OTHER THINGS
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 1109
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 1524
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 1600
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 2003
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 2049
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 2105
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 3001
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 3001
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 3128:3130
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 3128:3130
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 3306
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 3306
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 4444
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 6000:6100
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 6000:6100
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 6667
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 7000
+# WEBMIN
+ipchains -A input -p tcp -j ACCEPT -s $TRUSTEDHOST1 -i eth0 -d 0.0.0.0/0 10000
+ipchains -A input -p tcp -j ACCEPT -s $TRUSTEDHOST2 -i eth0 -d 0.0.0.0/0 10000
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -i eth0 -d 0.0.0.0/0 10000
+# FORWARD RULES
+ipchains -P forward DENY
+ipchains -A forward -p all -j MASQ -s $ETH1NET/$ETH1NETMASK -d 0.0.0.0/0</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2>Rule creation / scripts</h2>
+<p>&nbsp;</p>
+<h3>Firewall scripts</h3>
+<p>Some scripts for Red Hat Linux in rpm format: <a href="http://www.webideal.de/rh-isdn/downloads/">http://www.webideal.de/rh-isdn/downloads/</a>.</p>
+<h3>ipfwadm2ipchains</h3>
+<p>A simple script that converts ipfwadm rules to ipchains rules,
+making migration a snap. The script is available at: <a href="http://users.dhp.com/~whisper/ipfwadm2ipchains/">http://users.dhp.com/~whisper/ipfwadm2ipchains/</a></p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 27/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#8fe4fafdfbcffceae6e9fde6eaeba1e0fde8"><span class="__cf_email__" data-cfemail="69021c1b1d291a0c000f1b000c0d47061b0e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

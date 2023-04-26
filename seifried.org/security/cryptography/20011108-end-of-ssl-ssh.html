@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried / Information Security / Cryptography / End of SSL and SSH?</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>The end of SSL and SSH?</h1>
+<p>&nbsp;</p>
+<p>by <a href="/cdn-cgi/l/email-protection#d0a3b5b9b6a2b9b5b490a3b5b3a5a2b9a4a9a0bfa2a4b1bcfeb3bfbd">Kurt Seifried</a>
+for <a href="http://www.securityportal.com/">http://www.securityportal.com/</a>
+</p>
+<hr>
+<p>Follow-up article: <a href="20011108-sslssh-followup.html">The
+End of SSL and SSH? Follow-up.</a></p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2">
+<tr>
+<td>Author info sidebar: Dug Song is a Security Architect
+at Arbor Networks, Inc. focusing on cryptography, secure
+network and application architecture and design, and
+intrusion detection. He wrote dsniff, not me. </td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p><strong>December 17, 2000 -</strong> Today [Yesterday if this
+is posted on the 18th] dsniff 2.3 was released, why is this
+important you ask? dsniff 2.3 allows you to exploit several
+fundamental flaws in two extremely popular encryption protocols,
+SSL and SSH. SSL and SSH are used to protect a large amount of
+network traffic, from financial transactions with online banks
+and stock trading sites to network administrator access to
+secured hosts holding extremely sensitive data. Both SSH and SSL
+use &quot;public key encryption&quot;, wherein their
+vulnerabilities lay. They also rely heavily on the user to make
+the right decisions when faced with an attack, and most users are
+not educated enough to know what exactly they are dealing with
+and usually make the wrong decision (how many times have we told
+users not to open up executables emailed to them?). </p>
+<p>&nbsp;</p>
+<h2>Public key encryption</h2>
+<p>There is one fundamental problem with establishing a secure,
+encrypted connection over the Internet. No matter how you do it
+at some point you must initiate the connection, over a public and
+potentially hostile network. Ideally when two hosts establish a
+connection they exchange public keys using a variety of
+verifications processes (Diffie-Helman being an extremely popular
+one for example) and each host properly receives the other's key.
+Unfortunately since this must take place over a public and
+usually insecure network it is possible for an attacker to
+intercept the key exchange and subvert it. For example (this is
+an oversimplified example but essentially correct) User Alice
+wants to talk to server Bob, and Charlie want's to snoop in on
+her session so he can read her mail. Alice initiates a connection
+with Bob, Charlie sees this and intercepts it. Charlie talks to
+Bob and pretends to be Alice, on the other side he talks to Alice
+and pretends to be Bob. Alice sends her public key out, which
+Charlie intercepts, Charlie then sends his own public key to Bob.
+Bob then sends his public key to Alice, which is again
+intercepted by Charlie, Charlie sends his own public key on to
+Alice. Now when Alice signs data using her secret key and then
+encrypts data to Bob using Bob's public key she will actually be
+using Charlie's public key, meaning Charlie can decrypt the data.
+Charlie would then receive the data, decrypt it using his secret
+key, strip off Alice's signature, sign the data using his secret
+key and then encrypt the data using Bob's public key and send it
+to Bob. Thus Alice thinks she is talking directly to Bob in a
+secure manner when in fact Charlie is in the middle intercepting
+the communications, able to monitor it and also to modify the
+content. This means that Charlie can not only grab Alice's
+username and password but can inject commands in, and the trail
+would point to Alice. Bob is in the same situation as Alice,
+blissfully unaware that Charlie is about to format the main
+harddrive.</p>
+<p>Since this problem is so fundamental to public key encryption
+there have been many schemes to foil an attacker like Charlie.
+With SSL the most common solution is to use signed certificates.
+The server has a certificate containing it's public key, and
+information such as the server name, and organization responsible
+for it, this &quot;certificate&quot; of information is then sign
+by the secret key of a trusted third party (such as Verisign).
+The trusted third party's key is then usually built in to
+software such as web browsers, if an attacker can subvert the web
+browser and modify the certificate they would also be able to
+redirect information before it gets encrypted so the risk
+assumption is that the user will have trusted software. When the
+user tries to establish an encrypted session with the server they
+can verify that the certificate that the server sent them is
+indeed valid and belongs who it claims to. Unfortunately there is
+a missing part in this equation. While SSL requires that the
+server authenticate to the user it is usually option for the user
+to authenticate to the server. And since so very few users own
+personal certificates it is exceedingly rare for a user to be
+able to prove their identity to the server in question, leaving
+the connection open to attack. The same general problems exist
+for SSH however, instead of certificates however SSH simply uses
+a secret and public key, and since they are generally not signed
+it is trivial for an attacker to sit in the middle and intercept
+the connection. If this is the first time you are connecting to a
+host and do not have the server's public key locally you will be
+non the wiser, if you do have the server's public key you will
+generally receive a warning like &quot;warning, server's key has
+changed, continue?&quot;, most users will hit Yes. </p>
+<p>I also wrote several articles last year regarding SSL and
+other authentication protocols, the URL's are listed at the
+bottom and they discuss how an attacker could go about
+successfully. Unfortunately unless both parties have some
+pre-established connection (servers knows the user's password, or
+they use signed certificates from a trusted CA) any
+authentication system will probably be susceptible to a man in
+the middle attack (although people are working on better
+systems).</p>
+<p>&nbsp;</p>
+<h2>Can't they fix it?</h2>
+<p>So why haven't these problems been fixed? Well without some
+trusted third party to sign keys and certificates (providing a
+somewhat secure path to establish a secure connection over) the
+connection must be established by two parties that do not trust
+each other (that is they cannot prove their identity to each
+other securely). There are newer key exchange algorithms that
+claim to solve many of the problems inherent in these
+transactions, however most are aimed at services where the user
+is logging in to a server, thus the server and the client both
+either know the username and the password associated with that
+username or can otherwise verify it. Unfortunately these
+protocols do not work so well for SSL transactions which are used
+on a massive scale (almost anytime people are required to send or
+receive sensitive information via the WWW SSL is used, although
+in to many cases it is not). </p>
+<p>To make matters worse the very foundation of modern networks
+is generally insecure, using protocols designed 20 or 30 years
+ago in an environment where security was not as much of a
+concern. Lower level protocols like ARP (Address Resolution
+Protocol, used to map IP addresses to MAC hardware addresses on
+local networks) contain no provisions for security. Moving up the
+scale TCP-IP and UDP provide no built in encryption or
+authentication, and it will be a very long time before there is
+widespread use of IPSec. DNS is also generally insecure, anyone
+can provide false answers with no real way to verify the data
+currently, however DNSSEC is start to appear, and with the .mil
+domain pledging to use it should help matters somewhat. </p>
+<p>&nbsp;</p>
+<h2>Enter dsniff</h2>
+<p>dsniff is a sophisticated set of programs that combined with
+other standard utilities like tcpdump (a standard packet sniffer)
+allow you to monitor and redirect network traffic so you can
+analyze it. While most packet sniffers can monitor network data
+very few are capable or rerouting traffic or analyzing encrypted
+data. The utilities dsniff provides allow you redirect network
+traffic at a number of levels. First of all is the local network,
+if you are on a hub or switch you can use arpspoof to hijack
+other machines IP addresses, if the switch is secured and ignore
+arp packets you can use macof to flood it, some switches when
+flooded revert to hub mode, thus allowing you to monitor the
+targets network traffic. Using the dnsspoof utility you can forge
+DNS replies and redirect DNS names to arbitrary IP addresses
+(ones you control), and with tcpkill you can block TCP
+connections to machines by spoofing packets that tell the machine
+to close the connection. Once you have got the traffic going to a
+machine you control you can use the suite of sniffing tools to
+extract passwords, message traffic, files and so on from network
+traffic. With the latest version of dsniff you also gain the
+ability to intercept and monitor SSH (protocol version 1) and SSL
+connections using the vulnerabilities discussed above. Following
+is a list of dsniff utilities:</p>
+<ul type="disc">
+<li>arpspoof - spoof arp entries</li>
+<li>dnsspoof - forge dns replies</li>
+<li>macof - flood using mac addresses</li>
+<li>tcpkill - block tcp connections</li>
+<li>tcpnice - slow down tcp connections</li>
+<li>dsniff - all purpose sniffer</li>
+<li>filesnarf - NFS sniffer</li>
+<li>mailsnarf - email sniffer</li>
+<li>msgsnarf - IM sniffer</li>
+<li>urlsnarf - web url sniffer</li>
+<li>webspy - lets you surf in synch with your target</li>
+<li>sshmitm - SSH protocol 1 attack</li>
+<li>webmitm - HTTP / HTTPS attack</li>
+</ul>
+<p>And it is now available in a convenient source ball package
+that an attacker can easily compile and use. Most of these tools
+are available form other sources, or have been hand coded by
+attackers, however until now they were difficult to track down
+and use, which gave SSL and SSH a bit of respite. </p>
+<p>&nbsp;</p>
+<h2>What can you do about this?</h2>
+<p>Ignoring the problem would be one way, but that probably won't
+work in the long run. Without major restructuring of the SSH and
+SSL protocols there is very little that can be done to
+&quot;fix&quot; them. The best course of action is to educate
+users to the dangers that attackers pose, and how to recognize
+when an attack may be taking place. Setting up a lab or actually
+running the software and showing users and management their
+passwords would be one way to encourage them to pay attention,
+although make sure you get permissions and people are warned in
+advance. Maintaining the overall security of your network is also
+a good idea, if an attacker can't get in this will prevent them
+from many internal attacks. If you are using SSL for secure
+transactions you should probably consider setting up a CA (or
+outsourcing it) and issuing SSL certificates op users as well as
+smart cards readers to store them securely. The simplest solution
+with SSH would be to stop supporting protocol version 1, moving
+to protocol 2 shouldn't be to difficult as OpenSSH supports it,
+and most free clients as well (although not all). You can also
+use one time password schemes, doing so with a secure token would
+greatly minimize the risk involved, although session hijacking
+would still be possible and it would probably be more difficult
+then switching over to SSH protocol 2, however it is only a
+matter of time before someone improves upon dsniff to support SSH
+protocol 2. Implementing lower level security protocols such as
+DNSSEC should help (assuming it is done properly), this will
+prevent attackers from spoofing DNS replies (although rerouting
+traffic with ARP spoofing on local networks will still be
+possible). Other options include using IPSec and making it
+mandatory for workstations and servers, with a strong
+authentication system it would be much more difficult for
+attackers to spoof traffic or sniff it.</p>
+<p>&nbsp;</p>
+<h2>Summary:</h2>
+<p>Hopefully this will spurn on the adoption of secure network
+protocols such as DNSSEC and IPSec. It is unlikely that anyone
+will discover some new mathematical property that can be used to
+make a secure authentication protocol that won't be susceptible
+to the same problems as SSH and SSL given the same circumstances.
+Right now network encryption at the session level is seen as a
+panacea that will solve all your problems, but like any solution
+it breeds new problems. Admitedly these new problems tend to be a
+lot harder to exploit then the old ones, but they are sitll
+exploitable. </p>
+<p>&nbsp;</p>
+<p><strong>Reference links:</strong></p>
+<p><a href="http://www.monkey.org/~dugsong/dsniff/">http://www.monkey.org/~dugsong/dsniff/</a></p>
+<p><a href="http://www.counterpane.com/pki-risks.html">http://www.counterpane.com/pki-risks.html</a>
+- Ten risks of PKI</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 8/11/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

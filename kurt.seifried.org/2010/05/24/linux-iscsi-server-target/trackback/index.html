@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Linux iSCSI server (target) | Kurt Seifried</title>
+<link rel="pingback" href="http://kurt.seifried.org/xmlrpc.php"/>
+<script src='https://r-login.wordpress.com/remote-login.php?action=js&amp;host=kurt.seifried.org&amp;id=86342&amp;t=1480695559&amp;back=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F24%2Flinux-iscsi-server-target%2F' type="text/javascript"></script>
+<script type="text/javascript">
+		/* <![CDATA[ */
+			if ( 'function' === typeof WPRemoteLogin ) {
+				document.cookie = "wordpress_test_cookie=test; path=/";
+				if ( document.cookie.match( /(;|^)\s*wordpress_test_cookie\=/ ) ) {
+					WPRemoteLogin();
+				}
+			}
+		/* ]]> */
+		</script>
+<link rel='dns-prefetch' href='//s2.wp.com'/>
+<link rel='dns-prefetch' href='//s1.wp.com'/>
+<link rel='dns-prefetch' href='//s0.wp.com'/>
+<link rel='dns-prefetch' href='//kurtseifried.wordpress.com'/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Feed" href="http://kurt.seifried.org/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Comments Feed" href="http://kurt.seifried.org/comments/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Linux iSCSI server&nbsp;(target) Comments Feed" href="http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/feed/"/>
+<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1473172720h&ver=4.6.1-RC1-38499"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">img.wp-smiley,img.emoji{display:inline!important;border:none!important;box-shadow:none!important;height:1em!important;width:1em!important;margin:0 .07em!important;vertical-align:-0.1em!important;background:none!important;padding:0!important;}</style>
+<link rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJx9jtEKwjAMRX/IGibTPYnf0nbBdW220KQM/95W8UVlLyH3cg4JbGz8uiguClQMp3IPi0AKEQVmVLY+mlc6epED/MczJqs4Gl5Fv9Ke5teMtSe22gjCMVhMSBXb04gvH6utU31x98zGlTbOcUYRUyeFQkaneujXe9fAxUEsLgcfQfSRsIE3unZ93w3deRhO8xOHmHVX' type='text/css' media='all'/>
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='kubrick-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/kubrick/ie.css?m=1273203575h&#038;ver=4.6.1-RC1-38499' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJx9i8sKgCAQAH8oWwSjOkTfYmLLhrrig34/u0Rdus3ADBAELmQ45Ad6k3MHZxRNig0FfBXRVaTWoGXh2OhCHD4idqcp/a3Jbo6xIUKrXnpPq1+kGmalplGq4wKxyTcd' type='text/css' media='all'/>
+<link rel='stylesheet' id='print-css-3-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h' type='text/css' media='print'/>
+<link rel='stylesheet' id='all-css-4-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/actionbar/actionbar.css,/wp-content/themes/h4/global.css?m=1479929846j' type='text/css' media='all'/>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFj+sKwjAMhV/IrHib+kN8ltrFkdqbTevQpzcD/aEOhUDIyZfDiRoSUDCudsjKSl0q5tuzNZZn6hcAnvqsCzaewgs2MRQMZWR9PJJDqIxZ96KJ0SlOcCly8cgs0MT2PRKFK+HwF7NYkjZnyMh0/3L1FZKrPQVWGZ080MGY4WOSq4Pfz1dtu14sd5utfQAruHB+'></script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1377793621h' type='text/css' media='all'/>
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kurtseifried.wordpress.com/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"/>
+<link rel='prev' title='It feels slow &#8211; testing and verifying your network&nbsp;connection' href='http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/'/>
+<link rel='next' title='Python Performance Part&nbsp;1' href='http://kurt.seifried.org/2010/05/31/python-performance-part-1/'/>
+<meta name="generator" content="WordPress.com"/>
+<link rel="canonical" href="http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/"/>
+<link rel='shortlink' href='http://wp.me/pmsC-P'/>
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=json&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F24%2Flinux-iscsi-server-target%2F&amp;for=wpcom-auto-discovery"/><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=xml&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F24%2Flinux-iscsi-server-target%2F&amp;for=wpcom-auto-discovery"/>
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Linux iSCSI server (target)"/>
+<meta property="og:url" content="http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/"/>
+<meta property="og:description" content="So basically all the articles I could find on setting up Linux as an iSCSI server (aka iSCSI target) were out of date and useless. Here&#8217;s the current info: You have two current choices: Linux…"/>
+<meta property="article:published_time" content="2010-05-24T06:09:36+00:00"/>
+<meta property="article:modified_time" content="2010-05-24T06:09:36+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png"/>
+<link rel='openid.server' href='http://kurtseifried.wordpress.com/?openidserver=1'/>
+<link rel='openid.delegate' href='http://kurtseifried.wordpress.com/'/>
+<link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried"/>
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com"/>
+<style type='text/css'><!--
+body { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgcolor.gif"); }
+#page { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgwide.gif") repeat-y top !important; border: none; }
+#header { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickheader.gif") no-repeat bottom center; }
+#footer { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickfooter.gif") no-repeat bottom; border: none;}
+#header { margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px; }
+#headerimg { margin: 7px 9px 0; height: 192px; width: 740px; }
+#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: ; }
+#headerimg h1 a, #headerimg .description { display:  }
+
+	--></style><meta name="application-name" content="Kurt Seifried"/><meta name="msapplication-window" content="width=device-width;height=device-height"/><meta name="msapplication-tooltip" content="Just another blog from just another guy (kurt@seifried.org)"/><meta name="msapplication-task" content="name=Subscribe;action-uri=http://kurt.seifried.org/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="title" content="Linux iSCSI server&nbsp;(target) | Kurt Seifried on WordPress.com"/>
+<meta name="description" content="So basically all the articles I could find on setting up Linux as an iSCSI server (aka iSCSI target) were out of date and useless. Here&#039;s the current info: You have two current choices: Linux SCSI target framework (also current as of April 2010) - http://stgt.sourceforge.net/ iSCSI Enterprise Target (currently maintained as of late April&hellip;"/>
+<link rel="amphtml" href="http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/amp/"/><style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body class="single single-post postid-51 single-format-standard mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page">
+<div id="header">
+<div id="headerimg" onclick=" location.href='http://kurt.seifried.org';" style="cursor: pointer;">
+<h1><a href="http://kurt.seifried.org/">Kurt Seifried</a></h1>
+<div class="description">Just another blog from just another guy (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="771c0205033704121e11051e121359180510">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)</div>
+</div>
+</div>
+<hr/>
+<div id="content" class="widecolumn">
+<div class="navigation">
+<div class="alignleft">&laquo; <a href="http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/" rel="prev">It feels slow &#8211; testing and verifying your network&nbsp;connection</a></div>
+<div class="alignright"><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/" rel="next">Python Performance Part&nbsp;1</a> &raquo;</div>
+</div>
+<div class="clear post-51 post type-post status-publish format-standard hentry category-linux tag-iscsi tag-iscsi-target tag-storage" id="post-51">
+<h2>Linux iSCSI server&nbsp;(target)</h2>
+<small class="single-by"></small>
+<div class="entry">
+<p>So basically all the articles I could find on setting up Linux as an iSCSI server (aka iSCSI target) were out of date and useless. Here&#8217;s the current info:</p>
+<p>You have two current choices:</p>
+<p>Linux SCSI target framework (also current as of April 2010) &#8211; <a href="http://stgt.sourceforge.net/">http://stgt.sourceforge.net/</a></p>
+<p>iSCSI Enterprise Target (currently maintained as of late April 2010) &#8211; <a href="http://iscsitarget.sourceforge.net/">http://iscsitarget.sourceforge.net/</a></p>
+<p>The first one, Linux SCSI target framework (tgt) is shipped by Red Hat (5 and 6 beta, Fedora), Debian, SuSE and several other vendors which is good, but most of the vendors ship older versions (like 0.4, 0.6, 0.9) rather than the current 1.0 which is not so great (but upgrading is easy). Judging by the widespread vendor support I&#8217;m going to pick tgt over the iSCSI Enterprise Target for the simple and pragmatic reason that more people are using it and thus bugs and support are probably easier to deal with.</p>
+<p>The Fedora Project Wiki has a quick start guide for setting up tgt at <a href="https://fedoraproject.org/wiki/Scsi-target-utils_Quickstart_Guide">https://fedoraproject.org/wiki/Scsi-target-utils_Quickstart_Guide</a> that covers creating target devices/etc.</p>
+<p>The good news is that iSCSI initiators (aka clients) are reasonably mature and included in the installation support for most modern Linux systems.VMware also supports iSCSI out of the box with pretty much no hassle.</p>
+<p>Now to find an affordable 16 port SATA RAID controller and case.</p>
+<p>Obsolete iSCSI target software for Linux:</p>
+<p><a href="http://www.open-iscsi.org/">http://www.open-iscsi.org/</a> &#8211; Not maintained since May 2009</p>
+<p><a href="http://linux-iscsi.sourceforge.net/">http://linux-iscsi.sourceforge.net/</a>&#8211; Not maintained since 2005</p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-86342-51-58419f074b02a' data-src='//widgets.wp.com/likes/#blog_id=86342&amp;post_id=51&amp;origin=kurtseifried.wordpress.com&amp;obj_id=86342-51-58419f074b02a' data-name='like-post-frame-86342-51-58419f074b02a'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts'>
+<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>
+<p class="clear">Tags: <a href="http://kurt.seifried.org/tag/iscsi/" rel="tag">iscsi</a>, <a href="http://kurt.seifried.org/tag/iscsi-target/" rel="tag">iscsi target</a>, <a href="http://kurt.seifried.org/tag/storage/" rel="tag">storage</a></p>
+<p class="postmetadata alt">
+<small>
+This entry was posted on May 24, 2010 at 12:09 AM and is filed under <a href="http://kurt.seifried.org/category/linux/" rel="category tag">Linux</a>. You can follow any responses to this entry through the <a href='http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/feed/'>RSS 2.0</a> feed.
+You can <a href="#respond">leave a response</a>, or <a href="http://kurt.seifried.org/2010/05/24/linux-iscsi-server-target/trackback/" rel="trackback">trackback</a> from your own site.
+</small>
+</p>
+</div>
+</div>
+ 
+<h3 id="comments">One Response to &#8220;Linux iSCSI server&nbsp;(target)&#8221;</h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1 highlander-comment" id="comment-187">
+<cite>Nikola Savic</cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-187" title="">March 4, 2011 at 5:23 AM</a> | <a class='comment-reply-link' href='/2010/05/24/linux-iscsi-server-target/?replytocom=187#respond' onclick='return addComment.moveForm("comment-187", "187", "respond", "51")'>Reply</a> </small>
+<p>Hello,</p>
+<p>When iSCSI initiators are in question, open-iscsi is what is shipped with RHEL/CentOS. Since it&#8217;s obsolete, what would you recommend?</p>
+<p>Would that be LIO (linux-iscsi.org) ?</p>
+<p>Looks like target is actively developed, since preview release 4.0.0 was posted on 17. Jan 2011. However, initiator part is 4 years old.</p>
+<p>Nikola</p>
+</li> 
+</ol>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+<div id="respond" class="comment-respond">
+<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2010/05/24/linux-iscsi-server-target/#respond" style="display:none;">Cancel reply</a></small></h3> <form action="http://kurt.seifried.org/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+<input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="644ee5962f"/><input type="hidden" name="_wp_http_referer" value="/2010/05/24/linux-iscsi-server-target/"/>
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest"/>
+<div class="comment-form-field comment-textarea">
+<label for="comment">Enter your comment here...</label>
+<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+<div id="comment-form-identity" class="comment_registration">
+<div id="comment-form-nascar">
+<p>Please log in using one of these methods to post your comment:</p>
+<ul>
+<li>
+<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+<span></span>
+</a>
+</li>
+<li>
+</ul>
+</div>
+<div id="comment-form-guest" class="comment-form-service selected">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank"> <img src="" alt="Gravatar" width="25" class="no-grav"/>
+</a> </div>
+<div class="comment-form-fields">
+<div class="comment-form-field comment-form-email">
+<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+<div class="comment-form-input"><input id="email" name="email" type="email" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-author">
+<label for="author">Name <span class="required">(required)</span></label>
+<div class="comment-form-input"><input id="author" name="author" type="text" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-url">
+<label for="url">Website</label>
+<div class="comment-form-input"><input id="url" name="url" type="url" value=""/></div>
+</div>
+</div>
+</div>
+</div>
+<div id="comment-form-wordpress" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="WordPress.com Logo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value=""/>
+<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-twitter" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Twitter picture" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value=""/>
+<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-facebook" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Facebook photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value=""/>
+<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-googleplus" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Google+ photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value=""/>
+<p class="comment-form-posting-as pa-googleplus"><strong></strong> You are commenting using your Google+ account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-load-service" class="comment-form-service">
+<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+<p>Connecting to %s</p>
+</div>
+</div>
+<script type="text/javascript">
+var highlander_expando_javascript = function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+}
+jQuery(document).ready( highlander_expando_javascript );
+</script>
+<div id="comment-form-subscribe">
+<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog" style="display: inline;">Notify me of new posts via email.</label></p></div>
+<p class="form-submit">
+<input name="submit" type="submit" id="comment-submit" value="Post Comment"/>
+<input type='hidden' name='comment_post_ID' value='51' id='comment_post_ID'/>
+<input type='hidden' name='comment_parent' id='comment_parent' value='0'/>
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="e8fddf5a00"/></p>
+<input type="hidden" name="genseq" value="1480695559"/>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="9"/></p> </form>
+</div> 
+<div style="clear: both"></div>
+</div>
+<hr/>
+<div id="footer">
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+<br/><a href="http://kurt.seifried.org/feed/">Entries (RSS)</a> and <a href="http://kurt.seifried.org/comments/feed/">Comments (RSS)</a>. </p>
+</div>
+</div>
+ 
+<div style="display:none">
+</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/kurtseifried.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?action=logout&_wpnonce=724fd47a24","homeURL":"http:\/\/kurt.seifried.org\/","postID":"51","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"1","userIsLoggedIn":"","isJetpack":"0","text_direction":"ltr"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s2.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1479964158j'></script>
+<script type='text/javascript' src='https://s1.wp.com/wp-content/mu-plugins/akismet-3.0/_inc/form.js?m=1404442431h'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var actionbardata = {"siteID":"86342","siteName":"Kurt Seifried","siteURL":"http:\/\/kurt.seifried.org","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/void.gif' class='avatar avatar-36' height='36' width='36' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/kubrick","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F24%2Flinux-iscsi-server-target%2F","themeURL":"","xhrURL":"http:\/\/kurt.seifried.org\/wp-admin\/admin-ajax.php","nonce":"c5d9519be6","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"321560f319\" \/>","referer":"http:\/\/kurt.seifried.org\/2010\/05\/24\/linux-iscsi-server-target\/","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/kurtseifried.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fkurtseifried.wordpress.com%2F2010%2F05%2F24%2Flinux-iscsi-server-target%2F","postID":"51","shortlink":"http:\/\/wp.me\/pmsC-P","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/kurt.seifried.org\/51","i18n":{"view":"View Site","follow":"Follow","following":"Following","edit":"Edit","login":"Log In","signup":"Sign Up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Kubrick","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editFollows":"Manage Sites I Follow","editSubs":"Manage Subscriptions","viewReader":"View Site in the Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F24%2Flinux-iscsi-server-target%2F\">Log in now.<\/a>"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJx9jEEOwjAMBD9EalBRywXxlpBY4BI7wUkK/J70QMWpt9XO7sArGReloBSYMnicyWF6d1PewR/ialKoN5IMgR6Y4Vmx4t2KD6i/MYkL1TfYRC4yt6NRTOHTMcmG0frGzdUqsM0FtSUTZ1SlRbZ2WwZXKMpiWFNbX/h8OI5D35+GcT99AYXhVt0='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script> <iframe src='http://widgets.wp.com/likes/master.html?ver=20160429#ver=20160429' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.async = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+<noscript>
+<p class="robots-nocontent"><img src="http://b.scorecardresearch.com/p?c1=2&c2=7518284&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1" alt="" style="display:none;" width="1" height="1"/></p>
+</noscript><script src="//stats.wp.com/w.js?55" type="text/javascript" async defer></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'86342','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'86342','v':'wpcom','tz':'-7','user_id':'0','post':'51','subd':'kurtseifried'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V+ZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVBNT9XUF9mb2t2JTgmM2VlJixbflh0YytEQlBlRGR2T0JFNkdveUNrXz9rMlhybFs/WVtmYkxZZHUzOVosYS1ET1QsNGxYZU1nVGhqW0RYdkF6OGFNV189SVk0SWxBWDFvWEUueXpZbHJqbjMzJS9wVElxTmdWWmg0d282ZVV0MDYtelA4Tw=='}]);
+_stq.push([ 'clickTrackerInit', '86342', '51' ]);
+	</script>
+<noscript><img src="http://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt=""/></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script></body>
+</html>

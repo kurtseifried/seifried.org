@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Network services / X windows</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>X Window System</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#ddb6a8afa99daeb8b4bbafb4b8b9f3b2afba"><span class="__cf_email__" data-cfemail="ed86989f99ad9e88848b9f848889c3829f8a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>The X Window System provides a network-transparent method for
+sharing graphical data, or more specifically for exporting the
+display of a program to a remote (or the local) host. Using it
+you can run a powerful 3d rendering package on your SGI origin
+2000 and display it on a 486. Essentially it's the granddaddy to
+all this 'thin client' hype that is becoming very popular
+nowadays. It was created by MIT, at a time when security was not
+much of a concern. This, of course, has led to more then a few
+nasty bugs being found. Worse, the level of control X is given
+(it handles keystrokes, mouse movements, draws the screen, etc.)
+means if it is compromised, very bad things will happen. This
+data, if sent over the network (i.e., the X program being run is
+displaying on a remote host) can easily be logged, so sensitive
+information (like an xterm being used to login to another remote
+system) is vulnerable. In addition to these problems the
+authentication protocol that X uses is relatively weak (although
+it has been improved). Running a graphical xemacs session on a
+server 3 timezones away however can be a very handy thing. </p>
+<p>X is very predictable in port usage, almost all
+implementations and installations of X use port 6000 for the
+first session and increment by one for other sessions, thus
+making it quite easy to scan for. If you are not going to be
+using X to display program running on remote systems I suggest
+strongly that you firewall port 6000.&nbsp; </p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 6000:6100
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 6000:6100
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 6000:6100</pre>
+<p>or </p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 6000:6100
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 6000:6100
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 6000:6100</pre>
+<p>&nbsp;</p>
+<h2><a name="X server security configuration">X server security
+configuration</a></h2>
+<p>There are a number of methods to secure access to your X
+server. --no-listen-tcp</p>
+<p>&nbsp;</p>
+<h2><a name="xhost">xhost</a> </h2>
+<p>xhost simply allows you to specify which machines are, or
+aren't allowed to connect to the X server, this is a very
+simplistic security mechanism and is not really suitable in any
+modern environment, however used in conjunction with other
+mechanisms it can help. The command is quite simple: 'xhost
++example.org' adds example.org, 'xhost -example.org' removes
+example.org from the list, you must also specify 'xhost -' to
+turn on the access control list, or else everyone is let in by
+default. </p>
+<p>&nbsp;</p>
+<h2><a name="mkxauth">mkxauth </a></h2>
+<p>mkxauth is definitely a step up from xhost. mkxauth helps
+create ~/.Xauthority files, and merge them, which are used to
+specify hostnames and the related magic cookies (basically a
+token used to gain access). These cookies can then be used to
+gain access to a remote X host (you essentially have a copy of
+the cookie on each end) and are transferred either plain text
+(insecure) or DES encrypted (quite secure). Using this method you
+can be relatively safe and secure. Xauthority files can also be
+used in conjunction with Kerberos, removing the necessity to copy
+Xauthority files around and keep them in synchronization. Hosts
+authenticate to each other through a central Kerberos key
+server(s) in an encrypted fashion, this method is most
+appropriate for large installations/etc. mkxauth has an excellent
+man page 'man mkxauth' and more generalized details are available
+in the Xsecurity man page (not sure how common this name page is)
+'man Xsecurity'. </p>
+<p>&nbsp;</p>
+<h2><a name="SSH tunnel">SSH tunnel</a></h2>
+<p>SSH or OpenSSH can be used to create a tunnel between hosts
+(or more specifically between two X servers), thus encrypting the
+channel, providing authentication, and generally making things
+safer. The following web page explains it <a href="http://csociety.ecn.purdue.edu/~sigos/projects/ssh/forwarding/">http://csociety.ecn.purdue.edu/~sigos/projects/ssh/forwarding/</a>.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 2/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#7c17090e083c0f19151a0e15191852130e1b"><span class="__cf_email__" data-cfemail="5f342a2d2b1f2c3a36392d363a3b71302d38">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

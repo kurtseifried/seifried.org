@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Technical</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Care and feeding of RPM</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#650e1017112516000c03170c00014b0a1702"><span class="__cf_email__" data-cfemail="3f544a4d4b7f4c5a56594d565a5b11504d58">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>I'm always amazed at the lack of articles on topics like RPM
+and PAM. Basic systems components and tools that people use every
+day but generally speaking are poorly understood if at all.
+Prepare to be educated. RPM is &quot;Red Hat Package
+Manager&quot; and is currently the most widely used package
+format for Linux (yes, I know about dpkg and tar packages) with
+most vendors utilizing it. RPM allows you to easily install,
+uninstall and query packages and the RPM database for
+information. Generally speaking RPM's must be installed as root,
+basically RPM's can do anything on your system, install new
+files, overwriting files, reconfiguring system settings, add new
+users, etc. Why is this important? Because many people download
+RPM's from semi-trusted or untrusted sources and blindly install
+them. </p>
+<h3>Making sure RPM's are legit</h3>
+<p>The first step would be to download RPM's that were created by
+a trusted party (i.e. your vendor, your corporate LAN admin,
+etc.) and check the GnuPG signature on them. Unfortunately there
+are problems with this approach, detailed in the following
+security advisory:</p>
+<p><a href="http://seifried.org/security/advisories/kssa-001.html">http://seifried.org/security/advisories/kssa-001.html</a>
+</p>
+<p>If you want to use an RPM that comes from an untrusted source
+(i.e. you found it on the web, in the contrib directory, etc.)
+then you shouldn't use the binary RPM. No matter how much
+verification you do of the package to make sure it won't
+overwrite critical files it is always possible that an attacker
+may have trojaned one or more of the binary programs contained in
+the RPM. So what's the answer? Source RPM's. Simply download the
+source RPM and &quot;install&quot; it (I use the term loosely
+since installing a source RPM simply unpacks various files into
+/usr/src/vendorname/). The spec file (located at
+/usr/src/vendorname/packagename.spec) should list the official
+URL to download the source tarballs (i.e. Apache 1.3.19), you can
+go get signatures of the files and check them, or download the
+actual files and overwrite them. To be extra careful you should
+also sit down and read any patch files included with the source
+rpm as it is possible for an attacker to use patch files to
+introduce back doors and so forth. Lastly you should check the
+spec file, this is actually one of the best vectors for an
+attacker to introduce backdoors or take control of your system. </p>
+<h3>RPM spec files</h3>
+<p>If you haven't read an RPM spec file yet I suggest you grab a
+source RPM and read along as it were. The top of the spec file is
+typically informational in nature, package name, vendor, version
+and so on. Then comes the interesting stuff. For many software
+packages you need to do just more then lay down various files,
+typically things like adding users, restarting services and
+modifying global configurations needs to be done. This is
+achieved by pre-install, post-install, pre-uninstall and
+post-uninstall scripts. These scripts are usually written as
+shell scripts but you can also use Perl, obviously since they run
+as root you can do pretty much anything. In the spec file these
+sections are preceded by &quot;%pre&quot;, &quot;%post&quot;,
+&quot;%preun&quot; and &quot;%postun&quot;. Another cool thing
+you can do with RPM's are triggers. Like a database trigger that
+waits for an event (such as a record having the first name John)
+RPM triggers can &quot;watch&quot; for a package to be installed
+or uninstalled. Thus an attacker can place a logic bomb of sorts,
+the next time you upgrade ssh for example it would add an account
+with UID 0, and send out an email saying it did so. Of course
+there are many other places an attacker can place malicious
+instructions, such as the &quot;%pre&quot;, &quot;%build&quot;,
+&quot;%install&quot; and &quot;%clean&quot;. </p>
+<h3>Querying RPMs</h3>
+<p>The pre-uninstall and post-install scripts are difficult to
+find, one quick way to get the post install script for every
+package install on your system you can simply:</p>
+<blockquote>
+<pre>rpm -qa | xargs rpm -q --queryformat 'name: %{NAME}\n%{PREUN}\n\n'</pre>
+</blockquote>
+<p>Which should give you something like:</p>
+<blockquote>
+<pre>name: libtermcap
+(none)
+
+name: sed
+if [ $1 = 0 ]; then
+   /sbin/install-info --delete /usr/share/info/sed.info.gz /usr/share/info/dir
+fi
+
+name: slocate
+if [ &quot;$1&quot; = &quot;0&quot; ]; then 
+  /usr/sbin/groupdel slocate
+  rm -f /var/lib/slocate/slocate.db
+fi
+
+name: ntp
+if [ $1 = 0 ]; then
+    service ntpd stop &gt; /dev/null 2&gt;&amp;1
+    /sbin/chkconfig --del ntpd
+fi</pre>
+</blockquote>
+<p>Other things you can query are PREIN, POSTIN, PREUN and
+POSTUN. These are stored in /var/lib/rpm/Packages which is
+unfortunately a Berkely DB file, however you can use text
+utilities like grep or strings to find things (such as &quot;grep
+-i rewt Packages&quot;). There are several dozen things you can
+query for (name, packager, provides, requires, etc.) and these
+are covered in the RPM book and online documentation. </p>
+<h3>Installing RPMs</h3>
+<p>Before you install an RPM you should verify that it came from
+how it claims to be (i.e. check the GnuPG signature), then you
+should query it to make sure there are not spurious triggers,
+post-install instructions and so forth. If you are worried about
+triggers you can use &quot;--triggeredby&quot; to see what a
+package will trigger, if you do not want a package to trigger
+anything simply use &quot;--notriggers&quot;. If you have
+customized your system extensively or simply do not to run the
+scripts included with an rpm you can use &quot;--noscripts&quot;,
+during install it will ignore pre-install and post-install
+scripts, during uninstall it will ignore pre-uninstall and
+post-uninstall scripts. </p>
+<h3>Building RPMs</h3>
+<p>If possibly you should not build RPM's using the root account,
+either chown the /usr/src/vendorname/ directory so that a non
+root user or group can use it, or setup your .rpmmacros file so
+that a different buildroot and tmp directory are used during the
+actual build process. Personally I find it easier to have a user
+like &quot;buildrpm&quot; that owns /usr/src/vendorname rather
+then creating a complete set of directories for building RPM's
+and so on. Another concern is the use of tmp directories by RPM,
+to specify a specific tmp directory place the following in
+~/.rpmmacros:</p>
+<pre>%_tmppath /home/user/tmp</pre>
+<p>One thing to note is that RPM strips the leading
+&quot;/&quot;'s from files when unpacking tar archives so you
+need not worry about an attacker creating a tarball with
+&quot;/etc/passwd&quot; for example. When possible you should
+have a system dedicated to building rpm's that is heavily
+secured, just imagine if an attacker managed to break into a
+machine used be a vendor to build RPM's, or onto the one you use
+for building updated RPM's for your company's servers.</p>
+<h3>Summary</h3>
+<p>RPM is a very complex and powerful tool for building software
+packages. Blindly downloading and installing RPM's is of course
+very dangerous (this goes for installing software on any
+operating system). If you choose to build foreign RPM's on your
+machine then you should inspect the SPEC file for malicious
+commands and also verify the source code used and any patches.
+The good news however is that verifying the origin of RPM's is
+relatively easy, and as the majority of your RPM's will likely
+come from trusted sources then you should not have too many
+problems. Lastly with the use of scripts and triggers you can
+easily build RPM's that will notify you when installed (i.e. put
+a command to send mail out so you know when someone has upgraded
+a machine), or properly clean up after themselves. Used properly
+RPM is a very powerful tool.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://seifried.org/security/advisories/kssa-001.html">http://seifried.org/security/advisories/kssa-001.html</a>
+</p>
+<p><a href="http://www.rpm.org/">http://www.rpm.org/</a>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried Information Security - Future Denial Of Service Attacks</TITLE>
+</HEAD>
+<BODY LANG="en-US">
+<H1>Future Denial of Service Attacks</H1>
+<P>Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#375c4245437744525e51455e525319584550"><span class="__cf_email__" data-cfemail="91fae4e3e5d1e2f4f8f7e3f8f4f5bffee3f6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<HR>
+<P><BR><BR>
+</P>
+<P><B>February 2, 2000</B> - Denial of service attacks are a part of
+life on the Internet. They are generally speaking the easiest attacks
+to commit since they require minimal skill, only a minimum of
+knowledge about your intended victim's network, and can be done
+relatively anonymously. Businesses and their customers are beginning
+to rely on the availability of corporate web servers to conduct basic
+business tasks, such as collaborating on projects, retrieving email
+securely, checking the status of their pension fund, and so on. The
+deployment of virtual private networking technology, much of it based
+upon IP Security (IPSec) is also starting to accelerate, making it
+possible for businesses to link various sites, traveling employees,
+and customers together securely and cheaply. As people rely more
+heavily on these services, they will become an attractive target for
+malicious people, potentially disrupting large numbers of users and
+services.</P>
+<P>SSL provides authentication mechanisms for the proving of identity
+as well as encryption services for data. The problem is that unlike a
+traditional service (say telnet or ftp) there is a relatively high
+overhead on the encryption and decryption required to talk to other
+parties. Flooding a traditional HTTP webserver with say 50 bogus
+requests a second won't bother most servers (for example
+SecurityPortal.com recently got slashdotted, site traffic suddenly
+jumped but the servers managed to make it through), however flooding
+an HTTPS (SSL enabled) webserver with 20 requests per second can
+quickly bring it to it's knees. Processing an HTTPS based request as
+opposed to an HTTP request can require up to 10 times (and sometimes
+more) the CPU time, due to the decryption that takes place. Even if
+you require secure digital identification (using a client based X.509
+certificate for example) of the party requesting a document from your
+secure website there is still significant overhead in figuring out if
+the request is kosher or not. Even with hardware crypto accelerators
+for SSL, a determined attacker can still flood a server into the
+great beyond.</P>
+<P><EM>&quot;QuickSpecs: Compaq AXL200 Accelerator PCI Card<BR>The
+Compaq AXL200 Accelerator PCI Card is the performance solution for
+secure application servers. It supports more than 200 secure sockets
+layer (SSL) connections per second. [Adobe Acrobat]&quot;</EM></P>
+<P>This is one of the latest, greatest cryptographic accelerator
+cards to be released, and it only supports up to (let's be charitable
+and say 300) 300 connections per second, even with a server farm of
+say 20 servers, an attacker would only have to generate 6000 requests
+per second to flood your e-commerce site (or whatever you are using
+it for) into the dirt. You might be wondering at this point &quot;how
+is an attacker going to create 6000 bogus SSL connections if SSL is
+such a CPU hog?&quot; the simple answer is: (s)he doesn't have to.
+They can simply create a few bogus SSL packets and send them
+repeatedly, or simply flood the server with garbage packets which it
+will try to decrypt (and fail at). Unfortunately you can't block
+these bogus requests, since the attacker will simply start spoofing
+their packets as from large proxy servers and customer machines that
+you want to talk to.</P>
+<P>It gets worse, too.</P>
+<P>I personally rely on IPSec to link my servers (hosted in one
+location) to the LAN in my apartment, because of the IPSec link I can
+safely check email, transfer files, do online backups, and generally
+access my servers as if they were local to me. Unlike many companies
+employing VPN technology my network is very small (2 locations), and
+very heavily secured. The primary problem with IPSec is the
+authentication mechanism. Currently the standard is IKE (Internet Key
+Exchange) involves a daemon to communicate with other IPSec enabled
+computers, typically using port 500, UDP. Some people like me are
+lucky, and can firewall access to that port heavily (although
+figuring out which IP's I allow wouldn't be too hard, and then you
+could spoof them). Most sites will not be so lucky, having to support
+large populations of users and remote sites - possibly with dynamic
+addresses, means the ability to firewall access to the IKE daemon
+will be severely limited. IPSec can make use of cookies (small
+authentication tokens), which reduces the amount of damage a flood
+attack would cause, but does not fix it completely. Some initial
+testing of random UDP packet floods against an IPSec server indicate
+a denial of service attack should be quite effective. Again there are
+hardware based cryptographic accelerators but these will only
+alleviate the problem somewhat, a determined attacker will be able to
+flood the server and the resulting CPU usage will result in an
+unusable server. You could (in theory) use manual keying of IPSec
+tunnels and not use any key management, but this is unworkable in
+anything other then a small environment, and would decrease the
+security provided by encryption significantly.
+</P>
+<H5>So what can we do?</H5>
+<P>Probably the best thing you as an administrator can do, right now,
+is to make sure your firewall rules prevent spoofing. If all networks
+had outgoing firewall rules that prevented any packets claiming to
+come from networks not actually at that location, the ability to
+trace attacks would be significantly easier. Additionally by having
+outbound filters you stand a much better chance of detecting
+malicious users and compromised hosts internally, and the odd
+misconfigured host. If you have a high requirement for security I
+would advise against using the Internet, frame relay is a lot better,
+and dedicated lease lines are best (but hideously expensive), and if
+an attacker is sufficiently motivated they will rent a backhoe and
+buy some blueprints. Some firewalls (like IPF) will let you block
+small mangled packets, which is another technique attackers can use
+to <B>a)</B> sneak the packets past many firewalls, and <B>b)</B> use
+server resources, while it tries to put the packets together (i.e. it
+will wait for fragments that never show up).</P>
+<P><BR><BR>
+</P>
+<HR>
+<P><A HREF="">Back</A></P>
+<P>Last updated 9/10/2001</P>
+<P>Copyright Kurt Seifried 2001</P>
+<P><BR><BR>
+</P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

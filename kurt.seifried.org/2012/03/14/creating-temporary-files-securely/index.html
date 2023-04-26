@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Creating temporary files securely | Kurt Seifried</title>
+<link rel="pingback" href="http://kurt.seifried.org/xmlrpc.php"/>
+<script src='https://r-login.wordpress.com/remote-login.php?action=js&amp;host=kurt.seifried.org&amp;id=86342&amp;t=1480695508&amp;back=http%3A%2F%2Fkurt.seifried.org%2F2012%2F03%2F14%2Fcreating-temporary-files-securely%2F' type="text/javascript"></script>
+<script type="text/javascript">
+		/* <![CDATA[ */
+			if ( 'function' === typeof WPRemoteLogin ) {
+				document.cookie = "wordpress_test_cookie=test; path=/";
+				if ( document.cookie.match( /(;|^)\s*wordpress_test_cookie\=/ ) ) {
+					WPRemoteLogin();
+				}
+			}
+		/* ]]> */
+		</script>
+<link rel='dns-prefetch' href='//s2.wp.com'/>
+<link rel='dns-prefetch' href='//s1.wp.com'/>
+<link rel='dns-prefetch' href='//s0.wp.com'/>
+<link rel='dns-prefetch' href='//kurtseifried.wordpress.com'/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Feed" href="http://kurt.seifried.org/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Comments Feed" href="http://kurt.seifried.org/comments/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Creating temporary files&nbsp;securely Comments Feed" href="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/feed/"/>
+<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1473172720h&ver=4.6.1-RC1-38499"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">img.wp-smiley,img.emoji{display:inline!important;border:none!important;box-shadow:none!important;height:1em!important;width:1em!important;margin:0 .07em!important;vertical-align:-0.1em!important;background:none!important;padding:0!important;}</style>
+<link rel='stylesheet' id='all-css-0-1' href='https://s2.wp.com/_static/??-eJx9jtEKwjAMRX/IGibTPYnf0nbBdW220KQM/95W8UVlLyH3cg4JbGz8uiguClQMp3IPi0AKEQVmVLY+mlc6epED/MczJqs4Gl5Fv9Ke5teMtSe22gjCMVhMSBXb04gvH6utU31x98zGlTbOcUYRUyeFQkaneujXe9fAxUEsLgcfQfSRsIE3unZ93w3deRhO8xOHmHVX' type='text/css' media='all'/>
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='kubrick-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/kubrick/ie.css?m=1273203575h&#038;ver=4.6.1-RC1-38499' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJx9i8sKgCAQAH8oWwSjOkTfYmLLhrrig34/u0Rdus3ADBAELmQ45Ad6k3MHZxRNig0FfBXRVaTWoGXh2OhCHD4idqcp/a3Jbo6xIUKrXnpPq1+kGmalplGq4wKxyTcd' type='text/css' media='all'/>
+<link rel='stylesheet' id='print-css-3-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h' type='text/css' media='print'/>
+<link rel='stylesheet' id='all-css-4-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/actionbar/actionbar.css,/wp-content/themes/h4/global.css?m=1479929846j' type='text/css' media='all'/>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFj+sKwjAMhV/IrHib+kN8ltrFkdqbTevQpzcD/aEOhUDIyZfDiRoSUDCudsjKSl0q5tuzNZZn6hcAnvqsCzaewgs2MRQMZWR9PJJDqIxZ96KJ0SlOcCly8cgs0MT2PRKFK+HwF7NYkjZnyMh0/3L1FZKrPQVWGZ080MGY4WOSq4Pfz1dtu14sd5utfQAruHB+'></script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1377793621h' type='text/css' media='all'/>
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s1.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kurtseifried.wordpress.com/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"/>
+<link rel='prev' title='Fedora 16 with SELinux running WordPress with WP Super&nbsp;Cache' href='http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/'/>
+<link rel='next' title='Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with&nbsp;authentication' href='http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/'/>
+<meta name="generator" content="WordPress.com"/>
+<link rel="canonical" href="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/"/>
+<link rel='shortlink' href='http://wp.me/pmsC-2F'/>
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=json&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2012%2F03%2F14%2Fcreating-temporary-files-securely%2F&amp;for=wpcom-auto-discovery"/><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/1.0/?format=xml&amp;url=http%3A%2F%2Fkurt.seifried.org%2F2012%2F03%2F14%2Fcreating-temporary-files-securely%2F&amp;for=wpcom-auto-discovery"/>
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Creating temporary files securely"/>
+<meta property="og:url" content="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/"/>
+<meta property="og:description" content="Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to…"/>
+<meta property="article:published_time" content="2012-03-14T20:29:14+00:00"/>
+<meta property="article:modified_time" content="2015-05-13T02:27:37+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png"/>
+<link rel='openid.server' href='http://kurtseifried.wordpress.com/?openidserver=1'/>
+<link rel='openid.delegate' href='http://kurtseifried.wordpress.com/'/>
+<link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried"/>
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com"/>
+<style type='text/css'><!--
+body { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgcolor.gif"); }
+#page { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgwide.gif") repeat-y top !important; border: none; }
+#header { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickheader.gif") no-repeat bottom center; }
+#footer { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickfooter.gif") no-repeat bottom; border: none;}
+#header { margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px; }
+#headerimg { margin: 7px 9px 0; height: 192px; width: 740px; }
+#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: ; }
+#headerimg h1 a, #headerimg .description { display:  }
+
+	--></style><meta name="application-name" content="Kurt Seifried"/><meta name="msapplication-window" content="width=device-width;height=device-height"/><meta name="msapplication-tooltip" content="Just another blog from just another guy (kurt@seifried.org)"/><meta name="msapplication-task" content="name=Subscribe;action-uri=http://kurt.seifried.org/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="title" content="Creating temporary files&nbsp;securely | Kurt Seifried on WordPress.com"/>
+<meta name="description" content="Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to use them, creating security vulnerabilities in their applications. So in alphabetical order here is a list of programming languages and how to create a&hellip;"/>
+<link rel="amphtml" href="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/amp/"/><style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body class="single single-post postid-165 single-format-standard mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page">
+<div id="header">
+<div id="headerimg" onclick=" location.href='http://kurt.seifried.org';" style="cursor: pointer;">
+<h1><a href="http://kurt.seifried.org/">Kurt Seifried</a></h1>
+<div class="description">Just another blog from just another guy (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="80ebf5f2f4c0f3e5e9e6f2e9e5e4aeeff2e7">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)</div>
+</div>
+</div>
+<hr/>
+<div id="content" class="widecolumn">
+<div class="navigation">
+<div class="alignleft">&laquo; <a href="http://kurt.seifried.org/2012/01/04/fedora-16-with-selinux-running-wordpress-with-wp-super-cache/" rel="prev">Fedora 16 with SELinux running WordPress with WP Super&nbsp;Cache</a></div>
+<div class="alignright"><a href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/" rel="next">Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with&nbsp;authentication</a> &raquo;</div>
+</div>
+<div class="clear post-165 post type-post status-publish format-standard hentry category-uncategorized tag-auditing tag-programming tag-security tag-tmp" id="post-165">
+<h2>Creating temporary files&nbsp;securely</h2>
+<small class="single-by"></small>
+<div class="entry">
+<p>Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to use them, creating security vulnerabilities in their applications. So in alphabetical order here is a list of programming languages and how to create a temporary file securely. If I&#8217;m wrong, please let me know. Note: when searching for a secure temporary file creation function/method/etc. looking for &#8220;mkstemp&#8221; is a quick way to find most of them. Please note a lot of sites (e.g. <a href="http://rosettacode.org/wiki/Secure_temporary_file" rel="nofollow">http://rosettacode.org/wiki/Secure_temporary_file</a>) contain old/wrong information.</p>
+<h2>O_CREAT and O_EXCL (and similar)</h2>
+<p>When opening a temporary file in C you MUST use O_CREAT and O_EXCL together to ensure that the file is only created if the file does not exist. Otherwise between the time you check for the existence of a file and the time you create the file an attacker may be able to create a file with the same name. The good news here is that virtually every secure temporary file creation function/library does this or an equivalent option. To quote mkstemp():</p>
+<blockquote><p>The mkstemp() function shall replace the contents of the string pointed to by template by a unique filename, and return a file descriptor for the file open for reading and writing. The function thus prevents any possible race condition between testing whether the file exists and opening it for use.</p></blockquote>
+<h2><strong>Why &#8220;unique&#8221; names are not enough, but are generally not a huge problem</strong></h2>
+<p>People often think that creating a file with a &#8220;unique&#8221; name in /tmp (e.g. &#8220;/tmp/myprogram-output.log&#8221;) is sufficient to safely create a temporary file. However if you create the file with a known or easily guessed name (e.g. a static name set in the source code or a config file) an attacker can create the file first and then your application will be unable to, creating a denial of service condition potentially.</p>
+<p>However the names don&#8217;t have to be terribly unique. For example if you use mkstemp() with 10 random characters (the default) gives on the order of 839,299,365,868,340,224 possible file names. Any attacker able to create enough files to force a collision of the name would be able to fill up the /tmp directory in any event (unless you have an absurdly large /tmp directory that is several exabytes in size, which won&#8217;t be a problem for some time).</p>
+<h2>Unexpected temporary files</h2>
+<p>It should also be noted that many programs create temporary files. Text editors and other file editors may create temporary file saves in /tmp or /var/tmp and so on.</p>
+<h2>The problem with $TMP, $TEMP, $TMPDIR, $TEMPDIR and so on</h2>
+<p>One note: if you&#8217;re going to use environmental variables you&#8217;d better make sure you sanitize them and ensure they aren&#8217;t overly long. User controlled environmental variables are just that, user controlled. I can&#8217;t find a good set of libraries or code to sanitize these variables before use, if anyone knows of such a thing please contact me (<a href="/cdn-cgi/l/email-protection#e9829c9b9da99a8c808f9b808c8dc7869b8e"><span class="__cf_email__" data-cfemail="553e2027211526303c33273c30317b3a2732">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>).</p>
+<h2>Better list for lots of other languages:</h2>
+<p>Please see <a href="http://rosettacode.org/wiki/Secure_temporary_file">http://rosettacode.org/wiki/Secure_temporary_file</a></p>
+<h2><strong>Bash</strong></h2>
+<p>Simply use &#8220;mktemp&#8221; (&#8220;man mktemp&#8221; for details). Use &#8220;-d&#8221; or &#8220;&#8211;directory&#8221; for creating directories.</p>
+<h2><strong>C</strong></h2>
+<p>use mkstemp() (&#8220;man mkstemp&#8221; for details) for files</p>
+<p>use mkdtemp() (&#8220;man mkdtemp&#8221; for details) for directories</p>
+<p>tmpfile() is another option &#8211; Creates a temporary binary file, open for update (wb+ mode &#8212; see fopen for details). The filename is guaranteed to be different from any other existing file.</p>
+<h2><strong>C++</strong></h2>
+<p>use mkstemp() (&#8220;man mkstemp&#8221; for details)</p>
+<p>use mkdtemp() (&#8220;man mkdtemp&#8221; for details) for directories</p>
+<p>tmpfile() is another option &#8211; Creates a temporary binary file, open for update (wb+ mode &#8212; see fopen for details). The filename is guaranteed to be different from any other existing file.</p>
+<p>On Windows use GetTempPath() and GetTempFileName () (same names in C#)</p>
+<h2><strong>C#</strong></h2>
+<p>Path.GetTempFileName() <a href="http://msdn.microsoft.com/en-us/library/system.io.path.gettempfilename(v=vs.80).aspx">http://msdn.microsoft.com/en-us/library/system.io.path.gettempfilename(v=vs.80).aspx</a></p>
+<h2><strong>Cocoa</strong></h2>
+<p><a href="http://stackoverflow.com/questions/215820/how-do-i-create-a-temporary-file-with-cocoa">http://stackoverflow.com/questions/215820/how-do-i-create-a-temporary-file-with-cocoa</a></p>
+<h2>Google Go (golang)</h2>
+<p>So ioutil.TempDir and ioutil.TempFile automatically appends a uint32 and has default permissions of 0600. Well done.</p>
+<p><a href="http://golang.org/pkg/io/ioutil/#TempDir">http://golang.org/pkg/io/ioutil/#TempDir</a></p>
+<p>Use this and you&#8217;re safe. Just a note: io.TempDir returns the value of the temporary directly (e.g. /tmp).</p>
+<h2><strong>Java</strong></h2>
+<p>use java.io.File.createTempFile() &#8211; some interesting info at <a href="http://www.veracode.com/blog/2009/01/how-boring-flaws-become-interesting/">http://www.veracode.com/blog/2009/01/how-boring-flaws-become-interesting/</a></p>
+<p>for directories there is a helpful posting at <a href="http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java">http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java</a></p>
+<p><strong style="color:#2b6fb6;font-size:1.5em;">Java 7</strong></p>
+<p>for files use java.io.File.createTempFile()</p>
+<p>for directories use createTempDirectory()</p>
+<p><a href="http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html">http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html</a></p>
+<p><strong style="color:#2b6fb6;font-size:1.5em;">Lisp</strong></p>
+<p><a href="http://stackoverflow.com/questions/1384972/common-lisp-function-or-idiom-for-creating-a-temporary-file-name">http://stackoverflow.com/questions/1384972/common-lisp-function-or-idiom-for-creating-a-temporary-file-name</a></p>
+<h2>nodejs</h2>
+<p><a href="http://stackoverflow.com/questions/7055061/nodejs-temporary-file-name">http://stackoverflow.com/questions/7055061/nodejs-temporary-file-name</a></p>
+<h2><strong>Perl</strong></h2>
+<p>use mkstemp()</p>
+<p><a href="http://perldoc.perl.org/File/Temp.html#MKTEMP-FUNCTIONS">http://perldoc.perl.org/File/Temp.html#MKTEMP-FUNCTIONS</a></p>
+<h2><strong>Python</strong></h2>
+<p>Simply use &#8220;mkstemp&#8221; for files and &#8220;mkdtemp&#8221; for directories from the &#8220;tempfile&#8221; module:</p>
+<p><a href="http://docs.python.org/library/tempfile.html#tempfile.mkstemp">http://docs.python.org/library/tempfile.html#tempfile.mkstemp</a></p>
+<h2><strong>QT</strong></h2>
+<p>use QTemporaryFile for files:</p>
+<p><a href="http://qt-project.org/doc/qt-4.8/qtemporaryfile.html">http://qt-project.org/doc/qt-4.8/qtemporaryfile.html</a></p>
+<p>use  for QTemporaryDir directories:</p>
+<p><a href="http://qt-project.org/doc/qt-5.0/qtemporarydir.html">http://qt-project.org/doc/qt-5.0/qtemporarydir.html</a></p>
+<h2><strong>Ruby</strong></h2>
+<p>use Tempfile for files:</p>
+<p><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tempfile/rdoc/Tempfile.html#method-c-new">http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tempfile/rdoc/Tempfile.html#method-c-new</a></p>
+<p>use tmpdir for directories (require &#8216;tmpdir&#8217; and then you can &#8220;Dir.mktmpdir&#8221;):</p>
+<p><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tmpdir/rdoc/index.html" rel="nofollow">http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tmpdir/rdoc/index.html</a></p>
+<h2>Making per user /tmp directories</h2>
+<p>Using PAM you can also make per user /tmp directories using polyinstantiation <a href="http://www.ibm.com/developerworks/linux/library/l-polyinstantiation/">http://www.ibm.com/developerworks/linux/library/l-polyinstantiation/</a></p>
+<p>If you have a system with many users (e.g. a shell server or web host) this is a great way to avoid the whole /tmp mess at the system level rather than trying to ensure your applications are properly written.</p>
+<h2>Monitoring /tmp for activity</h2>
+<p>So how can we be sure our changes work and temporary directories and files are being created safely? Conversely how can we monitor /tmp to watch for programs that use /tmp improperly or in unsafe ways? Linux has an <a href="http://en.wikipedia.org/wiki/Inotify">inotify </a>subsystem that allows you to monitor a file(s) or directory(s) (including recursively) for file and directory related activity (creation, deletion, modification, etc.). The downside of inotify is that, as far as I can tell, there is no way to list which process was responsible (so if you have a large application and multiple applications running it may be difficult to track down which one specifically created the file/etc.</p>
+<p>To use inotify use either the &#8220;inotify-tools&#8221; or &#8220;pyinotify&#8221; programs, I prefer pynitofy, the output is really easy to read:</p>
+<pre style="padding-left:30px;"># /usr/bin/pyinotify /tmp/
+&lt;Event dir=True mask=0x40000100 maskname=IN_CREATE|IN_ISDIR \
+name=foo.ooCHP2tb1adt path=/tmp pathname=/tmp/foo.ooCHP2tb1adt wd=1 &gt;</pre>
+<p>You can also use SELinux, running permissive mode simply disable all access to /tmp and then run your application(s). The log files will show any accesses of /tmp including the process information.</p>
+<h2>Auditing for /tmp file vulnerabilities</h2>
+<p>It&#8217;s not hard, mostly I just do:</p>
+<pre style="padding-left:30px;">find ./ -type f -exec grep /tmp {} +</pre>
+<p>and if they wrote the code using the above techniques it is probably safe, if it is written any other way it&#8217;s probably wrong.</p>
+<h1>Which directory should you use?</h1>
+<p>You should be using /var/run/something/ or /run/something/ that is setup in advance and secured for the users/groups that require it.</p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-86342-165-58419ed4346c3' data-src='//widgets.wp.com/likes/#blog_id=86342&amp;post_id=165&amp;origin=kurtseifried.wordpress.com&amp;obj_id=86342-165-58419ed4346c3' data-name='like-post-frame-86342-165-58419ed4346c3'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts'>
+<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>
+<p class="clear">Tags: <a href="http://kurt.seifried.org/tag/auditing/" rel="tag">auditing</a>, <a href="http://kurt.seifried.org/tag/programming/" rel="tag">programming</a>, <a href="http://kurt.seifried.org/tag/security/" rel="tag">security</a>, <a href="http://kurt.seifried.org/tag/tmp/" rel="tag">tmp</a></p>
+<p class="postmetadata alt">
+<small>
+This entry was posted on March 14, 2012 at 2:29 PM and is filed under <a href="http://kurt.seifried.org/category/uncategorized/" rel="category tag">Uncategorized</a>. You can follow any responses to this entry through the <a href='http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/feed/'>RSS 2.0</a> feed.
+You can <a href="#respond">leave a response</a>, or <a href="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/trackback/" rel="trackback">trackback</a> from your own site.
+</small>
+</p>
+</div>
+</div>
+ 
+<h3 id="comments">3 Responses to &#8220;Creating temporary files&nbsp;securely&#8221;</h3>
+<ol class="commentlist">
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-493">
+<cite><a href='http://www.websecuritywatch.com/rubygem-ruby-parser-multiple-vulnerabilities/' rel='external nofollow' class='url'>Rubygem Ruby Parser Multiple Vulnerabilities | Web Security Watch</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-493" title="">March 17, 2013 at 9:46 PM</a> | <a class='comment-reply-link' href='/2012/03/14/creating-temporary-files-securely/?replytocom=493#respond' onclick='return addComment.moveForm("comment-493", "493", "respond", "165")'>Reply</a> </small>
+<p>[&#8230;] <a href="http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/" rel="nofollow">http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/</a> [&#8230;]</p>
+</li> 
+<li class="comment byuser comment-author-w4otn odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-499">
+<cite><a href='http://sparkslinux.wordpress.com' rel='external nofollow' class='url'>Eric Christensen</a></cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-499" title="">April 2, 2013 at 1:15 PM</a> | <a class='comment-reply-link' href='/2012/03/14/creating-temporary-files-securely/?replytocom=499#respond' onclick='return addComment.moveForm("comment-499", "499", "respond", "165")'>Reply</a> </small>
+<p>Reblogged this on <a href="http://sparkslinux.wordpress.com/2013/04/02/1034/" rel="nofollow">Sparks&#039; Linux Journal</a> and commented:<br/>
+Secure coding advice for dealing with temporary files.</p>
+</li> 
+<li class="comment byuser comment-author-silkentrance even thread-even depth-1 highlander-comment" id="comment-5795">
+<cite>silkentrance</cite> Says: <br/>
+<small class="commentmetadata"><a href="#comment-5795" title="">October 9, 2016 at 2:01 PM</a> | <a class='comment-reply-link' href='/2012/03/14/creating-temporary-files-securely/?replytocom=5795#respond' onclick='return addComment.moveForm("comment-5795", "5795", "respond", "165")'>Reply</a> </small>
+<p>For nodejs there is also the very good <a href="https://github.com/raszi/node-tmp" rel="nofollow">https://github.com/raszi/node-tmp</a>. Please include this in your survey as well.</p>
+</li> 
+</ol>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+<div id="respond" class="comment-respond">
+<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2012/03/14/creating-temporary-files-securely/#respond" style="display:none;">Cancel reply</a></small></h3> <form action="http://kurt.seifried.org/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+<input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="644ee5962f"/><input type="hidden" name="_wp_http_referer" value="/2012/03/14/creating-temporary-files-securely/"/>
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest"/>
+<div class="comment-form-field comment-textarea">
+<label for="comment">Enter your comment here...</label>
+<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+<div id="comment-form-identity" class="comment_registration">
+<div id="comment-form-nascar">
+<p>Please log in using one of these methods to post your comment:</p>
+<ul>
+<li>
+<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+<span></span>
+</a>
+</li>
+<li>
+<a href="#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+<span></span>
+</a>
+</li>
+<li>
+</ul>
+</div>
+<div id="comment-form-guest" class="comment-form-service selected">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank"> <img src="" alt="Gravatar" width="25" class="no-grav"/>
+</a> </div>
+<div class="comment-form-fields">
+<div class="comment-form-field comment-form-email">
+<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+<div class="comment-form-input"><input id="email" name="email" type="email" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-author">
+<label for="author">Name <span class="required">(required)</span></label>
+<div class="comment-form-input"><input id="author" name="author" type="text" value=""/></div>
+</div>
+<div class="comment-form-field comment-form-url">
+<label for="url">Website</label>
+<div class="comment-form-input"><input id="url" name="url" type="url" value=""/></div>
+</div>
+</div>
+</div>
+</div>
+<div id="comment-form-wordpress" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="WordPress.com Logo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value=""/>
+<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value=""/>
+<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-twitter" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Twitter picture" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value=""/>
+<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value=""/>
+<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-facebook" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Facebook photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value=""/>
+<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value=""/>
+<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-googleplus" class="comment-form-service">
+<div class="comment-form-padder">
+<div class="comment-form-avatar">
+<img src="" alt="Google+ photo" width="25" class="no-grav"/>
+</div>
+<div class="comment-form-fields">
+<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value=""/>
+<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value=""/>
+<p class="comment-form-posting-as pa-googleplus"><strong></strong> You are commenting using your Google+ account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)</span></p>
+</div>
+</div>
+</div>
+<div id="comment-form-load-service" class="comment-form-service">
+<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+<p>Connecting to %s</p>
+</div>
+</div>
+<script type="text/javascript">
+var highlander_expando_javascript = function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+}
+jQuery(document).ready( highlander_expando_javascript );
+</script>
+<div id="comment-form-subscribe">
+<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog" style="display: inline;">Notify me of new posts via email.</label></p></div>
+<p class="form-submit">
+<input name="submit" type="submit" id="comment-submit" value="Post Comment"/>
+<input type='hidden' name='comment_post_ID' value='165' id='comment_post_ID'/>
+<input type='hidden' name='comment_parent' id='comment_parent' value='0'/>
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="0187fdc95c"/></p>
+<input type="hidden" name="genseq" value="1480695508"/>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="142"/></p> </form>
+</div> 
+<div style="clear: both"></div>
+</div>
+<hr/>
+<div id="footer">
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+<br/><a href="http://kurt.seifried.org/feed/">Entries (RSS)</a> and <a href="http://kurt.seifried.org/comments/feed/">Comments (RSS)</a>. </p>
+</div>
+</div>
+ 
+<div style="display:none">
+</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/kurtseifried.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?action=logout&_wpnonce=724fd47a24","homeURL":"http:\/\/kurt.seifried.org\/","postID":"165","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"1","userIsLoggedIn":"","isJetpack":"0","text_direction":"ltr"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s2.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1479964158j'></script>
+<script type='text/javascript' src='https://s1.wp.com/wp-content/mu-plugins/akismet-3.0/_inc/form.js?m=1404442431h'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var actionbardata = {"siteID":"86342","siteName":"Kurt Seifried","siteURL":"http:\/\/kurt.seifried.org","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/void.gif' class='avatar avatar-36' height='36' width='36' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/kubrick","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2012%2F03%2F14%2Fcreating-temporary-files-securely%2F","themeURL":"","xhrURL":"http:\/\/kurt.seifried.org\/wp-admin\/admin-ajax.php","nonce":"c5d9519be6","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"321560f319\" \/>","referer":"http:\/\/kurt.seifried.org\/2012\/03\/14\/creating-temporary-files-securely\/","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/kurtseifried.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fkurtseifried.wordpress.com%2F2012%2F03%2F14%2Fcreating-temporary-files-securely%2F","postID":"165","shortlink":"http:\/\/wp.me\/pmsC-2F","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/kurt.seifried.org\/165","i18n":{"view":"View Site","follow":"Follow","following":"Following","edit":"Edit","login":"Log In","signup":"Sign Up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Kubrick","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editFollows":"Manage Sites I Follow","editSubs":"Manage Subscriptions","viewReader":"View Site in the Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2012%2F03%2F14%2Fcreating-temporary-files-securely%2F\">Log in now.<\/a>"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJx9jEEOwjAMBD9EalBRywXxlpBY4BI7wUkK/J70QMWpt9XO7sArGReloBSYMnicyWF6d1PewR/ialKoN5IMgR6Y4Vmx4t2KD6i/MYkL1TfYRC4yt6NRTOHTMcmG0frGzdUqsM0FtSUTZ1SlRbZ2WwZXKMpiWFNbX/h8OI5D35+GcT99AYXhVt0='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script> <iframe src='http://widgets.wp.com/likes/master.html?ver=20160429#ver=20160429' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.async = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+<noscript>
+<p class="robots-nocontent"><img src="http://b.scorecardresearch.com/p?c1=2&c2=7518284&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1" alt="" style="display:none;" width="1" height="1"/></p>
+</noscript><script src="//stats.wp.com/w.js?55" type="text/javascript" async defer></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'86342','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'86342','v':'wpcom','tz':'-7','user_id':'0','post':'165','subd':'kurtseifried'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V+ZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVBLDJ0SFUzbTZdOGh6MEhuS3g4NlVualNWRGdnLTFaYW9IWyZNYmJyP2J+eE5+cTN5NT04ZGZwS0Y0WlYwSFZRSEQlMlVHNWllbThIaFo/OTB8MC5UZ0MwQ25rfDFMQ3FRenBIQ19FYlt1aj1oaythXVImVU9tb34zci0yNVY9UGdzOU5FNw=='}]);
+_stq.push([ 'clickTrackerInit', '86342', '165' ]);
+	</script>
+<noscript><img src="http://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt=""/></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script><script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

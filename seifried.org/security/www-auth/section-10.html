@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 10.0 Some notes on CGI programming languages</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>10.0 Some notes on CGI programming languages</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#e08b959294a09385898692898584ce8f9287"><span class="__cf_email__" data-cfemail="a2c9d7d0d6e2d1c7cbc4d0cbc7c68ccdd0c5">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Taking input from webpages is inherently dangerous as this is
+often used by attackers to gain access. A good example of this
+being the publicized &quot;contest&quot; run by PCWeek where an
+NT and a Red Hat Linux box were setup (and somewhat secured). The
+Linux box was quickly compromised using a CGI program that did
+not check user input properly. For example if taking a username
+in, make sure it only contains alphanumeric characters, and is of
+a sane length (like 8 characters as opposed to say 400k). </p>
+<p><strong>10.1 Perl</strong></p>
+<p>Perl is by far one of the most popular languages for writing
+CGI programs. Perl has a number of features that can help prevent
+you from shooting yourself in the foot. Using Perl with the -w
+option will tell you about any options you are creating but not
+using, file handles, and so on, it is very useful for helping
+clean up code. A step up from this is to use Perl strict, which
+also helps prevents mistakes and so on.</p>
+<p><a href="http://www.cpan.org/doc/manual/html/lib/strict.html">http://www.cpan.org/doc/manual/html/lib/strict.html</a></p>
+<p>Once you are using those two options the next logical step
+would be to use perlsec.</p>
+<p><a href="http://www.perl.com/CPAN-local/doc/manual/html/pod/perlsec.html">http://www.perl.com/CPAN-local/doc/manual/html/pod/perlsec.html</a></p>
+<p>The O'Reilly books on Perl (they have an excellent book on CGI
+programming that is very Perl centric) are a very good source
+both for learning and as reference. Online there is a chapter of
+the &quot;CGI Developer's Guide&quot; (by: Eugene Eric Kim
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="9afffff1f3f7dafffff1f3f7b4f9f5f7">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>), available at:</p>
+<p><a href="http://www.eekim.com/pubs/cgibook/">http://www.eekim.com/pubs/cgibook/</a></p>
+<p><strong>10.2 PHP</strong></p>
+<p>PHP is a scripting language you embed directly in documents,
+when the user requests it the document is run through the PHP
+engine and any dynamic content and so on is handled. Generally
+speaking the usual rules apply, when taking user input always
+assume it will be potentially mangled or even hostile. </p>
+<p><a href="http://www.php.net/manual/en/security.php">http://www.php.net/manual/en/security.php</a>
+</p>
+<p><strong>10.3 ASP</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.microsoft.com/ISN/whitepapers/security.asp">http://www.microsoft.com/ISN/whitepapers/security.asp</a></p>
+<p><a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpguidnf/html/cpconaspsecurity.asp">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpguidnf/html/cpconaspsecurity.asp</a>
+</p>
+<p><a href="http://msdn.microsoft.com/library/default.asp?URL=/library/dotnet/cpguide/cpconhowaspnetsecurityworks.htm">http://msdn.microsoft.com/library/default.asp?URL=/library/dotnet/cpguide/cpconhowaspnetsecurityworks.htm</a>
+</p>
+<p><a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/ipubsdk/hh/ipubsdk/ipub01_2jqa.asp">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/ipubsdk/hh/ipubsdk/ipub01_2jqa.asp</a>
+</p>
+<p><a href="http://support.microsoft.com/support/kb/articles/Q176/3/77.ASP">http://support.microsoft.com/support/kb/articles/Q176/3/77.ASP</a>
+</p>
+<p><strong>10.4 Python</strong></p>
+<p>No notes yet.</p>
+<p><a href="http://www.python.org/">http://www.python.org/</a></p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-9.html">Back</a> | <a href="section-11.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

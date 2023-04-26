@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Encryption</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Encryption</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#72190700063201171b14001b17165c1d0015"><span class="__cf_email__" data-cfemail="f09b858284b08395999682999594de9f8297">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<h2>Encrypting data files and email</h2>
+<p>Several encryption programs are also available to encrypt your
+data, some at the file level (PGP, GnuPG, etc.) and some at the
+drive level (Cryptographic File System for example). These
+systems are very appropriate for the storage of secure data, and
+to some degree for the transmission of secure data. However both
+ends will require the correct software, compatible versions, and
+an exchange of public keys will somehow have to take place, which
+is unfortunately, an onerous task for most people. In addition to
+this you have no easy way of trusting someone's public key unless
+you receive it directly from them (such as at a key signing
+party), or unless it is signed by someone else you trust (but how
+do you get the trusted signer's key securely?). Systems for drive
+encryption such as CFS (Cryptographic FileSystem) are typically
+easy to implement, and only require the user to provide a
+password or key of some form to access their files. There is a
+really good article on choosing key sizes at <a href="http://www.cryptosavvy.com/">http://www.cryptosavvy.com/</a>
+which raises some issues you probably hadn't considered. I would
+recomend reading it. </p>
+<p>&nbsp;</p>
+<h3>GnuPG (Gnu Privacy Guard)</h3>
+<p>GnuPG is covered in the filesystem section <a href="../filesystem/index.html">here</a>.</p>
+<p>&nbsp;</p>
+<h3>pgp4pine</h3>
+<p>pgp4pine is a PGP shell for pine that allows easy usage of
+PGP/GnuPG from within pine. Signing / encrypting and so on is
+made easier. You can get it from: <a href="http://pgp4pine.flatline.de/">http://pgp4pine.flatline.de/</a>
+</p>
+<p>&nbsp;</p>
+<h3>Netscape Messenger</h3>
+<p>Netscape Messenger supports X.509 certificates, as do most
+Windows mailer programs. </p>
+<p>&nbsp;</p>
+<h2>Sources of random data</h2>
+<p>In order for encryption to be effective, especially on a large
+scale such as IPSec across many hosts, good sources of random,
+cryptographically secure data are needed. In Linux we have
+/dev/random and /dev/urandom which are good but not always great.
+Part of the equation is measuring 'random' events, manipulating
+that data and then making it available (via (u)random). These
+random events include: keyboard and mouse input, interrupts,
+drive reads, etc.&nbsp;</p>
+<p>However, as many servers have no keyboard/mouse, and new
+&quot;blackbox&quot; products often contain no harddrive, sources
+of random data become harder to find. Some sources, like network
+activity, are not entirely appropriate because the attacks may be
+able to measure it as well (granted this would be a very exotic
+attack, but enough to worry people nonetheless). There are
+several sources of random data that can be used (or at least they
+appear random), radioactive decay and radio frequency
+manipulations are two popular ones. Unfortunately the idea of
+sticking a radioactive device in a computer makes most people
+nervous. And using manipulated radio frequencies is prone to
+error, and the possibility of outside manipulation. For most of
+us, this isn&#146;t a real concern, however for IPSec gateway
+servers handling many connections it can be a problem. One
+potential solution is the PIII, which has a built in random
+number generator that measures thermal variance in the CPU, I
+think as we progress, solutions like this will become more
+common.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#a5ced0d7d1e5d6c0ccc3d7ccc0c18bcad7c2"><span class="__cf_email__" data-cfemail="6f041a1d1b2f1c0a06091d060a0b41001d08">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

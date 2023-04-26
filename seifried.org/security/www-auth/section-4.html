@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried Information Security / WWW Authentication / 4.0 Authentication information storage and retrieval</TITLE>
+<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.1  (Win32)">
+<META NAME="CREATED" CONTENT="20021215;15132639">
+<META NAME="CHANGED" CONTENT="20021215;15363884">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1>4.0 Authentication information storage and retrieval</H1>
+<P>By: Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#e18a949395a19284888793888485cf8e9386"><span class="__cf_email__" data-cfemail="600b1512142013050906120905044e0f1207">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+Copyright Kurt Seifried, 2001</P>
+<HR>
+<P>&nbsp;</P>
+<P>All authentication systems depend on some type of shared secret or
+shared knowledge. This can be a password or the same X.509 public key
+of a root certificate.</P>
+<P><STRONG>4.1 Local methods</STRONG></P>
+<P>Data used to authenticate users can be stored locally on the
+machine, or provided from a network server. If all you have is one
+machine then using a local method is fine, however if you need to add
+another machine you will have to change things, so going with a
+server based solution can be much cheaper in the long run.
+</P>
+<P><STRONG>4.1.1 System username/passwd database</STRONG></P>
+<P>Most UNIX style systems contain a password file (/etc/passwd) and
+a shadow passwords file (/etc/shadow). You can authenticate a user
+against these, however the CGI must have some form of root access or
+access to setuid root program to do the authentication. This is not
+highly recommended. In addition having users use their &quot;real&quot;
+username and password to a site increases the chance of exposure
+somewhat and is probably not a good idea. I would not highly
+recommend this method.</P>
+<P><STRONG>4.1.2 WWW server username/password database</STRONG></P>
+<P>Apache and most other web servers can consult a flat text file
+consisting of username:hashed_password pairs (similar to an
+/etc/passwd style file) or a database file such as dbm (for increased
+speed). This is quite appropriate and workable for single server
+installations but does not scale easily (you must somehow keep files
+in synchronization across multiple servers), unless of course adding
+user accounts and changing passwords is not a priority (i.e. if the
+files are relatively static). This is a recommended method for single
+server installations.</P>
+<P><STRONG>4.2 Network based methods</STRONG></P>
+<P>Network based authentication systems scale much better then
+locally based methods (such as a password file). The other advantage
+is that almost all networks have some form of network based
+authentication going (for people to log into workstations, etc.) so
+it saves a significant amount of effort in maintaining another set of
+usernames and passwords if you can tie into the existing schemes. For
+future growth and scalability in general (as well as redundancy) I
+would generally recommend using a network based method over a locally
+based method.
+</P>
+<P><STRONG>4.2.1 NIS/NIS+ server</STRONG></P>
+<P>This is one of the original methods of sharing authentication data
+across networks. NIS and NIS+ essentially copy chunks of config files
+(such as /etc/passwd) to machines, typically one machine (the master)
+propagates copies of the config files to secondary servers (slaves)
+which the client machines actually query. NIS/NIS+ is relatively
+insecure in that the data moves around the network in an unprotected
+format, so sniffing the network and collecting a lot of user data is
+relatively simple. About the only advantage of NIS/NIS+ is that
+almost all UNIX operating systems have native support for it, and
+configuration is typically not to difficult (not much security is
+involved which simplifies things).
+</P>
+<P><STRONG>4.2.2 SMB server</STRONG></P>
+<P>SMB (Server Message Block) is the backbone of Microsoft file and
+print sharing services. Many networks run NT servers with NT and
+Windows clients, typically using Microsoft's built in authentication
+systems (as opposed to say NDS for NT). The primary reason to use SMB
+as your www authentication provider would be to tie www
+authentication into an existing NT framework. If running NT server
+with IIS this is as simple as placing directory permissions on the
+appropriate directories, users access the site (from Windows only of
+course) will be automatically logged in (assuming they logged in with
+the correct username and password). This can be very useful for
+company Intranets. Most UNIX systems support SAMBA, which provides
+Windows file and print sharing, as well as domain authentication
+services, so you can have the data locally on the server which
+reduces time to check username and passwords. The algorithms used
+however to move this data around are relatively weak (not as bad as
+NIS/NIS+ though), so be aware of that.</P>
+<P><STRONG>4.2.3 LDAP server</STRONG></P>
+<P>LDAP (Lightweight Directory Access Protocol) is an increasingly
+popular method for storing and sharing user data. There are several
+LDAP products (including OpenLDAP, an OpenSource implementation), and
+many current and future directory services products include an LDAP
+interface (such as Novell's NDS and Microsoft's ADS). Many UNIX
+server products now support LDAP internally (such as Apache,
+ProFTPD), as well as support in programming languages such as Perl
+(one of the dominant CGI languages). LDAP is also very extensible, if
+you want to add the user's home directory information to the
+information held and make it accessible you can do so (and then for
+example Apache can retrieve that data when it gets a request for
+/~username/). LDAP is probably going to be one of the dominant
+methods in the future due to it's portability and spreading usage for
+authentication in general.</P>
+<P><STRONG>4.2.4 Certificate authority server</STRONG></P>
+<P>If you plan to use digital certificates for authentication then
+you will need a certificate authority, to handle revocation, issuing
+of new certificates, and so on. The alternative is to use a third
+party (such as Verisign) and pay a yearly fee for each user,
+additionally giving up a certain degree of control to them. Using
+certificates, especially those based on smartcards (which is the only
+remotely secure option) will cost a large amount of money per user on
+an ongoing basis (maintenance costs are not cheap). Typical
+certificate authority software is $100,000 USD and up, smart cards
+and readers will cost around $50 USD and up per user, and there are
+significant administrative costs. If setup and maintained correctly
+however a digital certificate based authentication scheme can be
+significantly more secure then username and password based methods,
+as well as offering advantages in tracking and auditing user
+activity.
+</P>
+<P><STRONG>4.2.5 Network database server</STRONG></P>
+<P>One method that is quite effective, but often ignored is the use
+of a database to store user credentials. Most moderns databases
+support ODBC connectivity, making access via CGI scripts and so on
+very easy. Database's also lend themselves to ease of administration
+and management, especially with large numbers of users, additionally
+you can typically tie other user information in, such as HR would
+keep on employees. One major issue however is the security of data
+moving to and from the database, in most cases it will not be
+protected so you should use a VPN solution (such as IPSec) to protect
+it or use SSL to encrypt it (with a utility such as sslwrap or
+stunnel). One advantage of using a database is that languages such as
+Perl support persistent database connections, so if you use mod_perl
+or fast CGI you can get extremely high performance out of a CGI and a
+good database.</P>
+<P><STRONG>4.2.6 Radius</STRONG></P>
+<P>Radius is a very popular protocol for authenticating users for
+dial-in and a variety of other network services. Tying your www based
+authentication into an existing system like Radius can save a lot of
+money (especially in administrative costs). There are Perl modules
+for Radius (actually there are Perl modules for just about
+everything), making integration relatively simple. Radius does
+encrypt the password before sending it to the server typically,
+however you may wish to use some sort of VPN (I recommend IPSec) to
+properly protect the entire transaction (and prevent someone from
+pretending to be the Radius server for example).</P>
+<P><STRONG>4.2.7 TACACS/TACACS+</STRONG></P>
+<P>TACACS, and the newer TACACS+ are Cisco's authentication protocol
+for allowing users access to terminals servers and routers. Just as
+with Radius, tying your www authentication into an existing system
+can save a significant amount of money and administrative overhead.
+Perl has modules for TACACS/TACACS+ allowing you to authenticate
+users easily, one minor caveat, as with Radius the protection on the
+username and password is less then optimal, I would advise using a
+VPN (I recommend IPSec) to properly protect the entire transaction
+(and prevent someone from pretending to be the TACACS/TACACS+ server
+for example).</P>
+<P><STRONG>4.2.8 Novell</STRONG></P>
+<P>Novell has been making directory service products for a long time,
+and has recently started to shift from being Novell centric to
+service centric. By this I mean that Novell has ported NDS (now
+available in a &quot;full strength&quot; and a &quot;lite&quot;
+version) to various platforms, including Linux and FreeBSD. This
+allows you to store a considerable number of users efficiently, it
+ties in well with any existing Novell infrastructure, and can of
+course be used as the backbone of your corporate authentication
+system. NDS is quite mature and allows for many objects (Novell says
+they tested it to 10 billion in their laboratory), and is now
+platform independent. Current version of NDS support an LDAP
+interface so tying support for your CGI programs into NDS is
+relatively easy. See the LDAP section for more details.</P>
+<P><STRONG>4.2.8.1 NDS eDirectory, formerly Corporate Edition</STRONG></P>
+<P>This is a &quot;full strength&quot; NDS suitable for corporate
+environments.</P>
+<P><A HREF="http://www.novell.com/products/nds/">http://www.novell.com/products/nds/</A>
+</P>
+<P><STRONG>4.2.8.2 NDS Authentication Services</STRONG></P>
+<P>This is NDS &quot;lite&quot;, suitable for www authentication and
+storing data on users.</P>
+<P><A HREF="http://www.novell.com/products/ndsas/quicklook.html">http://www.novell.com/products/ndsas/quicklook.html</A>
+</P>
+<P><STRONG>4.2.8.3 Novell iChain</STRONG></P>
+<P>A complete &ldquo;identity-based web security services&rdquo;
+package.
+</P>
+<P><A HREF="http://www.novell.com/products/ichain/">http://www.novell.com/products/ichain/</A></P>
+<P><STRONG>4.2.9 ADS</STRONG></P>
+<P>ADS (Active Directory Services) is Microsoft's answer to NDS, and
+ships with Windows 2000. ADS is a newcomer, but chances are many
+organizations will deploy it so chances are you will need to use it
+for web based authentication at some point. Like NDS, ADS supports
+and LDAP interface, making programming support for it relatively
+simple. See the LDAP section for more details.</P>
+<P><STRONG>4.2.10 DCE</STRONG></P>
+<P>DCE (Distributed Computing Environment) allows you to access
+applications and files by name without having to know their location
+via RPC (Remote Procedure Call, the same system used for NIS and so
+on). Generally speaking a DCE based web authentication solution will
+only be of interest to people with an existing DCE infrastructure.
+There is a set of Perl modules, and Apache modules to provide DCE
+capabilities and access to DFS (Distributed Filesystem) available for
+free at:</P>
+<P><A HREF="http://www.csupomona.edu/~henson/www/projects/">http://www.csupomona.edu/~henson/www/projects/</A></P>
+<P>A commercial packaged called Gradient DCE is available from:</P>
+<P><A HREF="http://www2.entegrity.com/solutions/dce.shtml">http://www2.entegrity.com/solutions/dce.shtml</A>
+</P>
+<P><STRONG>4.2.11 WebSEAL</STRONG></P>
+<P>WebSEAL appears to be a framework for building authentication
+solutions using pretty much anything (PKI, username and passwords,
+etc.). It is capable of using DCE, Kerberos 5, SSL Entrust and a
+variety of other protocols and encryption methods. IBM is currently
+in the process of acquiring DASCOM.</P>
+<P><A HREF="http://www.dascom.com/prod/webseal/index.html">http://www.dascom.com/prod/webseal/index.html</A>
+[site unavailable]</P>
+<P><STRONG>4.2.12 Kerberos</STRONG></P>
+<P>Kerberos is a strong authentication framework available for most
+UNIX platforms and there are some Windows clients. Most modern BSD
+and Linux distributions for example ship with support for Kerberos
+clients and servers. With some effort you can also integrate UNIX
+Kerberos and Windows 2000 Kerberos making for a homogenous
+authentication environment.</P>
+<P><A HREF="http://web.mit.edu/kerberos/www/">http://web.mit.edu/kerberos/www/</A>
+</P>
+<P><STRONG>4.3 Others</STRONG></P>
+<P>Other products and packages that I haven't had time to look into.
+If you want to be added please send me links.</P>
+<P><A HREF="http://www.netegrity.com/products/index.cfm?leveltwo=SiteMinder">http://www.netegrity.com/products/index.cfm?leveltwo=SiteMinder</A></P>
+<P><BR><BR>
+</P>
+<P><BR><BR>
+</P>
+<P ALIGN=CENTER>[ <A HREF="index.html">Index</A> | <A HREF="section-3.html">Back</A>
+| <A HREF="section-5.html">Next</A> ]</P>
+<P>&nbsp;</P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

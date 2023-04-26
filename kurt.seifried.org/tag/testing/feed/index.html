@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>testing &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/testing/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:51 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>testing &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>It feels slow &#8211; testing and verifying your network connection</title>
+		<link>http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/</link>
+		<comments>http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/#comments</comments>
+		<pubDate>Sat, 01 May 2010 07:14:25 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Information Security]]></category>
+		<category><![CDATA[openbsd]]></category>
+		<category><![CDATA[performance]]></category>
+		<category><![CDATA[testing]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=40</guid>
+		<description><![CDATA[So I have a backup network link (working from home means you need two network links) and it was feeling kind of slow. I had a Linksys BEsFx41 connected to it, which according to the specifications is an ok unit (does VPN, etc.) but in practice it felt really slow (web browsing was not fun). [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=40&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So I have a backup network link (working from home means you need two network links) and it was feeling kind of slow. I had a Linksys BEsFx41 connected to it, which according to the specifications is an ok unit (does VPN, etc.) but in practice it felt really slow (web browsing was not fun). So let&#8217;s test this objectively I thought.</p>
+<p>First obviously was to check the speed, am I getting what I paid for? a quick visit to <a title="SpeedTest" href="http://www.speedtest.net/">www.speedtest.net</a> showed that I was indeed getting the 4 megabits down and 1 megabit up (it&#8217;s a wireless link, so not super fast, but I don&#8217;t have to worry about backhoe fade) that I pay for. So if I&#8217;m getting good upload/download speeds why would it feel slow?</p>
+<p>DNS</p>
+<p>Luckily the DNSSEC has been in the news a lot recently and several DNS testing sites have come up in various blogs/conversations/etc. So I headed over to the <a title="ICSI Netalyzr" href="http://netalyzr.icsi.berkeley.edu/">ICSI Netalyzr </a>which promises to &#8220;Debug your Internet.&#8221; It&#8217;s a java based test and takes a while, but I have to say the results are worth it. It checks for connection speed, filtering, DNS speed and filtering and a few other things. Turns out DNS lookups were horribly slow (on the order of several thousand milliseconds&#8230; aka seconds). No wonder web browsing felt slow!</p>
+<p>Turns out the BEFSX41 intercepts DNS lookups and proxies them, good for filtering, terrible for performance.</p>
+<p>So I tried out a Dlink EBR-2310, which had even worse DNS performance. To add insult to injury it doesn&#8217;t support routing properly. On the BEFSX41 I can specify static routes, i.e. a router on 192.168.1.1 can get to 10.1.2.0/255.255.255.0 through the machine at 192.168.1.2. The EBR-2310 simply doesn&#8217;t support any routing. It also does the DNS proxy intercept, worse than the BEFSX41 (about twice as slow, in other words completely unusable).</p>
+<p>So off to the store I go for a Netgear RP614v4. I was hoping that because it was a relatively recent device it would have slightly better hardware and firmware. Luckily I was right. It&#8217;s a mildly retarded device; you can set it up as a DHCP server but you don&#8217;t really have many (well any) options as to what it serves out via DHCP (domain, DNS servers, default gateway, etc., it does these all with a brain dead default set). But it does DNS lookups in an average if 70-80ms (as opposed to 1-3 seconds).</p>
+<p>On my main subnet Internet access is brokered through a pretty vanilla OpenBSD machine (apart from having IPv6 enabled it&#8217;s pretty bog standard) and DNS lookups/etc are much faster. If anything this experience has taught me that if you want performance go find a small cheap machine, load it up with OpenBSD and be happy. Time to buy a <a title="Soekris" href="http://soekris.com/">Soekris </a>I suppose. Oh and if you want DNSSEC these hardware firewalls aren&#8217;t going to do the trick, they all pretty much only support short DNS replies, meaning that longer DNSSEC replies will be truncated (and thus broken). To test this you can use the <a title="ORAC reply size test" href="https://www.dns-oarc.net/oarc/services/replysizetest">OARC reply size test</a>:</p>
+<pre>dig +short rs.dns-oarc.net txt
+</pre>
+<p>I also decided to test my network links for traffic shaping/etc., turns out my primary ISP does and my backups ISP doesn&#8217;t. To see if yours does/doesn&#8217;t check out the <a title="EFF test your ISP" href="http://www.eff.org/testyourisp">EFF page covering this</a>.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/40/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/40/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=40&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/05/01/it-feels-slow-testing-and-verifying-your-network-connection/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 11.0 Some notes on Client side languages</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>11.0 Some notes on Client side languages</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#93f8e6e1e7d3e0f6faf5e1faf6f7bdfce1f4"><span class="__cf_email__" data-cfemail="ef849a9d9baf9c8a86899d868a8bc1809d88">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Another option is to move some of the authentication mechanism
+to the client side (although I am not sure why you would want to
+do this). A variety of languages exist that allow you to write
+applications that run on the client side. One option would be to
+write a client side application that behaves like a hardware
+token, that is a user inputs a secret to activate it, and then
+you can use challenge response authentication. The problem with
+this is that the users secret would be shipped to the client
+machine (which is potentially hostile), and they would be
+inputting their password into it as well (so if the machine were
+running a keyboard sniffer/etc it would then have all the info it
+needs to impersonate the user). </p>
+<p><strong>11.1 Java</strong></p>
+<p>Java is supported on most platforms and browsers, however not
+all support it properly, and in many cases users will have
+disabled it (so relying on it might not always work). Java is an
+excellent option if you control the client side, or can encourage
+the availability of Java (or are willing to take the chance it
+might not be available, which is an increasingly minor problem). </p>
+<p><strong>11.1.1 Hushmail</strong></p>
+<p>One example of this technology in usage is at Hushmail,
+Hushmail provides free, secure, web based email. You generate a
+public / private key pair when you sign up for an account with
+them, and the private key is protected by a passphrase. When you
+log in to the service a Java applet is downloaded to your PC and
+this program accepts your passphrase and so on which is partially
+used to help validate your account, at which point your public
+and private key are downloaded to the client. Generally speaking
+this is about as secure as you can make email and still have
+people accessing it from PC's not under their control. One
+security concern, over which Hushmail and the user can have
+little to no control in cases is the possibility of a keyboard
+sniffer logging the users passphrase for their Hushmail account /
+private key.</p>
+<p><a href="http://www.hushmail.com/">http://www.hushmail.com/</a>
+</p>
+<p><strong>11.1.2 Guardbot</strong></p>
+<p>Another possibility is Guardbot, which password protects www
+pages. Essentially there are two components, an applet that
+encrypts the data, using DES (56 bit keyspace), and an applet
+that will decrypt the data with the password you provide. The
+advantage of this over traditional server based methods of
+control (such as htaccess in Apache) is that the user manages it
+fully, and can protect each file individually without much setup.
+To fully take advantage of the keyspace available your password
+must contain upper and lower case letters, numbers (and
+punctuation marks, but this can confuse users) of around 10
+letters, however since people tend to choose less then random
+passwords a longer password then this is advisable.</p>
+<p><a href="http://www.guardbot.com/">http://www.guardbot.com/</a></p>
+<p><strong>11.2 ActiveX</strong></p>
+<p>ActiveX is only supported on Windows platforms running
+Internet Explorer (it will not work with Netscape) so choosing
+ActiveX severely limits your browser and OS options. </p>
+<p><strong>11.2.1 InnerDynamics</strong></p>
+<p>InnerDynamics makes a variety of Java and ActiveX components
+that include encryption:</p>
+<p><a href="http://www.innerdynamics.com/">http://www.innerdynamics.com/</a></p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-10.html">Back</a> | <a href="section-12.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

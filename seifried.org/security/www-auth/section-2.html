@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 2.0 Overview of the problem</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>2.0 Overview of the problem</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#3b504e494f7b485e525d49525e5f1554495c"><span class="__cf_email__" data-cfemail="d0bba5a2a490a3b5b9b6a2b9b5b4febfa2b7">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Users need to authenticate to a server in some manner
+(username/password, smart card, or biometrics) that is cost
+effective and reasonably simple. They need to be able to traverse
+servers (i.e. go to www.company.com and then to
+accounting.company.com) without having to re-authenticate. So the
+user either has to re-authenticate for each transaction (page
+viewed) or posses some sort of semi-permanent token that they can
+show to the server as needed. Secondary considerations include
+the ability to generate an audit trail, track usage in real time
+(i.e. if an account that is only used from location A suddenly
+gets used from location B you can deny it), and you need to log
+the user out when they are not using the system. This paper
+covers existing methods primarily that can be integrated into the
+existing framework of browsers (primarily Netscape and MSIE) and
+servers (SSL based). There are newer (and in some ways much
+better) authentication protocols, however implementing them would
+require a massive change in the existing infrastructure, so they
+are by and large not terribly practical.</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-1.html">Back</a> | <a href="section-3.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 3.0 Authentication methods</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>3.0 Authentication methods</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#0f647a7d7b4f7c6a66697d666a6b21607d68"><span class="__cf_email__" data-cfemail="9bf0eee9efdbe8fef2fde9f2feffb5f4e9fc">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>A variety of authentication methods and technologies exist.
+They all boil down to either something you know, something you
+have, or something you are. This &quot;something&quot; has to be
+unique, and either secret (like a password), or sufficiently
+complex to be unforgeable (such as a retina). You must also have
+some mechanism for securely transmitting the data, otherwise
+someone might be able to copy your password, or replay the
+authentication packets to gain access, this is usually
+accomplished via SSL (which uses public key cryptography. </p>
+<p><strong>3.1 Something you know</strong></p>
+<p>This is the most common since the storage mechanism used is
+your own memory, making it one of the cheapest forms of storage.
+It is easy to manage, easy to deploy, and most systems support it
+out of the box. The downside is however it is relatively
+insecure, users choose bad passwords, passwords get stored in
+form fields, etc.</p>
+<p><strong>3.1.1 Username and password</strong></p>
+<p>Typically it consists of a username and password, both 5 to 8
+characters long (although hopefully the password is longer). This
+data is relatively easy to store and is typically kept in a flat
+text file (such as /etc/passwd) in the form
+username:hashed_password, where the password is hashed so that
+you cannot simply read and use it. Typical hashes used are crypt
+(old and easily brute forced, but with a good password relatively
+safe) and MD5 (much better hash, somewhat more overhead required.
+When a username and password need to be checked the system goes
+down the list till it finds a matching name, and then hashes the
+password that was supplied and compares it to the listed value,
+if they match then that means the username and password supplied
+were correct. </p>
+<p><strong>3.2 Something you have</strong></p>
+<p>One problem with the &quot;something you know&quot; model is
+that the secret cannot be very large, and you must input it into
+the computer manually each time you wish to use it. If that
+computer were to be compromised then it would be a simple matter
+of logging keystrokes or otherwise gleaning your password.
+Digital certificates are a growing technology because not only
+can they be used to prove identity, but to secure transactions
+(typically using SSL). Alternatively there are cryptocards,
+credit card sized tokens with preloaded secrets that you use a
+PIN number to access and are used to respond to a challenge by
+the server.</p>
+<p><strong>3.2.1 X.509 certificates on the client machine</strong></p>
+<p>This is a really bad idea (it's so bad in fact I decided to
+put this at the very beginning of the explanation). You can
+easily generate an X.509 certificate, take the file and load it
+into a client machine (typically the mail program or www program
+can make use of it). This however makes the assumption that only
+one person will be using the workstation, and that the machine
+cannot be misused by others. This is really only useful on a home
+PC (that is secure), or if you lock your office door and never
+let anyone in and have a secured PC. In a business environment
+the certificates could be useful as identification of the machine
+(but not as identification of the user), in Internet Explorer for
+example you can mark the private key non-exportable, meaning to
+copy the certificate off the client workstation and put it on
+another will slow down most attackers. In other words digital
+certificates loaded onto client machines are useless, in fact
+they are worse then useless because they are usually not
+protected (i.e. with a passphrase) so you can easily impersonate
+the person. </p>
+<p><strong>3.2.2 X.509 certificates on smartcards</strong></p>
+<p>This is a much more secure method of generating and storing
+certificates, as well as being far more portable. The main
+problem currently with smartcards is the lack of smartcard
+readers on computers (and even if they have a smartcard reader
+there is a good chance it might not be compatible). There are
+also a wide variety of smartcards, ranging from ones that simply
+store data (and are not secure) to ones with built in random
+number generators, encryption chips, storage, and have been built
+to be tamper resistant (these cards cost $25 USD each typically).
+An additional benefit of these cards is you can use them for
+logging in to a wide variety of services (Windows 2000 has
+smartcard support for logins), and are quite easy to use.</p>
+<p>Smartcards cannot typically be &quot;copied&quot;, the private
+key is stored on a portion of the card that should not be
+accessible. When encryption or decryption takes place the card
+does the work internally using the private key, it is not
+feasible to remove (or copy) the private key from most good smart
+cards. However this is not to say that you cannot create
+identical cards. Several companies offer this service,
+essentially they use a secured computer to create the private and
+public key, these keys are then loaded onto one or more cards and
+the computer is wiped clean so that the private key cannot be
+recovered. This is especially useful for companies if you want to
+issue several people the same smart card, or maintain a backup of
+smartcards. This last point is especially important, as cards can
+be lost, damaged or stolen, if you only have one copy of a card
+then any data that was encrypted is no longer available (unless
+of course you have cleartext copies or backups). </p>
+<p><strong>3.2.3 Challenge response token</strong></p>
+<p>These are far more secure then an old style username and
+password. Each time you try to log into the server a challenge is
+issued (say an 8 digit number), you enter it into your token
+where it gets mangled via 3DES and spits out a new 8 digit
+number. To create this number you need the secret that is loaded
+onto the key, and kept on the server (and it's usually a large
+number), meaning an attacker stands very little chance of
+guessing it. These tokens are easy to use (hit &quot;on&quot;,
+enter your pin, enter the challenge), and generally secure (enter
+the PIN wrong X times and the card wipes itself). They do tend to
+be expensive however, selling for around $60 USD and as low as
+$40 USD in bulk. There are also additional costs in setting up
+the tokens, recovering them from employees that leave, and so on.
+An additional benefit of cryptocards is you can use them for
+logging in to a wide variety of services (Novell has cryptocard
+support for logins), and are quite easy to use.</p>
+<p><strong>3.3 Something you are</strong></p>
+<p>Personally speaking I don't like biometrics all that much, and
+for one very simple reason. What happens when an attacker manages
+to crack the system open (i.e. finds out how to &quot;spoof&quot;
+a finger or eyeball)? You have to replace the existing biometric
+system with a new one that will not be fooled by that attack, an
+extremely expensive, but more importantly a very lengthy process,
+leaving you open to attack. Unlike password based and token based
+systems you cannot simply issue people a new fingerprint. I have
+seen a variety of fingerprint scanning devices fooled, if you
+have rolled out 4000 fingerprint scanners to provide logins for
+users at their workstation what do you do?</p>
+<p><strong>3.3.1 Fingerprint scanners</strong></p>
+<p>Fingerprint scanners are getting quite affordable (I have seen
+them around $50 USD), easy to use, and are relatively
+non-intrusive. Older fingerprint scanners tend to be optical, I
+would avoid these as they are the easiest to fool. The next step
+up are the laser based ones that actually measure the ridges and
+patterns of your fingerprint, you also don't have to worry about
+the glass getting dirty (and an attacker would need to create a 3
+dimensional model with a pulse to fool it). This authentication
+method would only be of use for corporate LAN's, as the chance of
+finding a public terminal with a fingerprint scanner are slim
+indeed. </p>
+<p><strong>3.3.2 Retinal scanners</strong></p>
+<p>Retinal scanners are still pretty expensive, and probably
+overkill for www based authentication. There is also a degree of
+resistance to them, people believe that somehow they might damage
+their eyes, generally speaking they cannot, but there is
+something a bit intimidating about sticking your eye in close to
+a machine. This authentication method would only be of use for
+corporate LAN's, as the chance of finding a public terminal with
+a fingerprint scanner are very slim indeed. </p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-2.html">Back</a> | <a href="section-4.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

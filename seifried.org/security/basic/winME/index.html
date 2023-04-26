@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Basics / WinME</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Basic security - Windows ME</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#7e150b0c0a3e0d1b17180c171b1a50110c19"><span class="__cf_email__" data-cfemail="ed86989f99ad9e88848b9f848889c3829f8a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>So you are using Windows ME, and want to secure your machine,
+but aren't quite sure where to start. Well you have come to the
+right place. This guide will lead you through a 4 step security
+process, the first step is to install anti-virus software, the
+second step is disabling services you do not need on your
+computer (but were probably enabled by the manufacturer), step
+three consists of updating your windows software, and finally the
+last step is installing a personal firewall. Throughout this
+guide I use free products as examples for the simple reason that
+they are the quickest to get ahold of and install. You are
+encouraged by all means to purchase commercial products, they
+typically provide a much higher level of support then free
+products, and are sometimes easier to work with in the long run.
+However in the scheme of things free security software (such as
+an anti-virus software package) is much better then nothing.
+Unfortunately during the process of securing your machine you
+will have to reboot several times (this is a &quot;feature&quot;
+of windows, most changes require a reboot). I suggest you either
+bookmark this page, or save it to your harddisk. </p>
+<p>&nbsp;</p>
+<h2>Installing anti-virus software</h2>
+<p>Unfortunately there are no longer many free anti-virus
+software packages for Windows. While virtually every anti virus
+maker offers a free trial version these typically expire after 30
+days, leaving you unprotected. I strongly advise you purchase
+anti virus software, especially if you use email (which is where
+a majority of infections come from). New viruses like SirCam are
+especially bad, they go through your computer looking for files
+and email addresses and then send copies of your files to random
+email recipients. I personally have received several hundred
+sensitive documents from numerous people, ranging from tax
+returns to personal correspondence. Fortunately there are still
+several free solutions, AVG and Housecall.</p>
+<p>AVG is available from: <a href="http://www.grisoft.com/html/us_downl.cfm">http://www.grisoft.com/html/us_downl.cfm</a>
+to all non Europeans (although UK residents can get it for free).
+There is no support, however the package does provide real time
+support and cleaning. If you are not in Europe and unable to
+purchase anti-virus software I strongly recommend you download
+and install this software.</p>
+<p>Housecall is from Trend Micro, available at: <a href="http://housecall.antivirus.com">http://housecall.antivirus.com</a>.
+It provides an online web based software package that can scan
+and clean your system of viruses. Unfortunately because it is web
+based you must visit the web page to run it, and it does not
+offer real time protection. In other words you could easily
+receive a virus via email that would be able to delete files or
+otherwise damage your system, and Housecall would not protect
+you. </p>
+<p>If you wish to purchase anti-virus software there are several
+large companies that provide solid anti-virus solutions:</p>
+<p><a href="http://www.mcafee.com/">http://www.mcafee.com/</a></p>
+<p><a href="http://www.norton.com/">http://www.norton.com/</a></p>
+<p><a href="http://www.sophos.com/">http://www.sophos.com/</a></p>
+<p>After installation of your anti-virus software you will
+typically need to reboot, unfortunately you are not yet finished,
+as you will probably also need to update the anti-virus software
+and reboot once more. This step is critical, there are several
+nasty viruses currently circulating and unless you update your
+anti-virus software you will not be protected. </p>
+<p>&nbsp;</p>
+<h2>Disabling services in windows</h2>
+<p>There are several services in windows often enabled by
+manufacturers that most home users do not need. Part of the
+functionality that windows offers is network file sharing and
+printer support. If you only have one machine chances are you do
+not need these features. The other major feature is Windows
+network login. This login screen prompts you for a username and
+password, this username and password DO NOT restrict access to
+the machine however. The username and password are simply cached
+so that if you were to try and access a network file server your
+machine would try these credentials first, and if they were valid
+you would not be prompted for them (saving you from having to
+type in your username and password each time you access a file).
+Enabling windows printer and file sharing can allow an attacker
+to gain access to your machine, and the same goes for Windows
+network client. Installing these components and enabling them is
+the default in Windows, so unless you specifically disable or
+remove them they will be present. With these software component
+installed a remote attacker can find out a lot about your
+computer. By querying your machine remotely they can learn your
+login name and your workgroup name and the hardware address of
+your computer (which can give them enough information to know
+what brand of computer you own!):</p>
+<pre>nbtstat -A 10.3.0.1</pre>
+<pre>	NetBIOS Remote Machine Name Table
+
+Name			Type	Status
+---------------------------------------------
+WORKSTATION0	&lt;00&gt;	UNIQUE	Registered 
+WORKGROUP1	&lt;00&gt;	GROUP	Registered 
+WORKSTATION0	&lt;03&gt;	UNIQUE	Registered 
+
+MAC Address = 00-60-82-F8-F4-93</pre>
+<p>Workstation0 is the name of the workstation, and Workgroup1 is
+the name of the workgroup. With Windows file and print sharing
+enabled the remote attacker can find out even more information:</p>
+<pre>	NetBIOS Remote Machine Name Table
+
+Name			Type	Status
+---------------------------------------------
+WORKSTATION0	&lt;00&gt;	UNIQUE	Registered 
+WORKGROUP1	&lt;00&gt;	GROUP	Registered 
+WORKSTATION0	&lt;03&gt;	UNIQUE	Registered 
+WORKSTATION0	&lt;20&gt;	UNIQUE	Registered 
+WORKGROUP1	&lt;1E&gt;	GROUP	Registered 
+USERNAME	&lt;03&gt;	UNIQUE	Registered 
+WORKSTATION0	&lt;1F&gt;	UNIQUE	Registered 
+
+MAC Address = 00-00-D2-E8-F2-53</pre>
+<p>They now have your username, and can connect to any shared
+files or printers you posses. If you do need to share out files
+and printers you should install a personal firewall so you can
+restrict who has access.</p>
+<p>Click on &quot;Start&quot; &gt; &quot;Settings&quot; &gt;
+&quot;Control Panel&quot; and then choose &quot;Network&quot;:</p>
+<p><img src="../images/win98/control-panel-network.jpg" width="366" height="458"></p>
+<p>Then select &quot;File and printer sharing for Microsoft
+Networks&quot; and click remove, and then do the same for
+&quot;Client for Microsoft Networks&quot;.</p>
+<p>&nbsp;</p>
+<h2>Updating windows software</h2>
+<p>This is extremely easy in Windows ME. Simple click on the
+&quot;Windows Update&quot; link on your menu or type in the
+following URL in Internet Explorer:</p>
+<p><a href="http://windowsupdate.microsoft.com/">http://windowsupdate.microsoft.com/</a></p>
+<p>From there a small applet loads and does an inventory of what
+you have installed, and which version, then the items you need
+are displayed on a webpage, in descending order of importance
+(Critical security fixes first). You then click on the item, and
+download and install it, some fixes have to be installed on their
+own, and some you can install several at a time. </p>
+<p>You can also go to the above corporate URL if you wish to
+download the fixes and save them which is extremely useful if you
+have more then one Windows ME machine. The URL for this is:</p>
+<p><a href="http://corporate.windowsupdate.microsoft.com/en/default.asp">http://corporate.windowsupdate.microsoft.com/en/default.asp</a>
+</p>
+<p>You should visit these sites at least one a month, or to
+automate the task simply install the &quot;Windows Critical
+Update Notification&quot; component (available on the update page
+under &quot;Picks of the month&quot;). </p>
+<p>&nbsp;</p>
+<h2>Installing a personal firewall</h2>
+<p>If you do need to offer services such as file and print
+sharing to other machines then a personal firewall can allow you
+to restrict who is able to connect. As well any software you
+install that provides network services or tries to use them will
+be proactively blocked, so you can easily block spyware packages
+from sending back information and so on. My personal favorite for
+this is ZoneAlarm, it is freely available for home use, very
+effective and very easy to configure. You can get it from: <a href="http://wcarchive.cdrom.com/pub/flood/zonalm26.exe">http://wcarchive.cdrom.com/pub/flood/zonalm26.exe</a>
+or <a href="http://www.zonelabs.com/zap26_za_grid.html">http://www.zonelabs.com/zap26_za_grid.html</a>.
+</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

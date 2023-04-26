@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - Securing Your Network With OpenBSD</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Securing Your Network With OpenBSD</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#ed86989f99ad9e88848b9f848889c3829f8a"><span class="__cf_email__" data-cfemail="ea819f989eaa998f838c98838f8ec485988d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>This isn't a totally conventional article. I'm not going to be
+recommending you replace every UNIX server you've got with
+OpenBSD.&nbsp; Although the OpenBSD team did release 2.7 just
+last week, making it very hard not to cover its new features,
+this article will be a bit of both.&nbsp;</p>
+<p>Most networks share a few common traits:</p>
+<ul type="disc">
+<li>They are made up of heterogeneous pieces (i.e. some
+Linux, some Windows, Solaris, etc.)</li>
+<li>They evolve over time, and this growth may or may not be
+entirely planned and mapped out</li>
+<li>There is usually more then one system/network
+administrator, and they don't always communicate fully.</li>
+</ul>
+<p>So how can OpenBSD help with these problems? Well, first off:
+if you plan to track, probe and monitor your network from a
+central machine, it had better be secure. If someone breaks into
+these boxes, chances are you won't notice their activity on the
+network since it looks like normal internal scans/etc. The data
+collected by these machines will tend to be sensitive (i.e. a
+list of all your mail servers and what versions of Sendmail they
+are running). OpenBSD is the perfect candidate for this type of
+work; it's got solid security and an extremely capable network
+stack (important if you processing and generating a lot of
+network traffic. One major new upgrade with OpenBSD is support
+for gigabit network cards, so you can attach it to anything from
+the slowest LAN to the fastest LAN. Once you have installed your
+OpenBSD boxes, you need various software packages to aid you in
+your quest for network security. OpenBSD makes this trivially
+easy to do with the ports collection. Instead of shipping
+pre-compiled packages and having some huge central repository
+that attempts to contain them all, the BSD family uses the ports
+system. The ports system is essentially a gigantic collection of
+software packages, with comments, a description, MD5 sums of the
+tarballs, and makefiles (detailed instructions for the compiler
+on how to build the package). You simply find the package you
+want, run &quot;make&quot; to compile it, and then &quot;make
+install&quot; to create an install package and install it. If you
+want to update something, simply get a newer ports file and redo
+the process. This process is also very difficult to subvert.
+Since the ports package ships with MD5 (Message Digest version
+5), a relatively secure cryptographic hash function, the chances
+of an attacker being able to create a source code package with
+the same MD5 sum are very slim. So which packages are useful for
+securing your network? I'll break them down into several main
+areas:</p>
+<ul type="disc">
+<li>Port/network scanning programs</li>
+<li>Intrusion/penetration scanning programs</li>
+<li>General network management</li>
+</ul>
+<p>I'm not too sure of the terminology since I've seen varied
+usage, so I'll explain each area. &quot;Port/network scanning
+programs&quot; in my mind are programs that either probe IP
+addresses or TCP/UDP/ICMP ports to see if services are available
+or not. This also includes programs like Firewalk which attempts
+to map out ports a firewall is allowing and blocking.
+&quot;Intrusion/penetration scanning programs&quot; are programs
+that test for known vulnerabilities, For example, looking at the
+version of Sendmail a server has and telling you if it is
+vulnerable or not, and optionally may actually try to exploit the
+problem to see if it works; this can of course result in
+problems. The last is &quot;General network management&quot;,
+tools like MRTG, Multi Router Traffic Graph, which helps you spot
+unusual network behavior and can also help you plan out future
+needs. The latest copy of the snapshot file is:
+/pub/OpenBSD/snapshots/ports.tar.gz and I would recommend it over
+the copy in /pub/OpenBSD/2.7/ simply because a lot of the
+software gets frequent updates; with software, especially
+security related software, it's important to be up to date.
+Simply download the ports file and unpack it in the /usr/
+directory (i.e. cd /usr ; tar -zxf ~/ports.tar.gz). </p>
+<p>My favorite port scanning program is by far nmap. This thing
+has dozens of options and can conduct a wide variety (probably
+the widest) of scans from simple SYN scans to bouncing very
+strange packets off of open ftp servers. You will find nmap in
+the net/nmap/ directory; it should compile without any problems.
+The man page for nmap is exhaustive, options include controlling
+the speed of scans (useful for slipping past IDS systems, or
+stress testing firewalls), generating random IP's to test (useful
+for creating statistics and &quot;discovering&quot; servers).
+Scanning from a relatively slow machine, like sub P100, running
+OpenBSD you can easily scan a class B address for most
+interesting ports in a day or two. Your main limits will be
+bandwidth and handling opening ports. This means most
+organizations can easily afford to scan their entire network
+daily. This can be very beneficial to security; by comparing
+daily reports of the open and closed ports, you can track
+additions of new servers and ensure they are secured properly.
+Simply comparing daily files with diff or uniq can generate a
+relatively comprehensive report of what services are available on
+your network. Another scanner is strobe; while somewhat more
+limited then nmap for options, it is blazingly fast and simple to
+use, you can find it in security/strobe/. Now that you have a
+list of open ports (and generally speaking they will map to the
+expected services, but not always), you can now do some more in-
+depth probing.</p>
+<p>Probably the best free network security scanner is Nessus.
+Using a client / server architecture, it is very platform
+independent. With the server running on UNIX and NT, the client
+portion runs on UNIX, Windows and in Java. There are over 400
+tests, written in a custom plug-in language which makes the
+writing of new tests extremely easy, and additional information
+such as the solution can be included in the test script. The
+reports it generates are also very nice, with solutions (if
+offered in the test script) and output formatted in HTML, text,
+LaTeX, and &quot;.nsr&quot; format (which can be read in by
+Nessus clients and used to view the data). The tests also include
+denial of service attacks, so be careful when running Nessus
+against production machines. However, it is probably a wise idea
+to hammer production machines during off time, since attackers
+will probably hit them during prime time. For pure CGI scanning
+(useful if you are a web hosting provider or similar), the tool
+of choice would be whisker, in security/whisker/. Whisker is a
+pure CGI scanner with a lot of nifty options and features; it's
+ideal for finding out what you left enabled on the new web
+server. Whisker comes with a database of scans to attempt and you
+can easily add items, so if you purchase some new web based
+product you can easily scan it for problems.</p>
+<p>With all this cool scanning going on you probably want to try
+to avoid detection by IDS systems and firewalls. By using
+fragrouter in security/fragrouter/ you can severely mangle
+packets and slip them past many systems. Additionally, some
+systems will crash under the stress of fragmented packets. It's
+better to find out on your own than let an attacker exploit it.
+Many older IDS systems did not properly, if at all, check
+fragmented packets; this is an ideal way of finding IDS systems
+that need to be updated in your organization.</p>
+<p>This last network scanning tool didn't really fit into network
+scanning so I stuck it out on its own. Oftentimes when an
+attacker gains access to a machine on a network, the first tool
+they will install is a network sniffer. This allows them to suck
+up passwords and other interesting data easily. Antisniff is
+ideal for detecting these types of network sniffers (of course it
+isn't 100% accurate, but it's a whole lot better than nothing).
+Antisniff will not detect hardware based sniffers or induction
+taps or other &quot;sophisticated&quot; methods of sniffing, but
+as a rule of thumb, these require physical access to the network,
+which prevents most attackers from using them. </p>
+<p>In conclusion, an OpenBSD box or two loaded up with free
+software can help you secure your network and make collecting
+information significantly easier. If possible, try to have an
+OpenBSD box on each network segment between firewalls so you can
+completely monitor the network, also have an offsite box or two
+that will allow you to conduct scans with access equivalent to
+what most attackers would have. Old cast-off Pentium machines are
+perfect for the task, and since the software is free, usually the
+main obstacle is getting permission to conduct potentially
+hazardous scans on your network(s). Probably the easiest way to
+convince management is by pointing out that attackers will do it
+anyway, and if you are feeling particularly brave to do it and
+present them with the findings (and the fact that you probably
+went undetected). Next week I'm going to look at various methods
+for placing backdoors in machines, and methods for
+preventing/detecting/disabling them.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://www.openbsd.org/">http://www.openbsd.org/</a>
+</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 15/2/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

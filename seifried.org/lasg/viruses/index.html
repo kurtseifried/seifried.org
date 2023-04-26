@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Viruses</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Viruses</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#2e455b5c5a6e5d4b47485c474b4a00415c49"><span class="__cf_email__" data-cfemail="b7dcc2c5c3f7c4d2ded1c5ded2d399d8c5d0">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>Linux is not as susceptible to viruses in the same ways that a
+Dos/Windows or Mac platform is. In UNIX, security controls are a
+fundamental part of the operating system. For example users are
+not allowed to write promiscuously to any location in memory that
+they choose to, something that Dos/Windows and the Mac
+allow.&nbsp;</p>
+<p>To be fair there are viruses for UNIX. However the only Linux
+one I have seen was called &quot;bliss&quot;, had an uninstall
+option (&quot;--uninstall-please&quot;) and had to be run as root
+to be effective. Or to quote an old Unix favorite &quot;if you
+don't know what an executable does, don't run it as root&quot;.
+Worms are much more prevalent in the UNIX world, the first major
+occurrence being the Morris Internet worm which exploited a
+vulnerability in sendmail. Current Linux worms exploit broken
+versions of imapd, sendmail, WU-FTPD and other daemons. The
+simplest fix is to keep up to date and not make daemons
+accessible unless necessary. These attacks can be very successful
+especially if they find a network of hosts that are not up to
+date, but typically their effectiveness fades out as people
+upgrade their daemons. In general I would not specifically worry
+about these two items, and there is definitely no need to buy
+anti-virus software for Linux.&nbsp;</p>
+<p>Worms have a long and proud tradition in the UNIX world, by
+exploiting known security holes (generally, very few exploit
+new/unknown holes) and replicating they can quickly mangle a
+network(s). There are several worms currently making their way
+around Linux machines, mostly exploiting old Bind 4.x and old
+IMAP software. Defeating them is as easy as keeping software up
+to date.&nbsp;</p>
+<p>Trojan horses are also popular. Recently ftp.win.tue.nl was
+broken into and the TCP_WRAPPERS package (among others) was
+modified to email passwords to an anonymous account. This was
+detected when someone checked the PGP signature of the package
+and found that it wasn't quite kosher. Moral of the story? Use
+software from trusted sites, and check the PGP signature(s).</p>
+<p>&nbsp;</p>
+<h2><a name="Disinfection of viruses / worms / trojans">Disinfection
+of viruses / worms / trojans</a></h2>
+<p>Back up your data, format and reinstall the system from known
+good media. Once an attacker has root on a Linux system they can
+literally do anything, from compromising gcc/egcs to loading
+interesting kernel modules at boot time. Do not run untrusted
+software as root. Check the PGP signatures on files you download,
+etc. An ounce of prevention will pretty much block the spread of
+viruses, worms and trojans under Linux.</p>
+<p>The easiest method for dealing with viruses and the like is to
+use system integrity tools such as tripwire, L5, and
+Gog&amp;Magog, you will be able to easily find which files have
+been compromised and restore/replace/update them. There are also
+many Anti-Virus scanners available for Linux (but generally
+speaking there aren&#146;t any Linux viruses).</p>
+<p>&nbsp;</p>
+<h2><a name="Virus Scanners for Linux">Virus Scanners for Linux</a></h2>
+<p>As stated above viruses aren&#146;t a real concern in the
+Linux world, however virus scanners that run on Linux can be
+useful. Filtering email / other forms of content at the gateways
+to your network (everyone has Windows machines) can provide an
+extra line of defense since the platforms providing the defense
+against the threat cannot be compromised by that threat
+(hopefully). You may also wish to scan files stored on Linux file
+servers that are accessed by Windows clients. Luckily there are
+several good anti-virus programs available for Linux.</p>
+<p>&nbsp;</p>
+<h3>Sophos Anti-Virus</h3>
+<p>Sophos Anti-Virus is a commercial virus scanner that runs on a
+variety of Windows and UNIX platforms. It is free for personal
+use and relatively inexpensive for commercial use. You can get it
+at: <a href="http://www.sophos.com/">http://www.sophos.com/</a>.</p>
+<p>&nbsp;</p>
+<h3>AntiVir</h3>
+<p>AntiVir is another commercial virus scanner that runs on a
+variety of Windows platforms and Linux. You can get it from: <a href="http://www.hbedv.com/">http://www.hbedv.com/</a>.</p>
+<p>&nbsp;</p>
+<h3>InterScan VirusWall</h3>
+<p>Trend Micro has ported this product to Linux and offers it for
+free download on their site. You can get it from: <a href="http://www.antivirus.com/products/isvw/">http://www.antivirus.com/products/isvw/</a>.</p>
+<p>&nbsp;</p>
+<h3>F-Secure Anti-Virus</h3>
+<p>Data Fellow's has ported their anti-virus scanner to Linux as
+well. You can get it at: <a href="http://www.datafellows.com/products/">http://www.datafellows.com/products/</a>
+</p>
+<p>&nbsp;</p>
+<h3>AVP</h3>
+<p>Kaspersky lab's has also ported their anti-virus scanner over
+to Linux, currently in beta, available at: <a href="http://www.kaspersky.com/products.asp">http://www.kaspersky.com/products.asp</a>
+</p>
+<p>&nbsp;</p>
+<h2><a name="Virus scanning of email">Virus scanning of email</a></h2>
+<p>Also see the <a href="../network-servers/email/index.html">email
+server section</a> for setting up <a href="../network-servers/email/index.html">virus
+scanning of incoming email</a> (very useful if you have windows
+clients).</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href="http://www.openantivirus.org">www.openantivirus.org</a></p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#d9b2acabad99aabcb0bfabb0bcbdf7b6abbe"><span class="__cf_email__" data-cfemail="c9a2bcbbbd89baaca0afbba0acade7a6bbae">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - OAG - OpenBSD Administrator's Guide</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Preface</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#8fe4fafdfbcffceae6e9fde6eaeba1e0fde8"><span class="__cf_email__" data-cfemail="68031d1a1c281b0d010e1a010d0c46071a0f">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<h2><a name="About-this-book">About this book</a></h2>
+<p>II wrote this cause it needed to be writtern.</p>
+<p>&nbsp;</p>
+<h2><a name="Acknowledgements">Acknowledgements </a></h2>
+<p>None yet. </p>
+<p>&nbsp;</p>
+<h2><a name="Contacts-and-mailing-lists">Contacts and mailing
+lists</a></h2>
+<p>There is an announcement mailing list at: <a href="http://lists.seifried.org/mailman/listinfo/oag-announce/">http://lists.seifried.org/mailman/listinfo/oag-announce/</a>.
+Semi-regular postings are made to announce new updates, sections
+and any major changes.</p>
+<p>There is a discussion list for the OAG available at: <a href="http://lists.seifried.org/mailman/listinfo/oag-discuss/">http://lists.seifried.org/mailman/listinfo/oag-discuss/</a>.
+Appropriate topics incluse feature requests, errors, expanding on
+content, etc. </p>
+<p>You can contact the author directly at: <a href="/cdn-cgi/l/email-protection#701b0502043003151916021915145e1f0217"><span class="__cf_email__" data-cfemail="e68d939492a695838f80948f8382c8899481">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Typographical-conventions">Typographical conventions</a></h2>
+<p>Since this is rapidly approaching &quot;real book status&quot;
+I decided it was time to format it nicely. </p>
+<h1>Chapter Title - H1</h1>
+<p>Only one chapter title per chapter (individual files), linked
+from TOC.</p>
+<h2>Section Title H2 </h2>
+<p>Multiple section titles per chapter, linked from TOC</p>
+<h3>SubSection Title H3</h3>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2">
+<tr>
+<td valign="top"><strong>Bold</strong></td>
+<td valign="top">Hostnames, Usernames, IP's, UID/GID's</td>
+</tr>
+<tr>
+<td valign="top"><em>Italic</em></td>
+<td valign="top">file and directory names, program and
+command names, command-line options, email addresses and
+pathnames, site names and new terms.</td>
+</tr>
+<tr>
+<td valign="top"><pre>Formatted</pre>
+</td>
+<td valign="top">Examples of commands</td>
+</tr>
+<tr>
+<td valign="top"><pre><em>Formatted Italic</em></pre>
+</td>
+<td valign="top">variable options, keywords, text the
+user replaces with their value</td>
+</tr>
+<tr>
+<td valign="top"><pre><strong>Formatted Bold</strong></pre>
+</td>
+<td valign="top">commands and text to be literally typed
+by the user</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h2><a name="Bugs-and-errata">Bugs and errata</a></h2>
+<p>The beauty of this book is that it is available online, thus
+bugs and errata are done in real time. What you read is generally
+the most up to date version. If you find a problem please tell
+me, <a href="/cdn-cgi/l/email-protection#88e3fdfafcc8fbede1eefae1edeca6e7faef"><span class="__cf_email__" data-cfemail="3f544a4d4b7f4c5a56594d565a5b11504d58">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>. </p>
+<p>&nbsp;</p>
+<h2><a name="Dates,-times-and-other-conventions">Dates, times and
+other conventions</a></h2>
+<p>This book refers to dates and times in numerous places.
+Unfortunately there are no universally used conventions for
+simple things like writing dates, which is rather annoying. I
+have decided to use &quot;international&quot; standards as
+opposed to American/Canadian standards, while this may cause some
+confusion it makes sense to me.</p>
+<p>&nbsp;</p>
+<h3>Dates</h3>
+<p>Dates will be written using the ISO standard of Day first,
+then the month, and finally the year. For example the date August
+21, 2001 would be written:</p>
+<p>21/8/2001</p>
+<p>Long dates will be written the day first, then the month, then
+the date and finally the year. For example the date August 21,
+2001 would be written:</p>
+<p>Tuesday, August 21, 2001</p>
+<h3>Times</h3>
+<p>Time references are in GMT unless otherwise noted. References
+to duration are in the form hours, minutes and seconds
+(HH:MM:SS). A time of one hour, twenty minutes and thirty seconds
+would be written:</p>
+<p>1:20:30</p>
+<p>&nbsp;</p>
+<h2>Encryption keys</h2>
+<p>PGP key for Kurt Seifried.</p>
+<blockquote>
+<pre>-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: PGPfreeware 7.0.3 for non-commercial use &lt;http://www.pgp.com&gt;
+
+mQGiBDsNcxcRBAD987JAFctBIHhuUNm5tqQgYi/CsFsx1afNI6QyHhbqPxJMF2Vs
+D5dymEKSNd8QSAP4GNTk9MwswwxXHuXIYJolp+U2HhD/UhQsp37WiEODMB+NX8Xc
+Xe5+BOUEUxaGo/du64tawslmiNw2KJDonKWaUSQBtp5ek1eQ0plTQbJ1DQCg//m4
+wrYgtDl4iWdMk/76C4zbc/MD/ibshluW0pnWSDUxf00LrbMd3xAfQDPd9ACruY7z
+pXdbdSJctpGMgzjbC0B97uqJINmB2Uu9h62bK+eKb+eIlM+zJEth0r6PCrhr+Kj4
+EpQWiiujVU8ijNbHVM9SqT2vcS9i2o2ZCjrf2bQDdI7jt1c88+DdaCvRW79BiN4P
+GsyCBADy8uewbArfRQl/erB6XeyVz2KDRvi5mNzM0xEWTtNkEV43pyHxXNtLzuD8
+91GCHxsSL9f5JWEpcyiIiUhXNFdM3nZiGE/6/xfnKflDT7bsOdKXHXCvW1yN9aDx
+QoRhJhlc3mnZMyLx/xz4M6wXVj8ddOBtwgBmlFtdZjyiDHwNJLQpS3VydCBNLiBT
+ZWlmcmllZCAgPHNlaWZyaWVkQHNlaWZyaWVkLm9yZz6JAFQEEBECABQFAjsNcxcF
+CRAw7AAECwMCAQIZAQAKCRCtYwtOrVbldApoAJ9ZRUlW8cycj3/XlTVtQNx405GZ
+QgCg5zt7jGJ3v7FQguJgQloBGY1MACiJAEYEEBECAAYFAjsNcz8ACgkQ+7U3Ee+D
+x4wO6gCgnbSwZFOOiTPoYjLxu446qfvzAAoAni6CROE7jtzqZMdHJbEqDFXcreEn
+iQEcBBABAQAGBQI7DXNLAAoJECnUkEFIZQ2xALsH/13KyASmkFvyYCsj4hzD+UOV
+DMZ/3Vi8/dXqL2NpSdGbvaASNVRyGG4huJBBSh9ccjXo11IbAfOvICfjbUQmIb3w
+O/5mRQCiFIsakuPZWKhne5I9yVjL3ob78c4i2EvqSJ6VPFuqIrEdVCeMNU8DvjDw
+k8FkjF5osPoKdk2CndEnrLOXMz04Qyv6DB4O1qcmhEyVc842dqPd/eOnNGUA7qN7
+axp4AiZRNRyf4/XbRt+KQzS0tItQy9LcNfQiIr2B0nYo4t+edyQbQSPBiuESYTzm
+TZhz0J3zxl4Tkea1GlTBxuJ6ulOFofZtDyAWABncZ9oEWgPADl15a+SCUNGvct+J
+AEYEEBECAAYFAjsNdHYACgkQUWd9bj7NcwaN6QCeIYLdy4G3XlFebtHiXSHc/K1/
+Iw4AoNrGLQWSHat8rs74/uE8ojtzh79htCFLdXJ0IFNlaWZyaWVkIDxrdXJ0QHNl
+aWZyaWVkLm9yZz6JAEYEEBECAAYFAjuUYccACgkQrWMLTq1W5XRAugCfQyMVlXPs
+D7lYKvhYg08mv6U7AZcAn0feW5KeOLrmSCWKaHlNUsVHX3opuQINBDsNcxgQCAD2
+Qle3CH8IF3KiutapQvMF6PlTETlPtvFuuUs4INoBp1ajFOmPQFXz0AfGy0OplK33
+TGSGSfgMg71l6RfUodNQ+PVZX9x2Uk89PY3bzpnhV5JZzf24rnRPxfx2vIPFRzBh
+znzJZv8V+bv9kV7HAarTW56NoKVyOtQa8L9GAFgr5fSI/VhOSdvNILSd5JEHNmsz
+bDgNRR0PfIizHHxbLY7288kjwEPwpVsYjY67VYy4XTjTNP18F1dDox0YbN4zISy1
+Kv884bEpQBgRjXyEpwpy1obEAxnIByl6ypUM2Zafq9AKUJsCRtMIPWakXUGfnHy9
+iUsiGSa6q6Jew1XpMgs7AAICCAD1mLQv5THh1JfuQEN26KbdRXWtw5tJ2LiXri17
+G1BGS4pz7CVgNIhmKxhm9xvTD7Yb0xI2RoA5yre04xG77OQ47k0IjawSHdfr+PBZ
+8C7O03QS17vKHthrpKayKENOUqWKOK3jGd2fx50EgKMnt5o+n1szEuhwvmxh1lOp
+iV4l4EMc2QykM1W/weTgCmTvBVABfgm0OQoNswdkrKPyyY16Li2IBI9ebqo6Vnz8
+NWiZ2Hzta0cKvuGak/mmNkLsZFXQ3oH/J6ubRb9LskqJ4o7SwUaCAHR1sjlq5LS/
+JNVjwkG18Q+Jrr4X6NncRK1eCuHm8yD5dbvHPZi0VnltXHwsiQBMBBgRAgAMBQI7
+DXMYBQkQMOwAAAoJEK1jC06tVuV0vHwAmwTOfoVT5RJqaluoEvXy7qpRjmzUAKCw
+4DM73//OxJSRLTwVO5IVtq/WIQ==
+=azr0
+-----END PGP PUBLIC KEY BLOCK-----</pre>
+</blockquote>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 24/3/2002</p>
+<p>Copyright Kurt Seifried 2002 <a href="/cdn-cgi/l/email-protection#2d46585f596d5e48444b5f44484903425f4a"><span class="__cf_email__" data-cfemail="3e554b4c4a7e4d5b57584c575b5a10514c59">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

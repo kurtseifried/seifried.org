@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;SMB</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#412a3433350132242827332824256f2e3326"><span class="__cf_email__" data-cfemail="1e756b6c6a5e6d7b77786c777b7a30716c79">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2>SAMBA</h2>
+<p>SAMBA is one of the best things since sliced bread, that is if
+you want to share files and printers between Windows and *NIX. It
+is also somewhat misunderstood, and suffers heavily from
+interaction with various (sometimes broken) Windows clients.
+SAMBA has a great many kludges that attempt to make it somewhat
+sane, but can lead to what looks like broken behavior sometimes.
+SAMBA simply gives access to the filesystem via SMB (Server
+Message Block), the protocol Windows uses to share files and
+printers. It verifies the username and password given (if
+required) and then gives access to the files according to the
+file permissions and so forth that are set. I'm only going to
+cover Samba 2.x, Samba 1.x is pretty old and obsolete.</p>
+<p>Samba 2.x is controlled via smb.conf, typically in /etc (man
+smb.conf). In /etc/smb.conf you have 4 main areas of
+configuration switches: [globals] , [printers] , [homes], and
+each [sharename] has it's own configuration (be it a printer or
+drive share). There are a hundred or so switches, the smb.conf
+man page covers them exhaustively. Some of the important (for
+security) ones are:</p>
+<p>security = xxxx where xxxx is share, server or domain, share
+security is per share, with a password that everyone uses to get
+at it, server means the samba server itself authenticates users,
+either via /etc/password, or smbpasswd. If you set it to domain,
+samba authenticates the user via an NT domain controller, thus
+integrating nicely into your existing NT network (if you have
+one).</p>
+<p>guest account = xxxx where xxxx is the username of the account
+you want the guest user to map to. If a share is defined as
+public then all requests to it are handled as this user.</p>
+<p>hosts allow = xxxx where xxxx is a space separated list of
+hosts / IP blocks allowed to connect to the server.</p>
+<p>hosts deny = xxxx where xxxx is a space separated list of
+hosts / IP blocks not allowed to connect to the server.</p>
+<p>interfaces = xxxx where xxxx is a space separated list of IP
+blocks that samba will bind to</p>
+<p>SMB uses a variety or ports, mostly relying on ports 137, 138
+and 139, both udp and tcp for all except 139.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 137:139
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 137:139
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 137:139
+ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 137:139
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 137:139
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 137:139</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 137:139
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 137:139
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 137:139
+ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 137:139
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 137:139
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 137:139</pre>
+<p>I would also highly recommend installing and using SWAT (samba
+Web Administration Tool) as it will cut down on the mistakes/etc
+that you are liable to make. Samba and SWAT are available at: <a href="http://www.samba.org/">http://www.samba.org/</a> and ship
+with almost every distribution.</p>
+<h2>SWAT</h2>
+<p>SWAT is a very nice administration tool to setup your
+smb.conf. The main problem is that is requires you to use the
+root account and password to &#145;log&#146; in, and runs as a
+separate process out of inetd.conf, so there is no easy way to
+encrypt it, and as far as I can tell no way to grant others users
+administrative access to SWAT. Having said that however it is a
+good tool for cutting down on mistakes made while editing
+smb.conf. You can also run SWAT with the &#150;a switch, meaning
+no password will be required, and using TCP_WRAPPERS to restrict
+access to certain workstations (although you&#146;d still be open
+to IP spoofing). Essentially SWAT was not meant as a secure
+administrative tool, but it is useful. SWAT comes with samba
+(usually) and is available at: <a href="http://www.samba.org/">http://www.samba.org/</a>.</p>
+<h3>Other GUI interfaces to Samba</h3>
+<p>There are a dozen or so GUI interfaces to Samba. <a href="http://www.samba.org/samba/GUI/">http://www.samba.org/samba/GUI/</a>
+</p>
+<p>&nbsp;</p>
+<p><a href="index.html">Back</a></p>
+<p>Last updated on 31/8/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#600b1512142013050906120905044e0f1207"><span class="__cf_email__" data-cfemail="8de6f8fff9cdfee8e4ebffe4e8e9a3e2ffea">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

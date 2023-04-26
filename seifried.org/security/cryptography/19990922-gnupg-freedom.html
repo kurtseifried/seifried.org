@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - GnuPG and freedom</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>GnuPG and freedom</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried <a href="/cdn-cgi/l/email-protection#573c2225231724323e31253e323379382530"><span class="__cf_email__" data-cfemail="f8938d8a8cb88b9d919e8a919d9cd6978a9f">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>Additional note: as of fall 2001 the commercial PGP has
+essentially been dead with only a few critical bug fixes. </p>
+<p>&nbsp;</p>
+<p><b>September 22, 1999&nbsp;-&nbsp;W</b>ell last week caused a
+bit of a stir, which is good. Hopefully this week will really get
+people thinking. As you may or may not have heard, GnuPG 1.0 has
+been released. If you haven't heard, GnuPG is a GPL'ed
+cryptographic program that uses no patented algorithms, and
+happens to be perfectly compatible with PGP. I interviewed Werner
+Koch (via email), the heart and soul of the GnuPG project.&nbsp;</p>
+<hr width="50%">
+<p>&nbsp;</p>
+<p><b>Kurt:</b>&nbsp; Why did you feel the need to write GnuPG?</p>
+<p><b>Werner:</b> I think it started at a conference in
+Aachen/Germany where Richard Stallman asked the non European
+Programmers to work on crypto software, now that the
+Diffie-Hellmann was void (about fall 1997).</p>
+<p>A few weeks later I got bored by the programming tasks I was
+doing at that time and suddenly started to write a parser for PGP
+keyrings. After I could decrypt PGP 2 messages I remembered, that
+a PGP like program has been on the GNU task list for a long time.
+I contacted them and started to write a PGP based on ElGamal (a
+Diffie Hellmann variant). And it was quite interesting as I have
+been interested in cryptography for quite a while.</p>
+<p>Another important reason was the fact, that PGP 5 was not free
+anymore and the available Unix version was quite bad.</p>
+<p><b>Kurt:</b> Do you think people are actually concerned enough
+about &quot;freedom&quot; to switch to GnuPG? Do you have any
+plans for public education/advertising this?</p>
+<p><b>Werner:</b> To face the reality, most folks are concerned
+whether they can get stuff for free (beer). And many folks want
+to stay with PGP 2 because of all the rumors on key escrowing in
+PGP 5 and such things.</p>
+<p>I think that in the near future many will realize that only
+free (speech) software can guarantee that there are no hidden
+backdoors. And to take it further, a free operating system is
+also useful for such software, because a OS has so much power
+over the running applications, that it must be technically well
+designed and open for public analysis.</p>
+<p>We are currently evaluating ways to promote and offer GnuPG to
+the broad masses. This means that we need a Windows version (I
+did a first working version with a real random number generator
+and internationalization yesterday), a front-end for key
+management and plugins for some mailers.</p>
+<p><b>Kurt:</b> With public domain software like GnuPG, and other
+GPL/BSD licensed strong crypto, are you worried that countries
+might remove the portions of their crypto laws (such as Germany,
+Canada, and the Wassenaar agreement) that allow public domain
+crypto to be exported freely?</p>
+<p><b>Werner:</b> It may happen but I don't believe it. According
+to lawyer of the &quot;Innenministerium&quot; (Home Office) they
+tend to change the definition of &quot;public domain&quot; in the
+Wassenaar agreement to be more like &quot;academic research
+results&quot; which means that they will basically allow software
+which is published under the GPL (He did exactly know the
+contents of the GPL). So at least it will be legal to put such
+software onto FTP servers.</p>
+<p>I don't know of any thoughts to regulate technical advices or
+support like it is done in the U.S. I do not know what will
+happen in the UK, they have always different politics than the
+rest of the EU.&nbsp;</p>
+<hr width="50%">
+<p>&nbsp;</p>
+<p><b>So what does this mean?</b></p>
+<p>Most countries that have non-restrictive crypto policies allow
+public domain software to be exported without any restrictions or
+review. This has led to a dramatic increase in the amount of
+crypto software (especially GPL and BSD licensed stuff) being
+written. Linux and most versions of BSD now support IPSec, they
+all support SSL, and they now have a free (as in free beer, and
+free speech) PGP replacement. The arguments used by most
+government agencies don't hold much water, as any naughty person
+(read terrorist) can now simply download strong crypto for free
+over the Internet (not that this would stop them buying US
+software and making a million copies in any case).&nbsp;</p>
+<p>There are two kinds of crypto laws, either they are
+restrictive and impose limits, or they allow anything. You simply
+cannot have it both ways. The US recently &quot;relaxed&quot;
+their crypto policy, however no provisions were made to relax
+controls on public domain software. In addition to this they
+still require you to submit your software for a &quot;one time
+technical analysis&quot;, it is unclear whether you must wait for
+a yes before shipping, if so this would provide an effective way
+to deny exports. The official reasoning behind this is that
+terrorist organizations and criminals (of course they would have
+to be outside the US) might get ahold of strong US crypto.&nbsp;</p>
+<p>It would seem that the barn door is wide open, anyone with an
+internet connection can download OpenBSD, Linux and IPSec, or a
+copy of GnuPG (all written in &quot;free&quot; countries), and
+use them to encrypt their data. This might encourage various
+governments to loosen crypto policies, as they are obsolete in a
+world where a small group of people can create and distribute
+software to millions of people at very little cost. On the other
+hand it might lead to a crack down on public domain software,
+which might be to late at this point, due to the plethora of
+software currently available. Hopefully business will bring
+pressure to bear on governments to loosen crypto laws, in Britain
+key escrow was successfully killed by businesses lobbying the
+government.</p>
+<p>In addition to this the majority of GPL and BSD licensed
+software is free, as in free beer. To many people, issues such as
+the freedom to take the code and improve it are immaterial (try
+explaining the GPL to business people, it's usually a painful
+process). Smart management will realize that the initial purchase
+price of software is usually a minor portion of the total amount
+spent, but if GnuPG has the same interface, and plug-in
+capabilities as the commercial version, in the long run they can
+save a lot of money (currently the commercial version of PGP is
+$40 USD a copy).&nbsp;This means that any well written open
+source software will spread like kudzu (a vine like plant), due
+to the fact that it tends to fit the needs, and budgets of
+people.</p>
+<p><b>So one day we'll have strong crypto in every computer?</b></p>
+<p>I sure hope so. Computer security has been, until recently,
+seriously ignored by most people. We are moving towards a
+computing environment where everything is connected to the
+Internet (I'm not 100% sure why, but it seems to be happening).
+This causes some pretty fundamental problems, simple things like
+credentials (user names and passwords typically) flowing across
+insecure networks, and the simple fact that if you are connected
+to the Internet, and I'm connected to the Internet, I can get at
+your computer(s). A good example of this is the SANS
+&quot;Universal SSH&quot; project, it's ultimate goal to get all
+universities to use SSH to secure login's, and other network
+activity. So why should you care (unless of course you are an
+administrator at a university). The simple fact is most
+universities are very insecure, and are used as bases to launch
+attacks on other systems. It makes sense to encourage the use of
+strong crypto, as it will potentially save a lot of time and
+money, and possibly prevent security incidents for other people
+(like you).</p>
+<p><b>Hey, I wanted to read about GnuPG!</b></p>
+<p>When I wrote this article I didn't want to focus to much on
+the technical side of GnuPG, but I realized if I didn't people
+would hunt me down and force me to. GnuPG for Win32 is not yet
+ready (this is something they are working on), however the UNIX
+versions (at least the Linux one) work great. I generated a
+keypair &quot;gpg --gen-key&quot;, specifying a 4096 bit sized
+key (because it recommended 2048 as a maximum), and it took a
+long to calculate (like it warned me). I then exported my public
+key &quot;gpg --export --armor&quot;, tossed it into PGPi for
+windows (I figured that would be a good interoperability test),
+and successfully signed, verified, encrypted and decrypted some
+files. To get help for gpg simply type &quot;gpg -h&quot; or
+&quot;man gpg&quot;, if you've ever executed &quot;pgp -h&quot;
+or &quot;man pgp&quot; you know what to expect. The only real
+difference is that unlike &quot;modern&quot; pgp there is only
+the &quot;gpg&quot; command, whereas pgp has &quot;pgpk&quot;,
+&quot;pgpo&quot;, &quot;pgpe&quot;, etc, this is of course a
+trivial detail (and I actually prefer having just
+&quot;gpg&quot;). Basically there isn't much to say, other then
+it works as it should, and you might want to read the man page,
+but I wouldn't really bother if you're at all familiar with
+pgp.&nbsp;</p>
+<p><b>Summary</b></p>
+<p>Free crypto software, written in &quot;free&quot; countries is
+good. If you are using PGP under UNIX I'd highly recommend
+switching to GnuPG. Le Fini. I'd also like to thank Werner Koch
+for doing the interview.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p>GnuPG:<a href="http://www.gnupg.org/"><br>
+http://www.gnupg.org/</a></p>
+<p>SANS &quot;Universal SSH&quot; project:<br>
+<a href="http://www.sans.org/newlook/resources/ssh.htm">http://www.sans.org/newlook/resources/ssh.htm</a></p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 7/7/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Firewalling with IPTables</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Firewalling with IPTables</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#ff948a8d8bbf8c9a96998d969a9bd1908d98"><span class="__cf_email__" data-cfemail="e289979096a291878b84908b8786cc8d9085">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>IPTables (sometimes referred to as NETFILTER) is the current
+generation of packet firewalling for Linux. It is stateful, and
+easily extended, providing very powerful firewall capabilities to
+Linux. IPTables includes numerous new features, from advanced
+logging to the ability to do string matching. Backwards
+compatibility for ipfwadm and ipchains rules is provided with
+modules, allowing you to easily upgrade to IPTables with minimal
+effort. Unfortunately the majority of IPTables documents are not
+incredibly great, and the more advanced features can be difficult
+to use correctly. </p>
+<p>Although the HOWTO's are far from perfect I can't really do
+justice to recreating the IPTables HOWTO's so instead I will just
+point you to them:</p>
+<p><a href="http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/packet-filtering-HOWTO.linuxdoc.html">http://netfilter.samba.org/unreliable-guides/packet-filtering-HOWTO/packet-filtering-HOWTO.linuxdoc.html</a>.</p>
+<p>This is the most basic document, and will get you up and
+running.</p>
+<p><a href="http://netfilter.samba.org/documentation/HOWTO/NAT-HOWTO.html">http://netfilter.samba.org/documentation/HOWTO/NAT-HOWTO.html</a></p>
+<p>This document cover NAT (Network Address Translation,
+sometimes referred to as IPMASQ in Linux). </p>
+<p><a href="http://netfilter.samba.org/documentation/HOWTO/netfilter-extensions-HOWTO.html">http://netfilter.samba.org/documentation/HOWTO/netfilter-extensions-HOWTO.html</a></p>
+<p>This document covers extensions available in IPTables.</p>
+<p><a href="http://netfilter.samba.org/documentation/index.html">http://netfilter.samba.org/documentation/index.html</a>
+</p>
+<p>This lists all the documents available in various languages. </p>
+<p>&nbsp;</p>
+<h2>A very basic example </h2>
+<p>For those of you that just want to get on with it here is a
+simple iptables firewall script I use that is suitable for
+machines with one interface:</p>
+<blockquote>
+<pre>#
+# First set some default policies
+#
+
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+#
+# Then block the reserved network 10.* on the external interface eth0
+#
+
+-A INPUT -s 10.0.0.0/255.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -j DROP
+
+#
+# Then we allow SSH, SMTP and DNS
+#
+-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -p tcp -m tcp --dport 22:22 -j ACCEPT 
+-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -p tcp -m tcp --dport 25:25 -j ACCEPT
+-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -p udp -m udp --dport 53:53 -j ACCEPT
+-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -p tcp -m tcp --dport 53:53 -j ACCEPT
+#
+# Now we block all incoming traffic to ports between 1 and 1024. For your system
+#
+-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -p tcp -m tcp --dport 1:1024 -j REJECT
+-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -i eth0 -p udp -m udp --dport 1:1024 -j REJECT</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2>Some more tricks with IPTables</h2>
+<p>&nbsp;</p>
+<h3>Invalid packets</h3>
+<p>One of the nicest things about IPTables is that it is
+stateful, and there are several options for state: NEW,
+ESTABLISHED, RELATED and INVALID. INVALID is especially
+interesting as it will:</p>
+<blockquote>
+<p>&quot;A packet which could not be identified for some
+reason: this includes running out of memory and ICMP errors
+which don't correspond to any known connection. Generally
+these packets should be dropped.&quot;</p>
+</blockquote>
+<p>Putting this rule first in your list may be a wise decision
+since it will prevent mangled packets from traversing your chains
+and additionally it may help with survivability of your server if
+someone attacks it. </p>
+<blockquote>
+<pre>-A INPUT -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 -m state --state INVALID -j DROP</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h3>Listing Tables</h3>
+<p>Typically most of us will use:</p>
+<blockquote>
+<pre>iptables -L -v -n</pre>
+</blockquote>
+<p>However this will not show all the tables (most importantly it
+misses the pretrouting and postrouting tables, used for NAT among
+other things). </p>
+<p>To list current NAT tables:</p>
+<blockquote>
+<pre>iptables -t nat -L -v -n</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h3>Dropping every second or third packet</h3>
+<p>This is guarenteed to drive network administrators a bit
+nutty, and amuse attackers to ne end. Using the &quot;nth&quot;
+rule (not supported by default in most kernels) you can drop
+every &quot;nth&quot; packet:</p>
+<blockquote>
+<pre>iptables -A INPUT -p tcp --dport 80 -m nth --every 2 -j DROP </pre>
+</blockquote>
+<p>This rule would drop every second packet coming in to port 80
+(the webserver usually). </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 18/3/2002</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#33584641477340565a55415a56571d5c4154"><span class="__cf_email__" data-cfemail="f69d838482b685939f90849f9392d8998491">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

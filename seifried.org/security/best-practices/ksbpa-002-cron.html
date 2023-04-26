@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>SSL wrapping IMAP and POP on Linux systems</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1><strong>Kurt Seifried Best Practices Advisory 002 (KSBPA-002)</strong></h1>
+<p><a href="http://seifried.org/security/best-practices/ksbpa-002-cron.html">http://seifried.org/security/best-practices/ksbpa-002-cron.html
+</a></p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a5ced0d7d1e5d6c0ccc3d7ccc0c18bcad7c2"><span class="__cf_email__" data-cfemail="dbb0aea9af9ba8beb2bda9b2bebff5b4a9bc">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p><strong>Title: </strong></p>
+<p>Cron security</p>
+<p><strong>Issue date:</strong></p>
+<p>Sep 21, 2001</p>
+<p><strong>History of advisory:</strong></p>
+<p>Sep 21, 2001 First version of this advisory</p>
+<p><strong>Author:</strong></p>
+<p>Kurt Seifried <a href="/cdn-cgi/l/email-protection#eb809e999fab988e828d99828e8fc584998c"><span class="__cf_email__" data-cfemail="33584641477340565a55415a56571d5c4154">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p><strong>Credits:</strong></p>
+<p>N/A</p>
+<p><strong>Overview:</strong></p>
+<p>Many Linux vendors ship cron and by default allow all users
+touse cron. Most users do not need access to cron and should be
+restricted from using it.</p>
+<p><strong>Vendor Contact:</strong></p>
+<p>N/A</p>
+<p><strong>Impact:</strong></p>
+<p>Mostpeople allow all users to access cron allowing users to
+evade resource limits, and in some cases exploit vulnerabilities
+in cron that lead to system compromise. </p>
+<p><font color="#000000"><strong>Details:</strong></font></p>
+<p><font color="#000000">Many sites and vendors allow all users
+to access cron. This can allow users to leave programs like irc
+bots running even if you have security measures to kill all of a
+user's processes when they log out. A user would simply need to
+schedule a script to run once a minute that checks if their irc
+bot is running and if not start it. Numerous other abuses are
+also possible. </font></p>
+<p><strong>Solutions and workarounds:</strong></p>
+<p>Cron has built in support to limit which users can or cannot
+use it. By entering names in /etc/cron.allow a user must be
+listed in this file to use cron, otherwise they are denied by
+default, Conversely if you use /etc/cron.deny they will be denied
+access to cron if they are listed, if they are not listed they
+will be allowed to use it by default. Of course it is much safer
+to use /etc/cron.allow and restrict cron to only the system
+accounts that require access to it (such as root). For example to
+only allow various system accounts to use cron you would create
+an /etc/cron.allow with the following:</p>
+<blockquote>
+<pre>root</pre>
+</blockquote>
+<p>and so forth. To block untrusted users from using cron you
+would create an /etc/cron.deny with the following:</p>
+<blockquote>
+<pre>bob
+joe
+mary
+hacker</pre>
+</blockquote>
+<p><strong>Recommendations to vendors:</strong></p>
+<p>Vendors can create an /etc/cron.allow files with the users
+lists that require access for the system to operate properly
+(i.e. root). Any user not listed in here will not be allowed to
+use cron. Alternatively an /etc/cron.deny can be created, and
+with a modified &quot;adduser&quot; command you could prompt the
+administrator to block a user from being allowed to use cron
+(making sure the default is no). </p>
+<p><strong>References:</strong></p>
+<p>None</p>
+<p>&nbsp;</p>
+<hr>
+<p>Permission is granted for copying and circulating this
+Bulletin to the Internet community for the purpose of alerting
+them to problems, if and only if, the bulletin is not edited or
+changed in any way, is attributed to Kurt Seifried, and provided
+such reproduction and/or distribution is performed for
+non-commercial purposes.</p>
+<p>Any other use of this information is prohibited. Kurt Seifried
+is not liable for any misuse of this information by any third
+party.</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

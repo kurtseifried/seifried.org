@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - Suidnet - An Ongoing Solution</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Suidnet - An Ongoing Solution</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#4a213f383e0a392f232c38232f2e6425382d"><span class="__cf_email__" data-cfemail="c8a3bdbabc88bbada1aebaa1adace6a7baaf">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>I come not to bury Suidnet, but to praise it. Well, that is
+not entirely true - there are still some significant problems
+with Suidnet, but it looks to be the start of something good. I
+wouldn't be surprised if you haven't heard of Suidnet. It's an
+effort by IRC and security enthusiasts to create a more secure
+IRC network. IRC stands for Internet Relay Chat. You have servers
+linked together, and they relay what people are saying, so that
+you can have 50,000+ people logged in to multiple channels (or in
+AOL speak &quot;rooms&quot;), all talking about various topics. A
+lot of people use IRC to discuss reasonably sensitive topics -
+just like they use email - from personal things such as medical
+problems to generic discussion about what a twinky the new boss
+is. It is trivial to monitor what a person says on IRC through a
+variety of means, making it very similar to email: Don't say
+anything you wouldn't mind your mother/wife/competitor seeing. </p>
+<p>Suidnet has started this process by allowing people to connect
+to the servers using SSL-enabled IRC clients (or SSL tunneling
+software). This is a good start; it prevents local snooping on
+the user, and would be effective in a business environment where
+users may be monitored, or a shared computer lab on a university
+campus. The data moving between servers is also encrypted,
+preventing widespread snooping by one party with access to a
+machine in the path between servers. Unfortunately, a determined
+snooper can monitor what a user is up to online. Admittedly, it
+will take more effort, but it is far from impossible. As I see
+it, there are currently three primary problems with Suidnet, all
+of which will take a significant amount of effort solve.</p>
+<h2><br>
+Self-signed Certificates</h2>
+<p>The first issue is the SSL certificates used on the servers -
+they are self-signed, and improperly at that. Using the default
+settings in OpenSSL for certificate creation, they have created
+certificates for the server &quot;localhost,&quot; which is fine
+for local testing but inexcusable for anything going into
+production. This is the certificate information:</p>
+<pre>Name:
+localhost, Stunnel Developers Ltd, Some-State, PL
+Issued under:
+Stunnel Developers Ltd
+Serial number:
+00
+Validity:
+Thu Feb 10, 2000 to Fri Feb 09, 2001
+Fingerprint:
+C9:88:A5:3F:27:31:B8:1F:21:FB:95:A6:5A:10:4E:89</pre>
+<p>The certificate is completely and utterly useless. It is
+trivial for me as a business to redirect dns for irc.suidnet.org
+to an internal server, and then set up stunnel on port 9999 and
+direct it to the real servers. Users would then be directed at
+this &quot;proxy,&quot; allowing me to monitor what they are
+doing with ease. What Suidnet needs to do is create a certificate
+authority, with a protected master certificate in a safe location
+that is used to sign the server certificates (a process identical
+for Web server certificates). Even if Suidnet were to do this
+properly - which is unlikely, since properly creating and
+maintaining a certificate authority takes quite a bit of work -
+it would be pointless without the root certificate being shipped
+in IRC clients.</p>
+<p>The theory behind why SSL secures connections is simple.
+Certificates are signed by a root certificate (Thawte's or
+Verisign's). The public key portion of this root certificate can
+be used to verify the signatures, and this public key is shipped
+with the software. If an attacker is able to fiddle with the key
+that ships with the software package, they can also fiddle with
+the software package, rendering any security ineffective. This
+whole method of securing connections relies heavily on the client
+installing a &quot;trusted&quot; client that contains the public
+portions of the root keys. Now to fix this, they would need to
+work with the creators of popular IRC software such as Epic IRC
+or BitchX, or possibly create their own packages and distribute
+them on a secure Web server. Since the client has to trust the
+server not to be logging everything, Suidnet says it is feasible
+for them to distribute the client software as well. Hopefully
+Suidnet will fix this shortly. </p>
+<h2><br>
+Server Security</h2>
+<p>This is the next area that Suidnet appears to be having
+significant problems with. If the server is not secure, then an
+attacker can break in and modify the software so that they can
+monitor what is going on. A quick audit of the Suidnet servers
+showed almost every server running at least 2 or 3 services,
+ranging from ssh, dns and ftp to samba (windows file sharing),
+mysql, X11, portmap and NFS. On the server with NFS available, I
+was able to connect and query it - not exactly an encouraging
+sign, especially when you consider the number of software flaws
+present in Linux and the various BSDs. It doesn't do much good to
+write secure software and then run it on servers where an
+attacker can likely gain root-level access remotely. If Suidnet
+is serious about security, the only thing the servers should be
+running is the IRC software, and SSH for remote access. Not pop,
+X11 (yikes) and samba. They definitely need to cut down on the
+number of services available, and the number of user accounts. </p>
+<h2><br>
+Human Security</h2>
+<p>This one is by far the hardest to deal with in many ways. A
+really determined attacker can simply set up a server and ask to
+join the Suidnet IRC network. It would then be relatively easy to
+fiddle with the server software so that the cleartext messages of
+users are logged to a database or some similar feature (or he
+could simply copy the private SSL certificates to another
+machine, snoop all the network traffic and decrypt it with the
+certificate). No matter how much technical security goes into
+assuring that the IRC software running on the server has not been
+tampered with (self-verifying software and other neat tricks) the
+attacker possesses the private certificate and can easily decrypt
+all network traffic. Even if the server administrator is not
+given this information, and some trusted Suidnet member logs in
+to initialize the software, the attacker can copy it out of the
+machine's memory (this is much easier than previously thought)
+and use it to decrypt traffic. This issue boils down to carefully
+vetting server administrators and making sure they are
+trustworthy. </p>
+<h2><br>
+Suidnet Says...</h2>
+<p>I also got a chance to interview one of the primary people
+behind Suidnet, David N. Hulton (<a href="/cdn-cgi/l/email-protection#c9ada1bca5bda6a789a7afbaaee7a6bbae"><span class="__cf_email__" data-cfemail="17737f627b637879577971647039786570">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>). The good
+news is they seem aware of the current problems and are working
+on them. Security is an ongoing process that never ends. </p>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">What inspired you to create Suidnet? Why
+are you doing it?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">We found it too difficult to be able to
+talk to one another encrypted (for exchange of passwords
+and personal information mainly) and found that there
+wasn't much out there that could accommodate what we
+needed. We originally started Suidnet just so we could
+talk to one another encrypted and didn't really expect
+much more users on the system besides us.</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">What is the goal(s) of Suidnet?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">The main goal is to provide a IRC
+network where you don't have to worry about people
+listening to your conversations. To provide the facility
+for people to trust that their conversations are only
+heard by those they are intended for.</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">Do you think that IRC client software
+authors will be receptive to this, and make SSL support a
+standard part of SSL clients? (Assume that the actual
+crypto is provided externally via OpenSSL.)</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">I think that they will. It has already
+been widely implemented in many Unix clients, so it seems
+only natural that more and more clients will begin to
+support it as it grows more popular.</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">Do you have any plans to add anonymity
+to the Suidnet IRC network?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">We have no plans to do anything of the
+sort. The only degree of anonymity that we are offering
+is that we do not, and never will do, any ident checks.
+We still feel that hostnames and usernames should be kept
+to provide enough information so you can actually tell
+who you are talking to. I personally would want to have
+some way to verify who I'm talking to before giving out
+any information.</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">Do you worry about the possibility of
+people using this to discuss illegal things, or trade
+illegal items - child pornography for example? Do you
+have a plan to deal with this should it come to your
+attention?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">We are merely providing the facility to
+talk to other people with the least possibility of
+interception. What people talk about is their own
+business. We believe in freedom of speech no matter what
+the situation. We are also (obviously) not responsible
+for any files being traded client -&gt; client.</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">Do you have plans to do similar things
+with other network services?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">There is work in progress by one of our
+team members on implementing ssldcc in IRC clients.
+Besides that and IRC encryption, there aren't any other
+plans as of yet.</td>
+</tr>
+</table>
+<h2><br>
+Summary</h2>
+<p>Security is a holistic practice. You can't just plug one hole
+and expect all your problems to be solved. No matter how perfect
+a technological solution you use (encryption, firewalls, etc.),
+as long as there are humans involved mistakes can be made. People
+you thought you could trust turn out to be hostile in intent. If
+Suidnet is serious about running a secure IRC network, then they
+have made only the first few steps in what will be a long
+journey. But as the famous saying goes, &quot;A journey of 500
+miles starts with half a step.&quot; I hope that Suidnet will
+complete the journey, and inspire others to do so. We need more
+people to focus on making secure network services.</p>
+<p><br>
+</p>
+<hr>
+<p><strong>Reference Links</strong></p>
+<p><b>SUIDNET</b> - <a href="http://suidnet.org/" target="_blank">http://suidnet.org/</a> </p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,881 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information Security / Network / Denial of Service FAQ</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Denial of Service (DoS) FAQ</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#f09b858284b08395999682999594de9f8297"><span class="__cf_email__" data-cfemail="42293730360231272b24302b27266c2d3025">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p>&nbsp;</p>
+<hr>
+<p>This FAQ covers denial of service attacks (DoS) in great
+depth, and has links to software that can be used to execute DoS
+attacks, we do not condone or encourage the use of this software,
+however we feel that since the &quot;bad people&quot; (or just
+curious people) can find it easily, we might as well tell you
+where it is. Also, reviewing the DoS attack code can be helpful
+in assisting you in finding evidence of compromised systems,
+particularly if you do not have security scanning packages.</p>
+<hr>
+<p>&nbsp;</p>
+<p><a href="#1.0">1.0 What are Denial of Service (DoS) attacks?</a><br>
+1.1 What are Distributed Denial of Service (DDoS) attacks?<br>
+1.2 Is a DoS/DDoS Attack a threat to sensitive data?</p>
+<p><a href="#2.0">2.0 Who commits DoS/DDoS attacks, and why?</a><br>
+2.1 Curiosity<br>
+2.2 Malice<br>
+2.3 Financial gain</p>
+<p><a href="#3.0">3.0 Are the attackers likely to be caught, and
+what are the penalties for DoS/DDoS attacks?</a></p>
+<p><a href="#4.0">4.0 How can I protect my systems and networks
+from DoS/DDoS attacks?</a><br>
+4.1 Protecting the border's and gateways<br>
+4.2 Protecting Internet servers<br>
+4.3 Protecting internal servers and clients<br>
+4.4 Specific OS protection<br>
+4.4.1 Cisco routers<br>
+4.4.2 Linux<br>
+4.4.3 Windows 95 / 98<br>
+4.4.4 Windows NT 4.0<br>
+4.4.5 Windows 2000<br>
+4.4.6 OpenBSD<br>
+4.4.7 NetBSD<br>
+4.4.8 FreeBSD<br>
+4.4.9 Solaris</p>
+<p><a href="#5.0">5.0 How can I prevent my systems and networks
+from being used for DoS/DDoS attacks right now?</a></p>
+<p><a href="#6.0">6.0 How can I prevent my systems and networks
+from being used for DoS/DDoS attacks in the future?</a></p>
+<p><a href="#7.0">7.0 How do I detect a DoS/DDoS attack directed
+at me?</a></p>
+<p><a href="#8.0">8.0 What should I do if I am the target of a
+DoS/DDoS attack?</a></p>
+<p><a href="#9.0">9.0 How do I detect a DoS/DDoS attack
+originating from me?</a></p>
+<p><a href="#10.0">10.0 What should I do if I am the origin of a
+DoS/DDoS attack?</a></p>
+<p><a href="#11.0">11.0 How do I trace a DoS/DDoS attack and
+preparing evidence?</a></p>
+<p><a href="#12.0">12.0 DoS/DDoS attacks, software and counter
+software</a><br>
+12.1 Smurf<br>
+12.2 Trinoo<br>
+12.3 Tribe Flood Network<br>
+12.4 TFN2K<br>
+12.5 stacheldraht<br>
+12.6 shaft<br>
+12.7 mstream</p>
+<p><a href="#13.0">13.0 Who do I contact if I am attacked or an
+attack originates from me?</a></p>
+<p><a href="#14.0">14.0 What is in the future for DoS/DDoS
+attacks?</a></p>
+<p>&nbsp;</p>
+<h5><a name="1.0">1.0 What are Denial of Service (DoS) attacks?</a></h5>
+<p>Denial of service attacks are simple and usually quite
+effective. An attacker attempts to overwhelm a service with
+requests, similar to a 5 year old constantly tugging on his
+mother's sweater while she is trying to have a phone
+conversation, you can only do so many things at a time. For
+example if you have a mail server capable of receiving and
+delivering 10 messages a second an attacker simply sends 20
+messages per second, chances are the legitimate traffic (as well
+as a lot of the malicious traffic) will get dropped, or the mail
+server might stop responding entirely. Typically attackers will
+go for high visibility targets such as the web server, or for
+infrastructure targets like routers and network links. </p>
+<h5>1.1 What are Distributed Denial of Service (DDoS) attacks?</h5>
+<p>If using one computer to launch an attack against your target
+works, well using 50, or 5,000 computers is probably going to
+work that much better (and enable the attacker to go
+&quot;elephant hunting&quot; for things like Yahoo!). It also
+allows the attacker to take a step or more back from the actual
+machines executing the attacks, making it more difficult to trace
+them. </p>
+<p><a href="http://www.all.net/books/dca/top.html" target="_top">http://www.all.net/books/dca/top.html</a>
+</p>
+<p><a href="http://www2.axent.com/swat/news/ddos.htm" target="_top">http://www2.axent.com/swat/news/ddos.htm</a> </p>
+<p><a href="http://www.cert.org/reports/dsit_workshop.pdf" target="_top">http://www.cert.org/reports/dsit_workshop.pdf</a> </p>
+<p><a href="http://www.research.att.com/~smb/talks/nanog-dos/index.htm" target="_top">http://www.research.att.com/~smb/talks/nanog-dos/index.htm</a>
+</p>
+<p><a href="http://www.icsa.net/html/communities/ddos/index.shtml" target="_top">http://www.icsa.net/html/communities/ddos/index.shtml</a>
+</p>
+<p><a href="http://xforce.iss.net/alerts/advise43.php3" target="_top">http://xforce.iss.net/alerts/advise43.php3</a> </p>
+<h5>1.2 Is a DoS/DDoS Attack a threat to sensitive data?</h5>
+<p>DoS and DDoS attacks typically do not pose a direct threat to
+sensitive data. Usually the attacker is trying to prevent a
+service from being used, not actually compromise it. However a
+DoS/DDoS attack may be used as a diversion while another attack
+is made to actually compromise systems. Additionally
+administrators are more likely to make mistakes during an attack
+and possibly change a setting that creates a vulnerability that
+can be exploited. Services may need to be stopped or restarted,
+and if this is done incorrectly problems can be created, when
+modifying your network make sure you understand the effects of
+what you are doing (which may be different then normal while
+under attack).</p>
+<h5><a name="2.0">2.0 Who commits DoS/DDoS attacks, and why?</a></h5>
+<p>There are far too many reasons to even have a remotely
+comprehensive list, but I will list a few anyway to give a quick
+overview.</p>
+<h5>2.1 Curiosity</h5>
+<p>Some attackers are only testing or playing with tools they
+have downloaded and do not actually realize the amount of damage
+they can create.</p>
+<h5>2.2 Malice</h5>
+<p>Some attackers disagree with corporate policies, or color
+scheme used on the website, and attack the site for no real
+reason. Think of it as a simple act of vandalism similar to
+someone spray painting &quot;NARF NARF&quot; on the side of your
+building.</p>
+<h5>2.3 Financial gain</h5>
+<p>This is a real potential nightmare, for example a company
+might be attacked to delay the launch of an online service, or to
+discredit it. Attackers might be paid by a competitor, or are
+attempting to manipulate a stock price.</p>
+<h5><a name="3.0">3.0 Are the attackers likely to be caught, and
+what are the penalties for DoS/DDoS attacks?</a></h5>
+<p>It is hard to say - most attackers are not highly skilled, but
+their tools are good at concealing identities. They may possibly
+be caught through a combination of painstaking auditing and cross
+referencing of log files and someone bragging or squealing on
+IRC. The FBI press conference on February 9th mentioned possible
+penalties of up to 5-10 years incarceration.</p>
+<p><a href="http://abcnews.go.com/sections/tech/DailyNews/yahoo000209.html" target="_top">http://abcnews.go.com/sections/tech/DailyNews/yahoo000209.html</a>
+FBI press conference</p>
+<h5><a name="4.0">4.0 How can I protect my systems and networks
+from DoS/DDoS attacks?</a></h5>
+<p>Generally speaking good security practices are the best long
+term protection. Disabling all unnecessary services, keeping
+software up to date, and subscribing to various email security
+lists will help. Having a current list of contact names and
+numbers for emergencies will be especially useful during an
+emergency. Thre is no one thing you can do to stop DoS/DDoS
+attacks (i.e. no &quot;Anti DoS attack verion 1.0&quot; software,
+despite what some vendors claim). </p>
+<p><a href="http://all.net/journal/netsec/0004.html" target="_top">http://all.net/journal/netsec/0004.html</a></p>
+<p><a href="http://www.cert.org/security-improvement/" target="_top">http://www.cert.org/security-improvement/</a> </p>
+<h5>4.1 Protecting the border's and gateways</h5>
+<p>The extremeties of your network are usually the most
+accessible to an attacker, and the best choke points to attacks
+(most sites will have one link to the Internet, take that down
+and you have effectively taken down any services offered by that
+site). There are a number of measures you can take to protect
+your external routers, basic firewalling precautions (such as
+blocking spoofed addresses and so on) and protecting the
+mechanism used to broadcast and receive routing information (i.e.
+BGP, OSPF, and so on).</p>
+<p><a href="ftp://ftp.isi.edu/in-notes/rfc2267.txt">ftp://ftp.isi.edu/in-notes/rfc2267.txt</a></p>
+<p><a href="ftp://ftp.isi.edu/in-notes/rfc2644.txt">ftp://ftp.isi.edu/in-notes/rfc2644.txt</a>
+</p>
+<h5>4.2 Protecting Internet servers</h5>
+<p>Disable any unneeded services and make sure the software is up
+to date. If possible place at least one firewall in between the
+server and the Internet, this way if there is an attack on the
+server you can probably block it at the server. Realistically if
+the attacker is determined they can flood your bandwidth and
+there is nothing you can do on your end to &quot;fix&quot; it.
+The key for most sites is to filter the traffic before it gets to
+your links, which means having your ISP firewall attcks, this may
+not be possible if the attack comes from enough different sites
+(i.e. it is impractical to add 10,000 firewall rules). </p>
+<h5>4.3 Protecting internal servers and clients</h5>
+<p>Firewall them heavily, no external hosts should require access
+to internal hosts on your network. If external hosts do require
+access you should consider Virtual Private Networking (VPN) to
+provide secure access to your internal LAN.</p>
+<h5>4.4.1 Cisco routers</h5>
+<p><a href="http://www.cisco.com/warp/public/707/newsflash.html" target="_top">http://www.cisco.com/warp/public/707/newsflash.html</a>
+</p>
+<p><a href="http://www.cisco.com/warp/public/707/21.html" target="_top">http://www.cisco.com/warp/public/707/21.html</a></p>
+<p><a href="http://www.cisco.com/warp/public/707/22.html" target="_top">http://www.cisco.com/warp/public/707/22.html</a> </p>
+<h5>4.4.2 Linux</h5>
+<p>Linux has support for firewalling software and most Linux
+distributions ship with it. IPCHAINS (the current firewalling
+software) can easily block various hostile packets, and can
+easily be setup to prevent the machine from spoofing (i.e. a
+university lab with Linux workstations). For more information on
+IPCHAINS, and various utilities to make configuring it easier
+please see:</p>
+<p><a href="../../lasg/firewall/index.html" target="_top">/lasg/firewall/index.html
+</a></p>
+<p>You can also prevent IP spoofing from a machine very easily by
+enabling source address verification vi the rp_filter facility.
+From the IPCHAINS-HOWTO, miscellaneous section:</p>
+<pre>#!/bin/bash
+# This is the best method: turn on Source Address Verification and get
+# spoof protection on all current and future interfaces.
+if [ -e /proc/sys/net/ipv4/conf/all/rp_filter ]; then
+  echo -n &quot;Setting up IP spoofing protection...&quot;
+  for f in /proc/sys/net/ipv4/conf/*/rp_filter; do
+      echo 1 &gt; $f
+  done
+  echo &quot;done.&quot;
+else
+  echo PROBLEMS SETTING UP IP SPOOFING PROTECTION.  BE WORRIED.
+  echo &quot;CONTROL-D will exit from this shell and continue system startup.&quot;
+  echo
+  # Start a single user shell on the console
+  /sbin/sulogin $CONSOLE
+fi</pre>
+<p>Create this file as /etc/rc.d/init.d/rp_filter (or wherever
+appropriate) and then enable it at boot time by creating a
+symlink to it, or calling it in the network startup script.
+Hopefully in future vendors will add this as standard and enable
+it by default. The IPCHAINS-OWTO is available at:</p>
+<p><a href="http://www.linux.org/help/ldp/howto/IPCHAINS-HOWTO.html" target="_top">http://www.linux.org/help/ldp/howto/IPCHAINS-HOWTO.html</a>
+</p>
+<h5>4.4.3 Windows 95 / 98</h5>
+<p>Unfortunately Windows 95 / 98 has no real built in protection
+against attacks, however there are several add-on products (some
+free) that will protect you against most common threats. Please
+do not take these listings as an endorsement, we are simply
+listing various options available.</p>
+<p><a href="http://www.zonelabs.com/download_ZA.htm" target="_top">http://www.zonelabs.com/download_ZA.htm</a> - Zone
+labs &quot;ZoneAlarm&quot; is free</p>
+<p><a href="http://www.mcafee.com/products/#Guard Dog" target="_top">http://www.mcafee.com/products/#Guard Dog</a> -
+McAfee's &quot;Guard Dog 2.0&quot; is $29.95 US</p>
+<p><a href="http://www.networkice.com/Download/PURCHASE.HTM" target="_top">http://www.networkice.com/Download/PURCHASE.HTM</a>
+- Network ICE's &quot;BlackICE Defender&quot; is $39.95 US</p>
+<p><a href="http://www.symantec.com/sabu/nis/ddos.html" target="_top">http://www.symantec.com/sabu/nis/ddos.html</a> -
+Symantec's &quot;Norton Internet Security 2000&quot; is $53.95 US</p>
+<h5>4.4.4 Windows NT 4.0</h5>
+<p>Windows NT 4.0 does have built in firewalling however it is
+not 100% reliable and we would not advise relying upon it as your
+only security measure. There are of course several third party
+firewall proucts for NT, </p>
+<p><a href="http://www.networkice.com/Download/PURCHASE.HTM" target="_top">http://www.networkice.com/Download/PURCHASE.HTM</a>
+- Network ICE's &quot;BlackICE Defender&quot; is $39.95 US, it
+will work on servers but you will need to configure it to allow
+access (by default lit blocks most things). Network ICE is
+releasing a server version this year that will cost $50 US to
+upgrade to, or $139.95 US to purchase. </p>
+<p><a href="http://www.checkpoint.com/products/firewall-1/index.html" target="_top">http://www.checkpoint.com/products/firewall-1/index.html</a>
+- Firewall 1 </p>
+<h5>4.4.5 Windows 2000</h5>
+<p>Windows 2000 (recently released) has pretty good built in
+firewalling capabilities (a lot better then NT 4.0). These are
+appropriate for end user machines and small to medium sized
+servers, for a larger server you may want to consider a third
+party add on product. The firewalling configuration is done via
+the Microsoft Management Console tools, and can be configured
+remotely (of course be careful when doing this as you could
+easily lock yourself out of the machine).</p>
+<h5>4.4.6 OpenBSD</h5>
+<p>OpenBSD ships with PF which is a really nice stateful packet
+filter (free to). More information on PF is available at:</p>
+<p><a href="http://www.benzedrine.cx/pf.html">http://www.benzedrine.cx/pf.html</a>
+</p>
+<h5>4.4.7 NetBSD</h5>
+<p>NetBSD ships with IPF which is a stateful packet filter (free
+to). More information on IPF is available at:</p>
+<p><a href="http://coombs.anu.edu.au/~avalon/ip-filter.html">http://coombs.anu.edu.au/~avalon/ip-filter.html</a>
+</p>
+<h5>4.4.8 FreeBSD</h5>
+<p>FreeBSD ships with IPF which is a stateful packet filter (free
+to). More information on IPF is available at:</p>
+<p><a href="http://coombs.anu.edu.au/~avalon/ip-filter.html">http://coombs.anu.edu.au/~avalon/ip-filter.html</a>
+</p>
+<h5>4.4.9 Solaris</h5>
+<p>Solaris can use IPF or a variety of third party add on
+firewalls. More information on IPF is available at:</p>
+<p><a href="http://coombs.anu.edu.au/~avalon/ip-filter.html">http://coombs.anu.edu.au/~avalon/ip-filter.html</a>
+</p>
+<p><a href="http://www.checkpoint.com/products/firewall-1/index.html" target="_top">http://www.checkpoint.com/products/firewall-1/index.html</a>
+- Firewall 1</p>
+<h5><a name="5.0">5.0 How can I prevent my systems and networks
+from being used for DoS/DDoS attacks right now?</a></h5>
+<p>Firewall any unneeded services, turn off any unneeded
+services, this will reduce the number of services that can be
+attacked. As far as actually preventing an attack from succeeding
+the best you can do is buy the most powerful servers you can
+afford, and tune the software (while under attack if necessary)
+to handle as many connections as possible. Reducing the timeouts
+on connections to services will decrease the effect of a flood
+somewhat, but legitimate connections may fail as well. </p>
+<h5><a name="6.0">6.0 How can I prevent my systems and networks
+from being used for DoS/DDoS attacks in the future?</a></h5>
+<p><a href="http://www.ietf.org/internet-drafts/draft-moskowitz-hip-01.txt" target="_top">http://www.ietf.org/internet-drafts/draft-moskowitz-hip-01.txt</a></p>
+<p><a href="http://www.ietf.org/internet-drafts/draft-moskowitz-hip-impl-00.txt" target="_top">http://www.ietf.org/internet-drafts/draft-moskowitz-hip-impl-00.txt</a></p>
+<p><a href="http://www.ietf.org/internet-drafts/draft-moskowitz-hip-arch-01.txt" target="_top">http://www.ietf.org/internet-drafts/draft-moskowitz-hip-arch-01.txt</a>
+</p>
+<h5><a name="7.0">7.0 How do I detect a DoS/DDoS attack directed
+at me?</a></h5>
+<p>An unusually large amount of traffic, servers suddenly
+experiencing above average loads, all these can be signs of a
+DoS/DDoS attack, on the other hand it might represent a high
+usage peak. In any event you should examine the traffic and usage
+patterns, if the traffic is legitimate then you will probably
+want to tune your network and servers, or add additional
+equipment, if the traffic is an attack then you will need to deal
+with it accordingly. There are a number of Network Intrusion
+Detection Systems (NIDS) which can detect hostile attacks with a
+pretty good degree of accuracy, they may are a good investment if
+installed and maintained properly.</p>
+<h5><a name="8.0">8.0 What should I do if I am the target of a
+DoS/DDoS attack?</a></h5>
+<p><a href="http://www.sans.org/y2k/DDoS.htm" target="_top">http://www.sans.org/y2k/DDoS.htm</a>
+</p>
+<h5><a name="9.0">9.0 How do I detect a DoS/DDoS attack
+originating from me?</a></h5>
+<p>One of the more effective methods is to have filters on your
+firewall to block outgoing traffic that does not originate from
+your network (spoofed data). If you find this type of traffic
+hitting the firewall you can be relatively sure that internal
+hosts are being used for malicious purposes. Trace the data back
+to its origin, which should not be too difficult since (in
+theory) the network is under your control, and then depending on
+your security policy you might take the machine offline and
+examine it. Another effective method is to block the commonly
+used ports (like 37337) that are used to remotely control
+compromised machines. In addition to this I would advise scanning
+your network for open ports on a regular basis using tools such
+as nmap or saint, any changes should be investigated and
+appropriate action taken. Also there is a good network scanner
+called Nessus which will detect most common vulnerabilities, it
+is very easy to use (built on a client server architecture with
+Windows and Java clients available), and free. The newer DDOS
+programs however do typically not respond to scans, so scanning
+the network for open ports is primarily useful for finding the
+old tools, and for finding potential security holes in machines
+on your network.</p>
+<p><a href="http://www.sans.org/y2k/DDoS.htm" target="_top">http://www.sans.org/y2k/DDoS.htm</a>
+</p>
+<p><a href="http://www.insecure.org/nmap/index.html" target="_top">http://www.insecure.org/nmap/index.html</a></p>
+<p><a href="http://www.nessus.org/" target="_top">http://www.nessus.org/</a></p>
+<p><a href="http://www.wwdsi.com/saint/" target="_top">http://www.wwdsi.com/saint/</a></p>
+<h5><a name="10.0">10.0 What should I do if I am the origin of a
+DoS/DDoS attack?</a></h5>
+<p>This heavily depends on your network security policy. You may
+for example wish to ultimately prosecute the offender, in which
+case you will need to take great pains to preserve the chain of
+evidence. </p>
+<p>If you wish to stop your systems from being used to launch
+attacks you should not just reboot them and remove the agent. You
+will also need to plug any and ALL security holes, otherwise the
+intruder will break in again in short order. Assuming you cannot
+patch all the machines then you should try to limit access to
+them in other ways, by firewalling them off for example.
+Unfortunately in many environments (especially &quot;public
+ones&quot; like educational institutions) even updating all the
+software and making sure the mchines are secure against network
+attacks will not always be 100% effective.</p>
+<p>You should install software on all your important network
+machines and ideally on every single host that can detect changes
+and additions to the filesystem. This will allow you to hopefully
+nip attacks in the bud (i.e. you notice one machine has been
+compromised, and you can start taking corrective action) or for
+after the fact clean-up when trying to find out how widespread
+the penetration is.</p>
+<p><a href="http://www.tripwire.com/" target="_top">http://www.tripwire.com/</a>
+- Commercial Tripwire for various UNIX platforms and Windows </p>
+<p><a href="http://www.tripwire.com/products/linux.cfm" target="_top">http://www.tripwire.com/products/linux.cfm</a> -
+Free Tripwire for Linux (officially supported on Red Hat, but it
+should work on most distributions). </p>
+<p><a href="http://www.tripwire.org/" target="_top">http://www.tripwire.org/</a>
+- OpenSource Tripwire (hopefully coming soon and shipping with
+various Linux distributions). </p>
+<h5><a name="11.0">11.0 How do I trace a DoS/DDoS attack and
+preparing evidence?</a></h5>
+<p><a href="http://www.nanog.org/mtg-9910/robert.html" target="_top">http://www.nanog.org/mtg-9910/robert.html</a></p>
+<h5><a name="12.0">12.0 DoS/DDoS attacks, software and counter
+software</a></h5>
+<p>There is a lot of DoS/DDoS software available on the Internet,
+and several organizations (including the FBI) have helped create
+and distribute software to counter it. Several Network Intrusion
+Detection Systems (NIDS) are capable of detecting these attacks,
+and of detecting remote usage of this software on your network. </p>
+<p><a href="http://www.sans.org/giac.htm" target="_top">http://www.sans.org/giac.htm</a></p>
+<h5>12.1 Smurf</h5>
+<p>Smurf is one of the older DDoS attacks, and was one of the
+first to be widely publicized. It simply consists of sending a
+forged ICMP packet (that appears to be from the intended victim,
+i.e. 1.2.3.4) to the broadcast address of another network
+(6.7.8.255 for example), every machine on the remote network (so
+say 100 machines) all reply, to the victim. This has the effect
+of amplifying the attackers bandwidth, especially when you start
+pinging network addresses where hundreds of hosts respond. Smurf
+works because people do not configure their routers and/or
+firewalls correctly, there is no sane reason to need to send a
+broadcast ICMP packet to a remote network. Broadcast ICMP pings
+are useful on local networks, for determining which IP addresses
+are actively in use and so forth, but broadcast traffic should be
+blocked at the router and/or firewall. Simply add a firewall rule
+blocking traffic to your network address at the firewall and/or
+router - this is typically a relatively simple operation. If you
+want to see if a network is susceptible to being used to amplify
+ICMP pings simply visit one of the following websites, enter your
+network address and you will receive an answer quickly.</p>
+<p><a href="http://netscan.org/index.html" target="_top">http://netscan.org/index.html</a>
+</p>
+<p><a href="http://www.powertech.no/smurf/" target="_top">http://www.powertech.no/smurf/</a>
+</p>
+<p><a href="http://users.quadrunner.com/chuegen/smurf/" target="_tomp">http://users.quadrunner.com/chuegen/smurf/</a> </p>
+<h5>12.2 Trinoo</h5>
+<p>Trinoo is an older and somewhat simpler DDoS tool compared to
+the current crop. It is more advanced than the older generation,
+in that it uses password based authentication to allow access,
+these passwords are simply crypt()'ed and compiled in, and you
+can determine whether the binary on a machine is a master binary
+or a slave binary using a technique described in Dittrich's
+paper. If you find a master binary chances are there is also a
+list of controlled hosts, which can be useful for assessing the
+degree of penetration of an attack. Trinoo uses unencrypted
+communications between the &quot;masters&quot; and
+&quot;daemons&quot; and typically uses ports:</p>
+<pre>1524 tcp
+
+27665 tcp
+
+27444 udp
+
+31335 udp</pre>
+<p>for communication, making it somewhat easier to find. In
+addition if you run crack on the crypt()'ed password in a daemon
+binary you can monitor the network for that keyword and detect
+when the attacker is sending orders to the daemon (this is useful
+if you are pursuing an investigation and want to track the person
+down for prosecution).</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/trinoo.analysis" target="_top">http://staff.washington.edu/dittrich/misc/trinoo.analysis</a>
+</p>
+<p><a href="http://www.fbi.gov/nipc/trinoo.htm" target="_top">http://www.fbi.gov/nipc/trinoo.htm</a>
+</p>
+<p><a href="http://xforce.iss.net/alerts/advise40.php3" target="_top">http://xforce.iss.net/alerts/advise40.php3</a> </p>
+<p><a href="http://www.cert.org/incident_notes/IN-99-07.html" target="_top">http://www.cert.org/incident_notes/IN-99-07.html</a>
+</p>
+<h5>12.3 Tribe Flood Network</h5>
+<p>TFN was written mostly as a proof of concept by a german
+hacker (in the traditional sense of the word) to demonstrate how
+vulnerable most networks are (guess what, he's right).
+Unfortunately this tool was used in a series or large scale
+attacks against large e-commerce sites which resulted in a large
+amount of press and political activity (Mixter has since been
+arrested on unrelated charges in Germany). TFN uses a client /
+server approach, an attacker compromises a large number of
+machines and controls them through intermediaries, the control
+packets are labeled as ICMP_ECHOREPLY, which is typically allowed
+through most firewalls, and the commands themselves are 16 bit
+numbers (compiled into the program so they can be arbitrary).</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/tfn.analysis" target="_top">http://staff.washington.edu/dittrich/misc/tfn.analysis</a>
+</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/ddos_scan.tar" target="_top">http://staff.washington.edu/dittrich/misc/ddos_scan.tar</a>
+</p>
+<p><a href="http://xforce.iss.net/alerts/advise40.php3" target="_top">http://xforce.iss.net/alerts/advise40.php3</a> </p>
+<p><a href="http://www.cert.org/incident_notes/IN-99-07.html" target="_top">http://www.cert.org/incident_notes/IN-99-07.html</a>
+</p>
+<h5>12.4 TFN2K</h5>
+<p>Tribal Flood 2000 is one of the more advanced denial of
+service software packages available. It runs on almost every form
+of UNIX and has been ported to Windows (so almost the entire
+Internet is potentially usable). It supports a number of attacks,
+SYN flooding, UDP floods, ping floods and broadcast ping floods
+(see Smurf for information on this last attack). All
+communications between the various components (handler and
+attacker nodes) is encrypted with the CAST-256 algorithm, and
+then Base 64 encoded, so the content of control packets basically
+looks like random ASCII characters. Control is via UDP, TCP and
+ICMP packets, one way only (the attacker nodes do not respond to
+the handler nodes and the handler nodes do not respond to the
+master). These features (encryption, multiple types of control
+packets, and one way communication make it difficult to detect
+and block). There are several minor flaws with the way the
+packets are created however, allowing them to be detected with a
+relatively good degree of success. Since this program was ported
+to Windows it is especially useful due to the enormous number of
+insecure Windows clients on Cablemodem and ADSL networks (and
+corporate/university networks).</p>
+<p><a href="http://www.fbi.gov/nipc/trinoo.htm" target="_top">http://www.fbi.gov/nipc/trinoo.htm</a>
+</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/ddos_scan.tar" target="_top">http://staff.washington.edu/dittrich/misc/ddos_scan.tar</a>
+</p>
+<p><a href="http://packetstorm.securify.com/distributed/TFN2k_Analysis-1.3.txt" target="_top">http://packetstorm.securify.com/distributed/TFN2k_Analysis-1.3.txt</a></p>
+<h5>12.5 stacheldraht</h5>
+<p>stacheldraht is a continuation of trinoo and TFN, it uses TCP
+and ICMP for control messages between the handler and attacker
+nodes. One major advance is the ability to upgrade the program
+remotely, stacheldraht deletes the current file and downloads a
+new one via rcp from a remote site (realistically rcp should be
+blocked at your perimeter firewalls since rcp is not a very
+secure way for moving files around the internet and is probably
+not used in any case). Like the others there are signatures that
+can be used to detect the data, and a perl program is available
+to detect an agent, assuming it has the default configuration
+(with the source code for stacheldraht and attacker could change
+this).</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/stacheldraht.analysis" target="_top">http://staff.washington.edu/dittrich/misc/stacheldraht.analysis</a>
+</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/sickenscan.tar" target="_top">http://staff.washington.edu/dittrich/misc/sickenscan.tar</a>
+</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/ddos_scan.tar" target="_top">http://staff.washington.edu/dittrich/misc/ddos_scan.tar</a>
+</p>
+<h5>12.6 shaft</h5>
+<p>Shaft is essentially a continuation of the Trinoo, TFN and
+Stacheldraht denial of service programs. It does have several new
+features however, it can switch handler servers (machines that
+take commands from a master and then issue them to all the attack
+nodes) and it can switch ports, making it harder to detect.</p>
+<p><a href="http://netsec.gsfc.nasa.gov/~spock/shaft_analysis.txt" target="_top">http://netsec.gsfc.nasa.gov/~spock/shaft_analysis.txt</a></p>
+<p><a href="http://biocserver.cwru.edu/~jose/shaft_analysis/node-analysis.txt" target="_top">http://biocserver.cwru.edu/~jose/shaft_analysis/node-analysis.txt</a></p>
+<h5>12.7 mstream</h5>
+<p>Place marker</p>
+<p><a href="http://staff.washington.edu/dittrich/misc/mstream.analysis.txt" target="_top">http://staff.washington.edu/dittrich/misc/mstream.analysis.txt</a>
+</p>
+<h5><a name="13.0">13.0 Who do I contact if I am attacked or an
+attack originates from me?</a></h5>
+<p>If you are being attacked the best person to contact
+immediately would be your upstream network provider (whoever you
+pay for bandwidth), they can help you trace the attack down,
+and/or block it (they in turn will probably contact their
+upstream provider, etc.). You might also try contacting the site
+from which the attack originates, however this can be difficult
+due to time zone differences, language differences, and so on.
+When contacting the remote site do not use email, there is a
+chance their email server and computer network may be fully
+compromised, instead find their phone number and call them (this
+is more likely to get a response as well). You can use whois to
+list the contact information for domains and network blocks, for
+example if you wanted to contact example.org (a fictitious
+domain):</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ec999f899e828d8189ac9f899e9a899e">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> username]$ whois example.org
+
+
+
+[rs.internic.net]
+
+
+
+Whois Server Version 1.1
+
+
+
+Domain names in the .com, .net, and .org domains can now be registered
+
+with many different competing registrars. Go to http://www.internic.net
+
+for detailed information.
+
+
+
+   Domain Name: EXAMPLE.ORG
+
+   Registrar: NETWORK SOLUTIONS, INC.
+
+   Whois Server: whois.networksolutions.com
+
+   Referral URL: www.networksolutions.com
+
+   Name Server: NS.ISI.EDU
+
+   Name Server: VENERA.ISI.EDU
+
+   Updated Date: 31-aug-1999
+
+
+
+
+
+&gt;&gt;&gt; Last update of whois database: Thu, 10 Feb 00 02:15:17 EST &lt;&lt;&lt;
+
+
+
+The Registry database contains ONLY .COM, .NET, .ORG, .EDU domains and
+
+Registrars.</pre>
+<p>So you now know which server to ask for the information, since
+there are multiple DNS registrars now:</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="cdbea8a4abbfa4a8a98da0aca4a1">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> seifried]$ whois <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="54312c35392438317a3b263314233c3b3d277a3a3120233b263f273b3821203d3b3a277a373b39">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+
+
+[whois.networksolutions.com]
+
+The Data in Network Solutions' WHOIS database is provided by Network
+
+Solutions for information purposes, and to assist persons in obtaining
+
+information about or related to a domain name registration record.
+
+Network Solutions does not guarantee its accuracy.  By submitting a
+
+WHOIS query, you agree that you will use this Data only for lawful
+
+purposes and that, under no circumstances will you use this Data to:
+
+(1) allow, enable, or otherwise support the transmission of mass
+
+unsolicited, commercial advertising or solicitations via e-mail
+
+(spam); or  (2) enable high volume, automated, electronic processes
+
+that apply to Network Solutions (or its systems).  Network Solutions
+
+reserves the right to modify these terms at any time.  By submitting
+
+this query, you agree to abide by this policy.
+
+
+
+Registrant:
+
+Internet Assigned Numbers Authority (EXAMPLE2-DOM)
+
+   4676 Admiralty Way, Suite 330
+
+   Marina del Rey, CA 90292
+
+   US
+
+
+
+   Domain Name: EXAMPLE.ORG
+
+
+
+   Administrative Contact, Technical Contact, Zone Contact:
+
+      Internet Assigned Numbers Authority  (IANA)  <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="2d444c434c6d646c636c03627f6a">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+      310-823-9358
+
+Fax- - 310-823-8649
+
+
+
+   Record last updated on 14-Jun-1999.
+
+   Record created on 31-Aug-1995.
+
+   Database last updated on 10-Feb-2000 15:20:08 EST.
+
+
+
+   Domain servers in listed order:
+
+
+
+   VENERA.ISI.EDU               128.9.176.32
+
+   NS.ISI.EDU                   128.9.128.127</pre>
+<p>So you would now know who to contact (the IANA). Also you can
+look up information on who &quot;owns&quot; the network addresses
+(all blocks of network addresses are assigned by central
+authorities to prevent conflicts). The same utility (whois) is
+used to look up information on these. The contact information
+given will either be for the direct owner of the network block,
+or the company that &quot;resold&quot; the network block (usually
+to a customer). In any case it is a good place to start.</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="93e0f6faf5e1faf6f7d3e4faf4f4fff6">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> seifried]$ whois <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="487978667866786679083f2027213b66293a212666262d3c">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+[whois.arin.net]
+
+IANA
+
+ (RESERVED-6)
+
+   Internet Assigned Numbers Authority
+
+   Information Sciences Institute
+
+   University of Southern California
+
+   4676 Admiralty Way, Suite 330
+
+   Marina del Rey, CA 90292-6695
+
+   Netname: RESERVED-10
+
+   Netblock: 10.0.0.0 - 10.255.255.255
+
+   Coordinator:
+
+      Internet Assigned Numbers Authority  (IANA-ARIN)  <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="620b030c03222b232c234c2d3025">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+      (310) 823-9358
+
+Fax- (310) 823-8649
+
+   Domain System inverse mapping provided by:
+
+   BLACKHOLE.ISI.EDU            128.9.64.26
+
+   Record last updated on 14-Oct-1999.
+
+   Database last updated on 17-Feb-2000 05:35:09 EDT.
+
+The ARIN Registration Services Host contains ONLY Internet
+
+Network Information: Networks, ASN's, and related POC's.
+
+Please use the whois server at rs.internic.net for DOMAIN related
+
+Information and nic.mil for NIPRNET Information.</pre>
+<p>ARIN is the central registry for network numbers in north
+america, and if the network block is owned by say a German
+company ARIN's whois server will point you to the right server to
+use:</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="e497818d82968d8180a4938d83838881">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> seifried]$ whois <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="04353d362a35323c2a352a3444736c6b6d772a65766d6a2a6a6170">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+[whois.arin.net]
+
+European Regional Internet Registry/RIPE NCC (NETBLK-RIPE-C2)
+
+   These addresses have been further assigned to European users.
+
+   Contact information can be found in the RIPE database, via the
+
+   WHOIS and TELNET servers at whois.ripe.net, and at
+
+   http://www.ripe.net/db/whois.html
+
+   Netname: RIPE-CBLK2
+
+   Netblock: 192.168.0.0 - 192.255.255.0
+
+   Maintainer: RIPE
+
+   Coordinator:
+
+      RIPE Network Coordination Centre  (RIPE-NCC-ARIN)  <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="0967606a6d6b495b40594c27474c5d">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+
+      +31 20 535 4444
+
+Fax- - +31 20 535 4445
+
+   Domain System inverse mapping provided by:
+
+   NS.RIPE.NET                  193.0.0.193
+
+   NS.EU.NET                    192.16.202.11
+
+   AUTH03.NS.UU.NET             198.6.1.83
+
+   NS2.NIC.FR                   192.93.0.4
+
+   SUNIC.SUNET.SE               192.36.148.18
+
+   MUNNARI.OZ.AU                128.250.1.21
+
+   NS.APNIC.NET                 203.37.255.97
+
+   To search on arbitrary strings, see the Database page on
+
+   the RIPE NCC web-site at http://www.ripe.net/db/
+
+   Record last updated on 16-Oct-1998.
+
+   Database last updated on 17-Feb-2000 05:35:09 EDT.
+
+The ARIN Registration Services Host contains ONLY Internet
+
+Network Information: Networks, ASN's, and related POC's.
+
+Please use the whois server at rs.internic.net for DOMAIN related
+
+Information and nic.mil for NIPRNET Information.</pre>
+<p>If you intend to contact law enforcement your local police
+department is probably not equipped to handle it. You are much
+better off contacting a national organization (such as the FBI in
+the US, or the RCMP in Canada). There are many CERT (Computer
+Emergency Response Teams) organizations spread around the world
+that can provide you with assistance. Contact information is
+below.</p>
+<p>If an attack is originating from your site you may wish to
+contact the person on the receiving end of it so that you can
+coordinate </p>
+<p><strong>International</strong></p>
+<p>There is a list of CERT sites for various countries and large
+organizations available at:</p>
+<p><a href="http://www.mycert.mimos.my/others.html" target="_top">http://www.mycert.mimos.my/others.html</a></p>
+<p><strong>USA</strong></p>
+<p>FBI<br>
+<a href="http://www.fbi.gov/" target="_top">http://www.fbi.gov/</a>
+- Main page<br>
+<a href="http://www.fbi.gov/contact/fo/fo.htm" target="_top">http://www.fbi.gov/contact/fo/fo.htm</a>
+- List of local field offices<br>
+1-202-324-3000 - Head office phone number</p>
+<p>CERT<br>
+<a href="http://www.cert.org/" target="_top">http://www.cert.org/</a>
+- Main page<br>
+<a href="http://www.cert.org/contact_cert/contactinfo.html" target="_top">http://www.cert.org/contact_cert/contactinfo.html</a>
+- Contact information<br>
+1-412-268-7090 - 24 hour CERT Hotline</p>
+<p><strong>Canada</strong></p>
+<p>RCMP<br>
+<a href="http://www.rcmp-grc.gc.ca/" target="_top">http://www.rcmp-grc.gc.ca/</a>
+- Main page<br>
+<a href="http://www.rcmp-grc.gc.ca/tsb/index.htm" target="_top">http://www.rcmp-grc.gc.ca/tsb/index.htm</a>
+- Technical Security Branch<br>
+1-613-993-3891 - Incident report number<br>
+<a href="/cdn-cgi/l/email-protection#fd94939e9499989389bd8e989489d39e9290"><span class="__cf_email__" data-cfemail="b2dbdcd1dbd6d7dcc6f2c1d7dbc69cd1dddf">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a> -
+Incident report email address</p>
+<p><strong>Europe</strong></p>
+<p>Europe used to have a CERT but this has been split up. The
+various organizations that provide national CERT services are
+available at: <a href="http://www.eurocert.net/" target="_top">http://www.eurocert.net/</a>.
+</p>
+<p><strong>Germany</strong></p>
+<p>DFN-CERT<br>
+<a href="http://www.cert.dfn.de/">http://www.cert.dfn.de/</a> -
+Main page<br>
+<a href="/cdn-cgi/l/email-protection#97f3f1f9f4f2e5e3d7f4f2e5e3b9f3f1f9b9f3f2"><span class="__cf_email__" data-cfemail="83e7e5ede0e6f1f7c3e0e6f1f7ade7e5edade7e6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a><br>
++49 (0)40-42883-2262</p>
+<p>Bundeskriminalamt BKA<br>
+<a href="http://www.bka.de/" target="_top">http://www.bka.de/</a>
+- Main page<br>
++49 (0) 611-55-0 </p>
+<p><strong>Britain</strong></p>
+<p>JANET CERT<br>
+<a href="http://www.ja.net/CERT/cert.html" target="_top">http://www.ja.net/CERT/cert.html</a>
+- Main page<br>
+01235 822340</p>
+<p>Various police services<br>
+<a href="http://www.police.uk/" target="_top">http://www.police.uk/</a>
+- Main page</p>
+<p><strong>Australia</strong></p>
+<p>AUSCERT<br>
+<a href="http://www.auscert.org.au/" target="_top">http://www.auscert.org.au/</a>
+- Main page<br>
+<a href="http://www.auscert.org.au/Information/Auscert_info/contact.html" target="_top">http://www.auscert.org.au/Information/Auscert_info/contact.html</a>
+- Contact information<br>
++61 7 3365 4417 </p>
+<h5><a name="14.0">14.0 What is in the future for DoS/DDoS
+attacks?</a></h5>
+<p>The existing denial of service programs will get more
+sophisticated, as attackers learn from the mistakes of others,
+and various discussion forums distill the information gained.
+Recently an email trojan went around, it was simply a VB Script
+program, and it spread like wildfire. In the future someone may
+write a relatively &quot;stealthy&quot; virus that installs
+attack software on the windows client and possibly tries to
+infect other hosts via email. This method could easily infect a
+huge number of hosts for a short amount of time, with a steady
+&quot;decay&quot; rate as people cleaned up their systems,
+however the window of oppurtunity would exist to flatten many
+sites (ironically enough if anti-virus vendors and popular forums
+for alerting users about these problems were attacked it could
+probably &quot;survive&quot; for a while). Unfortunately people
+do not seem to be learning from these widespread infections
+(Melissa, then ILOVEYOU several months later)</p>
+<p>More attacks at emerging services is a likely bet. We have
+already seen this with major attacks against e-commerce sites
+(but not against the e-commerce technology specifically). With
+the growth of encryption online (secure web server, IPSec, etc)
+there will likely be more attacks against them, especially with
+the high CPU overhead associated with encryption. Granted there
+are hardware cryptographic accelerators that can easily handle
+high loads, they are quite expensive, and simply shift the weak
+link in the chain somewhere else. I also suspect there will be
+more attacks against services that provide authentication, such
+as PKI and LDAP servers, as the effect of &quot;taking out&quot;
+a major authentication provider would be felt by many people and
+be extremely disruptive to businesses (this would be similar to
+attacking root DNS servers for example). </p>
+<p><a href="20020324-dns-servers.html">DNS Servers </a></p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 16/03/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

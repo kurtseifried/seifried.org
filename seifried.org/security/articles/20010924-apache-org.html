@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Articles / A matter of trust: How Apache.org was compromised</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>A Matter of Trust: How Apache.org Was Compromised </h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#254e5057516556404c43574c40410b4a5742"><span class="__cf_email__" data-cfemail="22495750566251474b44504b47460c4d5045">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>As you've probably heard by now, Apache.org was broken into
+last week, and the system was compromised. How this happened is
+much more interesting then your usual &quot;known hole in an old
+piece of software&quot; scenario (although this was the final
+nail in the coffin for Apache.org).</p>
+<p>Most break-ins we hear about are relatively straightforward --
+someone was running an unpatched copy of IIS 5.0 or they forgot
+to upgrade their FTP server to a recent version. These types of
+problems are relatively easy to deal with, you keep software up
+to date, but they are impossible to completely eliminate. At some
+point you have to run software to make the system useful, and
+even the most heavily audited and secured system will have bugs
+in it's software. It is inevitable that at some point an attacker
+will discover a problem and use it, or release code publicly
+allowing anyone to exploit the flaw, and software vendors will
+react, provide a fix, but this still needs to be applied by
+system administrators.</p>
+<p>However, an old issue is becoming increasingly problematic as
+more machines are placed online. The problem is trust.</p>
+<h2>What is trust?</h2>
+<p>From <a href="http://www.dictionary.com/">dictionary.com</a>
+we get several definitions for &quot;trust&quot;, depending on
+usage, but the one I will be dealing with primarily is this:</p>
+<blockquote>
+<p>Firm reliance on the integrity, ability, or character of a
+person or thing.</p>
+</blockquote>
+<p>An example of this would be developers logging into the
+primary Apache.org development machine from remote locations. The
+SSH protocol is used to secure these connections with strong
+encryption, which provides a tunnel between the two communicating
+machines. Furthermore, it is assumed that the end developer's
+machine is secure, and that there are no keystroke loggers
+running, or items like KeyGhost hooked up to the machine. Herein
+lies a problem. More and more people are using machines that are
+not always secure or should not be considered
+&quot;trusted&quot;. </p>
+<h2>Where's the beef?</h2>
+<p>The number of publicly available terminals in libraries,
+educational computer labs, cafe's and other places has exploded
+in the last few years. The vast majority of these machines are
+not very well secured, ranging from Linux machines in a private
+cubicle (where LILO was not locked down) to windows machines that
+will cheerfully boot from a floppy disk.</p>
+<p>While breaking into these systems and logging passwords is
+probably not going to help you break into a specific site, if you
+throw out a large enough net you will catch something of interest
+eventually. This is especially true for more populous systems
+such as ISP shell servers and university servers (which are
+notorious for being poorly secured). Once you have a shell
+account on a system it becomes much easier to exploit any
+security flaws, local or remote.</p>
+<p>The number of passwords being entered into insecure machines
+and sent to insecure machines will only continue to grow, and
+once an attacker gains administrative or root access on a machine
+it is trivial to log all passwords (using modified versions of
+ssh clients and daemons for example). Harvesting passwords in
+this manner is relatively easy (choose poorly secured and
+maintained systems in a foreign country) and it only gets easier
+with time, since many people have a tendency to use the same
+password for multiple systems.</p>
+<p>If you see someone logging into a server with the password
+&quot;NBd72ts&quot; chances are probably good that it's the same
+password to log into the machine they came from. This process can
+even be automated by a savvy attacker -- software loads onto a
+system, breaks root with any number of well known local exploits,
+then attempts to connect back to machines people log in from,
+using their passwords, breaks root with any number of well known
+local exploits, and so on and so forth. Sending passwords back to
+it's master is not to hard either, by encrypting them and posting
+them to newsgroups, public mailing lists, online website and so
+forth where the attacker can easily collect them anonymously. </p>
+<h3>So what exactly happened to Apache.org?</h3>
+<p>An attacker &quot;broke in&quot; using a developer's password
+and then managed to exploit a security hole in the SSH server
+that had accidentally gone unfixed (the administrator had created
+new SSH binaries but failed to install them properly). This
+developer's password was harvested from SourceForge, which the
+attacker had broken into. So there were three main elements that
+contributed to the incident:</p>
+<ul type="disc">
+<li>Reliance on shell accounts.</li>
+<li>Developer logging in from a system outside their control.</li>
+<li>Failed upgrade procedure -- there were no checks to
+ensure that the update had &quot;taken&quot;.</li>
+</ul>
+<p>And several lesser elements:</p>
+<ul type="disc">
+<li>Use of passwords instead of one-time password or
+smartcard based systems. Usage of public/private key
+login for SSH is also recommended (but probably would not
+have helped in this incident)</li>
+<li>Multiple services running on a single server, increasing
+the chances for finding an exploitable vulnerability
+(although in this case it was SSH which has to be run on
+virtually every system providing shell access).</li>
+<li>Lack of chroot or jail'ing of interactive shell sessions.</li>
+</ul>
+<p>&nbsp;</p>
+<hr>
+<h2>Interview with Brian Behlndorf</h2>
+<p>Brian is President of the Apache Software Foundation, and
+responsible for the infrastructure.</p>
+<p><strong>Kurt: </strong>Do you currently have guidelines, or
+plan to implement any, with respect to security on developer
+machines? For example TAMU used to require people to run cops and
+pass all its checks before they would allow machines to go
+online.</p>
+<p><strong>Brian: </strong>Since we only have one box (today),
+the guidelines have always been &quot;do what you can to keep it
+secure&quot; -- and nothing more formal.&nbsp; The default
+FreeBSD security auditing programs have been pretty successful in
+detecting hacks; there is always more we can do, though.</p>
+<p><strong>Kurt:</strong> And what about the workstations and
+systems used by developers on their end?</p>
+<p><strong>Brian: </strong>Nope, no standards; we trust people to
+do the Right Thing, but now are getting large enough that
+defining that might be worthwhile.&nbsp; Someone is working on a
+security standards for developers document, this should probably
+be added.</p>
+<p><strong>Kurt:</strong> What is/are the biggest problem(s) with
+removing people's shell access to the servers, what solutions are
+being implemented or looked at?</p>
+<p><strong>Brian: </strong>It's simply that so many of the tools
+we use today presume shell access is easy to give, and are thus
+designed to work best with it.&nbsp; For example, CVS, updating
+web pages, and managing mailing lists, all (at this point) are
+all managed by editing files locally.&nbsp; There are non-shell
+solutions to each, but getting them all to work together
+consistently (so you have one view of who a developer is, etc) is
+a huge challenge - one my company has been focusing on with our
+Tigris project (<a href="http://www.tigris.org">www.tigris.org</a>).&nbsp;
+I'd say of all of them CVS is probably the biggest pain, but
+there are solutions. </p>
+<p><strong>Kurt:</strong> Are you considering the use of one time
+passwords, tokens or smartcards for shell access to the server?</p>
+<p><strong>Brian: </strong>Have not considered that, but
+could.&nbsp; In fact that would even make logging in from
+keystroke-capturing cybercafes safe, wouldn't it?&nbsp; Good
+idea. Wish there was a way to make it optional, though making it
+optional is probably missing the point.</p>
+<p>I guess this is the eternal struggle between ease of use and
+security; sometimes we lean too far towards the ease-of-use side,
+and get burned. There's also the cost-to-admin issue - since all
+resources available to Apache are donations of time and effort,
+the simplest solution is usually the one taken.&nbsp; Again, not
+always the wisest choice.</p>
+<p><strong>Kurt:</strong> With the increase in public and
+semi-public systems (like SourceForge and ISP servers) do you
+think there will be more attacks like this one?</p>
+<p><strong>Brian: </strong>If I were a cracker and had gotten
+root on a box, I'd certainly want to be able to get root on more,
+and compromising sshd &amp; ssh is probably the best way to at
+least get a shell these days, and usually from a shell there's at
+least one or two root compromises available.&nbsp; So yeah, this
+is probably going to increase (we'll probably be dealing with the
+aftereffects of all those hacked passwords for awhile anyways),
+and finding ways to avoid needing shells (or better containing
+people who use shells, e.g. using jails or capabilities) is
+probably going to be a pretty fruitful area of security research.</p>
+<p>&nbsp;</p>
+<hr width="50%">
+<h2>What's the Solution?</h2>
+<p>The most obvious solution would be to remove shell access
+where possible, so that even if an attacker manages to grab a
+password, exploiting the system is much more difficult.</p>
+<p>Unfortunately, this is the only easy answer, and not available
+to everyone. If you must provide shell access (because you are
+selling it, for example) the best thing to do would be to lock
+down the system as much as possible, removing as many setuid and
+setgid binaries is a good start. Restricting what users can do
+through a restrictive shell, chroot'ing, subdomain, tight file
+permissions and so forth is also recommended and can limit any
+damage. Programs like tripwire can monitor binaries such as ssh
+and sshd, so if an attacker replaces them with trojan'ed versions
+you will hopefully be notified promptly assuming of course the
+attacker doesn't intercept the alert and quash it. Of course you
+need to pay attention to your alerts and act upon them quickly
+otherwise they will do no good. Reducing the reliance upon
+passwords will also help, however most solutions such as tokens,
+smartcards, biometric authentication and so on tend to be
+relatively expensive. As long as people can remotely access a
+system without restrictions (such as using tcp_wrappers to
+restrict which IP's and domains they can log in from) you
+essentially trust every machine on the Internet. </p>
+<p>&nbsp;</p>
+<p><strong>Reference links</strong></p>
+<p>Information about the hack, from Apache.org - <a href="http://www.apache.org/info/20010519-hack.html">http://www.apache.org/info/20010519-hack.html</a></p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

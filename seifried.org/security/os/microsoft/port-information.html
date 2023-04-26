@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Microsoft / Port informaiton in windows</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Port information in windows</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#d8b3adaaac98abbdb1beaab1bdbcf6b7aabf"><span class="__cf_email__" data-cfemail="b2d9c7c0c6f2c1d7dbd4c0dbd7d69cddc0d5">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>For a list of TCP-IP, UDP and ICMP ports go <a href="../../ports/">here</a>.</p>
+<p>You can use netstat to list open ports and their state in
+Windows:</p>
+<blockquote>
+<pre>C:\WINDOWS&gt;netstat -a -n
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State
+  TCP    0.0.0.0:1822           0.0.0.0:0              LISTENING
+  TCP    0.0.0.0:1837           0.0.0.0:0              LISTENING
+  TCP    0.0.0.0:2001           0.0.0.0:0              LISTENING
+  TCP    10.1.1.2:1026          0.0.0.0:0              LISTENING
+  TCP    10.1.1.2:1026          10.1.1.1:139           ESTABLISHED
+  TCP    10.1.1.2:1822          10.1.1.1:22            ESTABLISHED
+  TCP    10.1.1.2:1837          10.1.1.1:22            ESTABLISHED
+  TCP    10.1.1.2:137           0.0.0.0:0              LISTENING
+  TCP    10.1.1.2:138           0.0.0.0:0              LISTENING
+  TCP    10.1.1.2:139           0.0.0.0:0              LISTENING
+  TCP    10.1.1.2:2001          10.1.1.1:993	      ESTABLISHED
+  TCP    127.0.0.1:1850         0.0.0.0:0              LISTENING
+  UDP    10.1.1.2:137           *:*
+  UDP    10.1.1.2:138           *:*
+  UDP    127.0.0.1:1850         *:*
+
+C:\WINDOWS&gt;</pre>
+</blockquote>
+<p>So on the workstation (10.1.1.2) there are open connections to
+ports 22 (SSH), 139 (windows file sharing) and 993 (secure imap)
+on the machine 10.1.1.1 among other things. </p>
+<p>In Windows XP you can use the -b option to list the executable involved:</p>
+<blockquote>
+<pre>
+C:\Documents and Settings\seifried>netstat -b
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    10.1.1.2:1043            10.1.0.15:microsoft-ds ESTABLISHED     4  [System]
+  TCP    10.1.1.2:1220            irc.example.org:6667   ESTABLISHED     5920  [mirc.exe]
+  TCP    10.1.1.2:1363            mail.example.org:993   ESTABLISHED     6128  [msimn.exe]
+  TCP    10.1.1.2:1365            www.example.org:http   ESTABLISHED     976  [ccProxy.exe]
+  TCP    10.1.1.2:1373            www.example.org:http   ESTABLISHED     976  [ccProxy.exe]
+  TCP    10.1.1.2:1027            localhost:1364         ESTABLISHED     976  [ccProxy.exe]
+  TCP    10.1.1.2:1027            localhost:1372         ESTABLISHED     976  [ccProxy.exe]
+  TCP    10.1.1.2:1027            localhost:1108         ESTABLISHED     976  [ccProxy.exe]
+  TCP    10.1.1.2:1077            localhost:1078         ESTABLISHED     5596  [firefox.exe]
+  TCP    10.1.1.2:1078            localhost:1077         ESTABLISHED     5596  [firefox.exe]
+  TCP    10.1.1.2:1107            localhost:11863        ESTABLISHED     2344  [msnmsgr.exe]
+  TCP    10.1.1.2:1108            localhost:1027         ESTABLISHED     3436  [SimpLite-MSN.exe]
+  TCP    10.1.1.2:1364            localhost:1027         ESTABLISHED     5596  [firefox.exe]
+  TCP    10.1.1.2:1372            localhost:1027         ESTABLISHED     5596  [firefox.exe]
+  TCP    10.1.1.2:1266            localhost:1027         CLOSE_WAIT      2344  [msnmsgr.exe]
+  TCP    10.1.1.2:1268            localhost:1027         CLOSE_WAIT      2344  [msnmsgr.exe]
+  TCP    10.1.1.2:1273            localhost:1027         CLOSE_WAIT      2344  [msnmsgr.exe]
+  TCP    10.1.1.2:1275            localhost:1027         CLOSE_WAIT      2344  [msnmsgr.exe]
+  TCP    10.1.1.2:1277            localhost:1027         CLOSE_WAIT      2344  [msnmsgr.exe]
+  TCP    10.1.1.2:1027            localhost:1368         TIME_WAIT       0
+  TCP    10.1.1.2:1027            localhost:1366         TIME_WAIT       0
+  TCP    10.1.1.2:1060            localhost:1374         TIME_WAIT       0
+  TCP    10.1.1.2:1271            localhost:1027         TIME_WAIT       0
+  TCP    10.1.1.2:11863           localhost:1270         TIME_WAIT       0
+</pre></blockquote>
+<p>On older systems then Windows XP you will need third party application sto see what
+applications actually have these ports open you will need a
+program such as Inzider (free), available from: <a href="http://ntsecurity.nu/toolbox/inzider/">http://ntsecurity.nu/toolbox/inzider/</a>.
+Another free tool is fport from Foundstone, available at: <a href="http://www.foundstone.com/resources/proddesc/fport.htm">http://www.foundstone.com/resources/proddesc/fport.htm</a>.
+There is a commercial program called TCPView from Winternals that
+provides a lot of information, available from: <a href="http://www.winternals.com/products/monitoringtools/tcpviewpro.asp">http://www.winternals.com/products/monitoringtools/tcpviewpro.asp</a>. It appears this tool has been folded into a commercial offering available at <A HREF="http://www.winternals.com/Products/AdministratorsPak/">http://www.winternals.com/Products/AdministratorsPak/</A></p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

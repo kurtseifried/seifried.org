@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Technical</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Technical</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#8ce7f9fef8ccffe9e5eafee5e9e8a2e3feeb"><span class="__cf_email__" data-cfemail="660d1314122615030f00140f030248091401">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p><a href="20020330-format-strings.html">Format Strings - An
+Interview with Chris Evans</a></p>
+<blockquote>
+<p><font size="2">In a previous article I covered the basics
+of format string attacks. This time I've interviewed Chris
+Evans, whom I quoted in the last article. Without further
+ado, here is the interview. Read it - you will learn
+something. (I did.)</font></p>
+</blockquote>
+<p><a href="20020307-kernel-options.html">System and Network
+Security - Kernel Options</a></p>
+<blockquote>
+<p><font size="2">When you ask most network and system
+administrators about system and network security, they'll
+respond, &quot;We have a firewall&quot; or &quot;We use SSL
+encryption.&quot; This is all fine and good. However, there
+are often some things they have missed - not that it is
+really their fault, since these additional options are not
+very well documented in most cases. Almost all Unix-based
+operating systems have the capability to modify various
+kernel options while the system is running. I'll be
+concentrating on Linux, *BSD and Solaris. </font></p>
+</blockquote>
+<p><a href="20000628-creating-preventing-backdoors-in-unix.html">Creating
+and Preventing Backdoors in UNIX Systems</a></p>
+<blockquote>
+<p><font size="2">Backdoors are by far one of the worst
+nightmares of many system and network administrators. We all
+know our networks and hosts will at some point be penetrated,
+and if we've done our job right we should be able to detect
+that penetration. However, one problem always rears its ugly
+head: Do we format the drive, reinstall from trusted media,
+then patch the system, configure it, and restore data from
+backups; or do we just try to patch the system up and remove
+any surprises the attacker may have left? In some cases it is
+clear-cut: For a user's workstation with most data stored
+centrally, rebuilding the system is far faster than trying to
+fix it. On the other hand, what if you have a production
+email server handling incoming email for 10,000 people and no
+backup machine to switch to? </font></p>
+</blockquote>
+<p><a href="20010924-care-feeding-rpm.html">Care and feeding of
+RPM</a></p>
+<blockquote>
+<p><font size="2">I'm always amazed at the lack of articles
+on topics like RPM and PAM. Basic systems components and
+tools that people use every day but generally speaking are
+poorly understood if at all. Prepare to be educated. RPM is
+&quot;Red Hat Package Manager&quot; and is currently the most
+widely used package format for Linux (yes, I know about dpkg
+and tar packages) with most vendors utilizing it. RPM allows
+you to easily install, uninstall and query packages and the
+RPM database for information. Generally speaking RPM's must
+be installed as root, basically RPM's can do anything on your
+system, install new files, overwriting files, reconfiguring
+system settings, add new users, etc. Why is this important?
+Because many people download RPM's from semi-trusted or
+untrusted sources and blindly install them. </font></p>
+</blockquote>
+<p><a href="20010924-postfix.html">Postfix</a></p>
+<blockquote>
+<p><font size="2">Most, if not all the readers of this column
+run a mail server, and more then likely it is running
+Sendmail. In all fairness Sendmail is a damn good MTA (Mail
+Transfer Agent), Eric Allman originally wrote it with one
+main goal in mind: the mail must get through. Unfortunately,
+when Sendmail was originally written security wasn't a major
+concern on the Internet and it shows. Sendmail runs almost
+exclusively as the root user on most systems, meaning any
+flaws are potentially very serious.&nbsp;In addition to this
+Sendmail isn't very good at handling high loads. New mailers,
+such as Postfix, Zmailer, and Qmail are several times faster
+then Sendmail on the same hardware. Until recently most of
+the alternative mailers to Sendmail were not drop-in
+replacements, to replace Sendmail was a painful task, and the
+new software typically behaved differently then Sendmail.
+Postfix was designed from the start to address all these
+problems.</font></p>
+</blockquote>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>&nbsp;</p>
+<p>Last updated 20/12/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 10 - Encrypting files and drives in Linux, BSD, and other Unices</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 10 - Encrypting files and drives in Linux, BSD, and
+other Unices</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#543f2126201427313d32263d31307a3b2633"><span class="__cf_email__" data-cfemail="fa918f888eba899f939c88939f9ed495889d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<h4>Overview</h4>
+<p>Do you have files on your computer that you wouldn't want your
+spouse to read, or perhaps your main competitor. Chances are if
+you use your computer for work or general usage the answer is
+yes. Also what happens if you want to send a file to someone, or
+let them download it from you, but you only have access to a
+public site (like a free web hosting company). The answer is to
+encrypt the file, and fire it off. For UNIX you have several
+choices, PGP, and GnuPG, as well as Guardbot for web based file
+transfers. If you work with files that are sensitive (such as
+spreadsheets containing sensitive financial data) the constant
+hassle of encrypting and decrypting the file (as well as the fact
+a decrypted copy will be stored on the filesystem, leaving a
+window of opportunity for an attacker) can get tedious. If this
+is the case you will want to use software such as, BestCrypt
+(commercially licensed but free for Linux with source code), or
+PPDD (Private and Top Secret, GPL licensed) which are both very
+similar in execution and general usage.</p>
+<h4>Encrypting files and drives</h4>
+<h5>PGP</h5>
+<p>Pretty Good Privacy is available as a command line driven
+program for most UNIX platforms, and there are a variety of front
+end GUI programs for it. I would not recommend using PGP on a
+UNIX platform since a completely OpenSource, and compatible
+replacement is now available, in the form of GnuPG.</p>
+<h5>GnuPG</h5>
+<p>GnuPG is a GPL licensed (a.k.a. completely free in every
+respect), written in Germany (a very pro-crypto and pro-privacy
+country). Since it is available in full source code chances are
+it has been ported to your UNIX platform (and if not try
+compiling it, it might work). You can download <a href="appendix-a.html#GnuPG">GnuPG</a> as a compressed tarball of
+source code, and there are links to a number of source and binary
+packages for various UNIX platforms. Once installed GnuPG behaves
+very similarly to PGP. The first thing you'll probably want to do
+is generate a new keypair, simply use the command &quot;gpg
+--gen-key&quot;, it will create a &quot;.gnupg&quot; directory in
+which to store your keys, option files and so on and exit, you
+then run it again and it will lead you through the key creation
+process. Choosing the defaults during key generation is a pretty
+safe bet, although you may want to use a 2048 bit keysize
+(realistically if someone manages to crack 1024 bit keys, chances
+are they can get at your 2048 bit key, however if they are only
+trying to brute force it a longer key is a good way to reduce the
+chances of that). For personal keys the expiry is typically set
+to &quot;0&quot; (that is to say they do not expire), however if
+these keys are for corporate use, or for really sensitive
+information it is a good idea to expire keys and rotate them
+(every month, year, decade, whatever your security policy
+dictates). The most important thing when generating a key (in my
+opinion) is the passphrase. This is a string of characters which
+should consist of letters (upper and lower case) numbers and
+punctuation marks, the longer the better (I'd say the bare
+minimum is 10 characters). This controls access to the private
+key, which is used to sign items (and if compromised means an
+attacker could easily impersonate you), and to decrypt data
+(meaning an attacker could access all your data). Keep your
+private key secure! If an attacker gains access to this key they
+only have to brute force the passphrase, which is typically a lot
+weaker then a random 1024 bit (or longer) key. Worse yet they may
+steal your passphrase, with a keyboard sniffer or similar attack,
+resulting in a compromise of your key. If the attacker does not
+have access to your private key they will be forced to guess it,
+which takes a brutally long time (on average however, there is a
+chance they may guess the key correctly on their first try). </p>
+<p>Signing files is useful if you want to distribute a file to
+someone, and be able to prove that you sent it, and it was not
+tampered with. Internally GnuPG takes a hash sum (such as MD5 or
+SHA1) of the file (basically it reduces the file to a shorter,
+unique string of data) which it then encrypts with your private
+key, generating a signature. This signature can then be decrypted
+with your public key, resulting in possession of the hash sum of
+the file, simply take the hash sum of the file in question, and
+if the they match, then obviously the file is what it claims to
+be. This signature file can be a binary file, or converted into
+text (for example signing email, or distributing file signatures
+via email). To sign a file with gpg simply use :</p>
+<pre>$ gpg -b file</pre>
+<p>which will create a detached signature of the file.</p>
+<p>To verify the signature use &quot;gpg --verify file.sig
+file&quot;. If all is well you should see something like:</p>
+<pre>$ gpg --verify file.sig file
+gpg: Signature made Sat 15 Jan 2000 05:23:31 AM MST using DSA key ID 47D0D9A8
+
+</pre>
+<p>If someone has fiddled with the file or signature you will see
+something like:</p>
+<pre>$ gpg --verify file.sig file
+gpg: Signature made Sat 15 Jan 2000 05:23:31 AM MST using DSA key ID 47D0D9A8
+
+</pre>
+<p>Encrypting files is also relatively simple, a person uses your
+public key to run the data through a one way algorithm which
+results in a seemingly random mishmash of data, you can then use
+your private key to recover what the original data was, thus
+decrypting it. To encrypt a file to someone you first need their
+public key, you can download it from their homepage (if they have
+it online of course), or you can go to a public key server, of
+which there are many:</p>
+<p><a href="http://www.keyserver.net/">http://www.keyserver.net/</a>
+- OpenPGP key server</p>
+<p>Once you have their key it is simply a matter of signing and
+encrypting the file (just encrypting the file is rare as there is
+no proof of who the data is from, unless you use some other
+method, like physically handing them a floppy disk with the
+encrypted file). The following is an example of me signing a file
+and encrypting it with my public key:</p>
+<pre>$ gpg -s -e file
+
+You need a passphrase to unlock the secret key for
+1024-bit DSA key, ID 47D0D9A8, created 2000-01-15
+
+You did not specify a user ID. (you may use &quot;-r&quot;)
+
+
+</pre>
+<h5>Guardbot</h5>
+<p>Another new possibility is <a href="appendix-a.html#Guardbot">Guardbot</a>,
+which password protects www pages. Essentially there are two
+components, an applet that encrypts the data, using DES (56 bit
+keyspace), and an applet that will decrypt the data with the
+password you provide. The advantage of this over traditional
+server based methods of control (such as htaccess in Apache) is
+that the user manages it fully, and can protect each file
+individually without much setup. To fully take advantage of the
+keyspace available your password must contain upper and lower
+case letters, numbers (and punctuation marks, but this can
+confuse users) of around 10 letters, however since people tend to
+choose less then random passwords a longer password then this is
+advisable. This program would be useful for getting files to
+other people cheaply (simply sign up for some free web space,
+post the file up, and get the password to the other person
+securely).</p>
+<h4>Hiding files and data on your computer</h4>
+<p>It is no longer enough in some countries to encrypt your data
+to prevent access to it. Recently in Britain a law was created
+making it a criminal offence to refuse to give up encryption keys
+or plain text versions of encrypted data. </p>
+<h5>StegHide</h5>
+<p>StegHide hides data in files such as sound and picture files
+where not all of the bits in a byte are used. Since the data is
+encrypted it will appear random, and proving that the data is
+actually there is difficult. The only downside is to store a one
+megabyte file you need a sound/picture file of several megabytes,
+which can be cumbersome (but hard drives and high speed access
+are becoming cheap so it's a moot point). You can get StegHide
+at: <a href="http://www.stego.com/">http://www.stego.com/</a>.</p>
+<h5>StegFS</h5>
+<p>Steganographic File System actually hides data on your
+harddrive, making it difficult to prove that it even exists. This
+can be very useful as the attacker first has to find the data,
+let alone break the strong encryption used to protect it. You can
+get StegFS from: <a href="http://ban.joh.cam.ac.uk/~adm36/StegFS/">http://ban.joh.cam.ac.uk/~adm36/StegFS/</a>.</p>
+<h5>OutGuess</h5>
+<p>OutGuess hides data in image files, meaning you can send files
+in a way that won't attract to much attention (and can't really
+be prooved either). You can get it from: <a href="http://www.outguess.org/">http://www.outguess.org/</a>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-09.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-11.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

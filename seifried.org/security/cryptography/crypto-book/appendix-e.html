@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Appendix E - RSA patent issues</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Appendix E - RSA patent issues</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a3c8d6d1d7e3d0c6cac5d1cac6c78dccd1c4"><span class="__cf_email__" data-cfemail="d5bea0a7a195a6b0bcb3a7bcb0b1fbbaa7b2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>RSA is one of the corner stones of modern cryptography.
+Numerous protocols use RSA, one of the most widespread being SSL
+(Secure Sockets Layer), the de facto standard for encryption of
+WWW traffic, and to a lesser degree for protocols such as POP and
+IMAP (among others). Unfortunately RSA is patented in the USA
+(until Sept 20th, 2000), resulting in a variety of
+restrictions/issues. You cannot use RSA without a license, for
+things such as web browsers this is not a problem as
+Netscape/Microsoft/etc. have licensed RSA components, for server
+software however you typically have to pay for SSL enabled
+services (such as secure web servers). However there is an
+implementation of RSA called RSAREF (RSA Reference), which has
+several problems, you cannot develop it, you can only make bug
+fixes, so speed wise it lags well behind other RSA
+implementations, and it has had a number of serious security
+problems (which have since been fixed). RSAREF used for free,
+however not in any situation on which you charge for access to
+the service using RSAREF which is perfectly reasonable, until you
+consider institutions such as universities. Universities charge
+tuition to students, and a portion of this goes to paying for
+network services, so legally speaking universities cannot use
+RSAREF (although several do, some, like columbia.edu have gone so
+far as to create encryption software for use on campus). US
+businesses are mostly in the clear, for internal operations there
+are typically no fees associated with access, however for
+e-commerce servers, and for services that ISP's and other network
+providers provide you cannot legally use RSAREF. The RSA company
+is also quite zealous about protecting their patents, so if they
+find a business using RSA or RSAREF improperly (i.e. they have
+not paid for it when they should) they will go after you, so
+before using RSAREF please consult a lawyer. The good news (as
+stated before) is that the patent should expire in September of
+2000, and that outside the US using RSAREF/etc is perfectly
+legal.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="appendix-d.html">Back</a> | <a href="index.html">TOC</a> | <a href="appendix-f.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

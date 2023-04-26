@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Kernel</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>The Linux kernel</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#3b504e494f7b485e525d49525e5f1554495c"><span class="__cf_email__" data-cfemail="ff948a8d8bbf8c9a96998d969a9bd1908d98">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Linux (or GNU/Linux according to Stallman if you&#146;re
+referring to a complete distribution) is actually just the kernel
+of the operating system. The kernel is the core of the system, it
+handles access to the harddrive, security mechanisms, networking
+and pretty much everything. It had better be secure or you are
+screwed.&nbsp;</p>
+<p>In addition to this we have hardware problems like the Pentium
+F00F bug, and problems inherent to the TCP-IP protocol, the Linux
+kernel has it&#146;s work cut out for it. Kernel versions are
+labeled as X.Y.Z, Z are minor revision numbers, Y define whether
+the kernel is a test (odd number) or production (even number),
+and X defines the major revision (we have had 0, 1 and 2 so far).
+I would highly recommend running kernel 2.2.x, as of December
+1999 this is 2.2.13. The 2.2.x series of kernel has major
+improvements over the 2.0.x series. Using the 2.2.x kernels also
+allows you access to newer features such as ipchains (instead of
+ipfwadm) and other advanced security features. The 2.0.x series
+has also been officially discontinued as of June 1999. To find
+out what the latest kernel(s) are simply finger
+@linux.kernel.org:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="a2d1c7cbc4d0cbc7c6e2cfc3cbce">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> kernel-patches]$ finger @finger.kernel.org
+[zeus.kernel.org]
+
+    The latest stable version of the Linux kernel is:     2.4.9
+    The latest prepatch (alpha) version *appears* to be:  2.4.10-pre4</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2><a name="Compiling and installing a kernel:">Compiling and
+installing a kernel:</a></h2>
+<p>&nbsp;</p>
+<p>Upgrading the kernel consists of getting a new kernel and
+modules, editing /etc/lilo.conf, rerunning LILO to write a new
+MBR. The kernel will typically be placed into /boot, and the
+modules in /lib/modules/kernel.version.number/.&nbsp;</p>
+<p>Getting a new kernel and modules can be accomplished 2 ways,
+by downloading the appropriate kernel package and installing it,
+or by downloading the source code from <a href="ftp://ftp.kernel.org/">ftp://ftp.kernel.org/</a> (please
+use a mirror site), and compiling it.</p>
+<blockquote>
+<pre>cd /usr/src</pre>
+</blockquote>
+<p>there should be a symlink called &#147;linux&#148; pointing to
+the directory containing the current kernel, remove it if there
+is, if there isn&#146;t one no problem. You might want to
+&#147;mv&#148; the linux directory to
+/usr/src/linux-kernel.version.number and create a link pointing
+/usr/src/linux at it.</p>
+<p>Unpack the source code using tar and gzip as appropriate so
+that you now have a /usr/src/linux with about 50 megabytes of
+source code in it. The next step is to create the linux kernel
+configuration (/usr/src/linux.config), this can be achieved using
+&#147;make config&#148;, &#147;make menuconfig&#148; or
+&#147;make xconfig&#148;, my preferred method is &#147;make
+menuconfig&#148; (for this you will need ncurses and ncurses
+devel libraries). This is arguably the hardest step, there are
+hundreds options, which can be categorized into two main areas:
+hardware support, and service support. For hardware support make
+a list of hardware that this kernel will be running on (i.e.
+P166, Adaptec 2940 SCSI Controller, NE2000 Ethernet card, etc.)
+and turn on the appropriate options. As for service support you
+will need to figure out which file systems (fat, ext2, minix
+,etc.) you plan to use, the same for networking (firewalling,
+etc.).&nbsp;</p>
+<p>Once you have configured the kernel you need to compile it,
+the following commands makes dependencies ensuring that libraries
+and so forth get built in the right order, then cleans out any
+information from previous compiles, then builds a kernel, the
+modules and installs the modules.</p>
+<blockquote>
+<pre>make dep		#(makes dependencies)
+make clean	#(cleans out previous cruft)
+make bzImage	#(make zImage pukes if the kernel is to big, and 2.2.x kernels tend to be pretty big)
+make modules	#(creates all the modules you specified)
+make modules_install	#(installs the modules to /lib/modules/kernel.version.number/)</pre>
+</blockquote>
+<p>You then need to copy /usr/src/linux/arch/i386/boot/bzImage
+(or zImage) to /boot/vmlinuz-kernel.version.number. Then edit
+/etc/lilo.conf, adding a new entry for the new kernel and setting
+it as the default image is the safest way (using the default=X
+command, otherwise it will boot the first kernel listed), if it
+fails you can reboot and go back to the previous working kernel.</p>
+<blockquote>
+<pre>boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=50
+default=linux
+image=/boot/vmlinuz-2.4.9
+	label=linux
+	root=/dev/hda1
+	read-only
+image=/boot/vmlinuz-2.4.5
+	label=linuxold
+	root=/dev/hda1
+	read-only</pre>
+</blockquote>
+<p>Once you have finished editing /etc/lilo.conf you must run
+/sbin/lilo to rewrite the MBR (Master Boot Record). When LILO
+runs you will see output similar to:</p>
+<blockquote>
+<pre>Added linux *
+Added linuxold</pre>
+</blockquote>
+<p>It will list the images that are listed on the data in the MBR
+and indicate with a * which is the default (typically the default
+to load is the first image listed, unless you explicitly specify
+one using the default directive).</p>
+<p>&nbsp;</p>
+<h2><a name="Kernel versions">Kernel versions</a></h2>
+<p>Currently the stable kernel release series is 2.4.x, and the
+development series is 2.5.x. The 2.3.x development series of
+kernels is not recommended, there are many problems and
+inconsistencies. The 2.2.x series of kernel while old and lacking
+some features is relatively solid, unfortunately the upgrade from
+2.2.x to 2.4.x is a pretty large step, I would advise caution.
+Several software packages must be updated, libraries, ppp,
+modutils and others (they are covered in the kernel docs / rpm
+dependencies / etc.). Additionally keep the old working kernel,
+add an entry in lilo.conf for it as &quot;linuxold&quot; or
+something similar and you will be able to easily recover in the
+event 2.2.x doesn't work out as expected. Don't expect the 2.4.x
+series to be bug free, flaws will be found and older versions
+will become obsolete, like every piece of software in the world.</p>
+<p>There are a variety of kernel level patches that can enhance
+the security of a Linux system. Some prevent buffer overflow
+exploits, other provide strong crypto.</p>
+<p>&nbsp;</p>
+<h2><a name="Kernel patches">Kernel patches</a></h2>
+<p>There are a variety of kernel patches directly related to
+security.</p>
+<p>&nbsp;</p>
+<h3><a name="Secure Linux  kernel patch">Secure Linux kernel
+patch</a></h3>
+<p>This patch solves a number of issues and provides another
+level of security for the system. The patch is available for the
+2.0 and 2.2 kernel series. You can get it from: <a href="http://www.openwall.com/linux/">http://www.openwall.com/linux/</a>.</p>
+<p>&nbsp;</p>
+<h3><a name="International kernel patch">International kernel
+patch</a></h3>
+<p>This patch (over a megabyte in size!) adds a huge amount of
+strong crypto and related items. It includes several encryption
+algorithms that were AES candidates (including MARS from IBM).
+You can get it from: <a href="http://www.kerneli.org/">http://www.kerneli.org/</a>.
+<a href="http://sourceforge.net/projects/cryptoapi/">http://sourceforge.net/projects/cryptoapi/</a>
+</p>
+<p>&nbsp;</p>
+<h3><a name="LIDS">Linux Intrusion Detection System Patch (LIDS)</a></h3>
+<p>This patch adds a number of interesting capabilities,
+primarily aimed at attack detection. You can &quot;lock&quot;
+file mounts, firewall rules, and a variety of other interesting
+options are available. You can get it from: <a href="http://www.lids.org/">http://www.lids.org/</a> </p>
+<p>&nbsp;</p>
+<h3><a name="RSBAC">RSBAC</a></h3>
+<p>Rule Set Based Access Control is a comprehensive set of
+patches and utilities to control various aspects of the system,
+from filesystem ACL's and up. You can get it from: <a href="http://www.rsbac.de/rsbac/">http://www.rsbac.de/rsbac/</a>.
+</p>
+<p>&nbsp;</p>
+<h3><a name="LOMAC">LOMAC </a></h3>
+<p>LOMAC (Low Water-Mark Mandatory Access Control for Linux) is a
+set of kernel patches to enhance Linux security. You can get it
+at: <a href="ftp://ftp.tislabs.com/pub/lomac/">ftp://ftp.tislabs.com/pub/lomac/</a>.</p>
+<p>&nbsp;</p>
+<h3><a name="auditd">auditd</a></h3>
+<p>auditd allows you to use the kernel logging facilities (a very
+powerful tool). You can log mail messages, system events and the
+normal items that syslog would cover, but in addition to this you
+can cover events such as specific users opening files, the
+execution of programs, of setuid programs, and so on. If you need
+a solid audit trail then this is the tool for you, you can get it
+at: <a href="ftp://ftp.hert.org/pub/linux/auditd/">ftp://ftp.hert.org/pub/linux/auditd/</a>.</p>
+<p>&nbsp;</p>
+<h3><a name="Fork Bomb Defuser">Fork Bomb Defuser</a></h3>
+<p>A loadable kernel module that allows you to control the
+maximum number of processes per user, and the maximum number of
+forks, very useful for shell servers with untrusted users. You
+can get it from: <a href="http://rexgrep.tripod.com/rexfbdmain.htm">http://rexgrep.tripod.com/rexfbdmain.htm</a>.
+</p>
+<p>&nbsp;</p>
+<h2><a name="Debugging the Linux kernel">Debugging the Linux
+kernel</a></h2>
+<p>&nbsp;</p>
+<h3><a name="KDB v0.6 (Built-in Kernel Debugger)">KDB v0.6
+(Built-in Kernel Debugger) </a></h3>
+<p>An SGI kernel debugger, available at: <a href="http://oss.sgi.com/projects/kdb/">http://oss.sgi.com/projects/kdb/</a>.</p>
+<p>&nbsp;</p>
+<h3><a name="kGDB (Remote kernel debugger)">kGDB (Remote kernel
+debugger)</a></h3>
+<p>SGI has written a tool that allows you to do kernel debugging,
+remotely which is a big step up from being tied to the console.
+You can get it at: <a href="http://oss.sgi.com/projects/kgdb/">http://oss.sgi.com/projects/kgdb/</a>.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#4c27393e380c3f29252a3e25292862233e2b"><span class="__cf_email__" data-cfemail="4d26383f390d3e28242b3f24282963223f2a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

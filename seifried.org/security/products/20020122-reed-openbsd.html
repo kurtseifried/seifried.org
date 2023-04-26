@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Products / Darren Reed's OpenBSD 3.0 with ipf</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Darren Reed's OpenBSD 3.0 with ipf</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#5f342a2d2b1f2c3a36392d363a3b71302d38"><span class="__cf_email__" data-cfemail="046f7176704477616d62766d61602a6b7663">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>It's not often a new BSD comes out. And unfortunately this is
+not one of those times. On January the 22nd, 2002 Darren Reed
+(the author of IPF, a popular packet filter) announced that he
+had released OpenBSD 3.0 with IPFilter 3.4.23.</p>
+<blockquote>
+<pre>binary files for OpenBSD/i386 3.0 with IPFilter 3.4.23 are available at
+<a href="http://openbsd30.ipfilter.org" target="_top">http://openbsd30.ipfilter.org</a>
+
+src .tgz's should be around soonish.
+
+in the next few weeks, I'll build and upload iso's.
+
+If you must do it from source, IPFilter 3.4.23 contains all the scripts
+and patches you need to patch-up a openbsd 3.0 distribution.</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2>Installation:</h2>
+<p>Installation is problematic. The files are only available from
+one location, a website, and are not mirrored anywhere. When you
+choose the &quot;http&quot; installation option the only websites
+that come up are the default OpenBSD 3.0 ones, the one with
+Darren Reed's OpenBSD 3.0 is not listed. If you manually enter
+the location when the installation program tries to find the
+files it fails, as it cannot find the files, even after searching
+for them. To install Darren Reed's OpenBSD 3.0 you must manually
+download the files and copy them to an ftp server, http server,
+tape, cdrom or harddrive that will be accessible to the machine
+being installed. </p>
+<p>Once you have copied the files you will need to choose your
+installation method, do not forget to change the default path's
+and site Darren Reed lists in the installation program or you
+will likely end up installing OpenBSD 3.0 by accident.
+Unfortunately Darren Reed's OpenBSD 3.0 is stripped down, only
+the base, etc, misc, comp, man, game and bsd packages are
+available. There is no X Windowing System packages, so when the
+installation asks you if you plan to use X you should change the
+default from yes to no. </p>
+<p>&nbsp;</p>
+<h2>Documentation:</h2>
+<p>Minimal distribution specific documentation is available. All
+the documentation shipped with the product applies to a
+&quot;stock&quot; OpenBSD 3.0 from openbsd.org, from the email to
+root from Theo DeRaadt, &quot;man afterboot&quot; and the pf man
+pages. There is limited documentation available for ipf, man
+pages for using the ipf control binary is available, but as for
+documentation on how to actual configure the firewall there is
+none at all. In addition to this /etc/ipf.conf is missing,
+however /etc/pf.conf is present (as is the man page for it).
+Additionally in /etc/rc.conf there is an entry for
+&quot;ipfilter&quot; and for pf, it is not clearly stated which
+applies however from /etc/rc it is apparent that the
+&quot;ipfilter&quot; line is the one used. The good news is that
+there is documentation for ipf online that is quite good, and can
+be found with minimal effort. If you wish to submit a bug report
+you will have to email Darren Reed directly as the
+&quot;sendbug&quot; command is configured to </p>
+<p>&nbsp;</p>
+<h2>Updates:</h2>
+<p>Updating Darren Reed's OpenBSD 3.0 is critical as it ships
+with a number of issues that have been fixed in stock OpenBSD
+3.0. Unfortunately updates are only available through
+&quot;normal&quot; OpenBSD channels, however if you are careful
+you can collect updates via CVS from the OpenBSD servers, then
+apply Darren Reed's patches and source code for ipf/etc and with
+some simple modification to make files you should be able to
+update a system using Darren Reed's OpenBSD 3.0. Unfortunately no
+documentation on this procedure is available yet. </p>
+<p>&nbsp;</p>
+<h2>Support:</h2>
+<p>Support for Darren Reed's OpenBSD 3.0 is not yet available,
+indeed there are no support contacts listed, email addresses to
+report bugs to, feature requests and so on. The good news is that
+commercial support providers should be able to provide support
+for Darren Reed's OpenBSD 3.0. </p>
+<p>&nbsp;</p>
+<h2>Conclusion:</h2>
+<p>Darren Reed's OpenBSD 3.0 with ipf is not yet a usable
+product. It contains a variety of security problems and is
+difficult to update. It is obvious that a minimal amount of
+effort was made to launch this product as several configuration
+files still refer to pf, as well pf binaries and documentation
+shipping with the product. This reviewer recommends that you
+stick with stock OpenBSD 3.0 and pf, the ruleset is largely
+compatible with ipf, and it is properly supported and maintained
+by the OpenBSD community. </p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p>Darren Reed's OpenBSD 3.0 with ipf - <a href="http://openbsd30.ipfilter.org">http://openbsd30.ipfilter.org</a>
+</p>
+<p>Darren Reed's original message - <a href="http://groups.google.com/groups?hl=en&amp;selm=3c45befe%40clarion.carno.net.au">http://groups.google.com/groups?hl=en&amp;selm=3c45befe%40clarion.carno.net.au</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 1/22/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

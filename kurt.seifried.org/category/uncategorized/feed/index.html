@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>Uncategorized &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/category/uncategorized/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:26 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>Uncategorized &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Why I love OpenSource &#8211; adding CSV export capability to Mailman</title>
+		<link>http://kurt.seifried.org/2013/08/17/why-i-love-opensource-adding-csv-export-capability-to-mailman/</link>
+		<comments>http://kurt.seifried.org/2013/08/17/why-i-love-opensource-adding-csv-export-capability-to-mailman/#respond</comments>
+		<pubDate>Sat, 17 Aug 2013 20:01:49 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=338</guid>
+		<description><![CDATA[So mailman is by far one of the best mailing list management packages available. One thing I love is the command line access, Because of this I can write simple scripts like: for list in `/usr/lib/mailman/bin/list_lists -b` do /usr/lib/mailman/bin/list_admins $list &#62; /root/mailman-export/$i-admins.txt /usr/lib/mailman/bin/list_owners $list &#62; /root/mailman-export/$i-owners.txt /usr/lib/mailman/bin/list_members $list &#62; /root/mailman-export/$i-members.txt done And get a nice [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=338&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So mailman is by far one of the best mailing list management packages available. One thing I love is the command line access, Because of this I can write simple scripts like:</p>
+<pre style="padding-left:30px;">for list in `/usr/lib/mailman/bin/list_lists -b`
+<span style="font-family:Consolas, Monaco, monospace;font-size:12px;line-height:18px;">do
+</span>/usr/lib/mailman/bin/list_admins $list &gt; /root/mailman-export/$i-admins.txt
+/usr/lib/mailman/bin/list_owners $list &gt; /root/mailman-export/$i-owners.txt
+/usr/lib/mailman/bin/list_members $list &gt; /root/mailman-export/$i-members.txt
+done</pre>
+<p>And get a nice list of all the admins, owners and members for each list hosted on that server. I can then do things like grep for a specific user or domain across all the lists and then put that data into further scripts (e.g. to remove every account from a specific domain from every list). But not everyone wants a big list of text files. I had one administrative user that wants to run some analytics, they wanted a CSV file for every list in the form:</p>
+<pre style="padding-left:30px;">"list name","email address","user name","access level"</pre>
+<p>so for example:</p>
+<pre style="padding-left:30px;">"announcements","kurt@seifried.org","Kurt Seifried","member"</pre>
+<p>and so on. Now I could take the above bash script and modify it sufficiently to take the output and turn it into a CSV file, but there is probably a more elegant way. If you look at the &#8220;/usr/lib/mailman/bin/list_members&#8221; script you&#8217;ll see it&#8217;s pretty simple. In order to add CSV export capability I first copied it to &#8220;/usr/lib/mailman/bin/list_members-csv&#8221; and then opened it up in an editor.</p>
+<p>First we&#8217;ll need support for CSV and datetime (so we can timestamp the output), just go to the import statements and add:</p>
+<pre style="padding-left:30px;">import csv
+import datetime</pre>
+<p>Then you&#8217;ll want to create a CSV file to write to, I want my files in &#8220;/root/list-exports/&#8221; in a file name  that has the list name, membership level and date (which is redundant but makes dumping all the outputs into the same dir easy and safe). Simply go into &#8220;__main_-&#8221; and find the line:</p>
+<pre style="padding-left:30px;">listname = args[0].lower().strip()</pre>
+<p>Then add something like:</p>
+<pre style="padding-left:30px;">datestring = str(datetime.date.today())
+cvsoutputdir = "/root/list-output/"
+cvsoutputfilename = cvsoutputdir + listname + "-members-" + datestring + ".csv"
+csvoutputfile = open(cvsoutputfilename, "wb")
+csvwriter = csv.writer(csvoutputfile, dialect='excel', quoting=csv.QUOTE_ALL)</pre>
+<p>you now have a file name in the form &#8220;listname-members-date.csv&#8221;, all the data will always be quoted and the output will be in the format preferred by Excel (so for escaping/etc. it&#8217;ll use the characters Excel is expecting). I could have integrated this with the &#8220;&#8211;output file&#8221; command line option,  but then I need logic to handle the datetime and membership level and list name in the wrapper using my modified version of list_members, so it&#8217;s easier (for me) to just stick that logic into my modified list_members.</p>
+<p>Now you simply look for the lines where the output is actually handled and replace:</p>
+<pre style="padding-left:30px;">print &gt;&gt; fp, formataddr((safe(name), addr))</pre>
+<p>with:</p>
+<pre style="padding-left:30px;">csvwriter.writerow([listname, addr, safe(name), "member"])</pre>
+<p>And you&#8217;re done.  Now you could get fancy and make it an actual option (&#8211;csv?) in the existing program, and add some switch logic for output, but honestly, I couldn&#8217;t be bothered, this is simple enough and it works reliably.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/338/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/338/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=338&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/08/17/why-i-love-opensource-adding-csv-export-capability-to-mailman/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Fedora 16 with SELinux running WordPress with Akismet</title>
+		<link>http://kurt.seifried.org/2013/06/17/fedora-16-with-selinux-running-wordpress-with-akismet/</link>
+		<comments>http://kurt.seifried.org/2013/06/17/fedora-16-with-selinux-running-wordpress-with-akismet/#respond</comments>
+		<pubDate>Tue, 18 Jun 2013 02:29:13 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[SELinux]]></category>
+		<category><![CDATA[spam]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=168</guid>
+		<description><![CDATA[So you have WordPress and Akismet to get rid of spam. But for some reason Akismet is not working: You can test if you have a valid key and connectivity from the command line with either wget: wget --post-data 'key=YOURKEYGOESHERE&#38;blog=http://example.org'\ http://rest.akismet.com/1.1/verify-key or using curl: curl -d 'key=YOURKEYGOESHERE' -d 'blog=http://example.org' \ http://rest.akismet.com/1.1/verify-keyd If it works you [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=168&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So you have WordPress and Akismet to get rid of spam. But for some reason Akismet is not working:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png"><img class="size-full wp-image-169 alignnone" title="WordPress-Akismet-fail" alt="WordPress with Akismet failing" src="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png?w=450" srcset="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png 419w, http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png?w=150 150w, http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png?w=300 300w" sizes="(max-width: 419px) 100vw, 419px"   /></a></p>
+<p>You can test if you have a valid key and connectivity from the command line with either wget:</p>
+<pre style="padding-left:30px;">wget --post-data 'key=YOURKEYGOESHERE&amp;blog=http://example.org'\
+http://rest.akismet.com/1.1/verify-key</pre>
+<p>or using curl:</p>
+<pre style="padding-left:30px;">curl -d 'key=YOURKEYGOESHERE' -d 'blog=http://example.org' \
+http://rest.akismet.com/1.1/verify-keyd</pre>
+<p>If it works you should receieve a file called &#8220;verify-key&#8221; containing the word &#8220;valid&#8221;</p>
+<p>If that doesn&#8217;t work then you have problems outside the scope of this article.</p>
+<p>But if you can retrieve the key than chances are your SELinux configuration is limiting what the httpd server can do.</p>
+<p>Luckily the fix is simple: allow httpd to make outgoing connections:</p>
+<pre style="padding-left:30px;">setsebool -P httpd_can_network_connect on</pre>
+<p>But wait a minute you say. Now my httpd server can connect to anything, attackers can use it to attack other systems potentially (especially if you allow CGI scripts and arbitrary WordPress plugins or themes which can contain PHP code).</p>
+<p>So we need to limit what systems the httpd server can connect to. The good news here is that IPTables supports this.</p>
+<p>In the case of Akissmet you&#8217;d want to add something like this to your /etc/sysconfig/iptables file:</p>
+<pre style="padding-left:30px;">-A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 66.135.58.61 -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 66.135.58.62 -j ACCEPT 
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 72.223.69.89 -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -m tcp -p tcp --dport 80 \
+--dest 72.223.69.88 -j ACCEPT
+-A OUTPUT -m owner --uid-owner apache -j REJECT</pre>
+<p>This should allow only existing inbound connections (e.g. web clients) and outgoing connections to Akismet (you may want to add any other services you use of course).</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/168/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/168/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=168&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/06/17/fedora-16-with-selinux-running-wordpress-with-akismet/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2012/03/wordpress-akismet-fail.png" medium="image">
+			<media:title type="html">WordPress-Akismet-fail</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Why Domain Specific Knowledge (DSK) is critical to writing good software &#8211; an example</title>
+		<link>http://kurt.seifried.org/2013/05/27/why-domain-specific-knowledge-dsk-is-critical-to-writing-good-software-an-example/</link>
+		<comments>http://kurt.seifried.org/2013/05/27/why-domain-specific-knowledge-dsk-is-critical-to-writing-good-software-an-example/#respond</comments>
+		<pubDate>Tue, 28 May 2013 03:27:23 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[dsk]]></category>
+		<category><![CDATA[programming]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=291</guid>
+		<description><![CDATA[Software for the police written by someone trained to be a policeman: http://www.fastcolabs.com/3010085/this-founder-trained-at-the-police-academy-to-build-an-app-for-cops Look for a genuine problem to be solved, not a way to leverage some technology. Really understand the problem that you seek to solve. For example, we have one of the ugliest UIs in the world, and unless you are a cop [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=291&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>Software for the police written by someone trained to be a policeman:</p>
+<p><a href="http://www.fastcolabs.com/3010085/this-founder-trained-at-the-police-academy-to-build-an-app-for-cops">http://www.fastcolabs.com/3010085/this-founder-trained-at-the-police-academy-to-build-an-app-for-cops</a></p>
+<p style="padding-left:30px;">Look for a genuine problem to be solved, not a way to leverage some technology. Really understand the problem that you seek to solve. For example, we have one of the ugliest UIs in the world, and unless you are a cop it&#8217;s very difficult to understand why. On the left hand side is what we call the pedigree: the person&#8217;s image and an image of their car model. This is designed to be used on a portable computer in a moving unmarked car, and all we want to give you is the ability to see that person on the street or the car in the driveway. Some of this information looks redundant but it isn&#8217;t, e.g., age and date of birth. The age is so I know how old the person who I am going to encounter is. The date of birth is to confirm her identity once I see her. The area on the right changes. It shows home address and home street view when you are still driving. We require almost no keystrokes. Cops hate typing, and they are in a car so they are not allowed to type while they drive. Everything is one click away except when you are parked. We are anticipating the workflow in the order in which we believe a cop will do it but we don&#8217;t require them to follow our workflow order.</p>
+<p>I would have put a pic of the front of the car (wrong) and just the DOB (making the cop do more work to mentally figure out the age). Good thing I don&#8217;t write software for the police.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/291/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/291/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=291&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/05/27/why-domain-specific-knowledge-dsk-is-critical-to-writing-good-software-an-example/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>VMware update insecurity</title>
+		<link>http://kurt.seifried.org/2013/04/16/vmware-update-insecurity/</link>
+		<comments>http://kurt.seifried.org/2013/04/16/vmware-update-insecurity/#respond</comments>
+		<pubDate>Tue, 16 Apr 2013 17:24:47 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[vmware]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=279</guid>
+		<description><![CDATA[So the good news is VMware has a built in updater, and even better the server it uses to query for information is SSL/TLS enabled. The bad news is they are using Akamai with an insecure configuration: A quick note: Akamai is a huge content delivery network (CDN) used by many vendors to deliver content and software [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=279&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So the good news is VMware has a built in updater, and even better the server it uses to query for information is SSL/TLS enabled. The bad news is they are using Akamai with an insecure configuration: <a href="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png"><img class="aligncenter size-large wp-image-281" alt="vmware-update-overall-grade" src="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=450&#038;h=246" width="450" height="246" srcset="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=450&amp;h=246 450w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=897&amp;h=492 897w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=150&amp;h=82 150w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=300&amp;h=164 300w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=768&amp;h=421 768w" sizes="(max-width: 450px) 100vw, 450px" /></a> A quick note: Akamai is a huge content delivery network (CDN) used by many vendors to deliver content and software updates to end customers. Some pretty insecure configurations of SSL and TLS are supported by Akamai for the simple fact that there is still a lot of old software/clients out there, which Akamai&#8217;s customers want to support. As you can see here if you query <a href="https://www.ssllabs.com/ssltest/analyze.html?d=softwareupdate.vmware.com">https://www.ssllabs.com/ssltest/analyze.html?d=softwareupdate.vmware.com</a> they use an Akamai certificate: <a href="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png"><img class="aligncenter size-large wp-image-280" alt="vmware-update-akamai" src="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=450&#038;h=265" width="450" height="265" srcset="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=450&amp;h=265 450w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=150&amp;h=89 150w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=300&amp;h=177 300w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=768&amp;h=454 768w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png 816w" sizes="(max-width: 450px) 100vw, 450px" /></a> Nothing wrong so far, but when you look at the versions of the SSL protocol that are supported they have left SSL 2.0 enabled, and they have also left weak ciphers including several 40 bit ones enabled: <a href="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png"><img class="aligncenter size-large wp-image-282" alt="vmware-update-weak-ciphers" src="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=450&#038;h=297" width="450" height="297" srcset="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=450&amp;h=297 450w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=150&amp;h=99 150w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=300&amp;h=199 300w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=768&amp;h=509 768w, http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png 817w" sizes="(max-width: 450px) 100vw, 450px" /></a> This makes an SSL downgrade attack trivial for an attacker as 40 bit keys can be broken in near real time now with even a remotely powerful computer that has a GPU.  Using this an attacker can man in the middle your upgrade session and tell the client no updates are available (forcing you to remain on an older version with security issues), or potentially send you a malicious update. I haven&#8217;t looked at the guts of the VMware updater, for all I know they may use additional protections like secure signing of the update software itself, but let&#8217;s hope they do, because the communication channels it is sent over are not very secure. The good news is that fixing this is easy, VMware just needs to make sure their updater software supports TLS and secure ciphers (which if they&#8217;re using an even moderately up to date library won&#8217;t be a problem), and they need to update their Akamai configuration to exclude SSL 2.0 and the weak ciphers.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/279/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/279/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=279&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/04/16/vmware-update-insecurity/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-overall-grade.png?w=450" medium="image">
+			<media:title type="html">vmware-update-overall-grade</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-akamai.png?w=450" medium="image">
+			<media:title type="html">vmware-update-akamai</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/04/vmware-update-weak-ciphers.png?w=450" medium="image">
+			<media:title type="html">vmware-update-weak-ciphers</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>New techniques in spam from the Harvard Business Review (HBR)</title>
+		<link>http://kurt.seifried.org/2013/03/01/new-techniques-in-spam-from-the-harvard-business-review-hbr/</link>
+		<comments>http://kurt.seifried.org/2013/03/01/new-techniques-in-spam-from-the-harvard-business-review-hbr/#respond</comments>
+		<pubDate>Sat, 02 Mar 2013 06:41:55 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[hbr]]></category>
+		<category><![CDATA[spam]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=265</guid>
+		<description><![CDATA[No this isn&#8217;t about an article in the Harvard Business Review (HBR), this is actually about spam from the Harvard Business Review. A long time ago I signed up for a year since I got one of those &#8220;get the magazine for $19.95 a year&#8221; offers and figured why not. I then cancelled at the [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=265&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>No this isn&#8217;t about an article in the Harvard Business Review (HBR), this is actually about spam from the Harvard Business Review. A long time ago I signed up for a year since I got one of those &#8220;get the magazine for $19.95 a year&#8221; offers and figured why not. I then cancelled at the end since I didn&#8217;t find the magazine terribly interesting or forward looking (it seems to mostly reflect an entrenched view of business/law that while useful for existing managers is not terribly education, unlike say the Economist which I still read).</p>
+<p>So what&#8217;s this new spam technique from the Harvard Business Review? Well they sent me an email, informing me that I had not completed an order at their online store and that my shopping cart still had items in it. This is a pretty clever social engineering technique, they&#8217;re prompting you and leading you to believe that you had meant to renew your Harvard Business Review subscription and obviously got distracted or something so you might want to finish the process and send them some money. Except I hadn&#8217;t been shopping on their web site (my subscription lapsed a few years ago).</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png"><img class="aligncenter size-full wp-image-267" alt="Harvard-Business-Review-Spam-Email" src="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=450&#038;h=431" width="450" height="431" srcset="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=450&amp;h=431 450w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=150&amp;h=144 150w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png?w=300&amp;h=288 300w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png 666w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>So I went to unsubscribe (who knows, they might actually stop emailing me), but that part of the process was also engineered to make it difficult, first step: make the person enter their email address rather then filling the form (and they know the email address, I mean they just spammed me):</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png"><img class="aligncenter size-full wp-image-268" alt="Harvard-Business-Review-Spam-Email-Unsubscribe" src="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=450&#038;h=187" width="450" height="187" srcset="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=450&amp;h=187 450w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=150&amp;h=62 150w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=300&amp;h=125 300w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png?w=768&amp;h=319 768w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png 808w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>But then the piece de resistance:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png"><img class="aligncenter size-full wp-image-269" alt="Harvard-Business-Review-Spam-Email-Unsubscribe-10-Days" src="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=450&#038;h=123" width="450" height="123" srcset="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=450&amp;h=123 450w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=150&amp;h=41 150w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=300&amp;h=82 300w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png?w=768&amp;h=210 768w, http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png 808w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>Up to 10 days to remove you from a mailing list. What. The. Fuck? So yeah, the moral of the story is use the &#8220;spam&#8221; button in your mail client and deep six all the crap Harvard Business Review is going to try sending you.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/265/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/265/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=265&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/03/01/new-techniques-in-spam-from-the-harvard-business-review-hbr/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email.png" medium="image">
+			<media:title type="html">Harvard-Business-Review-Spam-Email</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe.png" medium="image">
+			<media:title type="html">Harvard-Business-Review-Spam-Email-Unsubscribe</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/harvard-business-review-spam-email-unsubscribe-10-days.png" medium="image">
+			<media:title type="html">Harvard-Business-Review-Spam-Email-Unsubscribe-10-Days</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Circuit and Logic Simulators</title>
+		<link>http://kurt.seifried.org/2012/09/27/circuit-and-logic-simulators/</link>
+		<comments>http://kurt.seifried.org/2012/09/27/circuit-and-logic-simulators/#respond</comments>
+		<pubDate>Fri, 28 Sep 2012 02:33:00 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[simulators]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=236</guid>
+		<description><![CDATA[These look like fun Andreas Tetzl&#8217;s Logic simulators: http://www.tetzl.de/java_logic_simulator.html Atanua: http://sol.gfxile.net/atanua/index.html Board Drawing: http://3d2f.com/programs/84-182-board-drawing-download.shtml Circuitlab: https://www.circuitlab.com/ Circuit Maker: http://my.ece.ucsb.edu/bobsclass/2C/Simulation/circuit_maker.htm Circuit Simulator Applet: http://www.falstad.com/circuit/ DesignWorksMac: http://www.capilano.com/dwm45.html Hades Simulation Framework: http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/index.html Linear Technology: http://www.linear.com/designtools/software/ Logic Friday: http://sontrak.com/index.html Logic Lab: http://www.neuroproductions.be/logic-lab/ Logic.ly: http://logic.ly/ Logisim: http://ozark.hendrix.edu/~burch/logisim/ MMLogic: http://www.softronix.com/logic.html I wonder if there any good ones for the iPad.<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=236&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>These look like fun</p>
+<ul>
+<li>Andreas Tetzl&#8217;s Logic simulators: <a href="http://www.tetzl.de/java_logic_simulator.html">http://www.tetzl.de/java_logic_simulator.html</a></li>
+<li>Atanua: <a href="http://sol.gfxile.net/atanua/index.html">http://sol.gfxile.net/atanua/index.html</a></li>
+<li>Board Drawing: <a href="http://3d2f.com/programs/84-182-board-drawing-download.shtml">http://3d2f.com/programs/84-182-board-drawing-download.shtml</a></li>
+<li>Circuitlab: <a href="https://www.circuitlab.com/">https://www.circuitlab.com/</a></li>
+<li>Circuit Maker: <a href="http://my.ece.ucsb.edu/bobsclass/2C/Simulation/circuit_maker.htm">http://my.ece.ucsb.edu/bobsclass/2C/Simulation/circuit_maker.htm</a></li>
+<li>Circuit Simulator Applet: <a href="http://www.falstad.com/circuit/">http://www.falstad.com/circuit/</a></li>
+<li>DesignWorksMac: <a href="http://www.capilano.com/dwm45.html">http://www.capilano.com/dwm45.html</a></li>
+<li>Hades Simulation Framework: <a href="http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/index.html">http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/index.html</a></li>
+<li>Linear Technology: <a href="http://www.linear.com/designtools/software/">http://www.linear.com/designtools/software/</a></li>
+<li>Logic Friday: <a href="http://sontrak.com/index.html">http://sontrak.com/index.html</a></li>
+<li>Logic Lab: <a href="http://www.neuroproductions.be/logic-lab/">http://www.neuroproductions.be/logic-lab/</a></li>
+<li>Logic.ly: <a href="http://logic.ly/">http://logic.ly/</a></li>
+<li>Logisim: <a href="http://ozark.hendrix.edu/~burch/logisim/">http://ozark.hendrix.edu/~burch/logisim/</a></li>
+<li>MMLogic: <a href="http://www.softronix.com/logic.html">http://www.softronix.com/logic.html</a></li>
+</ul>
+<p>I wonder if there any good ones for the iPad.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/236/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/236/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=236&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/09/27/circuit-and-logic-simulators/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>How not to post log information, or why I shred every piece of paper I touch</title>
+		<link>http://kurt.seifried.org/2012/07/04/how-not-to-post-log-information-or-why-i-shred-every-piece-of-paper-i-touch/</link>
+		<comments>http://kurt.seifried.org/2012/07/04/how-not-to-post-log-information-or-why-i-shred-every-piece-of-paper-i-touch/#respond</comments>
+		<pubDate>Wed, 04 Jul 2012 21:09:35 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[sanitizing]]></category>
+		<category><![CDATA[security]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=207</guid>
+		<description><![CDATA[So this thread just came to my attention: http://comments.gmane.org/gmane.mail.postfix.user/227441 I use postfix2.5.5 rpm to run postfix as relay server since from last many day my application team of SAP software started complaining for the smtp email failuer pls find the below longs ++++++++++++++++++++++++++++++++++++++++++++ Email 1 Feb  6 10:41:22 D1SNX682RL postfix/smtpd[3693]: connect from unknown[155.14.132.36] Feb  6 10:41:23 [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=207&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So this thread just came to my attention: <a href="http://comments.gmane.org/gmane.mail.postfix.user/227441">http://comments.gmane.org/gmane.mail.postfix.user/227441</a></p>
+<div style="padding-left:30px;">I use postfix2.5.5 rpm to run postfix as relay server</div>
+<div style="padding-left:30px;">since from last many day my application team of SAP software started complaining for the smtp email failuer</div>
+<div style="padding-left:30px;">pls find the below longs</div>
+<div style="padding-left:30px;">++++++++++++++++++++++++++++++++++++++++++++</div>
+<div style="padding-left:30px;">
+<p style="padding-left:30px;">Email 1</p>
+<p style="padding-left:30px;">Feb  6 10:41:22 D1SNX682RL postfix/smtpd[3693]: connect from unknown[155.14.132.36]<br />
+Feb  6 10:41:23 D1SNX682RL postfix/smtpd[3693]: 20C453E00C0: client=unknown[155.14.132.36]<br />
+Feb  6 10:41:23 D1SNX682RL postfix/cleanup[10313]: 20C453E00C0: warning: header Subject: RE: RE: RE: RE: RE:// FOLLOW UP // HBL SCREENSHOT //  FINAL SI &amp; HBL // E.R FREMANTLE 087 // HIBLOW from unknown[155.14.132.36]; from=&lt;<a href="mailto:MANILA_DOCS &lt;at&gt; APL.COM">MANILA_DOCS &lt;at&gt; APL.COM</a>&gt; to=&lt;<a href="mailto:crm_email_archive_apl &lt;at&gt; apl.com">crm_email_archive_apl &lt;at&gt; apl.com</a>&gt; proto=ESMTP helo=&lt;<a href="http://nol.com.sg/">nol.com.sg</a>&gt;<br />
+Feb  6 10:41:23 D1SNX682RL postfix/cleanup[10313]: 20C453E00C0: message-id=&lt;<a href="mailto:ADR37000000104995 &lt;at&gt; nol.com.sg">ADR37000000104995 &lt;at&gt; nol.com.sg</a>&gt;<br />
+Feb  6 10:44:27 D1SNX682RL postfix/smtpd[3693]: lost connection after DATA (437492 bytes) from unknown[155.14.132.36]<br />
+Feb  6 10:44:27 D1SNX682RL postfix/smtpd[3693]: disconnect from unknown[155.14.132.36]</p>
+<p>Followed by:</p>
+</div>
+<p style="padding-left:30px;">please at least remove from this site , there is security audit going on in my organisation i dont want to maintain this thread , please remove this .</p>
+<p>Whoops. You may have noticed in my previous posting &#8220;<a href="http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/">Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication</a>&#8221; I took the time to sanitize all the IPs and hostnames presented in the examples. It was a bit of a chorse (running search and replace is simple, but reading the results three times to ensure nothing was missed is tedious), but it&#8217;s worth it. Would the information aid an attacker? A little bit. There are other ways to find this out as well (error messages from servers, etc.).</p>
+<p>But the reason I do it is simple: if you ALWAYS sanitize information then you won&#8217;t run into a situation where you decided not to sanitize the information and later turned out to be wrong. This is exactly why I shred every single piece of paper I touch before throwing it out. Do I need to shred the envelopes my bills come in? They have no personal information/etc., they could conceivably be used to determine which banks/companies I deal with, and how much I deal with them, but I&#8217;m not overly worried about that (anyone taking the time to go through all my trash can find this out other ways). No the reason I shred everything, including envelopes is so that I never have to worry about throwing something away sensitive. Also I don&#8217;t have to spend any time/effort deciding if something needs shredding or not, it all automatically goes into a pile, and when I&#8217;m bored I feed the shredder (I actually find it oddly fun&#8230;).</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/207/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/207/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=207&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/07/04/how-not-to-post-log-information-or-why-i-shred-every-piece-of-paper-i-touch/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely broken</title>
+		<link>http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/</link>
+		<comments>http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/#respond</comments>
+		<pubDate>Sat, 02 Jun 2012 04:49:32 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[gnome3]]></category>
+		<category><![CDATA[usability]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=191</guid>
+		<description><![CDATA[Update (June 6, 2012): Gnome 3 is actually a LOT more broken than I previously thought. I have since found more problems that basically make it near impossible to configure sanely, if at all. So to put it bluntly the Gnome 3 changes suck if you use more than one application at a time and [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=191&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<h2>Update (June 6, 2012): Gnome 3 is actually a LOT more broken than I previously thought. I have since found more problems that basically make it near impossible to configure sanely, if at all.</h2>
+<p>So to put it bluntly the Gnome 3 changes suck if you use more than one application at a time and especially if you use more than one monitor as well. Having to move the mouse over to the top left constantly to show windows/applications so you can bring another window to the front or launch an application. I typically have 5-10 (sometimes 20) xterms open (most SSH&#8217;ed in to remote hosts), at least two web browser (Firefox and Chrome, more if I have a lot of tabs open so I can actually read the titles on the tabs, a not uncommon occurrence), my mail client, and my IRC client at a bare minimum.</p>
+<p>In other words the Fedora 17 + Gnome 3 defaults completely suck for me (and I suspect many others).</p>
+<h2>Step 1) getting my minimize and maximize buttons back:</h2>
+<p>You&#8217;ll need the UI tweak tool:</p>
+<pre style="padding-left:30px;">yum install gnome-tweak-tool</pre>
+<p>and then run it and go to &#8220;Shell&#8221; and then pick the &#8220;Arrangement of buttons on the titlebar&#8221; and select &#8220;All&#8221;:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png"><img class="aligncenter size-full wp-image-195" title="gnome-tweak-tool-min-max-close" alt="" src="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=450&#038;h=359" width="450" height="359" srcset="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=450&amp;h=359 450w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=150&amp;h=120 150w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=300&amp;h=240 300w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png 642w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<p>which will put them on the right hand side ala Windows / Gnome 2</p>
+<h2>Step 2) getting a taskbar</h2>
+<p>I like the taskbar, most of us have been using the taskbar since Win95, and in my case since OS/2 (yeah, that was an interesting dead end OS), and most versions of Linux copied it early on because, well, it works quite well.</p>
+<pre style="padding-left:30px;">yum install tint2</pre>
+<p>and then have it autostart, run the gnome-session-properties program:</p>
+<pre style="padding-left:30px;">gnome-session-properties</pre>
+<p>and add it in:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png"><img class="aligncenter size-full wp-image-193" title="tint2-autostart" alt="" src="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=450&#038;h=360" width="450" height="360" srcset="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=450&amp;h=360 450w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=150&amp;h=120 150w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=300&amp;h=240 300w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png 610w" sizes="(max-width: 450px) 100vw, 450px" /></a></p>
+<h2>Step 3) A dock bar for launching programs</h2>
+<p>Being able to launch applications quickly is kind of useful. A dock bar with icons is about as good as it gets.</p>
+<pre style="padding-left:30px;">yum install gnome-shell-extension-dock.noarch</pre>
+<p>and then .. I&#8217;m not sure, I logged out and back in and Gnome failed to load. Removing the dock extension appears to have addressed it. sigh. The good news is that Fedora 16 will be supported for another 6 months.</p>
+<h2>Added June 6, 2012:</h2>
+<h2>Step 4) Customizing icon launch properties</h2>
+<p>So I also need some of my icons to have customized command line options. Usually this is easy, you right click, and change the properties of the icon such as the &#8220;command&#8221; or &#8220;execute&#8221; line. For example if you want to launch the Google Chrome web browser with Kerberos 5 support you need something like:</p>
+<pre style="padding-left:30px;">google-chrome --auth-server-whitelist="*.example.com"</pre>
+<p>So doing this should be easy right, simply choose icon properties&#8230; hrmm.. that isn&#8217;t available. Just &#8220;New Window&#8221; and &#8220;Add to favorites&#8221;. Ok, maybe there is an application to do this, aha, &#8220;alacarte&#8221; which is &#8220;a graphical menu editor that lets you edit, add, and delete menu entries.&#8221; This should be perfect, just install it:</p>
+<p>yum install alacarte</p>
+<p>and run it. Nope, it&#8217;s broken &#8220;ImportError: No module named gmenu&#8221;. Now Debian has a package called &#8220;python-gmenu&#8221; which is &#8220;an implementation of the freedesktop menu specification for GNOME&#8221;, but there doesn&#8217;t appear to be such a package for Fedora.</p>
+<p>Worse, the alacarte program has been broken, since August of 2011: <a href="https://bugzilla.redhat.com/show_bug.cgi?id=734442">https://bugzilla.redhat.com/show_bug.cgi?id=734442</a> so I wouldn&#8217;t exactly hold my breath.</p>
+<p>So if you want to customize an icon to include command line options you&#8217;ll need to copy the icon file data into your home directory and edit it by hand, this is best described at <a href="http://superuser.com/questions/304271/commandline-options-in-gnome-3-launchers">http://superuser.com/questions/304271/commandline-options-in-gnome-3-launchers</a> and the short version is:</p>
+<p>copy the file from /usr/share/applications/ to ~/.local/share/applications/ and modify the &#8220;Exec=&#8221; line.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/191/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/191/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=191&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png" medium="image">
+			<media:title type="html">gnome-tweak-tool-min-max-close</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png" medium="image">
+			<media:title type="html">tint2-autostart</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Fedora 16 and Red Hat on EC2 with Sendmail using SMART_HOST with authentication</title>
+		<link>http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/</link>
+		<comments>http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/#comments</comments>
+		<pubDate>Mon, 14 May 2012 06:59:39 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[sendmail]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=182</guid>
+		<description><![CDATA[So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&#8217;t want to have to request that the email limit be increased on each server (as [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=182&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So I have a bunch of servers hosted on Amazon EC2 running Red Hat Linux / Fedora. Most of them are web front ends, so they need to be able to send email (alerts, status reports, etc.) but I don&#8217;t want to have to request that the email limit be increased on each server (as they come up and down a lot as demand requires).</p>
+<p>So my obvious thought was to run an EC2 instance that would act as an email relay for all these servers. Easy enough, install a host with Sendmail, and allowing relaying. The trick here is that I don&#8217;t want to have to edit the access file every time a new host comes up or leaves as the level of IP address churn is quite high. So we enable email authentication, and pre-load EC2 images with the credentials to relay email through the server and we&#8217;re done.</p>
+<p>So, foolishly, I thought I&#8217;d skip SMTP, and go straight to TLS encrypted SMTP (port 465), and require authentication. This way all the communications, email, authentication credentials and so on are well protected.I setup the Sendmail server, and tested it using Thunderbird, TLS+auth worked perfectly. However on the Sendmail client server side it did not work well, in fact I was unable to get it working at all, so if anyone knows how I&#8217;d love to hear from you.</p>
+<h2><strong>Setting up the Sendmail Server with encryption and authentication</strong></h2>
+<p>You&#8217;ll need to install sendmail and sasl:</p>
+<pre style="padding-left:30px;">yum install sendmail-cf cyrus-sasl-plain cyrus-sasl-md5 
+cyrus-sasl-gssapi cyrus-sasl-lib cyrus-sasl-devel cyrus-sasl</pre>
+<p>and enable / start it:</p>
+<pre style="padding-left:30px;">systemctl enable saslauthd.service
+systemctl enable sendmail.service
+systemctl start saslauthd.service
+systemctl start sendmail.service</pre>
+<p>Then you&#8217;ll need to edit /etc/mail/sendmail.mc, make sure these two lines are not commented out (they are by default):</p>
+<pre style="padding-left:30px;">TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl</pre>
+<p>and then enable submission:</p>
+<pre style="padding-left:30px;">DAEMON_OPTIONS(`Port=submission, Name=MSA, M=Ea')dnl</pre>
+<p>Then you&#8217;ll need to enable encryption certificates:</p>
+<pre style="padding-left:30px;">define(`confCACERT_PATH', `/etc/pki/tls/certs')dnl
+define(`confCACERT', `/etc/pki/tls/certs/CA_bundle.pem')dnl
+define(`confSERVER_CERT', `/etc/pki/tls/certs/server.crt')dnl
+define(`confSERVER_KEY', `/etc/pki/tls/private/server.key')dnl</pre>
+<p>and you&#8217;re basically done. Simply rebuild the sendmail configuration and restart it:</p>
+<pre style="padding-left:30px;">/etc/mail/make
+systemctl restart sendmail.service</pre>
+<p>You&#8217;ll then need to ensure port 587 is not firewalled (either on the local system or in your EC2 security groups), and you&#8217;ll have to create local accounts with passwords so the clients can authenticate against them (e.g. create a user called &#8220;mail-relay&#8221; with a password and lock the account down).</p>
+<p>You can easily test the server using an email client such as Thunderbird.</p>
+<h2><strong>Setting up the Sendmail Client Server with encryption and authentication</strong></h2>
+<p>First you&#8217;re going to need Sendmail and the syrus-sasl-plain rpms installed. The really annoying part is if you don&#8217;t install the cyrus-sasl-plain package email connections will fail, but the log files are less than helpful when this occurs:</p>
+<pre style="padding-left:30px;">May 20 23:22:48 ip-10-242-49-173 sendmail[9890]: q4L3MmFP009890: 
+client.example.org [10.1.2.3] (may be forged) did not issue 
+MAIL/EXPN/VRFY/ETRN during connection to MSA</pre>
+<p>To install the rpms simply:</p>
+<pre style="padding-left:30px;">yum install sendmail-cf cyrus-sasl-plain</pre>
+<p>So now to setup the client. This is woefully documented and there is a ton of conflicting information. To start with install the same sendmail and sasl packages as above. Then you&#8217;ll need a standard SMART_HOST entry line, but with the added options of telling it to use port 587 (submission) and a link to the file with the authentication information:</p>
+<pre style="padding-left:30px;">define(`SMART_HOST', `smarthost.example.org')dnl
+define(`RELAY_MAILER_ARGS', `TCP $h 587')
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')
+FEATURE(`authinfo',`Hash -o /etc/mail/authinfo.db')dnl</pre>
+<p>You&#8217;ll also need to create an /etc/mail/authinfo file with contents such as:</p>
+<pre style="padding-left:30px;">AuthInfo:smarthost.example.org "U:user_name" "P:password_here" "M:PLAIN"</pre>
+<p>and build it using the makemap program:</p>
+<pre style="padding-left:30px;">makemap hash /etc/mail/authinfo &lt; /etc/mail/authinfo</pre>
+<p>You can then restart sendmail and it should work, the log file from the client sendmail server:</p>
+<pre style="padding-left:30px;">May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq005188: from=ec2-user, 
+size=297,, nrcpts=1, msgid=&lt;201205140651.q4E6p1aq003188@ip-10-10-10-10.ec2.internal&gt;, 
+relay=root@localhost
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3189]: q4E6p12W003189: 
+from=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt;, size=577,, nrcpts=1, 
+msgid=&lt;201205140651.q4E6p1aq003188@ip-10-10-10-10.ec2.internal&gt;, 
+proto=ESMTP, daemon=MTA, relay=localhost.localdomain [127.0.0.1]
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3188]: q4E6p1aq003188: 
+to=kurt@seifried.org, ctladdr=ec2-user (1000/1000), delay=00:00:00, 
+xdelay=00:00:00, mailer=relay, pri=30297, relay=[127.0.0.1] [127.0.0.1], 
+dsn=2.0.0, stat=Sent (q4E6p12W003189 Message accepted for delivery)
+
+May 14 02:51:01 ip-10-10-10-10 sendmail[3191]: STARTTLS=client, 
+relay=smarthost.example.org., version=TLSv1/SSLv3, verify=FAIL, 
+cipher=DHE-RSA-AES256-SHA, bits=256/256
+
+May 14 02:51:02 ip-10-10-10-10 sendmail[3191]: q4E6p52W003189: 
+to=&lt;kurt@seifried.org&gt;, ctladdr=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt; 
+(1000/1000), delay=00:00:01, xdelay=00:00:01, mailer=relay, pri=120577, 
+relay=smarthost.example.org. [1.2.3.4], dsn=2.0.0, stat=Sent 
+(q4E6p1ZE001355 Message accepted for delivery)</pre>
+<p>And on the server:</p>
+<pre style="padding-left:30px;">May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: STARTTLS=server, 
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), 
+version=TLSv1/SSLv3, verify=NO, cipher=DHE-RSA-AES256-SHA, bits=256/256
+
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: AUTH=server, 
+relay=ec2-1-2-3-4.compute-1.amazonaws.com [1.2.3.4] (may be forged), 
+authid=email-client, mech=PLAIN, bits=0
+
+May 14 02:49:48 ip-1-2-3-4 sendmail[1349]: q4E6nmgg001349: 
+from=&lt;ec2-user@ip-10-10-10-10.ec2.internal&gt;, size=795,, nrcpts=1, 
+msgid=&lt;201205140649.q4E6nmdE003182@ip-10-10-10-10.ec2.internal&gt;, 
+proto=ESMTP, daemon=MSA, relay=ec2-1-2-3-4.compute-1.amazonaws.com 
+[1.2.3.4] (may be forged)
+
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: STARTTLS=client, 
+relay=aspmx.l.google.com., version=TLSv1/SSLv3, verify=FAIL, 
+cipher=RC4-SHA, bits=128/128
+
+May 14 02:49:49 ip-1-2-3-4 sendmail[1354]: q4E6nmgg001349: 
+to=&lt;kurt@seifried.org&gt;, delay=00:00:01, xdelay=00:00:01, mailer=esmtp, 
+pri=120795, relay=aspmx.l.google.com. [173.194.68.26], dsn=2.0.0, 
+stat=Sent (OK 1336912345 gs11si19555555aaa.999)</pre>
+<p>As you can see the email comes in, and is then handed off to gmail.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/182/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/182/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=182&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/05/14/fedora-16-and-red-hat-on-ec2-with-sendmail-using-smart_host-with-authentication/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+		<item>
+		<title>Creating temporary files securely</title>
+		<link>http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/</link>
+		<comments>http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/#comments</comments>
+		<pubDate>Wed, 14 Mar 2012 20:29:14 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[auditing]]></category>
+		<category><![CDATA[programming]]></category>
+		<category><![CDATA[security]]></category>
+		<category><![CDATA[tmp]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=165</guid>
+		<description><![CDATA[Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to use them, creating security vulnerabilities in their applications. So in alphabetical order here is a list of programming languages and how to create a [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=165&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>Creating temporary files  is a common use case in virtually every program. Virtually every programming language has a simple and secure way to create temporary files. Sadly many programmers fail to use them, creating security vulnerabilities in their applications. So in alphabetical order here is a list of programming languages and how to create a temporary file securely. If I&#8217;m wrong, please let me know. Note: when searching for a secure temporary file creation function/method/etc. looking for &#8220;mkstemp&#8221; is a quick way to find most of them. Please note a lot of sites (e.g. <a href="http://rosettacode.org/wiki/Secure_temporary_file" rel="nofollow">http://rosettacode.org/wiki/Secure_temporary_file</a>) contain old/wrong information.</p>
+<h2>O_CREAT and O_EXCL (and similar)</h2>
+<p>When opening a temporary file in C you MUST use O_CREAT and O_EXCL together to ensure that the file is only created if the file does not exist. Otherwise between the time you check for the existence of a file and the time you create the file an attacker may be able to create a file with the same name. The good news here is that virtually every secure temporary file creation function/library does this or an equivalent option. To quote mkstemp():</p>
+<blockquote><p>The mkstemp() function shall replace the contents of the string pointed to by template by a unique filename, and return a file descriptor for the file open for reading and writing. The function thus prevents any possible race condition between testing whether the file exists and opening it for use.</p></blockquote>
+<h2><strong>Why &#8220;unique&#8221; names are not enough, but are generally not a huge problem</strong></h2>
+<p>People often think that creating a file with a &#8220;unique&#8221; name in /tmp (e.g. &#8220;/tmp/myprogram-output.log&#8221;) is sufficient to safely create a temporary file. However if you create the file with a known or easily guessed name (e.g. a static name set in the source code or a config file) an attacker can create the file first and then your application will be unable to, creating a denial of service condition potentially.</p>
+<p>However the names don&#8217;t have to be terribly unique. For example if you use mkstemp() with 10 random characters (the default) gives on the order of 839,299,365,868,340,224 possible file names. Any attacker able to create enough files to force a collision of the name would be able to fill up the /tmp directory in any event (unless you have an absurdly large /tmp directory that is several exabytes in size, which won&#8217;t be a problem for some time).</p>
+<h2>Unexpected temporary files</h2>
+<p>It should also be noted that many programs create temporary files. Text editors and other file editors may create temporary file saves in /tmp or /var/tmp and so on.</p>
+<h2>The problem with $TMP, $TEMP, $TMPDIR, $TEMPDIR and so on</h2>
+<p>One note: if you&#8217;re going to use environmental variables you&#8217;d better make sure you sanitize them and ensure they aren&#8217;t overly long. User controlled environmental variables are just that, user controlled. I can&#8217;t find a good set of libraries or code to sanitize these variables before use, if anyone knows of such a thing please contact me (<a href="mailto:kurt@seifried.org">kurt@seifried.org</a>).</p>
+<h2>Better list for lots of other languages:</h2>
+<p>Please see <a href="http://rosettacode.org/wiki/Secure_temporary_file">http://rosettacode.org/wiki/Secure_temporary_file</a></p>
+<h2><strong>Bash</strong></h2>
+<p>Simply use &#8220;mktemp&#8221; (&#8220;man mktemp&#8221; for details). Use &#8220;-d&#8221; or &#8220;&#8211;directory&#8221; for creating directories.</p>
+<h2><strong>C</strong></h2>
+<p>use mkstemp() (&#8220;man mkstemp&#8221; for details) for files</p>
+<p>use mkdtemp() (&#8220;man mkdtemp&#8221; for details) for directories</p>
+<p>tmpfile() is another option &#8211; Creates a temporary binary file, open for update (wb+ mode &#8212; see fopen for details). The filename is guaranteed to be different from any other existing file.</p>
+<h2><strong>C++</strong></h2>
+<p>use mkstemp() (&#8220;man mkstemp&#8221; for details)</p>
+<p>use mkdtemp() (&#8220;man mkdtemp&#8221; for details) for directories</p>
+<p>tmpfile() is another option &#8211; Creates a temporary binary file, open for update (wb+ mode &#8212; see fopen for details). The filename is guaranteed to be different from any other existing file.</p>
+<p>On Windows use GetTempPath() and GetTempFileName () (same names in C#)</p>
+<h2><strong>C#</strong></h2>
+<p>Path.GetTempFileName() <a href="http://msdn.microsoft.com/en-us/library/system.io.path.gettempfilename(v=vs.80).aspx">http://msdn.microsoft.com/en-us/library/system.io.path.gettempfilename(v=vs.80).aspx</a></p>
+<h2><strong>Cocoa</strong></h2>
+<p><a href="http://stackoverflow.com/questions/215820/how-do-i-create-a-temporary-file-with-cocoa">http://stackoverflow.com/questions/215820/how-do-i-create-a-temporary-file-with-cocoa</a></p>
+<h2>Google Go (golang)</h2>
+<p>So ioutil.TempDir and ioutil.TempFile automatically appends a uint32 and has default permissions of 0600. Well done.</p>
+<p><a href="http://golang.org/pkg/io/ioutil/#TempDir">http://golang.org/pkg/io/ioutil/#TempDir</a></p>
+<p>Use this and you&#8217;re safe. Just a note: io.TempDir returns the value of the temporary directly (e.g. /tmp).</p>
+<h2><strong>Java</strong></h2>
+<p>use java.io.File.createTempFile() &#8211; some interesting info at <a href="http://www.veracode.com/blog/2009/01/how-boring-flaws-become-interesting/">http://www.veracode.com/blog/2009/01/how-boring-flaws-become-interesting/</a></p>
+<p>for directories there is a helpful posting at <a href="http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java">http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java</a></p>
+<p><strong style="color:#2b6fb6;font-size:1.5em;">Java 7</strong></p>
+<p>for files use java.io.File.createTempFile()</p>
+<p>for directories use createTempDirectory()</p>
+<p><a href="http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html">http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html</a></p>
+<p><strong style="color:#2b6fb6;font-size:1.5em;">Lisp</strong></p>
+<p><a href="http://stackoverflow.com/questions/1384972/common-lisp-function-or-idiom-for-creating-a-temporary-file-name">http://stackoverflow.com/questions/1384972/common-lisp-function-or-idiom-for-creating-a-temporary-file-name</a></p>
+<h2>nodejs</h2>
+<p><a href="http://stackoverflow.com/questions/7055061/nodejs-temporary-file-name">http://stackoverflow.com/questions/7055061/nodejs-temporary-file-name</a></p>
+<h2><strong>Perl</strong></h2>
+<p>use mkstemp()</p>
+<p><a href="http://perldoc.perl.org/File/Temp.html#MKTEMP-FUNCTIONS">http://perldoc.perl.org/File/Temp.html#MKTEMP-FUNCTIONS</a></p>
+<h2><strong>Python</strong></h2>
+<p>Simply use &#8220;mkstemp&#8221; for files and &#8220;mkdtemp&#8221; for directories from the &#8220;tempfile&#8221; module:</p>
+<p><a href="http://docs.python.org/library/tempfile.html#tempfile.mkstemp">http://docs.python.org/library/tempfile.html#tempfile.mkstemp</a></p>
+<h2><strong>QT</strong></h2>
+<p>use QTemporaryFile for files:</p>
+<p><a href="http://qt-project.org/doc/qt-4.8/qtemporaryfile.html">http://qt-project.org/doc/qt-4.8/qtemporaryfile.html</a></p>
+<p>use  for QTemporaryDir directories:</p>
+<p><a href="http://qt-project.org/doc/qt-5.0/qtemporarydir.html">http://qt-project.org/doc/qt-5.0/qtemporarydir.html</a></p>
+<h2><strong>Ruby</strong></h2>
+<p>use Tempfile for files:</p>
+<p><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tempfile/rdoc/Tempfile.html#method-c-new">http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tempfile/rdoc/Tempfile.html#method-c-new</a></p>
+<p>use tmpdir for directories (require &#8216;tmpdir&#8217; and then you can &#8220;Dir.mktmpdir&#8221;):</p>
+<p><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tmpdir/rdoc/index.html" rel="nofollow">http://www.ruby-doc.org/stdlib-1.9.3/libdoc/tmpdir/rdoc/index.html</a></p>
+<h2>Making per user /tmp directories</h2>
+<p>Using PAM you can also make per user /tmp directories using polyinstantiation <a href="http://www.ibm.com/developerworks/linux/library/l-polyinstantiation/">http://www.ibm.com/developerworks/linux/library/l-polyinstantiation/</a></p>
+<p>If you have a system with many users (e.g. a shell server or web host) this is a great way to avoid the whole /tmp mess at the system level rather than trying to ensure your applications are properly written.</p>
+<h2>Monitoring /tmp for activity</h2>
+<p>So how can we be sure our changes work and temporary directories and files are being created safely? Conversely how can we monitor /tmp to watch for programs that use /tmp improperly or in unsafe ways? Linux has an <a href="http://en.wikipedia.org/wiki/Inotify">inotify </a>subsystem that allows you to monitor a file(s) or directory(s) (including recursively) for file and directory related activity (creation, deletion, modification, etc.). The downside of inotify is that, as far as I can tell, there is no way to list which process was responsible (so if you have a large application and multiple applications running it may be difficult to track down which one specifically created the file/etc.</p>
+<p>To use inotify use either the &#8220;inotify-tools&#8221; or &#8220;pyinotify&#8221; programs, I prefer pynitofy, the output is really easy to read:</p>
+<pre style="padding-left:30px;"># /usr/bin/pyinotify /tmp/
+&lt;Event dir=True mask=0x40000100 maskname=IN_CREATE|IN_ISDIR \
+name=foo.ooCHP2tb1adt path=/tmp pathname=/tmp/foo.ooCHP2tb1adt wd=1 &gt;</pre>
+<p>You can also use SELinux, running permissive mode simply disable all access to /tmp and then run your application(s). The log files will show any accesses of /tmp including the process information.</p>
+<h2>Auditing for /tmp file vulnerabilities</h2>
+<p>It&#8217;s not hard, mostly I just do:</p>
+<pre style="padding-left:30px;">find ./ -type f -exec grep /tmp {} +</pre>
+<p>and if they wrote the code using the above techniques it is probably safe, if it is written any other way it&#8217;s probably wrong.</p>
+<h1>Which directory should you use?</h1>
+<p>You should be using /var/run/something/ or /run/something/ that is setup in advance and secured for the users/groups that require it.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/165/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/165/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=165&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2012/03/14/creating-temporary-files-securely/feed/</wfw:commentRss>
+		<slash:comments>3</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

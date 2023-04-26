@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Format Strings - An Interview with Chris Evans</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#771c0205033704121e11051e121359180510"><span class="__cf_email__" data-cfemail="a2c9d7d0d6e2d1c7cbc4d0cbc7c68ccdd0c5">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>In a previous article I covered the basics of format string
+attacks. This time I've interviewed Chris Evans, whom I quoted in
+the last article. Without further ado, here is the interview.
+Read it - you will learn something. (I did.)</p>
+<h2><br>
+Personal</h2>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">It appears to me that these format
+strings have been present a very long time. A CERT
+advisory mentioned them being in WuFTPD since 1993. Do
+you think attackers have known about them and been using
+them? (This certainly would be a convenient explanation
+for many mysterious unsolved break-ins.)</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">This is a very interesting question. It
+depends what you mean by &quot;attackers.&quot; I doubt
+this problem was widely known in the underground cracker
+community. When that is the case, the exploit usually
+leaks to the public. I can happily entertain that a few
+highly skilled individuals knew about this issue, though.
+Finally, we should be wary of attributing any unsolved
+break-ins to format string bugs. Even if a compromised
+site was running daemons containing format string bugs,
+there is still the potential for undiscovered security
+bugs which are not of a format string nature.<p>As we
+know, string/buffer handling has traditionally been very
+buggy. The most obvious example of buggy buffer handling
+is the classic buffer overflow.</p>
+<p>The problem is that programmers tend to just treat a
+string or buffer as a &quot;chunk of memory.&quot; This
+gives the programmer tedious chores such as:</p>
+<ul>
+<li>When copying or appending strings, make sure the
+destination buffer is large enough.</li>
+<li>If the destination buffer isn't large enough, do
+we truncate? Allocate a new bigger buffer? Error
+out? </li>
+</ul>
+<p>All the calculations and checks involved in some of
+the above ways of coding are easy to get wrong. Also,
+code readability is reduced. It can be difficult to
+analyze the logic of a program because it is buried in
+buffer parsing and management.</p>
+<p>The solution is break the association between
+string/buffer, and &quot;chunk of memory.&quot; Instead
+of manipulating and copying things all over the place, we
+can manipulate an opaque object which just happens to
+internally manage a buffer.</p>
+<p>Suddenly, instead of:</p>
+<blockquote>
+<pre>{
+&nbsp; char buf[BUFSIZE];
+&nbsp; strcpy(buf, data);
+&nbsp; strcat(buf, more_data);
+}</pre>
+<p>we have</p>
+<pre>{
+&nbsp; struct safe_buf the_buf;
+&nbsp; safe_buf_init(data);
+&nbsp; safe_buf_append(more_data);
+}</pre>
+</blockquote>
+<p>The former case is easy to get wrong. The latter case
+introduces an API which is very hard to use in an
+insecure manner. That is the key thing.</p>
+<p>The safe_buf thing in fact boils down to little more
+than a C version of a classic C++ string or buffer class.
+You can happily push some string parsing into the
+safe_buf code too, e.g. string splitting, string
+substitutions, etc.</p>
+<p>It is my understanding that the highly secure mail
+server &quot;qmail&quot; employs this technique for
+secure string handling (although I haven't looked at the
+source to confirm). Have you seen a string/buffer
+handling bug in qmail lately ;-) </p>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">Like buffer overflows, bugs are due to
+programmers. Do you think programmers will ever break
+themselves of these habits/mistakes? Or are development
+tools the answer, like source code scanners such as ITS4?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">Broadly, I think highly secure code
+requires two things.<ol>
+<li>A high quality implementation</li>
+<li>A design resistant to flaws in the implementation</li>
+</ol>
+<p>Unfortunately, even the best and most security-aware
+programmers are only human, and make mistakes. High(er)
+quality implementations can be achieved with a number of
+measures;</p>
+<ul>
+<li>Using security-aware and good programmers to
+write security sensitive code.</li>
+<li>Thorough code auditing of security sensitive
+code. Source scanners have their place, but they
+are no substitute for one, or preferably more
+humans reviewing code.<br>
+</li>
+<li>Throwing away coding styles and/or APIs which are
+error prone. (There is a very interesting example
+I could give here which illustrates that buffer
+overflows can be a non-problem if you change your
+coding style.)</li>
+</ul>
+<p>Once we have taken steps to maximize the quality of
+code, there may unfortunately still be problems left. The
+recent &quot;rpc.statd&quot; exploit illustrates this.
+rpc.statd is a well audited piece of code, but a format
+string bug slipped through because at the times of the
+audits, no-one was looking for them. This is where a
+fault tolerant design comes in.</p>
+<p>A fault tolerant design essentially minimizes the
+degree of privilege that bugs are able to give attackers.
+Obviously, one way this can be achieved under UNIX is by
+running as little code as possible as root. Other tools
+available to UNIX programmers sometimes include
+chroot()/jailing facilities and capabilities.</p>
+<p>Unfortunately, most code isn't fault tolerant. A lot
+of daemons and services just permanently keep high levels
+of privilege. Not because they need it, but because it
+makes coding easier. It takes a non-trivial amount of
+effort to factor out parts of a program which genuinely
+_need_ privilege. Take something like the OpenSSH server.
+It has a good quality of implementation, largely because
+its security critical nature has inspired many audits.
+However, if a security hole is ever found in OpenSSH, its
+severity is likely to be a full machine compromise. That
+really need not be the case.</p>
+<p>In summary, a way to ensure security despite the
+presence of the always fallible programmer, is through
+auditing and fault tolerant design requirements.</p>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">I'm curious to know if you have seen
+SubDomain (from WireX). If so, what do you think of it?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">I have heard of SubDomain, from the same
+people, I expect this might be the same thing as CoDomain
+(<a href="http://immunix.org/products.html">http://immunix.org/products.html</a>
+gives some blurb).<p>I don't know all the gory details,
+but SubDomain is another application of the
+&quot;principle of least privilege,&quot; giving much
+better system resilience in the presence of security
+holes you don't yet know about. </p>
+<p>The SubDomain documentation, at the above URL,
+mentions enhanced file access control a lot. Hopefully,
+not just files will be protected, but also network access
+and process access. To generalize, the entire kernel API
+could use some decent protection. I like to visualize
+this protection as a &quot;syscall firewall.&quot;</p>
+<p>The existence of multiple projects with similar goals
+(SubDomain, Janus) shows a frustration that chroot() and,
+more recently, Linux kernel capabilities, are a step in
+the right direction, but simply not fine grained enough
+to apply the principle of least privilege properly.</p>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">Do you think that like buffer overflows
+and format strings, there are more of these
+&quot;fundamental&quot; problems lying around, waiting to
+be found? </td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">In the security world, we have to assume
+that yes, there are more undiscovered fundamental
+problems lying around. It would be foolish and
+short-sighted not to.<p>If we keep this threat in mind
+while writing code, it should help lead to fault tolerant
+solutions. The &quot;remote-root&quot; severity of the
+recent holes in WuFTPD, BSD-ftpd, rpc.statd and,
+probably, LPRng, simply would not have occurred in the
+presence of code with a good design from a security point
+of view.</p>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">You mention fault tolerance several
+times. What do you think of things such as Linux's kernel
+capabilities, The Openwall kernel patch and StackGuard
+from WireX? Are they an answer, or do we need more?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">I'll take these three things separately.<p>Linux
+kernel capabilities - these are a useful tool for
+reducing the impact of a vulnerability in a program or
+daemon. A superb example is a network time daemon. Why
+should it run with full privilege when the single
+privilege &quot;change the system clock time&quot; is
+required? Capabilities solve this nicely.</p>
+<p>Unfortunately, for some other uses, they are not
+really fine grained enough. Two quick examples are</p>
+<ul>
+<li>Listening on a privileged network port. With
+capabilities it's &quot;none of them&quot; or
+&quot;all of them.&quot; It would be nice to
+nominate the ability to listen on a specific
+network port, like you mention below.</li>
+<li>Ability to change the ownership on a file.
+Currently, this is either &quot;you can't,&quot;
+or, &quot;change any file to any owner.&quot;
+Better granularity would specify a list of
+allowable previous and new owners.</li>
+</ul>
+<p>Openwall kernel patch - an interesting collection of
+patches. Some of these are geared towards making certain
+types of exploit harder or impossible, which is good.
+Classic security hardening. By far the most discussed
+component of this patchset, though, is the &quot;non-exec
+stack&quot; patch. This is essentially a defense against
+your traditional stack buffer overflow. Unfortunately,
+stack overflows are still exploitable with this patch in
+place. It just requires a different exploit. People
+concentrate on why this is bad, i.e. you are just as
+exploitable with or without this patch. However, another
+important facet is that your average script kiddie will
+be foiled by this patch, and move onto another target
+which is not as well protected (obfuscated, some might
+say). This will remain true for as long as the number of
+installations without this protection is relatively
+large. If this protection because commonplace, exploits
+would simply be released targeted at systems with the
+non-exec stack patch in place.</p>
+<p>StackGuard - another solution to stack based buffer
+overflows, but one which will make some stack overflow
+bugs unexploitable. This is a very useful layer of
+security to add. If your extensive code audit were to
+miss a stack overflow (and this happens), then you may
+still not be exploitable.</p>
+<p>The direction I'd like to see things take, is better
+OS support for applications to describe the precise set
+of privilege they need. If done properly, most
+applications would run with sufficiently low privilege
+that a compromise would be only a fraction as serious as
+one is today.</p>
+<p>Things like StackGuard have a place too - namely
+targeting a common flaw and preventing it being a
+problem. In an ideal world, we would just nail the
+problem in the first place. However, this is not an ideal
+world, and some instances of &quot;problem&quot; get
+missed during auditing.</p>
+</td>
+</tr>
+</table>
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+<td valign="top">Q:</td>
+<td valign="top">I have seen other projects in progress.
+One that intrigued me was the ability to assign a port to
+a user/group (a la file ownership) so that, say,
+&quot;dnssrvr&quot; could use port 53 and not ever need
+to touch root. If you had a wish list of such items, what
+would the top three be?</td>
+</tr>
+<tr>
+<td valign="top">A:</td>
+<td valign="top">Nice question :)<ol>
+<li>Better OS support for jailing<p>By
+&quot;jailing,&quot; I mean placing strong
+restrictions on what a process is allowed to do.
+The only thing close to this in common UNIX use
+at the moment is chroot(). This essentially is
+restricting what files a compromised process can
+execute or open/read. Preventing arbitrary file
+execution is very powerful, because via suid-root
+binaries, it is a way of leveraging higher
+privilege.</p>
+<p>This needs to be extended to the ability to
+deny other system interactions such as
+making/receiving network connections, signals,
+using shared memory, allocating memory, creating
+processes, etc. </p>
+<p>Turning the problem on its head, doing
+anything should be denied to a daemon/server,
+apart from things it specifically needs to do.
+For some network servers you need little more
+than read()/write() on an existing network
+connection, plus the ability to open a small
+subset of the filesystem read-only. All other
+syscalls should be denied, which also has the
+pleasant effect of protecting from many potential
+kernel flaws which might be used to gain
+privilege.</p>
+<p>I haven't looked at the implementation yet,
+but &quot;Janus&quot; sounds very promising along
+these lines; <a href="http://www.cs.berkeley.edu/~daw/janus/">http://www.cs.berkeley.edu/~daw/janus/</a></p>
+<p>For a final different perspective on better
+jailing, consider a cracker who has found a
+security hole in a FTP server, which they then
+use to be able to execute arbitrary code. Imagine
+their frustration at not being able to execute
+/usr/bin/suidperl to gain root privs. Not being
+able to connect out to other systems. Not being
+able to DoS the local machine.. etc..</p>
+</li>
+<li>Reclassifying existing UNIX rights as
+capabilities<p>If I login as &quot;chris&quot; to
+my local machine, I get dropped at what is termed
+an unprivileged shell. In fact, it is not
+unprivileged in the slightest. I will find myself
+able to set up network servers. Connect out to
+other machines on the Internet. Run privileged
+binaries.</p>
+<p>It would be interesting to extend the
+capabilities system to make capabilities of some
+things that current operating systems allow by
+default to normal users.</p>
+</li>
+<li>Rewrite/re-architecting of existing software<p>Maybe
+this doesn't count in the context of the question
+you asked :) However, most existing software
+fails to use the privilege limitation/jailing
+facilities available to it. If better jailing
+facilities do become standard, then software will
+start to look _really_ outdated from a security
+standpoint. So, my wish list finishes with
+overhauling (or replacing) a lot of security
+sensitive software.</p>
+</li>
+</ol>
+</td>
+</tr>
+</table>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 3/30/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

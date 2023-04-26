@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried - OAG - OpenBSD Administrator's Guide - Upgrading OpenBSD System and Kernel</TITLE>
+<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.1  (Win32)">
+<META NAME="CREATED" CONTENT="20021027;1465610">
+<META NAME="CHANGED" CONTENT="20021027;1020139">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1>Upgrading the OpenBSD System and Kernel</H1>
+<P>&nbsp;</P>
+<P>By Kurt Seifried <A HREF="/cdn-cgi/l/email-protection#513a2423251122343837233834357f3e2336"><span class="__cf_email__" data-cfemail="acc7d9ded8ecdfc9c5cadec5c9c882c3decb">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+</P>
+<HR>
+<P>It doesn't really get much better then:
+<A HREF="http://www.openbsd.org/faq/upgrade-minifaq.html">http://www.openbsd.org/faq/upgrade-minifaq.html</A>.
+I am not going to rehash this page, however I have a quick summary of
+things Iuse, and some extra tips and tricks.
+</P>
+<P>I use the following commands to keep my machines at
+OpenBSD-current, they can easily be modified (one line change) to
+keep a system at 3.2-stable or whatever you want.
+</P>
+<P><BR><BR>
+</P>
+<H3>Updating the local source tree</H3>
+<P><BR><BR>
+</P>
+<P>The following commands will retrieve the &ldquo;current&rdquo;
+OpenBSD source tree (I like to live on the edge):</P>
+<PRE STYLE="margin-left: 2cm">export <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="591a0f0a0b16160d64383736373a2f2a19383736373a2f2a773a387736293c373b2a3d77362b3e">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>:/cvs
+export CVS_RSH=/usr/bin/ssh
+cd /usr
+cvs -q get -P src</PRE><P>
+<BR><BR>
+</P>
+<H3>Updating the kernel
+</H3>
+<P><BR><BR>
+</P>
+<P>Updating the kernel is a pretty straightforward process, make sure
+you clean up after the last compile, config a kernel, then compile
+and install it:</P>
+<PRE STYLE="margin-left: 2cm">rm -rf /usr/obj
+mkdir /usr/obj
+cd /usr/src
+make obj
+
+cd /usr/src/sys/arch/i386/conf
+config GENERIC
+cd ../compile/GENERIC
+
+make clean
+make depend
+make
+cp /bsd /bsd.old 
+cp bsd /bsd</PRE><P>
+After this script runs you will want to reboot the system.
+</P>
+<P><BR><BR>
+</P>
+<H3>Updating the system (userland)</H3>
+<P><BR><BR>
+</P>
+<P>Updating all of OpenBSD userland (i.e. All programs, libraries,
+etc, that ship with OpenBSD) is quite simple:</P>
+<PRE STYLE="margin-left: 2cm">cd /usr/src<BR>make build</PRE><P>
+<BR><BR>
+</P>
+<P>After this runs you will probably want to reboot the system if
+nothing else to ensure the system will reboot properly (better to
+find out now rather then later).
+</P>
+<P><BR><BR>
+</P>
+<H3>CVS tags</H3>
+<P><BR><BR>
+</P>
+<P>CVS relies on tags, a CVS repository often hosts different
+branches and versions of the same project, OpenBSD is no exception.
+The major OpenBSD CVS servers typically have OpenBSD-current,
+-stable, -release, as well as previous versions. To keep a system at
+a &ldquo;stable&rdquo; version as opposed to current simply modify
+the following line:
+</P>
+<PRE STYLE="margin-left: 2cm; margin-bottom: 0.5cm">cvs -q get -P src</PRE><P>
+To the following:</P>
+<PRE STYLE="margin-left: 2cm; margin-bottom: 0.5cm">cvs -q get -rOPENBSD_3_1 -P src</PRE><P>
+This would retrieve 3.1.
+</P>
+<P><BR><BR>
+</P>
+<HR>
+<P><A HREF="../">Back</A></P>
+<P>Last updated on 9/7/2002</P>
+<P>Copyright Kurt Seifried 2002 <A HREF="/cdn-cgi/l/email-protection#3f544a4d4b7f4c5a56594d565a5b11504d58"><span class="__cf_email__" data-cfemail="8ee5fbfcfacefdebe7e8fce7ebeaa0e1fce9">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

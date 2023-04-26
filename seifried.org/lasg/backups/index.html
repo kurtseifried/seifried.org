@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Backups</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Backups</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#caa1bfb8be8ab9afa3acb8a3afaee4a5b8ad"><span class="__cf_email__" data-cfemail="81eaf4f3f5c1f2e4e8e7f3e8e4e5afeef3e6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>I don't know how many times I can tell people, but it never
+ceases to amaze me how often people are surprised by the fact
+that if they do not backup their data it will be gone, if the
+drive suffers a head crash on them or they hit 'delete' without
+thinking. Always backup your system, even if it's just the config
+files, you'll save yourself time and money in the long run. This
+is even on the SANS top 20 list.</p>
+<p>To backup your data under Linux there are many solutions, all
+with various pro's and con's. There are also several industrial
+strength backup programs, the better ones support network backups
+which are a definite plus in a large non-homogenous environment.</p>
+<p>One of the other critical things to remember with backups is
+that whoever has access to them (backup admin, cleaning staff)
+will have access to all your files unless you encrypt the
+backups. Physically securing backups is critical, damaging
+backups physically so they cannot be recovered is extremely easy,
+with magnetic media simply place a strong magnet near them, for
+CD's simply scratching the surface or cracking the CD will
+prevent usage. You should also keep a relatively recent set of
+backups offsite in case the building burns down or is
+inaccessible for some other reason (such as a chemical spill). </p>
+<p>&nbsp;</p>
+<h2>Non-commercial backup programs for Linux</h2>
+<p>There are numerous non commercial backup programs for Linux
+ranging from simple tools suitable for saving a few files to
+professional multi-system network backups.</p>
+<p>&nbsp;</p>
+<h3>Tar and Gzip or Bzip2</h3>
+<p>Oldies but still goldies, tar and gzip. Why? Because like vi
+you can darn near bet the farm on the fact that any UNIX system
+will have tar and gzip. They may be slow, klunky and starting to
+show their age, but it's a universal tool that will get the job
+done. I find with Linux the installation of a typical system
+takes 15-30 minutes depending on the speed of the network/cdrom,
+configuration another 5-15 (assuming I have backups or it is very
+simple) and data restoration takes as long as it takes
+(definitely not something you should rush). Good example: I
+recently backed up a server and then proceeded to blow the
+filesystem away (and remove 2 physical HD's that I no longer
+needed), I then installed Red Hat 5.2, and reconfigured all 3
+network cards, Apache (for about 10 virtual sites), Bind and
+several other services in about 15 minutes. If I had done it from
+scratch it would have taken me several hours. Simply:</p>
+<pre>tar -cvf archive-name.tar dir1 dir2 dir3....</pre>
+<p>to create the tarball of all your favorite files (typically
+/etc, /var/spool/mail/, /var/log/, /home, and any other
+user/system data), followed by a:<br>
+gzip -9 archive-name.tar<br>
+to compress it as much as possible (granted harddrive space is
+cheaper then a politicians promise but compressing it makes it
+easier to move around). You might want to use bzip2, which is
+quite a bit better then gzip at compressing text, but it is quite
+a bit slower. I typically then make a copy of the archive on a
+remote server, either by ftping it or emailing it as an
+attachment if it's not too big (e.g. the backup of a typical
+firewall is around 100k or so of config files).</p>
+<p>&nbsp;</p>
+<h3>rsync</h3>
+<p>rsync is an ideal way to move data between servers. It is very
+efficient for maintaining large directory trees in synch (not
+real time mind you), and is relatively easy to configure and
+secure. rsync does not encrypt the data however so you should use
+something like SSH or IPSec if the data is sensitive (SSH is
+easiest, simply use &quot;-e ssh&quot;). rsync is <a href="../network-servers/file-print/rsync.html">covered here</a>.</p>
+<p>&nbsp;</p>
+<h3>Amanda</h3>
+<p>Amanda is a client/server based network backup programs with
+support for most unices and Windows (via SAMBA). Amanda is BSD
+style licensed and available from: <a href="http://www.amanda.org/">http://www.amanda.org/</a>.
+Amanda now ships standard with a number of distributions. </p>
+<p>&nbsp;</p>
+<h2>Commercial backup programs for Linux</h2>
+<p>&nbsp;</p>
+<h3>BRU</h3>
+<p>BRU (Backup and Restore Utility), has been in the Linux world
+since as long as Linux Journal (they have had ads in there since
+the beginning as far as I can tell). This program affords a
+relatively complete set of tools in a nice unified format, with
+command line and a graphical front end (easy to automate in other
+words). It supports full, incremental and differential backups,
+as well as catalogs, and can write to a file or tape drive,
+basically a solid, simple, easy to use backup program. BRU is
+available at <a href="http://www.tolisgroup.com/products3.html">http://www.tolisgroup.com/products3.html</a>.
+</p>
+<p>&nbsp;</p>
+<h3>Quickstart</h3>
+<p>Quickstart is more aimed at making an image of the system so
+that when the hard drive fails/etc. you can quickly re-image a
+blank disk and have a working system. It can also be used to
+'master' a system and then load other systems quickly (as an
+alternative to say Red Hat's KickStart). It's reasonably priced
+as well and garnered a good revue in Linux Journal (Nov 1998,
+page 50). You can get it at: <a href="http://www.tolisgroup.com/products3.html">http://www.tolisgroup.com/products3.html</a>.
+</p>
+<p>&nbsp;</p>
+<h3>Backup Professional</h3>
+<p><a href="http://www.unitrends.com/br_bp.html">http://www.unitrends.com/br_bp.html</a></p>
+<p>&nbsp;</p>
+<h3>CTAR</h3>
+<p><a href="http://www.unitrends.com/ctar.html">http://www.unitrends.com/ctar.html</a></p>
+<p>&nbsp;</p>
+<h3>CTAR:NET</h3>
+<p><a href="http://www.unitrends.com/br_ct.html">http://www.unitrends.com/br_ct.html</a></p>
+<p>&nbsp;</p>
+<h3>PC ParaChute</h3>
+<p><a href="http://www.unitrends.com/ps_cr.html">http://www.unitrends.com/ps_cr.html</a></p>
+<p>&nbsp;</p>
+<h3>Legato Networker</h3>
+<p>Legato Networker is another enterprise class backup program,
+now completely supported on Linux as both client and server. You
+can get it from: <a href="http://www.legato.com/">http://www.legato.com/</a>.
+</p>
+<p>&nbsp;</p>
+<h2>Backup media</h2>
+<p>There are more things to back data up onto than you can drive
+a range rover over but here are some of the more popular/sane
+alternatives:</p>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top">Name of Media</td>
+<td valign="top">Pro's</td>
+<td valign="top">Con's</td>
+</tr>
+<tr>
+<td valign="top">Hard Drive</td>
+<td valign="top">It's fast. It's cheap. It's huge (160
+gigs). It's pretty reliable. ($2-$3 USD per gig)&nbsp;</td>
+<td valign="top">It might not be big enough, and they do
+fail, usually at the worst possible time. Harder to take
+offsite as well. RAID is a viable option though. </td>
+</tr>
+<tr>
+<td valign="top">CDROM&nbsp;</td>
+<td valign="top">Not susceptible to EMP, and everyone in
+the developed world has a CDROM drive. Media is also
+pretty sturdy and cheap ($0.20 USD per 650 Megs or so)</td>
+<td valign="top">CDROM's do have a finite shelf life of
+5-15 years, and not all recordables are equal. Keep away
+from sunlight, and make sure you have a CDROM drive that
+will read them. </td>
+</tr>
+<tr>
+<td valign="top">Tape&nbsp;</td>
+<td valign="top">It's reliable, you can buy BIG tapes,
+tape carousels and tape robots, but they're not very
+cheap. </td>
+<td valign="top">Magnetic media, finite life span and
+some tapes can be easily damaged (you get what you pay
+for), also make sure the tapes can be read on other tape
+drives (in case the server burns down....).</td>
+</tr>
+<tr>
+<td valign="top">Floppies&nbsp;</td>
+<td valign="top">I'm not kidding, there are rumors some
+people still use these to backup data.</td>
+<td valign="top">It's a floppy. They go bad and are very
+small. Great for config files though.</td>
+</tr>
+<tr>
+<td valign="top">Zip Disks</td>
+<td valign="top">I have yet to damage one, nor have my
+cats. They hold 100 megs which is good enough for most
+single user machines.</td>
+<td valign="top">Not everyone has a zip drive, and they
+are magnetic media. The IDE and SCSI models are passably
+fast, but the parallel port models are abysmally slow.
+Watch out for the click of death.</td>
+</tr>
+<tr>
+<td valign="top">Jazz Drives</td>
+<td valign="top">1 or 2 gig removable hard drives, my
+SCSI one averages 5 meg/sec writes.</td>
+<td valign="top">They die. I'm on my third drive. The
+platters also have a habit of going south if used
+heavily. And they aren&#146;t cheap. They are junk.</td>
+</tr>
+<tr>
+<td valign="top">LS120&nbsp;</td>
+<td valign="top">120 Megs, and cheap, gaining in
+popularity (hah, I actually believed that). These things
+are dead as far as I can tell. </td>
+<td valign="top">Slow. I'm not kidding. 120 megs over a
+floppy controller to something that is advertised as
+&quot;up to 3-4 times faster then a floppy drive&quot;.</td>
+</tr>
+<tr>
+<td valign="top">Printer&nbsp;</td>
+<td valign="top">Very long shelf life. requires a
+standard Mark 1 human being as a reading device. Handy
+for showing consultants and as reference material. Cannot
+be easily altered.</td>
+<td valign="top">You want to retype a 4000 entry password
+file? OCR is another option as well.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 7/5/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#22495750566251474b44504b47460c4d5045"><span class="__cf_email__" data-cfemail="fb908e898fbb889e929d89929e9fd594899c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

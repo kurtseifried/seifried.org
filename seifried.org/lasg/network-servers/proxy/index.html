@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Proxy software</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#49223c3b3d093a2c202f3b202c2d67263b2e"><span class="__cf_email__" data-cfemail="a0cbd5d2d4e0d3c5c9c6d2c9c5c48ecfd2c7">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<p><a name="Overview">Overview</a></p>
+<p>There are a variety of proxy software packages for Linux. Some
+are application level (such as SQUID) and others are at the
+session level (such as SOCKS).</p>
+<p><a name="Application proxy server software">Application proxy
+server software</a></p>
+<h2><a name="SQUID">SQUID</a></h2>
+<p>SQUID is a powerful and fast object cache server. It proxies
+FTP and WWW sessions, basically giving it many of the properties
+of an FTP and a WWW server, but it only reads and writes files
+within it's cache directory (or so we hope), making it relatively
+safe. Squid would be very hard to use to actually compromise the
+system and runs as a non root user (typically 'nobody'), so
+generally it's not much to worry about. Your main worry with
+Squid should be improper configuration. For example, if Squid is
+hooked up to your internal network (as is usually the case), and
+the internet (again, very common), it could actually be used to
+reach internal hosts (even if they are using non-routed IP
+addresses). Hence proper configuration of Squid is very
+important.&nbsp;</p>
+<p>The simplest way to make sure this doesn't happen is to use
+Squid's internal configuration and only bind it to the internal
+interface(s), not letting the outside world attempt to use it as
+a proxy to get at your internal LAN. In addition to this,
+firewalling it is a good idea. Squid can also be used as an HTTP
+accelerator (also known as a reverse proxy), perhaps you have an
+NT WWW Server on the internal network that you want to share with
+the world, in this case things get a bit harder to configure but
+it is possible to do relatively securely. Fortunately Squid has
+very good ACL's (Access Control Lists) built into the squid.conf
+file, allowing you to lock down access by names, IP&#146;s,
+networks, time of day, actual day (perhaps you allow unlimited
+browsing on the weekends for people that actually come in to the
+office). Remember however that the more complicated an ACL is,
+the slower Squid will be to respond to requests.</p>
+<p>Most network administrators will want to configure Squid so
+that an internal network can access www sites on the Internet. In
+this example 10.0.0.0/255.255.255.0 is the internal network,
+5.6.7.8 is the external IP address of the Squid server, and
+1.2.3.4 is a www server we want to see.</p>
+<p>Squid should be configured so that it only listens for
+requests on it&#146;s internal interface, if it were listening on
+all interfaces I could go to 5.6.7.8 port 3128 and request
+http://10.0.0.2/, or any internal machine for that matter and
+view www content on your internal network. You want something
+like this in your squid.conf file:</p>
+<pre>tcp_incoming_address 10.0.0.1
+tcp_outgoing_address 5.6.7.8
+udp_incoming_address 10.0.0.1
+udp_outgoing_address 5.6.7.8</pre>
+<p>This will prevent anyone from using Squid to probe your
+internal network.</p>
+<p>On the opposite side of the coin we have people that use Squid
+to make internal www servers accessible to the Internet in a
+controlled manner. For example you may want to have an IIS 4.0
+www server you want to put on the Internet, but are afraid to
+connect it directly. Using Squid you can grant access to it in a
+very controlled manner. In this example 1.2.3.4 is a random
+machine on the Internet, 5.6.7.8 is the external IP address of
+the Squid server, 10.0.0.1 is it&#146;s internal IP address, and
+10.0.0.2 is a www server on the internal network running IIS 4.0.</p>
+<p>To set Squid up to run as an accelerator simply set the
+&#147;http_port&#148; to 80 in squid.conf:</p>
+<pre>http_port 3128</pre>
+<p>And then set the IP addresses differently:</p>
+<pre>tcp_incoming_address 5.6.7.8
+tcp_outgoing_address 10.0.0.2
+udp_incoming_address 5.6.7.8
+udp_outgoing_address 10.0.0.2</pre>
+<p>And finally you have to define the machine you are
+accelerating for:</p>
+<pre>httpd_accel_host 10.0.0.2
+httpd_accel_port 80</pre>
+<p>This is covered extensively in the Squid FAQ at: <a href="http://www.squid-cache.org/Doc/FAQ/FAQ.html">http://www.squid-cache.org/Doc/FAQ/FAQ.html</a>
+(section 20).</p>
+<p>The ACL's work by defining rules, and then applying those
+rules, for example:</p>
+<pre>acl internalnet 10.0.0.0/255.0.0.0
+http_access allow internalnet
+http_access deny all</pre>
+<p>Which defines &quot;internalnet&quot; as being anything with a
+source of 10.0.0.0/255.255.255.0, allowing it access to the http
+caching port, and denying everything else. Remember that rules
+are read in the order given, just like ipfwadm, allowing you to
+get very complex (and make mistakes if you are not careful).
+Always start with the specific rules followed by more general
+rules, and remember to put blanket denials after specific
+allowals, otherwise it might make it through. Its better to
+accidentally deny something then to let it though, as you'll find
+out about denials (usually from annoyed users) faster then things
+that get through (when annoyed users notice accounting files from
+the internal www server appearing on the Internet). The Squid
+configuration files (squid.conf) is well commented (to the point
+of overkill) and also has a decent man page.</p>
+<p>Another useful example is blocking ads, so to block them you
+can add the following to squid.conf:</p>
+<pre>acl ads dstdomain ads.blah.com
+http_access deny ads</pre>
+<p>The acl declaration is simply a pattern, be it a destination
+domain name, source domain name, regex and so on, the http_access
+directive actually specifies what to do with it (deny, allow,
+etc). Properly setup this is an extremely powerful tool to
+restrict access to the WWW. Unfortunately it does have one
+Achilles heel: it doesn't support user based authentication and
+control (not that many UNIX based proxy servers do). Remember
+that like any set of rules they are read from top to bottom, so
+put your specific denials and allowals first, and then the more
+general rules. The squid.conf file should be well commented and
+self explanatory, the Squid FAQ is at: <a href="http://www.squid-cache.org/Doc/FAQ/FAQ.html">http://www.squid-cache.org/Doc/FAQ/FAQ.html</a>
+</p>
+<p>One important security issue most people overlook with Squid
+is the log files it keeps. By default Squid may or may not log
+each request it handles (depends on the config file), from
+&#147;http://www.nsa.gov/&#148; to
+&#147;http://www.example.org/cgi-bin/access&amp;member=john&amp;password=bob&#148;.
+You definitely want to disable the access logs unless you want to
+keep a close eye on what people view on the Internet (legally
+this is questionable, check with your lawyers). The directive is
+&#147;cache_access_log&#148; and to disable it set it to
+&#147;/dev/null&#148;, this logs ALL accesses, and ICP queries
+(inter-cache communications). The next big one is the
+&#147;cache_store_log&#148;, which is actually semi useful for
+generating statistics on how effective your www cache is, it
+doesn&#146;t log who made the request, simply what the status of
+objects in the cache is, so in this case you would see the
+pictures on a pornographic site being repeatedly served, to
+disable it set it to &#147;none&#148;. The &#147;cache_log&#148;
+should probably be left on, it contains basic debugging info such
+as when the server was started and when it was stopped, to
+disable it set it to &#147;/dev/null&#148;. Another, not very
+well documented log files is the &#147;cache_swap_log&#148; file,
+which keeps a record of what is going on with the cache, and will
+also show you the URL&#146;s people are visiting (but not
+who/etc), setting this to &#147;/dev/null&#148; doesn&#146;t work
+(in fact Squid pukes out severely) and setting it to
+&#147;none&#148; simply changes the filename from &#147;log&#148;
+to &#147;none&#148;. The only way to stop it is to link the file
+to &#147;/dev/null&#148; (by default the root of the www cache
+files /log), and also to link the &#147;log-last-clean&#148; to
+&#147;/dev/null&#148; (although in my quick tests it doesn&#146;t
+appear to store anything you can&#146;t be sure otherwise). So to
+summarize:</p>
+<p>in squid.conf:</p>
+<pre>cache_access_log /dev/null
+cache_store_log none
+cache_log /dev/null</pre>
+<p>and link:</p>
+<pre>/var/spool/squid/log to /dev/null
+/var/spool/squid/log-last-clean to /dev/null</pre>
+<p>or whichever directory holds the root of your www cache (the
+00 through 0F directories).</p>
+<p>Another important issue that gets forgotten is the ICP
+(Internet Cache Protocol) component of Squid. The only time you
+will use ICP is if you create arrays or chains of proxy servers.
+If you&#146;re like me, you have only the one proxy server and
+you should definitely disabled ICP. This is easily done by
+setting the ICP port in squid.conf from the default
+&#147;3130&#148; to &#147;0&#148;. You should also firewall port
+3128 (the default Squid port that clients bind to) from the
+Internet:</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 3128
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 3128
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 3128</pre>
+<p>or in ipchains:</p>
+<pre>ipchains -A input -p all -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 3128
+ipchains -A input -p all -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 3128
+ipchains -A input -p all -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 3128</pre>
+<p><strong>squidGuard</strong></p>
+<p>squidGuard allows you to put in access control lists, filter
+lists, and redirect requests, easily and efficiently. It is ideal
+for controlling access to the WWW, and for more specific tasks
+such as blocking pornographic content (a valid concern for many
+people). It cannot make decisions based upon content however, it
+simply looks at the URL&#146;s being processed, so it cannot be
+used to block active content and so on. squidGuard is available
+from: <a href="http://www.squidguard.org">http://www.squidguard.org</a>
+</p>
+<p><strong>LDAP auth module for SQUID</strong></p>
+<p>This allows you to authenticate users via an LDAP server,
+however passwords/etc are transmitted in the clear, so use some
+form of VPN to secure it. You can get it from: <a href="http://www.stroeder.com/proxy_auth_ldap/">http://www.stroeder.com/proxy_auth_ldap/</a>
+</p>
+<h2><a name="Cut the crap">Cut the crap</a></h2>
+<p>Cut the crap (CTC) is aimed at blocking banner ads and
+reducing bandwidth usage while surfing. You can get it from: <a href="http://www.softlab.ece.ntua.gr/~ckotso/CTC/">http://www.softlab.ece.ntua.gr/~ckotso/CTC/</a>.</p>
+<h2><a name="WWWOFFLE">WWWOFFLE</a></h2>
+<p>WWWOFFLE is a rather nice looking proxy for UNIX systems that
+handles HTTP and FTP. You can get it at: <a href="http://www.gedanken.demon.co.uk/wwwoffle/">http://www.gedanken.demon.co.uk/wwwoffle/</a>.</p>
+<h2><a name="Circuit level proxy software">Circuit level proxy
+software</a></h2>
+<h2><a name="SOCKS">SOCKS</a></h2>
+<p>SOCKS is a circuit level proxy, typically loaded on firewalls
+because it has good access controls. Applications must be
+SOCKS'ified, most popular web browsers, ftp clients and so on
+have support by default. You can get it from: <a href="http://www.socks.nec.com/">http://www.socks.nec.com/</a>.</p>
+<h2><a name="Dante">Dante</a></h2>
+<p>Dante is a free implementaiton of the popular SOCKS server. It
+is available from: <a href="http://www.inet.no/dante/">http://www.inet.no/dante/</a>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#244f5156506457414d42564d41400a4b5643"><span class="__cf_email__" data-cfemail="1e756b6c6a5e6d7b77786c777b7a30716c79">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

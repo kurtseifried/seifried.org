@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Microsoft Security Whitepaper - Windows 9x</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#701b0502043003151916021915145e1f0217"><span class="__cf_email__" data-cfemail="4e253b3c3a0e3d2b27283c272b2a60213c29">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<h2>Introduction</h2>
+<p>Windows 95 and 98 are designed for single user workstations
+and end consumer environments. Windows 95 and 98 are not capable
+of using more then one CPU (unlike Windows NT and 2000), they do
+not have memory protection (you can boot Linux from within
+Windows for example) and have no file security or real concept of
+users. What this means is that there is no real concept of
+security within Windows 95 and 98. If you can run code on the
+machine you can do anything you want, from modifying system files
+to destroying the partition table.</p>
+<h2>Best Defenses</h2>
+<p>Your best defenses in Windows 95 and 98 are:</p>
+<ul type="disc">
+<li>Remove unneeded network services</li>
+<li>Update software regularly</li>
+<li>Install an Anti-Virus scanner</li>
+<li>Install a personal firewall</li>
+</ul>
+<h3><strong>Remove unneeded network services</strong></h3>
+<p>Removing unneeded network services is critical in windows 95
+and 98 since the default is to install the windows network client
+when networking protocols such as TCP-IP are installed. With this
+software component installed a remote attacker can find out a lot
+about your computer. By querying your machine remotely, for
+example from an NT box:</p>
+<pre>nbtstat -A 10.3.0.1</pre>
+<pre>	NetBIOS Remote Machine Name Table
+
+Name			Type	Status
+---------------------------------------------
+WORKSTATION0	&lt;00&gt;	UNIQUE	Registered 
+WORKGROUP	&lt;00&gt;	GROUP	Registered 
+WORKSTATION0	&lt;03&gt;	UNIQUE	Registered 
+
+MAC Address = 00-60-82-F8-F4-93</pre>
+<p>Workstation0 is the name of the workstation, and Workgroup is
+the name of the workgroup, the numeric code is the service. With
+Windows file and print sharing enabled the remote attacker can
+find out even more information:</p>
+<pre>	NetBIOS Remote Machine Name Table
+
+Name			Type	Status
+---------------------------------------------
+WORKSTATION0	&lt;00&gt;	UNIQUE	Registered 
+WORKGROUP	&lt;00&gt;	GROUP	Registered 
+WORKSTATION0	&lt;03&gt;	UNIQUE	Registered 
+WORKSTATION0	&lt;20&gt;	UNIQUE	Registered 
+WORKGROUP	&lt;1E&gt;	GROUP	Registered 
+USERNAME	&lt;03&gt;	UNIQUE	Registered 
+WORKSTATION0	&lt;1F&gt;	UNIQUE	Registered 
+
+MAC Address = 00-00-D2-E8-F2-53</pre>
+<p>They now have your username, and can connect to any shared
+files or printers you posses. Using share level controls can
+partially protect you, however I would not recommend depending
+upon it to share out and restrict access to resources. For the
+vast majority of home users removing the windows client as well
+as file and print sharing will not impinge on functionality if
+you do not need to share out any resources, or access resources
+on other windows machines. If you do need to share out files and
+printers you cannot selectively bind services to adapters, so all
+adapters will be vulnerable (in NT you would be able to shutdown
+services on a public interface connected to the Internet, but
+leave them enabled on an internal interface connected to your
+LAN). </p>
+<p>Click on &quot;Start&quot; &gt; &quot;Settings&quot; &gt;
+&quot;Control Panel&quot; and then choose &quot;Network&quot;:</p>
+<p><img src="images/windows9x/network.jpg" width="366" height="458"></p>
+<p>Then select &quot;File and printer sharing for Microsoft
+Networks&quot; and click remove, do the same for &quot;Client for
+Microsoft Networks&quot;.</p>
+<h3><strong>Update software regularly</strong></h3>
+<p>This is relatively easy in Windows 95, and extremely easy in
+Windows 98. Download the updates for Windows 95 and then install
+them (one at a time, rebooting after each one as needed). </p>
+<p>In Windows 98 they decided to make it easier, adding a link to
+the website on the primary start menu. Simple click on the
+&quot;Windows Update&quot; links, which takes you to:</p>
+<p><a href="http://windowsupdate.microsoft.com/">http://windowsupdate.microsoft.com/</a></p>
+<p>From there a small applet loads and does an inventory of what
+you have installed, and which version, then the items you need
+are displayed on a webpage, in descending order of importance
+(Critical security fixes first). You then click on the item, and
+download and install it, some fixes have to be installed on their
+own, and some you can install several at a time. You can also go
+to the above corporate URL if you wish to download the fixes
+(extremely useful if you have more then one Windows 98 machine). </p>
+<h3><strong>Install an Anti-Virus scanner</strong></h3>
+<p>There are many good anti-virus programs for Windows 95 and 98,
+the majority have a scanning component and virus signatures as
+well as access to upgrades (some more automated then others).</p>
+<p><a href="http://www.antivirus.com/">http://www.antivirus.com/</a>
+- TrendMicro (PC-cillin, about $30USD for single license)</p>
+<p><a href="http://www.norton.com/">http://www.norton.com/</a> -
+Norton (Anti-Virus, about $70 USD for single license)</p>
+<p><a href="http://www.mcafee.com/">http://www.mcafee.com/</a> -
+McAfee (Virus Clinic, about $30USD per year per license)</p>
+<h3><strong>Install a personal firewall</strong></h3>
+<p>If your machine is online (as most are) then a personal
+firewall is a good idea. When installed properly and configured
+correctly they will stop most network based attacks cold. Again
+they range in price from free and up, most have some sort of
+subscription service for updates as well. I reccomend ZoneAlarm
+for home users since it is free and easy to setup:</p>
+<p><a href="http://www.zonelabs.com/">http://www.zonelabs.com/</a>
+- ZoneLabs (ZoneAlarm, free, including upgrades)</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 10/4/2002</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

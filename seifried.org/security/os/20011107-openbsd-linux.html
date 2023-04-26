@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Why OpenBSD will never be as secure as Linux</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Why OpenBSD will never be as secure as Linux</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#751e0007013506101c13071c10115b1a0712"><span class="__cf_email__" data-cfemail="2a415f585e6a594f434c58434f4e0445584d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Counterpoint: <a href="20011107-linux-openbsd.html">Why Linux
+will never be as secure OpenBSD</a></p>
+<p>&nbsp;</p>
+<p>Set flame guns to kill. Please read the entire article before
+flaming me, as many of your concerns/etc will probably be
+answered next week. OpenBSD and Linux, two decidedly different
+operating systems. OpenBSD claims to be &quot;secure by
+default&quot;, and has undergone an extensive code audit, so the
+question is: have I been hit in the head with a blunt object, or
+what? Security is an extremely complex subject with a variety of
+definitions. This article is an attempt to educate people, I
+personally consider OpenBSD to be a reasonably &quot;secure&quot;
+operating system, in some ways more secure then your average
+Linux distribution. However people have a wide variety of needs
+when it comes to security, and some of these needs are not met by
+Linux more so then OpenBSD. There are a variety of security
+products and software suites for Linux currently available and a
+number of security projects in the works that will have a
+significant effect. Depending upon your exact needs, budget,
+level of expertise and so on there is almost surely a security
+solution for Linux that will fit your needs. </p>
+<p>&nbsp;</p>
+<h2><strong>SubDomain, StackGuard &amp; FormatGuard</strong></h2>
+<p>WireX ships a hardened version of Linux using a number of
+security enhancements. The most obvious would be SubDomain, which
+allows you to specify which files a program may access and in
+what manner (read, write, execute or list). This allows you to
+tightly contain software, you do not need to make any changes to
+the software or go through the problems associated with using
+chroot() (which for packages like Sendmail can be extremely
+complex). There is no equivalent to SubDomain in OpenBSD. Other
+benefits of WireX include StackGuard and FormatGuard, while it
+can be argued that because OpenBSD's code has been audited it
+doesn't need StackGuard or FormatGuard but the simple fact
+remains that buffer overflows and format strings attacks are
+still being discovered in OpenBSD. The beauty of these three
+technologies from WireX is that you do not need a huge amount of
+expertise or time to implement, and SubDomain can protect
+software available in binary only formats. </p>
+<p>&nbsp;</p>
+<h2><strong>Openwall kernel patch</strong></h2>
+<p>The Openwall kernel patch is a relatively simple set of kernel
+patches that once compiled in will prevent or stop a number of
+problems. A non-executable user stack area prevents various
+buffer overflows, and while it can be circumvented it definitely
+raises the bar for attackers. Restricting links and FIFO's in tmp
+is another feature, and again while OpenBSD has audited it's code
+and removed most of the /tmp vulnerabilities there are no
+guarantees about software in the ports package or binary only
+software. Once this software is installed you do not need to do
+anything more, there is no configuration required or additional
+setup when you install new software, removing any chance of
+accidentally forgetting to protect software/etc. </p>
+<p>&nbsp;</p>
+<h2>Argus PitBull LX</h2>
+<p>PitBull LX is a commercial product for Linux that comes as a
+binary kernel (and kernel headers if you want to create your own
+custom kernel) and various utilities to configure the security
+settings. The primary benefit PitBull LX offers is Mandatory
+Access Controls, one of the main differences between this and
+Discretionary Access Controls (what Linux has by default) is that
+not even root can tamper with files in a MAC capable system.
+Additionally controls can be placed on network devices and even
+ports themselves, you can specify that port 53 and all the files
+necessary for running BIND are one security domain, if Bind is
+compromised it will not be able to do anything outside it's
+domain (i.e. write to /etc/passwd). Controls can also be placed
+on IPC (inter process communication) objects, allowing for fine
+configurations of processes, files, network objects and so on.
+This capability, while complicated and non-trivial allows for a
+certain flexibility lacking in OpenBSD. </p>
+<p>&nbsp;</p>
+<h2><strong>NSA SELinux</strong></h2>
+<p>NSA SELinux is a set of kernel patches and modified utilities
+that allow for extremely granular control of security settings
+that are similar (but different) then PitBull LX. SELinux
+provides &quot;Type Enforcement&quot;, &quot;Role-based Access
+Control&quot; and &quot;Multi-level Security&quot; (not to be
+confused with multi-level marketing). Basically anything you can
+imagine is possible. You want to restrict port 80 to a certain
+process? You can do that. Want to restrict a certain process from
+accessing files? You can do that. Completely lock down the system
+so that even with root level access very little damage can be
+done? You can do that. Unfortunately this software is extremely
+non-trivial, and has a steep </p>
+<p>&nbsp;</p>
+<h2><strong>LIDS</strong></h2>
+<p>LIDS is a far less complicated project then PitBull LX or NSA
+SELinux. LIDS provides a variety of features ranging from
+increased filesystem protection to a number of capabilities that
+allow an administrator to &quot;lock&quot; a system into a
+certain configuration that then requires a significant amount of
+effort (i.e. console access or a reboot) to modify. For example
+the &quot;CAP_SYS_ADMIN&quot; capability lets you restrict the
+setting of the machines domainname, hostname, turning swap on or
+off, the configuration of serial ports and so on. While OpenBSD
+does have a somewhat similar system in the form of BSD
+securelevel LIDS is more flexible in many respects. </p>
+<p>&nbsp;</p>
+<h2><strong>Medusa DS9</strong></h2>
+<p>Yet another security system for Linux that allows an
+administrator to control access to files, various process
+actions, system calls and more. One interesting feature of Medusa
+DS9 is the ability to redirect access from one file to another
+instead, as well as useful in a security setting it can be used
+with chrooting or for debugging programs. Like LIDS, NSA SELinux,
+PitBull, SubDomain and so on Medusa allows for increased control
+of processes and files on a given system, again no comparable
+software is available for OpenBSD. </p>
+<p>&nbsp;</p>
+<h2>Conclusion</h2>
+<p>As you can see there is a large selection of security software
+Linux, ranging from simple items like the Openwall kernel patch
+to very configurable security suites like PitBull LX. These
+solutions are simply not available for OpenBSD, so if you have
+needs beyond the basic User/Group/Other filesystem restrictions
+for example you are basically out of luck. Restricting access to
+port 80 for example, while easily achieved in Linux with NSA
+SELinux or PitBull LX is basically impossible in OpenBSD.
+Protecting binary software can be done in Linux with a variety of
+tools, doing so in OpenBSD is very difficult (there is little you
+can do). Even with some of the most secure source code in the
+world OpenBSD will not be capable of providing the same levels of
+security and trust that a Linux system with the appropriate
+software (i.e. NSA SELinux or PitBull) can. For a system to be
+both secure and trusted you need both secure code and additional
+items that provide Mandatory Access Controls, RBAC, Type
+enforcement and so on.<font color="#000000"> This is why OpenBSD
+will never be as secure as Linux.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://seifried.org/security/products/20010912-immunixos-7.html">20010912-immunixos-7.html</a>
+- ImmunixOS 7 - Secure Linux</p>
+<p><a href="http://www.wirex.com/">http://www.wirex.com/</a>
+- WireX communications</p>
+<p><a href="http://www.openwall.com/linux/">http://www.openwall.com/linux/</a>
+- Linux kernel patch from the Openwall Project</p>
+<p><a href="http://www.argus-systems.com/product/overview/lx/">http://www.argus-systems.com/product/overview/lx/</a>
+- PitBull LX</p>
+<p><a href="http://www.nsa.gov/selinux/">http://www.nsa.gov/selinux/</a>
+- NSA Security Enhanced Linux</p>
+<p><a href="http://www.lids.org/">http://www.lids.org/</a>
+- Linux Intrusion Detection System</p>
+<p><a href="http://medusa.fornax.sk/">http://medusa.fornax.sk/</a>
+- Medusa DS9</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 8/11/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

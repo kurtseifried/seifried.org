@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>ssd &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/ssd/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:35 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>ssd &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>SSD Failure modes</title>
+		<link>http://kurt.seifried.org/2013/03/30/ssd-failure-modes/</link>
+		<comments>http://kurt.seifried.org/2013/03/30/ssd-failure-modes/#respond</comments>
+		<pubDate>Sat, 30 Mar 2013 19:05:28 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Hardware]]></category>
+		<category><![CDATA[hardware]]></category>
+		<category><![CDATA[ssd]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=273</guid>
+		<description><![CDATA[So everyone constantly talks about SSD failure modes and how they die suddenly with no warning and blah blah blah (honestly: everything dies, and sometimes the building burns down, so make sure you have off site backups). But here is an interesting failure mode I found this week. I have two older Intel 80GB SSD&#8217;s [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=273&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>So everyone constantly talks about SSD failure modes and how they die suddenly with no warning and blah blah blah (honestly: everything dies, and sometimes the building burns down, so make sure you have off site backups). But here is an interesting failure mode I found this week. I have two older Intel 80GB SSD&#8217;s in a RAID 0 configuration I use for scratch space (e.g. unpacking the Linux Kernel and grepping for stuff). But the RAID 0 array was suddenly very very slow. Since I was retiring that machine anyways I had to wipe it, so I popped in the DBAN disk and started wiping all the drives. It said it would take 79 hours, which seemed a bit excessive:</p>
+<div data-shortcode="caption" id="attachment_274" style="width: 460px" class="wp-caption aligncenter"><a href="http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg"><img class="size-large wp-image-274" alt="DBAN screen showing two identical SSDs being wiped with very different results." src="http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=450&#038;h=198" width="450" height="198" srcset="http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=448&amp;h=198 448w, http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=896&amp;h=396 896w, http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=150&amp;h=66 150w, http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=300&amp;h=133 300w, http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=768&amp;h=340 768w" sizes="(max-width: 450px) 100vw, 450px" /></a><p class="wp-caption-text">DBAN screen showing two identical SSDs being wiped with very different results.</p></div>
+<p>That&#8217;s right, you may have missed it, I did the first time, there&#8217;s no &#8220;K&#8221; in the speed listing for the first SSD. It&#8217;s writing at 559240 BYTES/second, not Kilobytes. The second drive is writing at a reasonable ~56.5 Megabytes/sec but the first one is writing at 0.53 Megabytes/sec, about 100 times slower. This certainly explains why my RAID 0 was behaving so badly. The kicker is there are not write or read errors off of that first drive, it&#8217;s just really, really slow. So I guess the lesson to be learned is you should check if your RAID card/software can tell you drive specific statistics or periodically read/write test your SSD&#8217;s individually if things start behaving oddly.</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/273/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/273/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=273&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2013/03/30/ssd-failure-modes/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+
+		<media:content url="http://kurtseifried.files.wordpress.com/2013/03/dying-ssd.jpg?w=450" medium="image">
+			<media:title type="html">DBAN screen showing two identical SSDs being wiped with very different results.</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

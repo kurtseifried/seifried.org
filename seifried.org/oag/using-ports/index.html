@@ -1,0 +1,322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried - OAG - OpenBSD Administrator's Guide / Using ports</TITLE>
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1>Using ports</H1>
+<P>By Kurt Seifried, <A HREF="/cdn-cgi/l/email-protection#39524c4b4d794a5c505f4b505c5d17564b5e"><span class="__cf_email__" data-cfemail="472c3235330734222e21352e222369283520">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<HR>
+<P>The ports collection is the primary interface for installing
+additional software on OpenBSD. It consists of makefiles, information
+about the programs, and patch files needed to compile them
+successfully on OpenBSD. You will need the compXX.tgz (where XX is
+your version of OpenBSD) installed to compile software in ports.
+However you can compile ports on a machine and take the installation
+package it creates and use it on another machine, allowing you to
+quickly deploy software to numerous systems.
+</P>
+<P>&nbsp;</P>
+<H2>Downloading and installing the ports tree</H2>
+<P>Ports consists of a large tarball available on OpenBSD ftp sites
+and the CD's. You download &quot;ports.tar.gz&quot; and unpack it in
+&quot;/usr/&quot; so that you have a tree of directories and files in
+&quot;/usr/ports/&quot; (hence the name &quot;ports tree&quot;).
+</P>
+<PRE STYLE="margin-left: 1cm; margin-right: 1cm"># ftp ftp.openbsd.org
+Connected to openbsd.sunsite.ualberta.ca.
+220- 
+220-                 Welcome to SunSITE Alberta
+220- 
+220-     at the University of Alberta, in Edmonton, Alberta, Canada
+220- 
+220- All connections to and transfers from this server are logged. If 
+220- you do not like this policy, please disconnect now.
+220- 
+220- You may want to grab the index file called &quot;ls-lR.gz&quot; in /pub.  It is 
+220- updated nightly with the contents of the ftp tree.  
+220- 
+220-     If you have any questions, hints, or requests, please email
+220- 
+220-            <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="bbc8ced5c8d2cfdefbc8ced5c8d2cfde95cedad7d9dec9cfda95d8da">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+220- 
+220 merlin FTP server (SunOS 4.1) ready.
+Name (ftp.openbsd.org:username): anonymous
+331 Guest login ok, send your email address as password.
+Password:
+230- Guest login ok, access restrictions apply.
+230- Local time is: Fri Jun 14 15:01:27 2002
+230 
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; cd pub/OpenBSD/3.1
+250 CWD command successful.
+ftp&gt; get ports.tar.gz</PRE><P>
+Followed by unpacking and untaring it:</P>
+<PRE STYLE="margin-left: 1cm; margin-right: 1cm"># gzip -d ports.tar.gz 
+# cd /usr
+# tar -xf /root/ports.tar</PRE><P>
+&nbsp;</P>
+<H2>Finding things in ports</H2>
+<P>There are a number of ways to find things in ports. Commonly
+simply cd'ing to the appropriate directory and issuing an ls will
+list likely candidate programs, with security programs in the
+security directory, network packages in net and so on. If you are
+looking for a specific application or a keyword, such as &quot;vpn&quot;
+then you simply use the make command in the root of the ports tree:</P>
+<BLOCKQUOTE><STRONG># cd /usr/ports<BR># make search key=vpn</STRONG><BR>Port:
+pptp-1.0.2<BR>Path: net/pptp<BR>Info: PPTP client package for
+Microsoft VPN servers<BR>Maint: Reinhard J. Sammer
+&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="beccdbd7d0d6dfccdafed1cedbd0dccdda90d1ccd9">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;<BR>Index: net<BR>L-deps: <BR>B-deps:
+<BR>R-deps: <BR>Archs: any</BLOCKQUOTE>
+<P>Please note that keywords may not be intuitive, for example when
+searching for an email server using the keyword &quot;smtp&quot;
+results in only one port being listed, &quot;smtpclient&quot;. Using
+more generic keywords will result in more results, of which typically
+only the name, path and information fields are wanted. To list only
+these portions of the ports info when using search simply use grep to
+cull the results down. To list all the web browsers for example
+simply use the following command:</P>
+<BLOCKQUOTE><STRONG># make search key=&quot;web browser&quot; | grep
+&quot;^Port:&quot; -A 2</STRONG><BR>Port: dillo-0.6.6<BR>Path:
+www/dillo<BR>Info: Fast and light gtk-based web browser<BR>--<BR>Port:
+hotjava-3.0<BR>Path: www/hotjava<BR>Info: Sun's Hotjava web
+browser<BR>--<BR>Port: konqueror-20020311<BR>Path:
+www/konqueror-embedded<BR>Info: stand-alone web browser<BR>--<BR>Port:
+w3m-0.3<BR>Path: www/w3m<BR>Info: pager/text-based web
+browser<BR>--<BR>Port: w3m-0.3-image<BR>Path: www/w3m,image<BR>Info:
+pager/text-based web browser<BR>--<BR>Port: ja-w3m-0.3<BR>Path:
+www/w3m,japanese<BR>Info: pager/text-based web browser<BR>--<BR>Port:
+ja-w3m-0.3-image<BR>Path: www/w3m,image,japanese<BR>Info:
+pager/text-based web browser<BR>--<BR>Port:
+w3m-0.3.20020311-m17n<BR>Path: www/w3m,m17n<BR>Info: pager/text-based
+web browser<BR>--<BR>Port: w3m-0.3.20020311-image-m17n<BR>Path:
+www/w3m,image,m17n<BR>Info: pager/text-based web browser</BLOCKQUOTE>
+<P>You can also use multiple search terms by separating them with a
+&quot;|&quot;:</P>
+<BLOCKQUOTE><STRONG># make search key=&quot;nntp|smtp|vpn&quot; |
+grep ^Port: -A 2</STRONG><BR>Port: smtpclient-1.0.0<BR>Path:
+mail/smtpclient<BR>Info: simple SMTP client<BR>--<BR>Port:
+pptp-1.0.2<BR>Path: net/pptp<BR>Info: PPTP client package for
+Microsoft VPN servers<BR>--<BR>Port: newsfetch-1.21<BR>Path:
+news/newsfetch<BR>Info: download news articles from NNTP
+server<BR>--<BR>Port: p5-News-Article-1.13<BR>Path:
+news/p5-News-Article<BR>Info: perl module for accessing NNTP
+articles<BR>--<BR>Port: tin-1.4.5-nntp_only<BR>Path:
+news/tin,nntp_only<BR>Info: full-screen easy to use Usenet reader</BLOCKQUOTE>
+<P>&nbsp;</P>
+<P>To find the maintainer of a specific package you can search the
+Makefile, or use the make command to list them:</P>
+<PRE STYLE="margin-left: 1cm; margin-right: 1cm"># cd /usr/ports/security/nessus
+# make show VARNAME=MAINTAINER 
+or
+# grep &quot;^MAINTAINER&quot; Makefile</PRE><P>
+&nbsp;</P>
+<H2>Building and installing things from ports</H2>
+<P>Once you have found what you want you will need to build the port
+and install it. Many ports require other things in ports to be
+present, such as &quot;gmake&quot;, if such a dependency is present
+when you issue the &quot;make&quot; command the dependencies will
+automatically be built first and installed. This can lead to some
+problems on non standard systems that require specific make options,
+you should first build things in /usr/ports/devel/ that you will
+probably need such as &quot;gmake&quot; or any language specific
+items like &quot;ORBit&quot; or &quot;jdk&quot;. To build a port
+simply cd into the appropriate directory and issue the make command:</P>
+<BLOCKQUOTE><STRONG># cd /usr/ports/security/gpgme/<BR># make</STRONG></BLOCKQUOTE>
+<P>The first thing that will happen is any dependencies are satisfied
+first. Then it will download the package from the ftp or web site if
+it is not present in /usr/ports/distfiles. The package is then
+uncompressed and un-tar'ed as needed, any patch files are applied,
+and the package is then built using the appropriate tools (make and
+Makefiles, a shell script, etc.). At this point the software has been
+built but not yet installed. If the last thing you see are error
+messages then you will need to take corrective actions (try using an
+older or newer version of the software, check the mailing lists,
+etc.).
+</P>
+<P>To install the software you will need to issue a second command,
+&quot;make install&quot;:</P>
+<BLOCKQUOTE><STRONG># make install</STRONG></BLOCKQUOTE>
+<P>The first thing you will see is a line such as:</P>
+<BLOCKQUOTE>===&gt; Faking installation for gpgme-0.3.4</BLOCKQUOTE>
+<P>And the last set of lines you should see will be something like:</P>
+<BLOCKQUOTE>===&gt; Building package for gpgme-0.3.4<BR>Creating
+package /usr/ports/packages/i386/All/gpgme-0.3.4.tgz<BR>Using SrcDir
+value of
+/usr/ports/security/gpgme/w-gpgme-0.3.4/fake-i386/usr/local<BR>Creating
+gzip'd tar ball in
+'/usr/ports/packages/i386/All/gpgme-0.3.4.tgz'<BR>===&gt; gpgme-0.3.4
+depends on: gnupg-* - found<BR>===&gt; Installing gpgme-0.3.4 from
+/usr/ports/packages/i386/All/gpgme-0.3.4.tgz</BLOCKQUOTE>
+<P>Essentially the system creates the installable package first and
+then install it, rather then installing from the source code
+directly. This ensures consistency across systems and also provides
+one last sanity check, allowing the ports maintainer to control the
+location files are installed to rather then the author of the
+software (i.e. /bin vs.s /usr/local/bin vs.s. /opt/bin vs.s.
+/nfs-exports/openbsd/3.1/bin and so on).
+</P>
+<P>&nbsp;</P>
+<H2>Using &quot;flavors&quot;</H2>
+<P>Some ports support &quot;flavors&quot;, this can range from
+something simple like building a program without X windows support
+(for example Nessus which includes a server component, and client
+components) to which version of a program to use (such as &quot;pgp&quot;
+or &quot;pgp5&quot;). Other flavors commands can include keywords
+such as &quot;static&quot; (i.e. to build the binary statically and
+not use dynamically linked libraries). Flavors are extremely simply
+to use, you append the command &quot;flavor='foo'&quot; to the make
+command, such as:</P>
+<BLOCKQUOTE><STRONG># make flavor='no_x11'</STRONG></BLOCKQUOTE>
+<P>The quickest way to find if a port has flavors is to simply grep
+the Makefile for &quot;FLAVORS&quot;:</P>
+<BLOCKQUOTE><STRONG># grep FLAVORS
+/usr/ports/net/bind9/Makefile</STRONG><BR>/usr/ports/net/bind9/Makefile:FLAVORS=
+debug static threads</BLOCKQUOTE>
+<P>Thus you can see that Bind 9 can be built using threads,
+statically or with debugging capabilities. Typically flavors are not
+required, the major exception being &quot;no_x11&quot; which is very
+common on headless servers and the like.
+</P>
+<P>&nbsp;</P>
+<H2>Installing precompiled packages</H2>
+<P>Precompiled software packages for OpenBSD are available on the
+official vendor CD's, and any packages you build in ports will be
+available in /usr/ports/packages/ARCHITECTURE/All/. Some software
+vendors also make binary packages available to spare users the
+trouble or to prevent source code from being distributed. To install
+such precompiled packages simply use the &quot;pkd_add&quot; command:</P>
+<BLOCKQUOTE><STRONG># pkg_add -v gpgme-0.3.4.tgz </STRONG><BR>Requested
+space: 480296 bytes, free space: 10443402240 bytes in
+/var/tmp/instmp.vNzip25517<BR>pkg: Handling dependencies for
+gpgme-0.3.4<BR>checking gnupg-* (gnupg-1.0.6) -&gt;
+gnupg-1.0.6<BR>Package `gpgme-0.3.4' depends on `gnupg-1.0.6'<BR>-
+`gnupg-1.0.6' already installed<BR>extract: Package name is
+gpgme-0.3.4<BR>extract: CWD to /usr/local<BR>extract:
+/usr/local/bin/gpgme-config<BR>extract:
+/usr/local/include/gpgme.h<BR>extract:
+/usr/local/info/gpgme.info<BR>extract:
+/usr/local/lib/libgpgme.a<BR>extract:
+/usr/local/lib/libgpgme.la<BR>extract:
+/usr/local/share/aclocal/gpgme.m4<BR>extract:
+/usr/local/lib/libgpgme.so.7.0<BR>extract: execute '/sbin/ldconfig -m
+/usr/local/lib'<BR>extract: execute 'install-info
+--info-dir=/usr/local/info /usr/local/info/gpgme.info'<BR>extract:
+CWD to .<BR>Attempting to record package into
+`/var/db/pkg/gpgme-0.3.4'<BR>Attempting to record dependency on
+package `gnupg-1.0.6'<BR>Package `gpgme-0.3.4' registered in
+`/var/db/pkg/gpgme-0.3.4'</BLOCKQUOTE>
+<P>You can change the location used to unpack the file using the &quot;-t&quot;
+option, if you are installing a large package to /usr/ for example
+and /tmp is on a separate disk it may be faster to unpack to /usr/
+and install from there then from /tmp.
+</P>
+<P>&nbsp;</P>
+<H2>What to do when things won't build</H2>
+<P>Ports will almost always build, but that is not to say they will
+always work. Some of the more common problems are:</P>
+<UL TYPE=DISC>
+<LI><P STYLE="margin-bottom: 0cm">Inability to download the source
+code
+</P>
+<LI><P STYLE="margin-bottom: 0cm">The source code signatures have
+changed
+</P>
+<LI><P STYLE="margin-bottom: 0cm">A broken dependency port
+</P>
+<LI><P STYLE="margin-bottom: 0cm">Broken source code or source code
+incompatible with current OpenBSD
+</P>
+<LI><P>Something on your system is broken, such as &quot;make&quot;
+</P>
+</UL>
+<P>The first thing to check is the source code, did it get
+downloaded, if yes it should be present in &quot;/usr/ports/distfiles&quot;.
+This can be due to the source code being modified but not renumbered,
+ports files usually have an MD5 and SHA1 signature of the source code
+tarball, if they don't match the port will not compile it by default.
+Changing the Makefile to ignore this signature and compile in any
+event is dangerous. Please see more on this in the security section.
+</P>
+<P>The next thing to do is check the output of the compile, common
+errors include things like &quot;can't find library...&quot; or
+&quot;patch file hunk failed to apply...&quot; most of these messages
+are reasonably self explanatory, if patch files aren't applying
+properly then either the patch file or the source code has changed
+enough to break it, manually checking files and modifying the patch
+is one approach, simply downloading newer software another. Another
+common reason for these errors is something on the system is broken,
+have you recently removed any files or directories to save space?
+This is a common mistake that can lead to problems. You should also
+check what version of OpenBSD you are using, if it's 2.x-stable then
+it may be time to upgrade, GCC is currently going through major
+changes as vendors start to ship the next major release (3.x), and
+many software packages have errors that GCC 2.x will accept and
+process but that GCC 3.x will not (being somewhat more strict in it's
+input).
+</P>
+<P>&nbsp;</P>
+<H2>Security issues in ports</H2>
+<P>Ports relies primarily on third party software vendors ranging
+from individuals to organizations such as the Apache group. While
+efforts are made to ensure the code is reasonable correct the
+software in ports is not audited to nearly the degree that OpenBSD
+is. Furthermore there have been several incidents of sites such as
+monkey.org being broken into and software packages hosted there being
+modified, ranging from additional commands in the Makefiles to actual
+modification of the source code. For this reason OpenBSD includes MD5
+sums of the packages, if modified the MD5 sum will not match and a
+warning will be issued, <STRONG>DO NOT IGNORE THESE WARNINGS</STRONG>.
+While they are often false positives due to a package being updated
+they should be investigated before continuing as you are putting your
+system at risk.
+</P>
+<P>You can change ownership of the &quot;/usr/ports&quot; directory
+to a non root user such as &quot;portuser&quot; and then compile all
+packages as this user. You will also want to create /etc/mk.conf and
+add the following line to it:</P>
+<PRE>SUDO=/usr/bin/sudo</PRE><P>
+<BR><BR>
+</P>
+<P>This will greatly simplify the task of creating ports as a non
+root user. The user building ports should of course have sudo access.
+</P>
+<P>Building ports as a non root user decreases the risk of a security
+incident, several programs in ports were found to have compromised
+distribution source code which created a root shell bound to the
+network if the port was compiled as root, if the port had been
+compiled as a user this would not have been an issue. However if an
+attacker can subvert your ports files, or the software you download
+they can compromise your system since the compiled package must be
+installed by root in any event. Please note this will break some
+ports when trying to compile them or create the packages as non-root
+users will not be able to set file permissions to other users or
+create setuid/setgid files.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>Bandwidth saving techniques for ports</H2>
+<P>There are a number of ways to save bandwidth when making ports
+files. The first most obvious way is to purchase the OpenBSD CD's
+which come with a wide variety of prebuilt packages such as bash and
+emacs and other commonly used software. The second major bandwidth
+saving technique is to keep a copy of the source code required for
+the build locally, you can then use it by copying it into
+/usr/ports/distfiles/, or by making it available on a local server
+and modifying the locations in the Makefile for the program. This is
+ideal for administrators with multiple architectures or systems
+spanning multiple version of OpenBSD and libraries who wish to
+install the latest version of emacs for example on all their systems.
+The third method is to take the compiled packages, stored in
+/usr/ports/packages/ARCHITECTURE/All/ and copy them over to other
+systems and then use &quot;pkg_add&quot; to install them, this also
+saves on compiler time.
+</P>
+<P>&nbsp;</P>
+<HR>
+<P><A HREF="../">Back</A></P>
+<P>Last updated on 6/13/2002</P>
+<P>Copyright Kurt Seifried 2002 <A HREF="/cdn-cgi/l/email-protection#c1aab4b3b581b2a4a8a7b3a8a4a5efaeb3a6"><span class="__cf_email__" data-cfemail="cfa4babdbb8fbcaaa6a9bda6aaabe1a0bda8">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 14.0 Security for the authentication backend</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>14.0 Security for the authentication backend</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#345f4146407447515d52465d51501a5b4653"><span class="__cf_email__" data-cfemail="e289979096a291878b84908b8786cc8d9085">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>This section has been added since many people use databases to
+store the login and password information that is used to
+authenticate. Doing this securely is much more difficult then
+most people realize. </p>
+<p><strong>14.1 Basic security considerations</strong></p>
+<p>The authentication backend must be secured heavily of course,
+there are several &quot;best practices&quot; you should follow:</p>
+<p>The authentication server should only be an authentication
+server, it should not have other services such as DNS, WWW, POP,
+IMAP and so forth. Any additional services only increase the
+chances of a compromise.</p>
+<p>The authentication server should have a minimal number of
+users that are allowed to log in, the best is to only allow
+administrators as needed.</p>
+<p>The authentication server should be firewalled and possibly
+placed on a separate segment. </p>
+<p>If this is a publicly accessible web server using the
+authentication server then you may want to place the
+authentication server outside of your internal network. This
+prevents attackers from potentially compromising an internal
+machine (using an SQL insertion attack for example). </p>
+<p>Where possible create a special user that only has read access
+to the database that is used for authentication queries. In this
+manner it is much harder for an attacker to modify data in the
+database. </p>
+<p><strong>14.2 Exporting authentication information</strong></p>
+<p>As it is preferable to have authentication servers isolated as
+much as possible it is not often that people allow externally
+placed authentication servers to pull data from internal
+authentication servers. The most popular solution is to export
+data from the internal servers, this also allows you to only
+export the accounts that are needed instead of everything.
+Exporting information depends heavily on the exist authentication
+backend used.</p>
+<p><strong>14.2.1 Databases</strong></p>
+<p>Typically the simplest was is to simply export a subset of the
+data to a file and then upload it to authentication server where
+it is imported to the appropriate table(s). Another method would
+be to use an automated SQL client to connect to the external
+authentication server and update accounts with standard SQL
+commands (i.e. INSERT records for new accounts). This can be
+combined with database triggers (not available in all databases)
+so that whenever a password is modified for example the internal
+server connects to the external one and updates the information.
+The last method is to use database replication (again not
+available in all databases) and simply replicate the database out
+to the external server. Depending on the product in use you may
+be able to filter what goes out. </p>
+<p><strong>14.2.2 Windows 2000</strong></p>
+<p>Using the LDAP server in Windows 2000 you can replicate data
+to other LDAP servers, allowing for relatively easy updates to an
+external server. </p>
+<p><strong>14.3 SQL insertion attacks</strong></p>
+<p>As always you need to filter data that is provided by users.
+Just blindly using the contents of the &quot;name&quot; field can
+be very dangerous. Inserting special characters can allow an
+attacker to modify the SQL command used, such as inserting
+wildcard characters (i.e. set username and password to
+&quot;*&quot; so that it simply matches the first record).
+Several papers are available on this topic:</p>
+<p><a href="http://www.roses-labs.com">http://www.roses-labs.com</a>
+- Abusing poor programming techniques in webserver scripts V 1.0</p>
+<p><a href="http://www.digitaloffense.net/csw/slides/CanSec_files/frame.htm">http://www.digitaloffense.net/csw/slides/CanSec_files/frame.htm</a>
+- Making NT Server Bleed </p>
+<p>To combat SQL insertion attacks you should sanitize data
+before it is sent to the database server. This must not be done
+client side through the use of java script for example since it
+is trivial for attackers to circumvent preventive measures that
+run on their machines. Probably the best piece of advice is to
+create a list of allowed characters (i.e. a-z, A-Z, 0-9) for
+usernames and the appropriate characters for passwords, not
+allowing &quot;special&quot; characters like &quot;/&quot;,
+&quot;\&quot;, &quot;*&quot;, &quot;&amp;&quot; and so forth will
+greatly reduce the number of potential problems. You should then
+escape any remaining &quot;special&quot; characters so they are
+interpreted as data and not parts of the SQL command. For Perl
+there is a DBI quote function, for recent version of PHP this is
+done automatically for example. </p>
+<p><strong>14.4 Preventing brute forcing </strong></p>
+<p>As with any authentication system attackers can (and will) try
+to brute force their way in by using different usernames and
+passwords. Preventing brute forcing is difficult, for example
+using account lockouts results in a new problem, attackers simply
+try to guess the password X number of times and then the account
+is locked out and users cannot access the system. Using rate
+limits and back off procedures is typically more robust,
+increasing the time between authentication methods by 5 seconds
+will force an attacker to connect repeatedly, increasing the time
+needed to try passwords. With all of these solutions there is one
+major common flaw. The assumption is that attackers will choose a
+user and then try various passwords. Attackers can just as easily
+choose a password and try different usernames. This works
+especially well with systems that use default passwords when
+accounts are created or reset for example (for example my
+telephone company and my bank use default passwords, the phone
+company changes it every year, and the bank four times a year).
+If you use some sort of lockout or backoff you should take this
+into consideration. </p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-13.html">Back</a> | <a href="section-15.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

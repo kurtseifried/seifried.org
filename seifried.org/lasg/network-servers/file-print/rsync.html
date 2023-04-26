@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;rsync</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#a8c3dddadce8dbcdc1cedac1cdcc86c7dacf"><span class="__cf_email__" data-cfemail="2f445a5d5b6f5c4a46495d464a4b01405d48">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>rsync is an extremely efficient method for mirroring files, be
+it source code files of a CVS tree, a web site, or even this
+document. rsync preserves file permissions, links, file times and
+more. In addition to this, it supports an anonymous mode (which,
+incidentally, I use for the mirroring of this document) that
+makes life very easy for all concerned. The rsync program itself
+can act as the client (run from a command line or script) and as
+the server (typically run from inetd.conf). The program itself is
+quite secure: it does not require root privileges to run as a
+client nor as the server (although it can if you really want it
+to) and can chroot itself to the root directory of whatever is
+being mirrored (this however requires root privileges and can be
+more dangerous then it is worth). You can also map the user id
+and group id it will access the system as (the default is nobody
+for most precompiled rsync packages and is probably the best
+choice). In non-anonymous mode rsync supports usernames and
+passwords that are encrypted quite strongly using 128 bit MD4.
+The &quot;man rsyncd.conf&quot; page quite clearly covers setting
+up rsync as a server and making it relatively safe. The default
+configuration file is /etc/rsyncd.conf. It has a global section
+and module sections (basically each shared out directory is a
+module).</p>
+<p>rsyncd.conf example:</p>
+<pre>motd file = /etc/rsync.motd # specifies a file to be displayed, legal disclaimer, etc.
+max connections = 5 # maximum number of connections so you don't get flooded
+[pub-ftp]
+	comment = public ftp area # simple comment 
+	path = /home/ftp/pub # path to the directory being exported
+	read only = yes # make it read only, great for exported directories
+	chroot = yes # chroot to /home/ftp/pub 
+	uid = nobody # explicitly set the UID
+	gid = nobody # explicitly set the GID
+[secret-stuff]
+	comment = my secret stuff
+	path = /home/user/secret # path to my stuff
+	list = no # hide this module when asked for a list
+	secrets file = /etc/rsync.users # password file
+	auth users = me, bob, santa # list of users I trust to see my secret stuff
+	hosts allow = 1.1.1.1, 2.2.2.2 # list of hosts to allow</pre>
+<p>As you can see rsync is quite configurable, and generally
+quite secure, the exception being the actual file transfers which
+are not encrypted in any way. If you need security I suggest you
+use SSH to tunnel a connection, or some VPN solution like
+FreeS/WAN. Also make sure you are running rsync 2.3.x or higher
+as a potential root compromise was found in 2.2.x. Rsync is
+available at: <a href="http://rsync.samba.org/">http://rsync.samba.org/</a>.
+Rsync runs on port 873, tcp.</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 873
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 873
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 873</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 873
+ipchains -A input -p tcp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 873
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 873</pre>
+<p><a href="index.html">Back</a></p>
+<p>Last updated on 31/8/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#e68d939492a695838f80948f8382c8899481"><span class="__cf_email__" data-cfemail="2f445a5d5b6f5c4a46495d464a4b01405d48">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Installation</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Installation</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#0a617f787e4a796f636c78636f6e2465786d"><span class="__cf_email__" data-cfemail="2c47595e586c5f49454a5e45494802435e4b">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>How you install Linux will have a big impact on how much you
+will be able to secure. If you install Linux from an untrusted
+source you could potentially end up with an installation that has
+backdoors or other security issues. If you install packages you
+do not need and forget about there is a greater chance that
+someone will be able to break in. As well there are security
+tasks that are best accomplished during installation, attempting
+to do them post install can be troublesome. </p>
+<p>&nbsp;</p>
+<h2>Verifying packages and files</h2>
+<p>Some sources of install packages and files are safer then
+others. Buying Linux on CD from a large vendor such as Red Hat at
+a large store is relatively safe and the chances of acquiring a
+trojan'ed CD set is very unlikely. Installing Linux via ftp from
+a remote ftp server provides an attacker many avenues to replace
+packages with modified versions. The good news is that most
+vendors have addressed this problem. </p>
+<p>Using public/private key cryptography most vendors have a
+keypair that they use to sign packages, you can verify these
+signatures with the public key. These public keys can be
+downloaded online and most vendors include them on their CD's. A
+list of vendor key names, ID's, fingerprints and the keys
+themselves are available <a href="../vendor-keys/">here</a>. </p>
+<p>You first need to download the vendors PGP or GnuPG key, for
+example Red Hat&#146;s signing key has the identity of &quot;<font size="3"><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="087b6d6b7d7a617c71487a6d6c60697c266b6765">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></font>&quot; and the fingerprint is:</p>
+<p>CA20 8686 2BD6 9DFC 65F6 ECC4 2191 80CD DB42 A60E</p>
+<p>Generally speaking you can download the vendor keys from their
+websites, and many vendors ship the key on their CD&#146;s. To
+verify a directory full of RPM&#146;s this simple script will
+automate the task:</p>
+<blockquote>
+<pre><font face="Albertus Extra Bold">[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="b0c5c3d5c2f0c3d5c2c6d5c2">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> RPMS]# for a in *.rpm
+&gt; do
+&gt; rpm -K $a &gt;&gt; ~/sign-log
+&gt; done</font></pre>
+</blockquote>
+<p>The file sign-log should consists of lines like:</p>
+<blockquote>
+<pre>ElectricFence-2.2.2-5.i386.rpm: md5 gpg OK
+ImageMagick-5.2.2-5.i386.rpm: md5 gpg OK
+ImageMagick-devel-5.2.2-5.i386.rpm: md5 gpg OK
+Inti-0.5preview-1.i386.rpm: md5 gpg OK</pre>
+</blockquote>
+<p>&nbsp;</p>
+<h2>Installation Media</h2>
+<p>You cannot secure your installation very well if an attacker
+manages to compromise the system before you even install it.
+While it is rare for an attacker to try and compromise
+installation media it is certainly possible. The first step is to
+verify the packages and installation files on your installation
+media, this can be done by checking GnuPG signatures on the
+RPM's/etc, and the other files, although finding the signatures
+of the other files or MD5 sums is relatively tricky it is
+possible. The next step is to secure the system providing the
+files and the path between this system and the machine you are
+installing the software on. This is very easy for example with a
+CD-ROM, and much more tricky if doing an FTP or NFS install over
+the Internet from a system you do not control. It is strongly
+suggested you use a server that you control to host installation
+files. </p>
+<p>&nbsp;</p>
+<h3>CD's</h3>
+<p>CD's are typically the easiest to install from, and relatively
+secure. If you purchase CD's from the vendor it is unlikely that
+they have been somehow compromised, all you do is simply boot
+from them and install the software. You can leave the machine
+offline for the installation typically, and if you burn the
+updates onto a CD you can easily update the system, again without
+needing to bring it online. It is strongly recommended to keep a
+set of vendor CD's around so that you can cleanly install
+critical systems as needed. </p>
+<p>&nbsp;</p>
+<h3>Harddrive</h3>
+<p>Installing from a local harddrive is also a relatively secure
+way of installing Linux. Simply partition the drive first (if you
+are installing Linux to it) and then copy the files onto a
+prepared partition, boot the system and away you go. Installing
+from the harddrive provides many of the benefits of installing
+from CD without the need to burn CD's. As well you can easily
+copy all the updates to the drive and then install them on the
+first reboot and bring the system completely up to date.
+Additionally with the increased availability of external
+harddrives utilizing parallel, FireWire and USB ports it is
+relatively easy to plug a harddrive into a system without needing
+to take it apart (assuming of course the installation floppy disk
+supports it). </p>
+<p>&nbsp;</p>
+<h3>Network (FTP / NFS)</h3>
+<p>These two methods are very convenient, all you need is a
+single floppy disk (typically) and a server with all the files.
+Simply mirror the directory structure you need (typically
+something like /pub/redhat/7.1/en/i386) and then make it
+accessible via ftp (anonymous or username/password required) or
+via NFS (to the IP or subnet you use for installations). The
+files only need to be readable, there is absolutely no need for
+writing to them and in fact you are probably better off removing
+the write bit for all to prevent &quot;accidents&quot;. These
+network methods can also be combined with the automated
+installations such as KickStart, or you can do you own custom
+installation of sorts (by removing packages you do not want for
+example). If you choose to do network installs it is critical
+that the NFS/FTP server remains secure, to this end I highly
+recommend using a protected subnet, not attached to your main
+network if possible. </p>
+<p>&nbsp;</p>
+<h2>Automating installs</h2>
+<p>Automating installs can relieve tedium and prevent security
+problems. If you have to do 100 Linux installs chances are you
+will make error if you have to do them each manually. However if
+you can create an automated installation that is secured then it
+is much less likely that you will have problems. </p>
+<p>&nbsp;</p>
+<h3>Red Hat Kickstart</h3>
+<p>Red hat provides a facility for automating installs, which can
+be very useful. Simply put you create a text file with various
+specifications for the install, and point the Red Hat installer
+at it, then sit back and let it go. This is very useful if
+rolling out multiple machines, or giving users a method of
+recovery (assuming their data files are safe). You can get more
+information at: <a href="http://www.redhat.com/mirrors/LDP/HOWTO/KickStart-HOWTO.html">http://www.redhat.com/mirrors/LDP/HOWTO/KickStart-HOWTO.html</a>.
+The configuration file can also be placed on a tftp server, in a
+directory named for the IP address of the client, thus using a
+dhcp/tftp server you can completely automate installs for
+machines if you know the MAC address of the client machine. </p>
+<p>&nbsp;</p>
+<h2>Filesystem layout and structuring</h2>
+<p>There are a number of common attacks/exploits in Linux (and
+UNIX) that can be reduced in risk and significance with a proper
+directory and partition structure. One of the most common denial
+of service attacks is to fill up the disk space with junk data,
+this can also happen unintentionally with software that
+experiences a problem. This is typically defended against by
+assigning root a set percentage of the disk space as reserve
+(usually 5-10%), so on a 10 gig disk users would not be able to
+use the last 500 megs, this would be reserved for root. This
+doesn't do you any good however if something running as root,
+that generates log files, goes nuts, or is attacked and made to
+generate massive log files. The next big attack that takes
+advantage of disk setup would be /tmp races, and core dumps,
+programs that create links or files improperly without checking
+to make sure they exist first, especially programs that run as
+root. An attacker can then link /tmp/foo to /etc/passwd and
+potentially add a user account, wipe the password database out,
+and so on. </p>
+<p>Mounting options can be used to mount a partition read only,
+not allow execution of programs, and other useful things. You may
+encounter difficulties when using these options however, for
+example if you mount /usr as read only you will have
+significantly more work when upgrading system components,
+especially on critical servers (such as e-commerce machines) that
+need to be up and running, but also require critical updates.
+More useful options are &quot;nosuid&quot; (no setuid or setgid
+files), &quot;noexec&quot; (no executables) and &quot;nodev&quot;
+(no device files). </p>
+<p>So with this in mind we have several guidelines:</p>
+<ul type="disc">
+<li>Put filesystems that users can write to on separate
+partitions </li>
+<li>Put filesystems with critical system
+components/configuration on separate partitions </li>
+<li>Consider mounting some partitions with system binaries as
+read-only (this will make upgrades more difficult
+however), mounting /bin/, /sbin/ and /etc/ separately
+however will make booting the system tricky (depending on
+your configuration), test this before using it in a
+production environment. </li>
+</ul>
+<p>Some notes on the various flags</p>
+<p>noexec, if you mount /tmp noexec for example you can copy a
+binary in, but it will not run, however if you execute it using
+ld-linux.so it will work fine:</p>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="4c3f29252a3e2529280c3f3829222f24">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /tmp]$ ./date 
+bash: ./date: Permission denied
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="e89b8d818e9a818d8ca89b9c8d868b80">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /tmp]$ /lib/ld-linux.so.2 ./date 
+Thu Aug 24 21:59:08 MDT 2000
+[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="cfbcaaa6a9bda6aaab8fbcbbaaa1aca7">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> /tmp]$ </pre>
+<p>&nbsp;</p>
+<table border="2" cellpadding="2">
+<tr>
+<td valign="top">Dir.</td>
+<td valign="top">nodev</td>
+<td valign="top">noexec</td>
+<td valign="top">nosuid</td>
+<td valign="top">read-only</td>
+<td valign="top">separate</td>
+<td valign="top">comments</td>
+</tr>
+<tr>
+<td valign="top">/</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">good idea</td>
+<td valign="top">Ideally you should mount / totally
+restricted and then have directories like /boot/
+separate, this also forces you to configure the
+directories properly since any &quot;dangerous&quot;
+directory (for example /dev/) will be &quot;broken&quot;
+(i.e. nodev would severely break /dev/). This is only
+recommended if you are going all out.</td>
+</tr>
+<tr>
+<td valign="top">/boot/</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">ok</td>
+<td valign="top">good idea</td>
+<td valign="top">Critical directory with kernel images,
+if an attacker replaces your kernel or deletes it you
+have a lot of problems. </td>
+</tr>
+<tr>
+<td valign="top">/bin/</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">ok</td>
+<td valign="top">tricky</td>
+<td valign="top">Directory with important system
+binaries, do not mount noexec or nosuid, your system will
+not work correctly. Mounting read-only will prevent
+trojans, and make updating software significantly more
+difficult.</td>
+</tr>
+<tr>
+<td valign="top">/dev/</td>
+<td valign="top">no</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">yes</td>
+<td valign="top">Mounting /dev/ with the nodev option
+will severely break your system, as will mounting it read
+only. /dev/ is usually less then a few megs, and the
+ability to write to device files can result in huge
+damage, and system compromise.</td>
+</tr>
+<tr>
+<td valign="top">/etc/</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">tricky</td>
+<td valign="top">Critical directory with system
+configuration information, usually the first target for
+an attacker. There should be no binaries in here
+(although some Unix systems do keep binaries in /etc/,
+Linux is not one of them). Mounting it read only will not
+allow you to change passwords, or other important
+settings so is not recommended. </td>
+</tr>
+<tr>
+<td valign="top">/home/</td>
+<td valign="top">yes</td>
+<td valign="top">good idea</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">yes</td>
+<td valign="top">/home/ is the primary area where users
+keep their files and work with them (assuming they can
+log in), if you provide services like IMAP this is where
+their mail folders will be. You should make it a separate
+partition since users have a tendency of eating up space
+rapidly, as well it will prevent them from making hard
+links to files and then using setuid programs that dump
+core for example and wiping out system files. Mounting it
+noexec is probably a good idea, however depending on the
+type of work users do it may seriously hamper them,
+mounting it nosuid is a good idea and shouldn't really
+affect users. </td>
+</tr>
+<tr>
+<td valign="top">/lib/</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">yes</td>
+<td valign="top">ok</td>
+<td valign="top">good idea</td>
+<td valign="top">Most programs will rely on libraries in
+this directory, if they are damaged or compromised you
+will have a hard time cleaning up. There are executable
+files in here (.so's, etc.), so setting it noexec would
+not be advised, but setting it nosuid is probably wise.</td>
+</tr>
+<tr>
+<td valign="top">/mnt/</td>
+<td valign="top">yes</td>
+<td valign="top">good idea</td>
+<td valign="top">good idea</td>
+<td valign="top">ok</td>
+<td valign="top">no need</td>
+<td valign="top">/mnt/ is typically used to mount
+removable devices, such as /mnt/floppy/ or /mnt/cdrom, as
+such it rarely contains anything other then a few
+directories, making it separate is not a real issue since
+anything in it will be mounted as well.</td>
+</tr>
+<tr>
+<td valign="top">/opt/</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">good idea</td>
+<td valign="top">Typically this directory is used for
+optional packages, vendor software and the like,
+oftentimes this stuff needs setuid bits to work properly
+(a good reason to separate it since a lot of vendors have
+terrible software security). </td>
+</tr>
+<tr>
+<td valign="top">/proc/</td>
+<td valign="top">&nbsp;</td>
+<td valign="top">&nbsp;</td>
+<td valign="top">&nbsp;</td>
+<td valign="top">&nbsp;</td>
+<td valign="top">&nbsp;</td>
+<td valign="top">/proc/ is a virtual filesystem</td>
+</tr>
+<tr>
+<td valign="top">/root/</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">good idea</td>
+<td valign="top">root's private playground usually, many
+people use it instead of /usr/local/ when testing
+things/etc</td>
+</tr>
+<tr>
+<td valign="top">/sbin/</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">ok</td>
+<td valign="top">tricky</td>
+<td valign="top">Directory with other important system
+binaries, do not mount noexec or nosuid or you will break
+your system. Mounting read-only will prevent trojans, and
+make updating software significantly more difficult.</td>
+</tr>
+<tr>
+<td valign="top">/tmp/</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">yes</td>
+<td valign="top">Temporary directory for use by users and
+system, mount read only will break things, make it
+separate because many exploits consist of making hard
+links in tmp to files, and then having a program
+misbehave and destroy/modify the target file maliciously.
+Binaries, especially setuid binaries should not be
+allowed in /tmp/ since any user can modify them usually.</td>
+</tr>
+<tr>
+<td valign="top">/usr/</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">no</td>
+<td valign="top">ok</td>
+<td valign="top">good idea</td>
+<td valign="top">This directory is where the majority of
+software will be installed, along with source code and
+other stuff typically, mounting it separately is a good
+idea since it tends to contain relatively important
+software (especially in /usr/bin and /usr/sbin). Mounting
+it read only will prevent an attacker from inserting
+trojan software, but will make upgrades significantly
+harder. I wouldn't bother mounting it read only unless
+you also mount /bin/ and /sbin/ read only. </td>
+</tr>
+<tr>
+<td valign="top">/var/</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">yes</td>
+<td valign="top">no</td>
+<td valign="top">yes</td>
+<td valign="top">/var/ is used for a lot of things, least
+of which includes system logging. This partition should
+be separate since attackers can attempt to fill it up by
+flooding the log files, and other user data is stored
+here, such as mail (/var/spool/mail usually). Software
+that stores data here includes: Mail servers (Sendmail,
+Postfix, etc.), INN (Usenet news), Proxy software like
+Squid (WWW/FTP proxy), and so on. There should be no
+binaries at all here, just log files and data. Setting it
+noexec may break programs, Red Hat 7.0 places various
+binaries used for anonymous ftp with WuFTPD and arpwatch
+binaries in /var/ for example. You can place those files
+on another partition and symlink the directories to
+within /var/.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h2>Hardening your installation</h2>
+<p>So you've got a fresh install of Linux (Red Hat, Debian,
+whatever, please, please, DO NOT install really old versions and
+try to upgrade them, it's a nightmare), but chances are there is
+a lot of extra software installed, and packages you might want to
+upgrade or things you had better upgrade if you don't want the
+system compromised in the first 15 seconds of uptime (in the case
+of BIND/Sendmail/etc.). Keeping a local copy of the updates
+directory for your distributions is a good idea (there is a list
+of errata for distributions at the end of this document), and
+making it available via NFS/ftp or burning it to CD is generally
+the quickest way to make it available. As well there are other
+items you might want to upgrade, for instance imapd or bind. You
+will also want to remove any software you are not using, and/or
+replace it with more secure versions (such as replacing RSH with
+SSH).</p>
+<p>&nbsp;</p>
+<h3>Bastille Linux</h3>
+<p>If you are running Mandrake / Red Hat or a similar Linux you
+can use the Bastille Linux hardening script available at: <a href="http://www.bastille-linux.org/">http://www.bastille-linux.org/</a>.
+It will disable various servers, install login banners and
+generally automates many of the tasks a security administrator
+will have to do in any event. </p>
+<p>&nbsp;</p>
+<h3>Harden SuSE</h3>
+<p>Harden SuSE is a script specifically for SuSE Linux and
+available from: <a href="http://www.suse.de/~marc/">http://www.suse.de/~marc/</a>.
+Usage can be automated. </p>
+<p>&nbsp;</p>
+<h2>Summary</h2>
+<p>Linux, like most UNIX systems uses a directory structure based
+off of /, which directories like /home, /tmp, /usr, and so on.
+These directories can be placed on the same partition, or
+separate partitions, separating them properly can have security
+(and performance) benefits. There are also a number of mounting
+options that can be used to prevent common problems and attacks.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 31/8/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#1f746a6d6b5f6c7a76796d767a7b31706d78"><span class="__cf_email__" data-cfemail="147f6166605467717d72667d71703a7b6673">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

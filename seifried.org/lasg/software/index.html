@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Software</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Software</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#d1baa4a3a591a2b4b8b7a3b8b4b5ffbea3b6"><span class="__cf_email__" data-cfemail="42293730360231272b24302b27266c2d3025">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<h2><a name="RPM&nbsp;">RPM&nbsp;</a></h2>
+<p>RPM is a software management tool originally created by Red
+Hat, and later GNU'ed and given to the public (<a href="http://www.rpm.org/">http://www.rpm.org/</a>).
+It forms the core of administration on most systems, since one of
+the major tasks for any administrator is installing and keeping
+software up to date. Various estimates place most of the blame
+for security break-ins on bad passwords, and old software with
+known vulnerabilities. This isn't exactly surprising one would
+think, but while the average server contains 200-400 software
+packages on average, one begins to see why keeping software up to
+date can be a major task.</p>
+<p>The man page for RPM is pretty bad, there is no nice way of
+putting it. The book &quot;Maximum RPM&quot; (ISBN:
+0-672-31105-4) on the other hand is really wonderful (freely
+available at <a href="http://www.rpm.org/">http://www.rpm.org/</a>
+in post script format). I would suggest this book for any Red Hat
+administrator, and can say safely that it is required reading if
+you plan to build RPM packages. The basics of RPM are pretty self
+explanatory, packages come in an rpm format, with a simple
+filename convention:</p>
+<pre>package_name-package_version-rpm_build_version-architecture.rpm</pre>
+<pre>nfs-server-2.2beta29-5.i386.rpm</pre>
+<p>would be &#147;nfs-server&#148;, version &#147;2.2beta29&#148;
+of &#147;nfs-server&#148;, the fifth build of that rpm (i.e. it
+has been packaged and built 5 times, minor modifications, changes
+in file locations, etc.), for the Intel architecture, and
+it&#146;s an rpm file.</p>
+<p>Command Function<br>
+-q Queries Packages / Database for info<br>
+-i Install software<br>
+-U Upgrades or Installs the software<br>
+-e Extracts the software from the system (removes)<br>
+-v be more Verbose<br>
+-h Hash marks, a.k.a. done-o-dial</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td><pre>Command Example</pre>
+</td>
+<td><pre>Function</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -ivh package.rpm</pre>
+</td>
+<td><pre>Install 'package.rpm', be verbose, show hash marks</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -Uvh package.rpm</pre>
+</td>
+<td><pre>Upgrade 'package.rpm', be verbose, show hash marks</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -qf /some/file</pre>
+</td>
+<td><pre>Check which package owns a file</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -qpi package.rpm</pre>
+</td>
+<td><pre>Queries 'package.rpm', lists info</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -qpl package.rpm</pre>
+</td>
+<td><pre>Queries 'package.rpm', lists all files</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -qa</pre>
+</td>
+<td><pre>Queries RPM database lists all packages installed</pre>
+</td>
+</tr>
+<tr>
+<td><pre>rpm -e package-name</pre>
+</td>
+<td><pre>Removes 'package-name' from the system (as listed by rpm -qa)</pre>
+</td>
+</tr>
+</table>
+<p><br>
+Red Hat Linux 5.1 shipped with 528 packages, and Red Hat Linux
+5.2 shipped with 573, which when you think about it is a heck of
+a lot of software (SuSE 6.0 ships on 5 CD's, I haven&#146;t
+bothered to count how many packages). Typically you will end up
+with 2-300 packages installed (more apps on workstations, servers
+tend to be leaner, but this is not always the case). So which of
+these should you install and which should you avoid if possible
+(like the r services packages). One thing I will say, the RPM's
+that ship with Red Hat distributions are usually pretty good, and
+typically last 6-12 months before they are found to be broken.</p>
+<p>There is a list of URL's and mailing lists where distribution
+specific errata and updates are available later on in this
+document.&nbsp;</p>
+<p>&nbsp;</p>
+<h2><a name="dpkg">dpkg</a></h2>
+<p>The Debian package system is a similar package to RPM, however
+lacks some of the functionality, although overall it does an
+excellent job of managing software packages on a system. Combined
+with the dselect utility (being phased out) you can connect to
+remote sites, scroll through the available packages, install
+them, run any configuration scripts needed (like say for gpm),
+all from the comfort of your console. The man page for dpkg
+&quot;man dpkg&quot; is quite extensive.</p>
+<p>The general format of a Debian package file (.deb) is:</p>
+<pre>packagename_packageversion-debversion.deb</pre>
+<pre>ncftp2_2.4.3-2.deb</pre>
+<p>Unlike rpm files .deb files are not labeled for architecture
+as well (not a big deal but something to be aware of).</p>
+<p>Command Function:<br>
+-I Queries Package<br>
+-i Install software<br>
+-l List installed software (equiv. to rpm -qa)<br>
+-r Removes the software from the system</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td><pre>Command Example</pre>
+</td>
+<td><pre>Function</pre>
+</td>
+</tr>
+<tr>
+<td><pre>dpkg -i package.deb</pre>
+</td>
+<td><pre>Install package.deb</pre>
+</td>
+</tr>
+<tr>
+<td><pre>dpkg -I package.deb</pre>
+</td>
+<td><pre>Lists info about package.deb (rpm -qpi)</pre>
+</td>
+</tr>
+<tr>
+<td><pre>dpkg -c package.deb</pre>
+</td>
+<td><pre>Lists all files in package.deb (rpm -qpl)</pre>
+</td>
+</tr>
+<tr>
+<td><pre>dpkg -l</pre>
+</td>
+<td><pre>Shows all installed packages</pre>
+</td>
+</tr>
+<tr>
+<td><pre>dpkg -r package-name</pre>
+</td>
+<td><pre> Removes 'package-name' from the system (as listed by dpkg -l)</pre>
+</td>
+</tr>
+</table>
+<p>&nbsp;<br>
+Debian has 1500+ packages available with the system. You will
+learn to love dpkg (functionally it has everything necessary, I
+just miss a few of the bells and whistles that rpm has, on the
+other hand dselect has some features I wish rpm had).</p>
+<p>There is a list of URL's and mailing lists where distribution
+specific errata is later on in this document.</p>
+<p>&nbsp;</p>
+<h2><a name="tarballs / tgz&nbsp;">tarballs / tgz&nbsp;</a></h2>
+<p>Most modern Linux distributions use a package management
+system to install, keep track of and remove software on the
+system. There are however many exceptions, Slackware does not use
+a true package management system per se, but instead has
+precompiled tarballs (a compressed tar file containing files)
+that you simply unpack from the root directory to install, some
+of which have install script to handle any post install tasks
+such as adding a user. These packages can also be removed, but
+functions such as querying, comparing installed files against
+packages files (trying to find tampering, etc.) is pretty much
+not there. Or perhaps you want to try the latest copy of X, and
+no-one has yet gotten around to making a nice .rpm or .deb file,
+so you must grab the source code (also usually in a compressed
+tarball), unpack it and install it. This present no more real
+danger then a package as most tarballs have MD5 and/or PGP
+signatures associated with them you can download and check. The
+real security concern with these is the difficulty in sometimes
+tracking down whether or not you have a certain piece of software
+installed, determining the version, and then removing or
+upgrading it. I would advise against using tarballs if at all
+possible, if you must use them it is a good idea to make a list
+of files on the system before you install it, and one afterwards,
+and then compare them using 'diff' to find out what file it
+placed where. Simply run 'find /* &gt; /filelist.txt' before and
+'find /* &gt; /filelist2.txt' after you install the tarball, and
+use 'diff -q /filelist.txt /filelist2.txt &gt; /difflist.txt' to
+get a list of what changed. Alternatively a 'tar -tf blah.tar'
+will list the contents of the file, but like most tarballs you'll
+be running an executable install script/compiling and installing
+the software, so a simple file listing will not give you an
+accurate picture of what was installed or modified. Another
+method for keeping track of what you have installed via tar is to
+use a program such as &#145;stow&#146;, stow installs the package
+to a separate directory (/opt/stow/) for example and then creates
+links from the system to that directory as appropriate. Stow
+requires that you have Perl installed and is available from: <a href="http://www.gnu.ai.mit.edu/software/stow/stow.html">http://www.gnu.ai.mit.edu/software/stow/stow.html</a>.</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td><pre>Command </pre>
+</td>
+<td><pre>Function</pre>
+</td>
+</tr>
+<tr>
+<td><pre>tar -tf filename.tar</pre>
+</td>
+<td><pre>Lists files in filename.tar</pre>
+</td>
+</tr>
+<tr>
+<td><pre>tar -xf filename.tar</pre>
+</td>
+<td><pre>Extracts files from filename.tar</pre>
+</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h2><a name="Checking file integrity">Checking file integrity</a></h2>
+<p>Something I thought I would cover semi-separately is checking
+the integrity of software that is retrieved from remote sites.
+Usually people don&#146;t worry, but recently ftp.win.tue.nl was
+broken into, and the TCP_WRAPPERS package (among others) was
+trojaned. 59 downloads occurred before the site removed the
+offending packages and initiated damage control procedures. You
+should always check the integrity of files you download from
+remote sites, some day a major site will be broken into and a lot
+of people will suffer a lot of grief.</p>
+<p>&nbsp;</p>
+<h3>RPM integrity</h3>
+<p>RPM packages can (and typically are) PGP signed by the author.
+This signature can be checked to ensure the package has not been
+tampered with or is a trojaned version. This is described in
+great deal in chapter 7 of &#147;Maximum RPM&#148; (online at <a href="http://www.rpm.org/">http://www.rpm.org/</a>),
+but consists of adding the developers keys to your public PGP
+keyring, and then using the &#150;K option which will grab the
+appropriate key from the keyring and verify the signature. This
+way, to trojan a package and sign it correctly, they would have
+to steal the developers private PGP key and the password to
+unlock it, which should be near impossible.</p>
+<p>Be warned however there are some potential problems if you do
+not configure RPM correctly. Please see this security advisory:</p>
+<p><a href="https://www.seifried.org/security/advisories/kssa-001.html">https://www.seifried.org/security/advisories/kssa-001.html</a></p>
+<p>&nbsp;</p>
+<h3>dpkg integrity</h3>
+<p>dpkg supports MD5, so you must somehow get the MD5 signatures
+through a trusted channel (like PGP signed email). MD5 ships with
+most distributions.</p>
+<p>&nbsp;</p>
+<h3>PGP signed files</h3>
+<p>Many tarballs are distributed with PGP signatures in separate
+ASCII files, to verify them add the developers key to your
+keyring and then use PGP with the &#150;o option. This way to
+trojan a package and sign it correctly, they would have to steal
+the developers private PGP key and the password to unlock it,
+which should be near impossible. PGP for Linux is available from:
+<a href="ftp://ftp.zedz.net/">ftp://ftp.zedz.net/</a>.</p>
+<p>&nbsp;</p>
+<h3>GnuPG signed files</h3>
+<p>Also used is GnuPG, a completely open source version of PGP
+that uses no patented algorithms. You can get it from: <a href="http://www.gnupg.org/">http://www.gnupg.org/</a>.
+</p>
+<p>&nbsp;</p>
+<h3>MD5 signed files</h3>
+<p>Another way of signing a package is to create an MD5 checksum.
+The reason MD5 would be used at all (since anyone could create a
+valid MD5 signature of a trojaned software package) is that MD5
+is pretty much universal and not controlled by export laws. The
+weakness is you must somehow distribute the MD5 signatures in
+advance securely, and this is usually done via email when a
+package is announced (vendors such as Sun do this for patches).</p>
+<p>&nbsp;</p>
+<h2><a name="Automating software updates">Automating software
+updates</a></h2>
+<h3>NSBD</h3>
+<p>NSBD (not-so-bad-distribution) is a method to autmatically
+distribute and update software securely over the network. You can
+get it from: <a href="http://www.bell-labs.com/project/nsbd/">http://www.bell-labs.com/project/nsbd/</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Automating updates with RPM">Automating updates with
+RPM</a></h2>
+<h3>AutoRPM</h3>
+<p>AutoRPM is probably the best tool for keeping rpm&#146;s up to
+date, simply put you point it at an ftp directory, and it
+downloads and installs any packages that are newer then the ones
+you have. Please keep in mind however if someone poisons your DNS
+cache you will be easily compromised, so make sure you use the
+ftp site&#146;s IP address and not its name. Also you should
+consider pointing it at an internal ftp site with packages you
+have tested, and have tighter control over. AutoRPM requires that
+you install the libnet package Net::FTP for Perl and is available
+from: <a href="http://www.kaybee.org/~kirk/html/linux.html">http://www.kaybee.org/~kirk/html/linux.html</a>.</p>
+<p>&nbsp;</p>
+<h3>RpmWatch</h3>
+<p>RpmWatch is a simple Perl script that will install updates for
+you, note it will not suck down the packages you need so you must
+mirror them locally, or make them accessible locally via
+something like NFS or CODA. RpmWatch is available from: <a href="http://www.iaehv.nl/users/grimaldo/info/scripts/">http://www.iaehv.nl/users/grimaldo/info/scripts/</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Automating updates with dpkg">Automating updates
+with dpkg</a></h2>
+<p>Debian's software package management tools (dpkg and apt-get)
+support automated updates of packages and all their dependancies
+from a network ftp server. Simple create a script that is called
+by cron once a day (or more often if you are paranoid) that does:</p>
+<p>#!/bin/bash<br>
+PATH=/usr/bin<br>
+apt-get update<br>
+apt-get upgrade</p>
+<p>The only additional thing you will need to do is configure
+your download sites in /etc/apt/sources.list and general apt
+configuration in /etc/apt/apt.conf.</p>
+<p>&nbsp;</p>
+<h2><a name="Automating updates with tarballs / tgz">Automating
+updates with tarballs / tgz</a></h2>
+<p>No tools found, please tell me if you know of any (although
+beyond mirroring, automatically unpacking and running
+&#147;./configure ; make ; make install&#148;, nothing really
+comes to mind, i.e. a ports collection similar to BSD).&nbsp;</p>
+<p>&nbsp;</p>
+<h2><a name="Tracking software installation">Tracking software
+installation</a></h2>
+<p>Usually when software installs from a source install as
+opposed to a package it has a tendency to go all over the place.
+Removing it can be an extremely troublesome task.</p>
+<p>&nbsp;</p>
+<h3>instmon</h3>
+<p>instmon is run before and after you install a tarball / tgz
+package (or any package for that matter). It generates a list of
+files changed that you can later use to undo any changes. It is
+available from: <a href="http://hal.csd.auth.gr/~vvas/instmon/">http://hal.csd.auth.gr/~vvas/instmon/</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Converting file formats">Converting file formats</a></h2>
+<p>Another way to deal with packages/etc. is to convert them.
+There are several utilities to convert rpm files to tarballs,
+rpm&#146;s to deb&#146;s, and so on.</p>
+<p>&nbsp;</p>
+<h3>alien</h3>
+<p>alien is probably the best utility around for converting
+files, it handles rpm&#146;s, deb&#146;s and tarballs very well.
+You can download it from: <a href="http://kitenet.net/programs/alien/">http://kitenet.net/programs/alien/</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="Finding software">Finding software</a></h2>
+<p>One major problem with Linux is finding software that did not
+ship with your distribution. Searching the Internet is a pain.
+There are some resources however that can ease the pain:</p>
+<ul>
+<li><a href="http://www.rpmfind.net/">http://www.rpmfind.net/</a></li>
+<li><a href="http://www.linuxapps.com/">http://www.linuxapps.com/</a></li>
+<li><a href="http://www.freshmeat.net/">http://www.freshmeat.net/</a></li>
+</ul>
+<p>&nbsp;</p>
+<h2><a name="Secure programming">Secure programming</a></h2>
+<p>This whole guide exists because Linux and the software running
+on Linux systems is either insecurely written, or insecurely
+setup. Many issues, such as buffer overruns, are due to bad
+programming and carelessness. These problems become especially
+bad when the software in question is setuid to run as root, or
+any other privileged group. There are a variety of techniques,
+and other measures that can be taken to make software safer.</p>
+<p>&nbsp;</p>
+<h3>Secure Linux Programming FAQ</h3>
+<p>This guide covers a lot of general techniques for secure
+programming as well as some Linux specific items. You can get it
+at: <a href="http://www.dwheeler.com/secure-programs/">http://www.dwheeler.com/secure-programs/</a>.
+</p>
+<p>&nbsp;</p>
+<h3>Secure UNIX Programming FAQ</h3>
+<p>This document covers a variety of techniques to make programs
+more secure, as well as some pretty low level items like
+inherited trust, sharing credentials, and so on. This document is
+available at: <a href="http://www.whitefang.com/sup/">http://www.whitefang.com/sup/</a>
+and I highly recommend reading it if you plan to program in Linux
+(or UNIX in general).</p>
+<p>&nbsp;</p>
+<h3>Secure Internet Programming</h3>
+<p>Secure Internet Programming (SIP) is a laboratory (for lack of
+a better word) that studies computer security, and more
+specifically problems with mobile code such as Java and ActiveX.
+They have a number of interesting projects going, and many
+publications online that make excellent reading. If you are going
+to be writing Java code I would say you have to visit this site: <a href="http://www.cs.princeton.edu/sip/">http://www.cs.princeton.edu/sip/</a>.</p>
+<p>&nbsp;</p>
+<h3>Writing Safe Setuid Programs</h3>
+<p>Writing Safe Setuid Programs is an extremely comprehensive
+work that covers most everything and is available in HTML format
+for easy reference. A must read for anyone that uses setuid
+software, let alone codes it. Available at: <a href="http://nob.cs.ucdavis.edu/~bishop/secprog/">http://nob.cs.ucdavis.edu/~bishop/secprog/</a>
+</p>
+<p>&nbsp;</p>
+<h3>userv</h3>
+<p>userv allows programs to invoke other programs in a more
+secure manner then is typically used. It is useful for programs
+that require higher levels of access then a normal user, but you
+don't want to give root access to. Available at: <a href="http://www.chiark.greenend.org.uk/~ian/userv/">http://www.chiark.greenend.org.uk/~ian/userv/</a>.</p>
+<p>&nbsp;</p>
+<h3>More</h3>
+<p><a href="http://www.w3.org/Security/Faq/www-security-faq.html">http://www.w3.org/Security/Faq/www-security-faq.html</a><br>
+<a href="http://security.devx.com/">http://security.devx.com/</a><br>
+<a href="http://members.home.net/razvan.peteanu/">http://members.home.net/razvan.peteanu/</a><br>
+<a href="http://www.shmoo.com/securecode/">http://www.shmoo.com/securecode/</a><br>
+<a href="http://heap.nologin.net/aspsec.html">http://heap.nologin.net/aspsec.html</a><br>
+<a href="http://www.javaworld.com/javaworld/jw-12-1998/jw-12-securityrules.html">http://www.javaworld.com/javaworld/jw-12-1998/jw-12-securityrules.html</a><br>
+<a href="http://lsap.org/faq.txt">http://lsap.org/faq.txt</a>
+<br>
+<a href="http://www.linuxdoc.org/HOWTO/Secure-Programs-HOWTO/">http://www.linuxdoc.org/HOWTO/Secure-Programs-HOWTO/</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog1.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog1.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog2.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog2.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog3.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog3.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog4.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog4.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog5.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog5.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog6.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog6.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog7.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog7.html</a><br>
+<a href="http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog8.html">http://portal.suse.de/en/content.php?3occccccccccccccccccccmccccccccacocccccccococcccccccccccccccc&amp;content/security/secprog8.html</a><br>
+<a href="http://www-106.ibm.com/developerworks/security/">http://www-106.ibm.com/developerworks/security/</a><br>
+<a href="http://www.boran.com/security/it13-applications.html">http://www.boran.com/security/it13-applications.html</a><br>
+<a href="http://www.homeport.org/~adam/review.html">http://www.homeport.org/~adam/review.html</a><br>
+<a href="http://www.mozilla.org/hacking/reviewers.html">http://www.mozilla.org/hacking/reviewers.html</a><br>
+<a href="http://www.pobox.com/~kragen/security-holes.html">http://www.pobox.com/~kragen/security-holes.html</a><br>
+<a href="http://heap.nologin.net/programming.html">http://heap.nologin.net/programming.html</a>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2><a name="Testing software">Testing software</a></h2>
+<p>There are a variety of common errors programmers make that
+leave software vulnerable to attacks. There are also tools to
+help find these problems and show the existence of other issues.</p>
+<p>&nbsp;</p>
+<h3>fuzz</h3>
+<p>Written by Ben Woodward, fuzz is a semi-intelligent program
+that feeds garbage, random, and other pseudo-hostile inputs and
+sees how the program reacts (i.e. does it dump core and have a
+heart attack?). fuzz is available from: <a href="http://fuzz.sourceforge.net">http://fuzz.sourceforge.net</a>.
+</p>
+<p>&nbsp;</p>
+<h2><a name="Compiler patches">Compiler patches</a></h2>
+<p>There are several sets of patches for compilers to increase
+security.</p>
+<p>&nbsp;</p>
+<h3>Stackguard</h3>
+<p>Stackguard is a set of patches for GCC that compile programs
+to prevent them from writing to locations in memory they
+shouldn't (simplistic explanation, the Stackguard website has
+much better details). Stackguard does break some functionality
+however, programs like gdb and other debuggers will fail, but
+this is generally not a concern for high security production
+servers. You can get Stackguard from: <a href="http://www.immunix.org/">http://www.immunix.org/</a>.&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#c4afb1b6b084b7a1ada2b6ada1a0eaabb6a3"><span class="__cf_email__" data-cfemail="345f4146407447515d52465d51501a5b4653">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

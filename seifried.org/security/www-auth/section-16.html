@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 15.0 Summary</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>15.0 Summary</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#6a011f181e2a190f030c18030f0e4405180d"><span class="__cf_email__" data-cfemail="f8938d8a8cb88b9d919e8a919d9cd6978a9f">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Like most authentication problems there are many solutions.
+Finding a solution that fits into your existing framework, and
+doesn't open up any new holes can be tricky. The other major
+trick with web based authentication is keeping track of the user
+during the session, and closing the session off once the user is
+done (of course the user will often not tell the server when this
+occurs). Adding to these problems is the simple fact that
+oftentimes the user will be using an untrusted terminal (public
+kiosk, etc.) to access the web site, so an attacker may have
+installed a keyboard sniffer and so on. You will be restricted by
+your choice of web server, and client platform (especially if you
+do not control the client platform). Generally speaking
+Smartcards, fingerprint scanners, retinal scanners, and any other
+methods that require additional hardware/software will be
+difficult and expensive to deploy and maintain. Key token and
+other items offer more hope, since the interface is independent
+of the computer (you punch your PIN into the card and a number
+and it spits out a response), unfortunately these items tend to
+be expensive. </p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-14.html">Back</a> | <a href="index.html">Next</a> ]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

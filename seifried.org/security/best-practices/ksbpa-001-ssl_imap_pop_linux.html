@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information Security / Best practices / SSL wrapping IMAP and POP on Linux systems</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1><strong>Kurt Seifried Best Practices Advisory 001 (KSBPA-001)</strong></h1>
+<p><a href="http://seifried.org/security/best-practices/ksbpa-001-ssl_imap_pop_linux.html">http://seifried.org/security/best-practices/ksbpa-001-ssl_imap_pop_linux.html</a>
+</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#650e1017112516000c03170c00014b0a1702"><span class="__cf_email__" data-cfemail="c5aeb0b7b185b6a0aca3b7aca0a1ebaab7a2">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p><strong>Title: </strong></p>
+<p>SSL wrapping IMAP and POP on Linux systems</p>
+<p><strong>Issue date:</strong></p>
+<p>Sep 21, 2001</p>
+<p><strong>History of advisory:</strong></p>
+<p>Sep 21, 2001 First version of this advisory</p>
+<p><strong>Author:</strong></p>
+<p>Kurt Seifried <a href="/cdn-cgi/l/email-protection#bfd4cacdcbffccdad6d9cdd6dadb91d0cdd8"><span class="__cf_email__" data-cfemail="5f342a2d2b1f2c3a36392d363a3b71302d38">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<p><strong>Credits:</strong></p>
+<p>N/A</p>
+<p><strong>Overview:</strong></p>
+<p>Many Linux vendors ship software that allows users to SSL wrap
+IMAP and POP, but very few (none so far) make it easy for
+administrators to do so.</p>
+<p><strong>Vendor Contact:</strong></p>
+<p>N/A</p>
+<p><strong>Impact:</strong></p>
+<p>Most people are not using SSL wrapped IMAP and POP since it is
+relatively painful to setup.</p>
+<p><font color="#000000"><strong>Details:</strong></font></p>
+<p><font color="#000000">Many sites and vendors now exclusively
+use SSH protocol for logins which protects usernames and
+passwords from exposure. Unfortunately many of these sites still
+use insecure protocols such as POP and IMAP which expose
+usernames and passwords. While almost all vendors ship the tools
+needed to SSL wrap IMAP and POP there is little or no actual
+documentation given on how to do so. Even vendors like Red Hat
+that ship preconfigured xinetd configuration files for SSL
+wrapping IMAP and POP leave administrators to properly create the
+certificates. The X.509 certificates used by SSL wrapped IMAP and
+POP must not be passphrase protected (i.e. PEM encoded) because
+each time you connect to an SSL wrapped IMAP or POP the server
+must access the certificate, which it cannot do if it is
+protected. Of course creating a certificate without password
+protection requires a customized configuration file for OpenSSL,
+which no vendors ship. </font></p>
+<p><strong>Solutions and workarounds:</strong></p>
+<p>The first step is to configure xinetd, typically the files
+reside in /etc/xinetd.d/, and you will need an &quot;simap&quot;
+or &quot;imaps&quot; file (check your /etc/services file with
+respect to port 993 and port 995) with the following:</p>
+<blockquote>
+<pre>service imaps
+{
+        socket_type             = stream
+        wait                    = no
+        user                    = root
+        server                  = /usr/sbin/stunnel
+        server_args             = -l /usr/sbin/imapd -- imapd
+        log_on_success          += DURATION USERID
+        log_on_failure          += USERID
+}</pre>
+</blockquote>
+<p>And then restart xinetd. Of course connections will not yet
+work, you need a certificate. The location of the certificate can
+vary, for example on Red Hat it is typically:</p>
+<blockquote>
+<pre>/usr/share/ssl/certs/stunnel.pem</pre>
+</blockquote>
+<p>By pointing your IMAP or POP client at the server and trying
+to connect error messages will be generated, you can check
+/var/log/messages, and should see something like:</p>
+<blockquote>
+<pre>Sep 21 22:11:15 vomit stunnel[14083]: SSL_read (socket): Connection reset by peer (104)
+Sep 21 22:11:15 vomit stunnel[14083]: Connection reset: 3418 bytes sent to SSL, 338 bytes sent to socket
+Sep 21 22:11:15 vomit stunnel[14139]: /usr/share/ssl/certs/stunnel.pem: No such file or directory (2)
+Sep 21 22:11:15 vomit stunnel[14140]: /usr/share/ssl/certs/stunnel.pem: No such file or directory (2)
+Sep 21 22:11:15 vomit stunnel[14141]: /usr/share/ssl/certs/stunnel.pem: No such file or directory (2)</pre>
+</blockquote>
+<p>Of course using a stock openssl.cnf or stunnel.cnf to create
+the certificate will not work. You must modify the configuration
+file, typically in a location like:</p>
+<blockquote>
+<pre>/usr/share/ssl/openssl.cnf 
+/etc/stunnel.cnf</pre>
+</blockquote>
+<p>Look for the section called &quot;req_attributes&quot;, by
+default it should look something like:</p>
+<blockquote>
+<pre>[ req_attributes ]
+challengePassword               = A challenge password
+challengePassword_min           = 4
+challengePassword_max           = 20</pre>
+</blockquote>
+<p>You will need to set the &quot;challengePassword_min&quot; to
+0 so that you can create a certificate without protection that
+can be opened as needed. Once you have created the certificate
+you need to make sure that it is only readable by root, and
+definitely not writeable by anyone other then root. Depending on
+how stunnel was compiled it may or may not warn you about
+improper permissions:</p>
+<blockquote>
+<pre>Sep 21 22:27:35 vomit stunnel[14236]: Wrong permissions on /usr/share/ssl/certs/stunnel.pem</pre>
+</blockquote>
+<p>Assuming everything is setup correctly you should see entries
+like this in /var/log/messages:</p>
+<blockquote>
+<pre>Sep 21 22:12:17 vomit stunnel[14151]: stunnel 3.8 on i386-pc-linux-gnu PTHREAD+LIBWRAP
+Sep 21 22:12:17 vomit stunnel[14151]: imapd connected from 161.184.218.225:61879</pre>
+</blockquote>
+<p>And something like this in /var/log/secure:</p>
+<blockquote>
+<pre>Sep 21 22:12:17 vomit xinetd[2596]: START: imaps pid=14174 from=161.184.218.225
+Sep 21 22:12:17 vomit xinetd[2596]: EXIT: imaps pid=14174 duration=5(sec)</pre>
+</blockquote>
+<p>Some things to remember:</p>
+<p>If you want to keep the certificate file (*.pem) in a
+different location use the stunnel &quot;-p&quot; option to
+specify a different location, such as:</p>
+<blockquote>
+<pre>service imaps
+{
+        socket_type             = stream
+        wait                    = no
+        user                    = root
+        server                  = /usr/sbin/stunnel -p /etc/imaps.pem
+        server_args             = -l /usr/sbin/imapd -- imapd
+        log_on_success          += DURATION USERID
+        log_on_failure          += USERID
+}</pre>
+</blockquote>
+<p>Older clients such as Outlook Express version 5.0 will accept
+any certificate for SSL wrapped IMAP or POP as long as the server
+name and date are correct, it can be signed by anyone, making a
+man in the middle attack very easy. You are strongly upgraded to
+upgrade to Outlook Express 6.0 which solves this problem
+partially. Netscape Messenger supports SSL wrapped IMAP but not
+SSL wrapped POP, there is no solution I know of for this.</p>
+<p>If you can get an officially signed certificate (i.e. by
+Verisign) then clients will connect without any error or warning.
+Alternatively you can install the certificate on the client
+machine, with Netscape Messenger the dialog will prompt you for
+it, however in Outlook Express it will not. To install the
+certificate for Outlook Express simply point Internet Explorer to
+the URL:</p>
+<blockquote>
+<pre>https://your.mail.server:993/</pre>
+</blockquote>
+<p>or port 995 for SSL wrapped POP, and install the certificate
+through the standard certificate dialog. </p>
+<p><strong>Recommendations to vendors:</strong></p>
+<p>Ship preconfigured xinetd configuration files (Red Hat and
+several vendors already do this).</p>
+<p>Document in these configuration files where the SSL
+certificate should be stored. </p>
+<p>Provide a customized stunnel.cnf file which is setup with
+&quot;challengePassword_min&quot; set to 0 and document why the
+certificate cannot be protected. </p>
+<p>Also document where this configuration file is and the command
+line needed to use it. </p>
+<p><strong>References:</strong></p>
+<p>None</p>
+<p>&nbsp;</p>
+<hr>
+<p>Permission is granted for copying and circulating this
+Bulletin to the Internet community for the purpose of alerting
+them to problems, if and only if, the bulletin is not edited or
+changed in any way, is attributed to Kurt Seifried, and provided
+such reproduction and/or distribution is performed for
+non-commercial purposes.</p>
+<p>Any other use of this information is prohibited. Kurt Seifried
+is not liable for any misuse of this information by any third
+party.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

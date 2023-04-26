@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Network - Physical protocols</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Physical protocols</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#bed5cbcccafecddbd7d8ccd7dbda90d1ccd9"><span class="__cf_email__" data-cfemail="3d56484f497d4e58545b4f54585913524f5a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Before you even begin to think about TCP-IP and network
+security it is good to have a grasp of the protocols that sit
+beneath TCP-IP. The two most common protocols most people will
+encounter are PPP, commonly used for dial-up access and Ethernet,
+a mainstay of LAN's and the interface that you will see most
+often on networking equipment like DSL modems and cable modems.</p>
+<p>&nbsp;</p>
+<h2>PPP security</h2>
+<p>PPP provides TCP-IP, IPX/SPX, and NetBEUI connections over
+serial lines (which can, of course, be attached to modems, but
+can also be direct cable connections or even done over
+Ethernet!). It is the primary method most people use to connect
+to the Internet (virtually all dial-up accounts are PPP). A PPP
+connection essentially consists of two computing devices (a
+computer, a Palm Pilot, a terminal server, etc.) connected over a
+serial link (usually via modems). Both ends invoke PPP,
+authentication is handled (by one of several methods), and the
+link is brought up. PPP has no real support for encryption, so if
+you require a secure link you must invest in some form of VPN
+software.&nbsp;</p>
+<p>Most systems tended to invoke PPP in a rather kludgy way, you
+&#147;log in&#148; to the equipment (terminal server, etc.) and
+then as your login shell PPP is invoked. This of course means
+your username and password are sent in clear text over the line
+and you must have an account on that piece of equipment. In this
+case PPP does not handle the authentication at all. A somewhat
+safer method of handling this is to use PAP (Password
+Authentication Protocol). With PAP the authentication is handled
+internally by PPP, so you do not require a &#147;real&#148;
+account on the server. However the username and password is still
+sent in clear text, but at least the system is somewhat more
+secure due to the lack of &#147;real&#148; user accounts.</p>
+<p>The third (and best) method for authentication is to use CHAP
+(Challenge Handshake Authentication Protocol). Both sides
+exchange public keys and use them to encrypt data sent during the
+authentication sequence. Thus your username and password are
+relatively safe from snooping, however actual data transfers are
+sent normally. One caveat with CHAP: Microsoft's implementation
+uses DES instead of MD5, making it slightly 'broken' if
+connecting with a Linux client. There are patches available
+however to fix this. PPP ships with almost every Linux
+distribution as a core part of the OS, the Linux PPP-HOWTO is
+available at: <a href="http://www.linuxdoc.org/HOWTO/PPP-HOWTO/index.html">http://www.linuxdoc.org/HOWTO/PPP-HOWTO/index.html</a>
+</p>
+<p>&nbsp;</p>
+<h2>Ethernet security</h2>
+<p>coming soon</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated on 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#b8d3cdcaccf8cbddd1decad1dddc96d7cadf"><span class="__cf_email__" data-cfemail="553e2027211526303c33273c30317b3a2732">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

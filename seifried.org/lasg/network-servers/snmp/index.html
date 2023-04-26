@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services -&nbsp;SNMP</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#8ee5fbfcfacefdebe7e8fce7ebeaa0e1fce9"><span class="__cf_email__" data-cfemail="cda6b8bfb98dbea8a4abbfa4a8a9e3a2bfaa">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>SNMP (Simple Network Management Protocol) was designed to let
+heterogeneous systems and equipment talk to each other, report
+data and allow modifications to there settings over a TCP-IP
+network. For example an SNMP enabled device (such as a Cisco
+router) can be monitored/configured from an SNMP client, and you
+can easily write scripts to, say, alert you if denied
+packets/second rises above 20. Unfortunately SNMP has no security
+built into it. SNMPv1, originally proposed in RFC 1157 (May 1990)
+and section 8 (Security Considerations) reads thusly:
+&quot;Security issues are not discussed in this memo.&quot;. I
+think that about sums it up. In 1992/1993 SNMPv2 was released,
+and did contain security considerations however these security
+considerations were dropped later on when they were shown to be
+completely broken. Thus we end up today with SNMPv2 and no
+security.&nbsp;</p>
+<p>Currently the only way to protect your SNMP devices consists
+of setting the community name to something hard to guess (but it
+is very easy to sniff the wire and find the name), and
+firewall/filter SNMP so that only the hosts that need to talk to
+each other can (which leaves you open to spoofing). Brute force
+community name attacks are easy to do and usually effective, and
+there are several tools specifically for monitoring SNMP
+transmissions and cracking open an SNMP community, it is a pretty
+dangerous world out there.&nbsp;</p>
+<p>These risks are slightly mitigated by the usefulness of SNMP,
+if properly supported and implemented it can make network
+administration significantly easier. In almost every SNMP
+implementation the default community name is &quot;public&quot;
+(this goes for Linux, NT, etc), you must change this, to
+something obscure (your company name is a bad idea). Once a
+person has your community name they can conduct an
+&quot;snmpwalk&quot; and take over your network. SNMP runs over
+UDP on ports 161 and 162; block this at all entrances to your
+network (the backbone, the dialup pool, etc). If a segment of
+network does not have SNMP enabled devices or an SNMP console you
+should block SNMP to and from that network. This is your only
+real line of defense with SNMP.&nbsp;</p>
+<p>Additionally the use of IPSec (or other VPN software) can
+greatly reduce the risk from sniffing. The RFC's for SNMPv3
+however go extensively into security (especially RFC 2274, Jan
+1998) so there is hope for the future. If you are purchasing new
+SNMP aware/enabled products make sure they support SNMPv3, as you
+then have a chance at real security.</p>
+<p>There are no specific problems with cu-snmpd per se, apart
+from the general SNMP problems I have covered. The cu-snmp tools
+and utilities only support SNMPv1 and SNMPv2, so remember to be
+careful when using them on or across untrusted networks as your
+main line of security (the community name) will be out in the
+open for anyone to see.</p>
+<pre>ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 161:162
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 161:162
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 161:162</pre>
+<p>or</p>
+<pre>ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 161:162
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 161:162
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 161:162</pre>
+<h2><a name="SNMP server software">SNMP server software</a></h2>
+<p>&nbsp;</p>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#28435d5a5c685b4d414e5a414d4c06475a4f"><span class="__cf_email__" data-cfemail="8be0fef9ffcbf8eee2edf9e2eeefa5e4f9ec">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Keyboard sniffing</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Keyboard sniffing</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#573c2225231724323e31253e323379382530"><span class="__cf_email__" data-cfemail="a1cad4d3d5e1d2c4c8c7d3c8c4c58fced3c6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Keyboard is a useful techniques for computer investigators,
+forensics specialists and people who are overly curious in their
+surroundings. Many modern security practices, such as encryption,
+are virtually impossible to brute force, and if the defender is
+using a good passphrase then it is virtually impossible to hit
+the right combination unless you are very lucky. The answer to
+this, and other password protected services is of course to use a
+keyboard sniffer, in effect tricking the subject into revealing
+their password. </p>
+<p>There are two approaches to keyboard sniffing, the first being
+hardware based and the second being software based. The advantage
+of hardware sniffing is that it is unlikely that any software
+will be able to detect it, and installation does not require
+access to the operating system on the machine. The majority of
+hardware sniffing devices are external, with items like the
+keyghost consisting of a PS/2 extensions cable. Other devices
+include an IOGear USB hub that is capable of logging keystrokes.
+The downside is that any users who is security conscious and
+regularly checks their machine for anomalous pieces of hardware
+may find it. The other downside is you must physically visit the
+machine in most cases to retrieve the data that has been logged
+which can add additional risk. Hardware devices also tend to work
+poorly with laptops as few people use external keyboards. </p>
+<p>The other choice is software based. These require access to
+the operating system as you must install software with
+administrative privileges (which you may not have if doing an
+investigation/etc). The upside of these is that few users will
+detect it, and many software packages can be configured to
+automatically send out the keystrokes, reducing the risk
+associated with retrieving the data.There are numerous
+&quot;legitimate&quot; packages for Windows that will allow you
+to sniff keyboard activity and some even include features such as
+taking screen snapshots to monitor activity. For Unix systems you
+will generally need to find a kernel modules, or a patch for the
+user's login shell (which can usually be changed), generally
+speaking the kernel option is more reliable. Several rootkits
+exist for Windows and Unix that have keyboard sniffing
+capabilities, a few are listed below and the rest can be
+discovered on google. </p>
+<p>&nbsp;</p>
+<p><strong>Reference links:</strong></p>
+<p><a href="http://www.keyghost.com/">http://www.keyghost.com/</a>
+</p>
+<p><a href="http://www.megasecurity.org/Tools/Nt_rootkit_all.html">http://www.megasecurity.org/Tools/Nt_rootkit_all.html</a></p>
+<p><a href="http://www.iogear.com/press/pdf/16.pdf">http://www.iogear.com/press/pdf/16.pdf</a>
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 1/26/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

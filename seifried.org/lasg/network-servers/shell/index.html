@@ -1,0 +1,353 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Shell servers</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#c5aeb0b7b185b6a0aca3b7aca0a1ebaab7a2"><span class="__cf_email__" data-cfemail="076c7275734774626e61756e626329687560">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<p>Getting access to your server remotely is critical for most
+administrators. Most of us cannot sit down at the console and
+login, and in any case remote access is much less effort in the
+long run. Doing this securely is the trick of course.</p>
+<p>&nbsp;</p>
+<h2><a name="Telnet">Telnet</a></h2>
+<p>Telnet was one of the first services on what is now the
+Internet, it allows you to login to a remote machine
+interactively, issue commands and see their results. It is still
+the primary default tools for remote administration in most
+environments, and has nearly universal support (even NT has a
+telnet daemon and client). It is also one of the most insecure
+protocols, susceptible to sniffing, hijacking, etc. If you have
+clients using telnet to come into the server you should
+definitely chroot their accounts if possible, as well as
+restricting telnet to the hosts they use with TCP_WRAPPERS. The
+best solution for securing telnet is to disable it and use
+SSL'ified telnet or ssh.</p>
+<p>Problems with telnet include:</p>
+<ul>
+<li>Clear text authentication, username and password.&nbsp;</li>
+<li>Clear text of all commands.&nbsp;</li>
+<li>Password guessing attacks (minimal, will end up in the
+log files)&nbsp;</li>
+</ul>
+<p>The best solution is to turn telnet off and use ssh. This is
+however not practical in all situations. If you must use telnet
+then I strongly suggest firewalling it, have rules to allow
+hosts/networks access to port 23, and then a general rule denying
+access to port 23, as well as using TCP_WRAPPERS (which is more
+efficient because the system only checks each telnet connection
+and not every packet against the firewall rules) however using
+TCP_WRAPPERS will allow people to establish the fact that you are
+running telnet, it allows them to connect, evaluates the
+connection, and then closes it if they are not listed as being
+allowed in.&nbsp;<br>
+An example of firewalling rules:</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 23
+ipfwadm -I -a accept -P tcp -S some.trusted.host -D 0.0.0.0/0 23
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 23</pre>
+<p>or in ipchains:</p>
+<pre>ipchains -A input -p all -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 23
+ipchains -A input -p all -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 23
+ipchains -A input -p all -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 23</pre>
+<p>An example of the same using TCP_WRAPPERS, in
+/etc/hosts.allow:</p>
+<pre>in.telnetd: 10.0.0.0/255.0.0.0, some.trusted.host</pre>
+<p>And in /etc/hosts.deny:</p>
+<pre>in.telnetd: ALL</pre>
+<p>There are several encrypted alternatives to telnet as
+mentioned before, ssh, SSLeay Telnet, and other third party
+utils, I personally feel that the 'best' alternative if you are
+going to go to the bother of ripping telnet out and replacing it
+with something better is to use ssh.<br>
+To secure user accounts with respect to telnet there are several
+things you can do. Number one would be not letting root login via
+telnet, this is controlled by /etc/securetty and by default in
+most distributions root is restricted to logging on from the
+console (a good thing). For a user to successfully login their
+shell has to be valid (this is determined by the list of shells
+in /etc/shells), so setting up user accounts that are allowed to
+login is simply a matter of setting their shell to something
+listed in /etc/shells, and keeping users out as simple as setting
+their shell to /bin/false (or something else not listed in
+/etc/shells. Now for some practical examples of what you can
+accomplish by setting the user shell to things other then shells.</p>
+<p>For an ISP that wishes to allow customers to change their
+password easily, but not allow them access to the system (my ISP
+uses Ultrasparcs and refuses to give out user accounts for some
+reason, I wonder why).</p>
+<p>in /etc/shells list:</p>
+<pre>/usr/bin/passwd</pre>
+<p>and set the users shell to /usr/bin/passwd so you end&nbsp;up
+with something like:</p>
+<pre>username:x:1000:1000::/home/username:/usr/bin/passwd</pre>
+<p>and voila. The user telnets to the server, is prompted for
+their username and password, and is&nbsp;<br>
+then prompted to change their password. If they do so
+successfully passwd then exits and they are disconnected. If they
+are unsuccessful passwd exits and they are disconnected. The
+following is a transcript of such a setup when a user telnets in:</p>
+<pre>Trying 1.2.3.4&#133;
+Connected to localhost.
+Escape character is '^]'.
+
+Red Hat Linux release 5.2 (Apollo)
+Kernel 2.2.5 on an i586
+login: tester
+Password:&nbsp;
+Changing password for tester
+(current) UNIX password:&nbsp;
+New UNIX password:&nbsp;
+Retype new UNIX password:&nbsp;
+passwd: all authentication tokens updated successfully
+Connection closed by foreign host.</pre>
+<p>Telnet also displays a banner by default when someone
+connects. This banner typically contains systems information like
+the name, OS, release and sometimes other detailed information
+such as the kernel version. Historically this was useful if you
+had to work on multiple OS's, however in today's hostile Internet
+it is generally more harmful then useful. Telnetd displays the
+contents of the file /etc/issue.net (typically it is identical to
+/etc/issue which is displayed on terminals and so forth), this
+file is usually recreated at boot time in most Linux
+distributions, from the rc.local startup file. Simply edit the
+rc.local file, either modifying what it puts into /etc/issue and
+/etc/issue.net, or comment out the lines that create those files,
+then edit the files with some static information.</p>
+<p>Typical Linux rc.local contents pertaining to /etc/issue and
+/etc/issue.net:</p>
+<pre># This will overwrite /etc/issue at every boot. So, make any changes you
+# want to make to /etc/issue here or you will lose them when you reboot.
+echo &quot;&quot; &gt; /etc/issue
+echo &quot;$R&quot; &gt;&gt; /etc/issue
+echo &quot;Kernel $(uname -r) on $a $(uname -m)&quot; &gt;&gt; /etc/issue
+cp -f /etc/issue /etc/issue.net
+echo &gt;&gt; /etc/issue</pre>
+<p>simply comment out the lines or remove the uname commands. If
+you absolutely must have telnet enabled for user logins make sure
+you have a disclaimer printed:</p>
+<pre>This system is for authorized users only. Trespassers will be prosecuted.</pre>
+<p>or something like the above. Legally you are in a stronger
+position if someone cracks into the system or otherwise abuses
+your telnet daemon.</p>
+<h2><a name="Telnet - SSL">Telnet - SSL</a></h2>
+<p>&nbsp;</p>
+<h2><a name="SSLtelnet and MZtelnet">SSLtelnet and MZtelnet</a></h2>
+<p>A drop in replacement for telnet, SSLtelnet and MZtelnet
+provide a much higher level of security then plain old telnet,
+although SSLtelnet and MZtelnet are not as flexible as SSH, they
+are perfectly free (i.e., GNU licensed) which SSH is not
+(although OpenSSH is *BSD licensed). The server and client
+packages are available as tarballs at: <a href="ftp://ftp.uni-mainz.de/pub/internet/security/ssl/">ftp://ftp.uni-mainz.de/pub/internet/security/ssl/</a>.</p>
+<p>&nbsp;</p>
+<h2><a name="SSH - server and client software">SSH - server and
+client software</a></h2>
+<p>SSH is a secure protocol and set of tools to replace some
+common (insecure) ones. It was designed from the beginning to
+offer a maximum of security and allows remote access to servers
+in a secure manner. SSH can be used to secure any network based
+traffic, by setting it up as a 'pipe' (i.e. binding it to a
+certain port at both ends). This is quite kludgy but good for
+such things as using X across the Internet. In addition to this
+the server components runs on most UNIX systems, and NT, and the
+client components runs on pretty much anything. Unfortunately SSH
+is no longer free; however, there is a project to create a free
+implementation of the SSH protocol. There aren't any problems
+with SSH per se like there are with telnet, all session traffic
+is encrypted and the key exchange is done relatively securely
+(alternatively you can preload keys at either end to prevent them
+from being transmitted and becoming vulnerable to man in the
+middle attacks).</p>
+<p>&nbsp;</p>
+<h2>OpenSSH</h2>
+<p>&nbsp;</p>
+<p>Use openssh, available from <a href="http://www.ssh.com/">http://www.ssh.com/</a>.
+OpenSSH ships with almost all Linux distributions and typically
+installs by default. SSH typically runs as a daemon, and can
+easily be locked down by using the sshd_config file. </p>
+<p>The firewalling rules for ssh are pretty much identical to
+telnet. There is of course TCP_WRAPPERS, the problem with
+TCP_WRAPPERS being that an attacker connects to the port, but
+doesn't get a daemon, HOWEVER they know that there is something
+on that port, whereas with firewalling they don't even get a
+connection to the port. The following is an example of allowing
+people to ssh from internal machines, and a certain C class on
+the internet (say the C class your ISP uses for it's dial-up pool
+of modems).&nbsp;</p>
+<pre>ipfwadm -I -a accept -P tcp -S 10.0.0.0/8 -D 0.0.0.0/0 22
+ipfwadm -I -a accept -P tcp -S isp.dial.up.pool/24 -D 0.0.0.0/0 22
+ipfwadm -I -a deny -P tcp -S 0.0.0.0/0 -D 0.0.0.0/0 22</pre>
+<p>or</p>
+<pre>ipchains -A input -p tcp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 22
+ipchains -A input -p tcp -j ACCEPT -s isp.dial.up.pool/24 -d 0.0.0.0/0 22
+ipchains -A input -p tcp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 22</pre>
+<p>Or via TCP_WRAPPERS, hosts.allow:</p>
+<pre>sshd: 10.0.0.0/255.0.0.0, isp.dial.up.pool/255.255.255.0</pre>
+<p>hosts.deny:</p>
+<pre>sshd: 0.0.0.0/0.0.0.0</pre>
+<p>In addition to this, ssh has a wonderful configuration file,
+/etc/sshd/sshd_config by default in most installations. You can
+easily restrict who is allowed to login, which hosts, and what
+type of authentication they are allowed to use. The default
+configuration file is relatively safe but following is a more
+secure one with explanations. Please note all this info can be
+obtained by a &#147;man sshd&#148; which is one of the few well
+written man pages out there. The following is a typical
+sshd_config file:</p>
+<pre>Port 22
+# runs on port 22, the standard
+ListenAddress 0.0.0.0
+# listens to all interfaces, you might only want to bind a firewall
+# internally, etc
+HostKey /etc/ssh/ssh_host_key
+# where the host key is
+RandomSeed /etc/ssh/ssh_random_seed
+# where the random seed is
+ServerKeyBits 768
+# how long the server key is
+LoginGraceTime 300
+# how long they get to punch their credentials in
+KeyRegenerationInterval 3600
+# how often the server key gets regenerated&nbsp;
+PermitRootLogin no
+# permit root to login? no
+IgnoreRhosts yes
+# ignore .rhosts files in users dir? yes
+StrictModes yes
+# ensures users don't do silly things
+QuietMode no
+# if yes it doesn't log anything. yikes. we want to log logins/etc.
+X11Forwarding no
+# forward X11? shouldn't have to on a server
+FascistLogging no
+# maybe we don't want to log too much.
+PrintMotd yes
+# print the message of the day? always nice
+KeepAlive yes
+# ensures sessions will be properly disconnected
+SyslogFacility DAEMON
+# who's doing the logging?
+RhostsAuthentication no
+# allow rhosts to be used for authentication? the default is no
+# but nice to say it anyways
+RhostsRSAAuthentication no
+# is authentication using rhosts or /etc/hosts.equiv sufficient
+# not in my mind. the default is yes so lets turn it off.&nbsp;
+RSAAuthentication yes
+# allow pure RSA authentication? this one is pretty safe
+PasswordAuthentication yes
+# allow users to use their normal login/passwd? why not.
+PermitEmptyPasswords no
+# permit accounts with empty password to log in? no</pre>
+<p>Other useful sshd_config directives in 1.2.x include:</p>
+<pre>AllowGroups - explicitly allow groups (/etc/group) to login using ssh
+DenyGroups - explicitly disallows groups (/etc/groups) from logging in
+AllowUsers - explicitly allow users to login in using ssh
+DenyUsers - explicitly blocks users from logging in
+IdleTimeout time - time in minutes/hours/days/etc, forces a logout by SIGHUP'ing the process.</pre>
+<p>These directives appear to have been removed from current
+OpenSSH versions:</p>
+<p>AllowHosts - allow certain hosts, the rest will be denied<br>
+DenyHosts - blocks certain hosts, the rest will be allowed</p>
+<p>Make sure your sshd is compiled with tcp_wrappers support and
+use hosts.allow and hosts.deny instead. </p>
+<p>&nbsp;</p>
+<h2><a name="SSH - client software:&nbsp;">SSH - client
+software:&nbsp;</a></h2>
+<p>&nbsp;</p>
+<h2><a name="Fresh Free FiSSH">Fresh Free FiSSH</a></h2>
+<p>Most of us still have to sit in front of windows workstations,
+and ssh clients for windows are a pain to find. Fresh Free FiSSH
+is a free ssh client for Windows 95/NT 4.0. Although not yet
+completed, I would recommend keeping your eye on it if you are
+like me and have many Windows workstations. The URL is: <a href="http://mit.edu/ssh/FiSSH/">http://mit.edu/ssh/FiSSH/</a> </p>
+<h2><a name="Tera Term">Tera Term</a></h2>
+<p>Tera Term is a free Telnet client for Windows, and has an
+add-on DLL to enable ssh support. Tera Term is available from: <a href="http://hp.vector.co.jp/authors/VA002416/teraterm.html">http://hp.vector.co.jp/authors/VA002416/teraterm.html</a>.
+The add-on DLL for SSH support is available from: <a href="http://www.zip.com.au/~roca/ttssh.html">http://www.zip.com.au/~roca/ttssh.html</a>.&nbsp;</p>
+<h2><a name="putty">putty</a></h2>
+<p>putty is a Windows SSH client, pretty good, and completely
+free, and also small (184k currently). You can download it from: <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty.html">http://www.chiark.greenend.org.uk/~sgtatham/putty.html</a>.</p>
+<h2><a name="mindterm">mindterm</a></h2>
+<p>mindterm is a free java ssh client, you can get it at: <a href="http://www.appgate.org/products/mindterm/">http://www.appgate.org/products/mindterm/</a>
+</p>
+<h2><a name="The Java Telnet Application">The Java Telnet
+Application</a></h2>
+<p>The Java Telnet Application supports ssh,and is free, you can
+get it at: <a href="http://www.mud.de/se/jta/">http://www.mud.de/se/jta/</a>.
+</p>
+<h2><a name="Secure CRT">Secure CRT</a></h2>
+<p>A commercial Telnet / SSH client from Vandyke software. You
+can download / purchase it at: <a href="http://www.vandyke.com/">http://www.vandyke.com/</a>.</p>
+<h2><a name="Fsh">Fsh</a></h2>
+<p>Fsh is stands for &#147;Fast remote command execution&#148;
+and is similar in concept to rsh/rcp. It avoids the expense of
+constantly creating encrypted sessions by bring up an encrypted
+tunnel using SSH or LSH, and running all the commands over it.
+You can get it from: <a href="http://www.lysator.liu.se/fsh/">http://www.lysator.liu.se/fsh/</a>.</p>
+<h2><a name="SSH Win32 ports">SSH Win32 ports</a></h2>
+<p>Ports of SSH to Win32 available at: <a href="http://guardian.htu.tuwien.ac.at/therapy/ssh/">http://guardian.htu.tuwien.ac.at/therapy/ssh/</a>.</p>
+<h2><a name="SRP">SRP</a></h2>
+<p>SRP is a relative newcomer, however it has several advantages
+over some of the older programs. SRP is free and does not use
+encryption per se to secure the data, so exporting it outside of
+the US isn&#146;t as much of a problem (there is a version that
+encrypts and is available within the US and Canada, and
+interoperates with the non encrypting version of SRP). SRP is
+available from <a href="http://srp.stanford.edu/">http://srp.stanford.edu/</a>.
+SRP currently has Telnet and FTP support (for windows as well)
+although SRP enabling other protocols is relatively
+straightforward. A windows client with SRP capabilities is
+available at: <a href="http://www.kermit-project.org/k95.html">http://www.kermit-project.org/k95.html</a>.
+</p>
+<h2><a name="NSH">NSH</a></h2>
+<p>NSH is a commercial product with all the bells and whistles
+(and I do mean all). It&#146;s got built in support for
+encryption, so it&#146;s relatively safe to use (I cannot verify
+this completely however, as it isn&#146;t open source). Ease of
+use is high, you cd //computername and that &#145;logs&#146; you
+into that computer, you can then easily copy/modify/etc. files,
+run ps and get the process listing for that computer, etc. NSH
+also has a Perl module available, making scripting of commands
+pretty simple, and is ideal for administering many like systems
+(such as workstations). In addition to this NSH is available on
+multiple platforms (Linux, BSD, Irix, etc.) with RPM&#146;s
+available for Red Hat systems. NSH is available from: <a href="http://www.networkshell.com/">http://www.networkshell.com/</a>,
+and 30 day evaluation versions are easily downloaded.&nbsp;</p>
+<h2><a name="R services">R services</a></h2>
+<p>R services such as rsh, rcp, rexec and so forth are very
+insecure. There is simply no other way to state it, DO NOT USE
+THEM. Their security is based on the hostname/IP address of the
+machine connecting, which can easily be spoofed or, using
+techniques such as DNS poisoning, otherwise compromised. By
+default they are not all disabled, please do so immediately. Edit
+/etc/inetd.conf and look for rexec, rsh and so on, and comment
+them out, followed by a &quot;killall -1 inetd&quot; to restart
+inetd.</p>
+<p>If you absolutely must run these services use TCP_WRAPPERS to
+restrict access, it's not much but it will help. Also make sure
+you firewall them as TCP_WRAPPERS will allow an attacker to see
+that they are running, which might result in a spoofed attack,
+something TCP_WRAPPERS cannot defend against if done properly.
+Access to the various R services is controlled via rhosts files,
+usually each user has their own rhosts file, unfortunately this
+is susceptible to packet spoofing. The problem with r services is
+also that once there is a minor security breach that can be used
+to modify files, editing a users (like root's) .rhost file makes
+it very easy to crack a system wide open.</p>
+<p>If you need remote administration tools that are easy to use
+and similar to rsh/etc I would recommend NSH (Network SHell) or
+SSH, they both support encryption, and a much higher level of
+security. Alternatively using VPN software will reduce some of
+the risk as you can deny packet spoofers the chance to compromise
+your system(s) (part of IPSec is authentication of sender and
+source, which is almost more important then encrypting the data
+in some cases).</p>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 1/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#dbb0aea9af9ba8beb2bda9b2bebff5b4a9bc"><span class="__cf_email__" data-cfemail="d7bca2a5a397a4b2beb1a5beb2b3f9b8a5b0">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

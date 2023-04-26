@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Articles / Writing security advisories</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Writing security advisories</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#315a4443457142545857435854551f5e4356"><span class="__cf_email__" data-cfemail="88e3fdfafcc8fbede1eefae1edeca6e7faef">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>I've been writing security digests now for several months, for
+Linux and BSD. This means I read pretty much every single vendor
+issued security advisory, along with advisories for software
+packages on Bugtraq and other mailing lists/websites/etc. I am
+happy to say that most Linux distributions and vendors are doing
+a pretty good job on their security advisories, but not all are
+perfect. A security advisory is a complex thing to write
+properly, the following items need to be covered (if applicable):</p>
+<ul type="disc">
+<li>Name of the problem</li>
+<li>Description of the problem, severity, etc.</li>
+<li>Versions affected and not affected, configurations
+affected and not affected</li>
+<li>Workarounds for the problem </li>
+<li>Solutions for the problem </li>
+<li>List of software updates to apply </li>
+<li>Where to get the software updates</li>
+<li>How to apply the software updates</li>
+<li>Patch code</li>
+<li>Contact information in case you have more questions</li>
+<li>URL for the advisory (i.e. FTP or WWW)</li>
+</ul>
+<p>There are a number of other optional items such as credit to
+whomever discovered the problem originally, came up with the fix,
+and so on (giving credit costs nothing, and encourages people).
+The advisory should also be signed securely, PGP or GnuPG are
+good choices for this, X.509 signing is not such a good idea
+since these advisories should be posted to web and ftp sites in
+addition to mailing lists. Unfortunately most PGP signed
+advisories that are emailed get sufficiently mangled (i.e. line
+wraps) so when you check the advisories they say something like:</p>
+<pre>*** PGP Signature Status: bad
+*** Signer: Name removed to protect the innocent
+*** Signed: 8/30/00 3:38:25 AM
+*** Verified: 9/2/00 1:53:14 AM
+*** BEGIN PGP VERIFIED MESSAGE ***</pre>
+<p>And since many do not include a link to the advisory via FTP
+or WWW most users will not bother to check the validity of the
+advisory, it is only a matter of time before some adventurous
+soul posts a fake advisory which people follow, loading trojan
+code. This is especially true for non-vendor advisories, i.e.
+advisories for the smaller software packages, for example Helix
+Code issued a security advisory recently that was not PGP/GnuPG
+signed. Hopefully if enough vendors follow these practices users
+will become used to actually verifying the validity of security
+announcements, and will not be as easily fooled.</p>
+<p>This leads to my next beef. PGP/GnuPG keys, would it kill
+vendors to have them signed properly and post them in an easy to
+find location on their websites? Caldera is especially guilty in
+this respect, I could not find their PGP key on their website,
+and when I searched the keyservers I found several, but since
+their keys are not signed by any other keys (self signed,
+absolutely useless) it is of questionable value. Shame on
+Caldera. Vendors should get together and at least sign each
+others keys, and maybe get luminaries such as Linus Torvalds or
+Werner Koch (author of GnuPG) to sign their keys. </p>
+<p>The next problem area is advisory numbers. Most vendors put a
+unique advisory number on each advisory, most use something along
+the lines of:</p>
+<p>vendor_id_sa-number-version</p>
+<p>for example:</p>
+<p>CSSA-2000-029.0<br>
+MDKSA-2000:042<br>
+RHSA-2000:047-03 </p>
+<p>CS is Caldera Systems, MDK is Mandrake, RH is Red Hat and so
+on, the SA stands for Security Advisory. The year is a really
+good idea, whole number of course would be pointless without the
+version number, and not having a revision number is highly
+annoying when trying to figure out which is the latest (i.e.
+correct) version of the advisory (DO NOT &quot;backport&quot;
+updates to advisories and neglect to add a revision number, this
+is a really bad idea). This information is <strong>CRITICAL </strong>for
+your users, you need to make it as understandable as possible and
+extremely easy to keep track of. Some vendors guilty of not using
+advisory numbers include SuSE and Debian, with things like:</p>
+<p>Update: the powerpc packages mentioned in the first release of
+this advisory were linked with a version of libgtk that is not
+available in Debian GNU/Linux 2.2. They have been recompiled with
+the correct version and reuploaded. </p>
+<p>Now for my all time favorite pet peeve. Not listing MD5 sums
+in the advisory along with the software packages. It's trivial to
+execute &quot;md5sum *&quot; and cut and paste that into an
+advisory. Luckily most vendors include MD5 sums in their
+advisories (and most of the smaller software packagers do not),
+however in some cases the MD5 sums listed, and the actual MD5
+sums of the software packages have been different (meaning
+someone messed up while creating the advisory, or that the
+packages have been replaced with different version on the ftp
+site). Between most posted security advisories not being
+verifiable by the PGP/GnuPG signatures, and the occasional MD5
+sum mistake it is very difficult for users to verify packages. Of
+course if vendors signed their packages it would basically be a
+non-issue, currently many major vendors do not PGP/GnuPG sign
+their packages, although SuSE and Mandrake should be doing this
+in the next major release (and if they don't I will roast them). </p>
+<p>There are often other problems with security advisories that
+make them hard to read or interpret. One of the most annoying
+things is to read a security advisory with spelling mistakes in
+it. It really make me wonder how much care an attention was spent
+on the security problem that is being talked about. Other issues
+include listing updates &quot;messily&quot; i.e. when you have
+multiple product versions with different updates and the full
+pathname is either not given or not very descriptive. </p>
+<p>Now this brings us to the last and final problem, no matter
+how well an advisory is written, how technically accurate it is,
+and how well it walks the user through the update, it is
+absolutely useless if the user does not see it. Probably the best
+method to get this information to users is to email it to them,
+almost all Linux distributions have severity announcement mailing
+lists that they post all their advisories to. Many also post to
+lists such as Linux-Security-List and Bugtraq (the granddaddy of
+security mailing lists). The advisories should also be posted to
+a directory on your website and ftpsite, it requires a trivial
+amount of effort, unfortunately many vendors do not place these
+in an obvious place, and even more do not include a URL to the
+WWW or FTP locations of their advisory. All in all most
+distributions are doing a pretty good job, but with a few
+improvements they could be doing a great job. </p>
+<p>It should be interesting to see which distributions take this
+article to heart and fix their advisories.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

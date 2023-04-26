@@ -1,0 +1,302 @@
+<!doctype html>
+<html amp lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Python Performance Part 3"/>
+<meta property="og:url" content="http://kurt.seifried.org/2010/05/31/python-performance-part-3/"/>
+<meta property="og:description" content="Python Performance Part 1 Python Performance Part 2 Python Performance Part 4 In part one I covered a basic introduction to threads and the producer-consumer pattern. In part two I covered the Glob…"/>
+<meta property="article:published_time" content="2010-05-31T08:34:32+00:00"/>
+<meta property="article:modified_time" content="2011-06-22T23:36:13+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<title>Python Performance Part 3 &#8211; Kurt Seifried</title>
+<link rel="canonical" href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/"/>
+<script src="https://cdn.ampproject.org/v0.js" async></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic,700,700italic">
+<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"BlogPosting","mainEntityOfPage":"http:\/\/kurt.seifried.org\/2010\/05\/31\/python-performance-part-3\/","publisher":{"@type":"Organization","name":"Kurt Seifried","logo":{"@type":"ImageObject","url":"https:\/\/s2.wp.com\/i\/favicons\/apple-touch-icon-60x60.png","width":60,"height":60}},"headline":"Python Performance Part 3","datePublished":"2010-05-31T02:34:32+00:00","dateModified":"2011-06-22T17:36:13+00:00","author":{"@type":"Person","name":"kurtseifried"},"image":{"@type":"ImageObject","url":"http:\/\/2.gravatar.com\/avatar\/8b588344181b6098f508e9741ac36e0e?s=200&amp;d=identicon&amp;r=G","width":200,"height":200}}</script>
+<style amp-custom>.alignright{float:right;}.alignleft{float:left;}.aligncenter{display:block;margin-left:auto;margin-right:auto;}.amp-wp-enforced-sizes{max-width:100%;margin:0 auto;}.amp-wp-unknown-size img{object-fit:contain;}.amp-wp-content,.amp-wp-title-bar div{margin:0 auto;max-width:450px;}html{background:#0a89c0;}body{background:#fff;color:#353535;font-family:'Merriweather','Times New Roman',Times,Serif;font-weight:300;line-height:1.75em;}p,ol,ul,figure{margin:0 0 1em;padding:0;}a,a:visited{color:#0a89c0;}a:hover,a:active,a:focus{color:#353535;}blockquote{color:#353535;background:rgba(127,127,127,.125);border-left:2px solid #0a89c0;margin:8px 0 24px 0;padding:16px;}blockquote p:last-child{margin-bottom:0;}.amp-wp-meta,.amp-wp-header div,.amp-wp-title,.wp-caption-text,.amp-wp-tax-category,.amp-wp-tax-tag,.amp-wp-comments-link,.amp-wp-footer p,.back-to-top{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen-Sans","Ubuntu","Cantarell","Helvetica Neue",sans-serif;}.amp-wp-header{background-color:#0a89c0;}.amp-wp-header div{color:#fff;font-size:1em;font-weight:400;margin:0 auto;max-width:calc(840px - 32px);padding:.875em 16px;position:relative;}.amp-wp-header a{color:#fff;text-decoration:none;}.amp-wp-header .amp-wp-site-icon{background-color:#fff;border:1px solid #fff;border-radius:50%;position:absolute;right:18px;top:10px;}.amp-wp-article{color:#353535;font-weight:400;margin:1.5em auto;max-width:840px;overflow-wrap:break-word;word-wrap:break-word;}.amp-wp-article-header{align-items:center;align-content:stretch;display:flex;flex-wrap:wrap;justify-content:space-between;margin:1.5em 16px 1.5em;}.amp-wp-title{color:#353535;display:block;flex:1 0 100%;font-weight:900;margin:0 0 .625em;width:100%;}.amp-wp-meta{color:#696969;display:inline-block;flex:2 1 50%;font-size:.875em;line-height:1.5em;margin:0;padding:0;}.amp-wp-article-header .amp-wp-meta:last-of-type{text-align:right;}.amp-wp-article-header .amp-wp-meta:first-of-type{text-align:left;}.amp-wp-byline amp-img,.amp-wp-byline .amp-wp-author{display:inline-block;vertical-align:middle;}.amp-wp-byline amp-img{border:1px solid #0a89c0;border-radius:50%;position:relative;margin-right:6px;}.amp-wp-posted-on{text-align:right;}.amp-wp-article-featured-image{margin:0 0 1em;}.amp-wp-article-featured-image amp-img{margin:0 auto;}.amp-wp-article-featured-image.wp-caption .wp-caption-text{margin:0 18px;}.amp-wp-article-content{margin:0 16px;}.amp-wp-article-content ul,.amp-wp-article-content ol{margin-left:1em;}.amp-wp-article-content amp-img{margin:0 auto;}.amp-wp-article-content amp-img.alignright{margin:0 0 1em 16px;}.amp-wp-article-content amp-img.alignleft{margin:0 16px 1em 0;}.wp-caption{padding:0;}.wp-caption.alignleft{margin-right:16px;}.wp-caption.alignright{margin-left:16px;}.wp-caption .wp-caption-text{border-bottom:1px solid #c2c2c2;color:#696969;font-size:.875em;line-height:1.5em;margin:0;padding:.66em 10px .75em;}amp-carousel{background:#c2c2c2;margin:0 -16px 1.5em;}amp-iframe,amp-youtube,amp-instagram,amp-vine{background:#c2c2c2;margin:0 -16px 1.5em;}.amp-wp-article-content amp-carousel amp-img{border:none;}amp-carousel>amp-img>img{object-fit:contain;}.amp-wp-iframe-placeholder{background:#c2c2c2 url(http://s2.wp.com/wp-content/plugins/amp/assets/images/placeholder-icon.png) no-repeat center 40%;background-size:48px 48px;min-height:48px;}.amp-wp-article-footer .amp-wp-meta{display:block;}.amp-wp-tax-category,.amp-wp-tax-tag{color:#696969;font-size:.875em;line-height:1.5em;margin:1.5em 16px;}.amp-wp-comments-link{color:#696969;font-size:.875em;line-height:1.5em;text-align:center;margin:2.25em 0 1.5em;}.amp-wp-comments-link a{border-style:solid;border-color:#c2c2c2;border-width:1px 1px 2px;border-radius:4px;background-color:transparent;color:#0a89c0;cursor:pointer;display:block;font-size:14px;font-weight:600;line-height:18px;margin:0 auto;max-width:200px;padding:11px 16px;text-decoration:none;width:50%;-webkit-transition:background-color 0.2s ease;transition:background-color 0.2s ease;}.amp-wp-footer{border-top:1px solid #c2c2c2;margin:calc(1.5em - 1px) 0 0;}.amp-wp-footer div{margin:0 auto;max-width:calc(840px - 32px);padding:1.25em 16px 1.25em;position:relative;}.amp-wp-footer h2{font-size:1em;line-height:1.375em;margin:0 0 .5em;}.amp-wp-footer p{color:#696969;font-size:.8em;line-height:1.5em;margin:0 85px 0 0;}.amp-wp-footer a{text-decoration:none;}.back-to-top{bottom:1.275em;font-size:.8em;font-weight:600;line-height:2em;position:absolute;right:16px;}.amp-wp-inline-1e75e0c5c1c72efeb09c14908ed6fea1{height:1px;left:-10000px;overflow:hidden;position:absolute;top:3397px;max-width:1px;}.amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de{text-decoration:underline;}.amp-wp-inline-db677c5b6378ba4ba77d74199d689561{font-family:Courier New,monospace;}.amp-wp-inline-7568cb2b46b0c92abfcdcade041bac74{font-size:x-small;}</style>
+</head>
+<body class="">
+<header id="#top" class="amp-wp-header">
+<div>
+<a href="http://kurt.seifried.org">
+Kurt Seifried </a>
+</div>
+</header>
+<article class="amp-wp-article">
+<header class="amp-wp-article-header">
+<h1 class="amp-wp-title">Python Performance Part 3</h1>
+<div class="amp-wp-meta amp-wp-byline">
+<amp-img src="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=24&#038;d=identicon&#038;r=g" width="24" height="24" layout="fixed"></amp-img>
+<span class="amp-wp-author author vcard">kurtseifried</span>
+</div>
+<div class="amp-wp-meta amp-wp-posted-on">
+<time datetime="2010-05-31T02:34:32+00:00">
+7 years ago </time>
+</div>
+</header>
+<div class="amp-wp-article-content">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/">Python Performance Part 1</a><br/><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/">Python Performance Part 2</a><br/><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/">Python Performance Part 4</a></p>
+<p>In part one I covered a basic introduction to threads and the producer-consumer pattern. In part two I covered the Global Interpreter Lock (GIL) and some of the more pathological behavior it can cause. Now we’re going to go over how to profile code and how to instrument code so you can measure the performance of it so you can know with some certainty if the code actually needs to be fixed (and how it can be fixed). Finally we’ll go over some significant ways in which we can improve our handling of the producer-consumer pattern that will be more efficient and reliable.</p>
+<p><strong>Profiling vs. Performance measurement</strong></p>
+<p>Profiling and performance measurement are closely related but there is a difference. Profiling will generally give you every a lot of detail: function returns and exception events and since Python supports deterministic profiling it will do so with an extremely high degree of accuracy. The output of Python profiling is staggering, every single detail, the number of calls (ncalls), total time (tottime), per call time (tottime divided by ncalls), cumulative time (including sub calls/etc. for a function, cumtime) and the filename and line number and function called (filename:lineno(function)). In other words everything (this is one advantage of using an interpreted language). For most of us profiling should be used once the code has been written (premature optimization and all that) and used a bit (testing or otherwise). Performance measurement tends to be coarse grained, for example adding hooks that record how long a database operation takes to return or how long it takes to generate a web page in total. As well you can insert performance measuring code into your application and use it to continuously monitor system state/health (i.e. average DB query time over the last 5 minutes, etc.) and alert you if a problem occurs which is something that profiling is not really suited for.</p>
+<p><strong>Profiling Python code</strong></p>
+<p>Python provides two main profilers: “profile” and “cProfile” [PROFILE](a third one, “hotshot” has been deprecated and may be removed in the next version of Python according to the documentation). “profile” and “cProfile” are essentially identical with respect to usage, however the “cPython” module (written in C) is much faster and won’t slow your code down significantly. The “profile” module will slow your code down significantly, but as it is written in Python it can easily be modified or extended should you need to. Because Python is an interpreted language the interpreter is active during code execution, you don’t need to add instrumented code as it is already present.</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7"><col width="664"/><tbody><tr><td width="664">A simple example of profiling</td>
+</tr><tr><td width="664">
+<pre>&gt;&gt;&gt; def count():&#13;
+...     n = 100000&#13;
+...     while n &gt; 0:&#13;
+...             n -= 1&#13;
+...&#13;
+&gt;&gt;&gt; import cProfile&#13;
+&gt;&gt;&gt; cProfile.run('count()', 'countprof')&#13;
+&gt;&gt;&gt; import pstats&#13;
+&gt;&gt;&gt; p = pstats.Stats('countprof')&#13;
+&gt;&gt;&gt; print p&#13;
+&lt;pstats.Stats instance at 0x254fb48&gt;&#13;
+&gt;&gt;&gt; p.print_stats()&#13;
+Mon Jan  4 00:19:11 2010    countprof&#13;
+&#13;
+ 3 function calls in 0.012 CPU seconds&#13;
+&#13;
+ Random listing order was used&#13;
+&#13;
+ ncalls  tottime  percall  cumtime  percall filename:lineno(function)&#13;
+ 1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}&#13;
+ 1    0.000    0.000    0.012    0.012 &lt;string&gt;:1(&lt;module&gt;)&#13;
+ 1    0.012    0.012    0.012    0.012 &lt;stdin&gt;:1(count)</pre>
+</td>
+</tr></tbody></table><p>An excellent video covering this is available from Mike Fletcher [Mike C. Fletcher]</p>
+<p><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://us.pycon.org/2009/conference/schedule/event/15/">http://us.pycon.org/2009/conference/schedule/event/15/</a></span></p>
+<p>What we can take away from this and other sources appears to be:</p>
+<ol><li>You need to be able to properly measure performance before you profile code (luckily Python makes this trivial)</li>
+<li>Save your profiling results so you can compare things before and after (in other words did your optimization actually help)</li>
+<li>Check your algorithms; a stupid algorithm will always be slow</li>
+<li>Find function calls that are used often or are slow (and thus where you should start looking at first)</li>
+<li>Look for operations or results that can be pooled (i.e. using a single database query with a JOIN statement instead of multiple queries to get a collection of data)</li>
+<li>Look for operations that can be cached (keep your results around if you will use them again)</li>
+<li>Anytime you rely upon external code (especially opaque or closed source code) you are very much at the mercy of someone else</li>
+<li>Anytime you rely upon an external service (a database, reading or writing a file from the local system, getting a web page, etc.) you are very much at the mercy of someone else (in other words watch out for IO which may show up as lots of time spent sleeping)</li>
+<li>Only optimize one thing at a time unless you are incredibly brave</li>
+<li>Profiling threaded code can be problematic on multi-threaded or multiprocessor code</li>
+</ol><p>Of course I could be wrong. One last note, you can convert all this information into nice dot graphs using Gprof2Dot [GPROF2DOT].</p>
+<p><strong>Using cProfile</strong></p>
+<p>Using cProfile is easy; you import it as a module and then run code using it as a wrapper:</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7"><col width="325"/><col width="325"/><tbody><tr><td width="325">
+<pre><span class="amp-wp-inline-db677c5b6378ba4ba77d74199d689561"><span class="amp-wp-inline-7568cb2b46b0c92abfcdcade041bac74">import cProfile </span></span><span class="amp-wp-inline-db677c5b6378ba4ba77d74199d689561"><span class="amp-wp-inline-7568cb2b46b0c92abfcdcade041bac74"><span class="amp-wp-inline-db677c5b6378ba4ba77d74199d689561"><span class="amp-wp-inline-7568cb2b46b0c92abfcdcade041bac74">cProfile.run('foo()', 'foo_profile')</span></span></span></span></pre>
+<p> </p></td>
+<td width="325"></td>
+</tr></tbody></table><p>This will execute the function foo() and output the data from the profile run to the file foo_profile. This is great if you just want to profile a specific class or function within your program. Alternatively if you want to profile the entire program you can use cProfile to execute the Python program in question and profile the entire thing:</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7"><col width="664"/><tbody><tr><td width="664">
+<pre># /usr/lib64/python2.6/cProfile.py -o base64-profile /usr/lib64/python2.6/base64.py /etc/resolv.conf&#13;
+# python&#13;
+&#13;
+&gt;&gt;&gt; import pstats&#13;
+&gt;&gt;&gt; p = pstats.Stats('base64-profile')&#13;
+&gt;&gt;&gt; p.print_stats()&#13;
+Tue Jan  5 02:37:04 2010    test-output.1&#13;
+&#13;
+ 282 function calls in 0.008 CPU seconds&#13;
+&#13;
+ Random listing order was used&#13;
+&#13;
+ ncalls  tottime  percall  cumtime  percall filename:lineno(function)&#13;
+ 2    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}&#13;
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/getopt.py:16(&lt;module&gt;)&#13;
+ 1    0.000    0.000    0.002    0.002 /usr/lib64/python2.6/base64.py:3(&lt;module&gt;)&#13;
+ 4    0.000    0.000    0.000    0.000 {method 'read' of 'file' objects}&#13;
+ 1    0.000    0.000    0.000    0.000 {open}&#13;
+ 3    0.000    0.000    0.000    0.000 {len}&#13;
+ 1    0.006    0.006    0.008    0.008 {execfile}&#13;
+ 256    0.000    0.000    0.000    0.000 {chr}&#13;
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/getopt.py:39(GetoptError)&#13;
+ 2    0.000    0.000    0.000    0.000 {binascii.b2a_base64}&#13;
+ 1    0.000    0.000    0.008    0.008 &lt;string&gt;:1(&lt;module&gt;)&#13;
+ 1    0.001    0.001    0.001    0.001 /usr/lib64/python2.6/base64.py:326(test)&#13;
+ 2    0.000    0.000    0.000    0.000 {method 'write' of 'file' objects}&#13;
+ 1    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}&#13;
+ 1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}&#13;
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/base64.py:285(encode)&#13;
+ 1    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}&#13;
+ 1    0.000    0.000    0.000    0.000 {range}&#13;
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/getopt.py:52(getopt)&#13;
+&#13;
+&lt;pstats.Stats instance at 0x7fad1e6c1ab8&gt;</pre>
+</td>
+</tr></tbody></table><p>As you can see I ran the file /etc/resolv.conf through the Python base64 encode/decode utility. The first obvious thing to jump out is heavy use of the “chr()” function. This function returns a string one character at a time but appears to be extremely efficient (virtually no CPU time was used). The only thing that really appears to have taken any time is the execfile() function which parses a file. As you can imagine a Python application of any real size will generate a lot of output. Use of cPython is covered in detail in <a href="http://docs.python.org/library/profile.html" rel="nofollow">http://docs.python.org/library/profile.html</a></p>
+<p><strong>Measuring Python code performance </strong></p>
+<p>There’s a couple of ways to measure Python code execution, the most accurate for small amounts is the timeit.Timer() function. You basically wrap your function in this and it reports how long things took to run, it can also takes a repeat command, so for operations that are relatively fast you can run them a few thousand (or million times) to get an idea of how long they take. This module is generally best used when testing algorithms or other short pieces of code since it won’t give details of where things are being slow (just an overall picture).</p>
+<p>But what about instrumenting code for long term monitoring, or measuring the speed of external software and services such as database queries? Some strategies here include simply using the time.time() method to get the current time at the start and end of the code you are interested in, subtract the two and you get the elapsed time. This allows you to wrap a call to a database; if the query takes more than say 5 seconds you can send a warning of some sort (log an alert, send an email, etc.). If you are processing database entries you can log the primary key and the start time when you start processing the entity, once done processing (possibly after shoving it through several work queues/etc.) you log the finish time, and ideally log these results.</p>
+<p><strong>A note on long term performance monitoring</strong></p>
+<p>A major advantage of architecting in performance monitoring is that you can generate long term stats regarding your code, application and environment. Things like how long database queries take, swap the disks for solid stats disks and see if or what a difference it makes, network latency/speed issues, etc. My advice would be to measure the performance of external libraries and services since profiling won’t really address this. I would also measure the overall performance of things (how long from page request to page generation, or page generation and writing of back end data, etc.). Especially if you are splitting work up using work queues profiling won’t help since you can’t track the processing of a specific message/request/etc. within that context easily.</p>
+<p>Additionally if you do this by using function decorators you can simply create a timing function and wrap your database query class or whatever function it is you want to monitor without having to modify your code significantly.</p>
+<p><strong>Disassembling Python code</strong></p>
+<p>I thought I should add a quick note on disassembling Python code (so you can find out approximately how many ticks it is). In some cases where you suspect a computation or a task is causing a lot of context switching you may wish to look at modifying the sys.setcheckinterval() and increasing it. But of course simply twiddling the knobs until you get a better result is probably not the easiest way to accomplish this. Using the dis[DIS] module you can disassemble code, see “The trouble with ticks” in the second part of this series for an example. You may be lucky and find that setting the sys.setcheckinterval() helps (e.g. if you computation takes 120 ticks and it can now complete in one run rather than being interrupted) but I would urge extreme caution as it may have unintended side effects that are difficult to track down.</p>
+<p><strong>Shared resources, locking and performance</strong></p>
+<p>So what happens if you profile or time your code in testing and find that it is reasonably fast; but when you run it in a multi-threaded or multi-process environment you find your code crawls to a stand still or takes far more time than it should? Chances are you have some form of shared resource or locking, that when run in small trials doesn’t create contention, but when run in production does. The best manner to deal with this is of course to avoid having any resources that require locking or can’t easily be shared. Additionally I have found that the less shared resources, locking and other synchronization issues I have to deal with, the fewer bugs and I create (imagine that). The two best ways to deal with this are to profile and monitor your code, code that spends a lot of time sleeping may be waiting on a shared lock, and if something takes to long to run (such as a database query) you may have an external resource that doesn’t share well (i.e. a MySQL MyISAM table that forces table level locking for inserts can really kill performance when you have multiple INSERT or UPDATE statements happening at the same time).</p>
+<p><strong>Mapping critical code sections</strong></p>
+<p>If you must have shared resources you want to minimize their impact as much as possible, identify the minimal amount of code that needs to hold a lock on a shared resource and only wrap that code with the lock. One note: if your critical code relies on external code or services all bets are off (you hold a lock, then do a DB query and the DB query is very slow or fails or whatever you are out of luck and your application will grind to a halt). Look for code that establishes a lock using locking primitives such as acquire() and release() or threading.lock() and multiprocessing.Lock(). Additionally any databases you connect to may use table level locking, thus if one thread or process is running an INSERT or an UPDATE no other thread or process will be able to. You also want to ensure there are no concurrent deadlocks (i.e. thread #1 holds lock A while waiting to acquire lock B and thread #2 is holding lock B and waiting to acquire lock A, neither one gives up their lock and neither one can move forwards). If you must have multiple locks I would strongly suggest using locking hierarchies (e.g. always lock A and then lock B so no deadlock can occur); there are several excellent articles available on this topic. [LOCKING HIERARCHY]</p>
+<p><strong>A note on external C libraries</strong></p>
+<p>According to some sources Python is generally capable of running at around 10-20% of the speed of a compiled C program for the same algorithm (due to interpreter overhead, etc.). Generally speaking this won’t be a significant problem since many applications are IO bound (networks, disks, etc.) and modern CPU’s are quite fast. But what happens when you start pegging the CPU because of computation being done in Python? Again there is good news here, Guido van Rossum comes from a scientific computing (a.k.a. number crunching) background and this is one of the first things Python was designed to handle. You can (with relative ease) write C or C++ code and use it to extend Python code[PYTHON AND C]. This has already been done with a number of core modules, as mentioned above the cProfile and profile extensions accomplish the same work but as cPython is written in C it runs much faster. If you need to do heavy computation you will want to check out SciPy which is written largely in C and NumPy which is quite fast. [SCIPY]</p>
+<p><strong>An Extension to the Advanced Threading pattern – spinlocks</strong></p>
+<p>Normally we would use the thread.join() method but in this case we need a little more flexibility. The use of a spinlock (the thread simply spins, checking the lock repeatedly and once the lock releases it then continues doing whatever it is supposed to).</p>
+<p>One of the main problems with the producer-consumer pattern is starvation. What if the producer can’t go fast enough to feed the workers and the workers have to wait for work? This in and of itself is not an insurmountable problem, however when combined with the fact that we want the Python script to run and exit in a timely manner (i.e. when all the work is done) and not before it is done how do we avoid a starvation situation triggering an early end of the program? The simplest method is to use a lock hierarchy, we have the producer establish a spinlock that it unlocks once it is done feeding data into the queue. The consumers also set a spinlock, if they notice that the queue is empty they can then check the producer spinlock, if this is not set then they know it is a simple starvation problem and that they should keep rechecking the queue until there is more work. However if they check the producer spinlock and it is set as done then they know that there is no more work to be done and they can also exit. One of the simpler ways this can be done is to create an array for each pool of threads (i.e. one for producers and one for consumers). Use the thread ID as the key and a value of 0 or 1 to indicate if the thread is done or not, then you can simply use something like “while (0 in spinlockProducerThread)” to see if any threads are still running. Ultimately this pattern can also be applied to the main thread, we simply have the main thread spawn off the producer and consumer threads and then spin until all the locks are released, indicating that all the work is done and the threads are finished. Additionally this allows us to have threads exit when they are done (i.e. once the producer thread has pushed all the work into the queue there is no reason to leave it running, because the spinlock is external we can exit, unlike if we were to use the thread.join() method). This pattern also works really well if you have multiple levels of producers and consumers, i.e. a chain of modules that downloads a web page, processes the content within it, then creates something based on the content and so on. This pattern also lends itself to distributed systems, by taking the locking mechanism and making it external to the running code (for example by using a database table as a shared blackboard to communicate) allows multiple systems to join, do work and then leave (allowing you to dynamically allocate resources).</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7"><col width="664"/><tbody><tr><td width="664">web_get_producer_consumer_basic_pattern.py (outline of code)</td>
+</tr><tr><td width="664">
+<pre>class ProducerThread:&#13;
+	def __init__(self, myID):&#13;
+		self.myID = myID&#13;
+		while 1:&#13;
+			work_todo = GetWorkFromDB()&#13;
+			for work_item in work_todo:&#13;
+				workQueue.put(work_item)&#13;
+			break&#13;
+		spinlockProducerThread[myID] = 1&#13;
+		sys.exit()&#13;
+&#13;
+class ConsumerThread:&#13;
+	def __init__(self, myID):&#13;
+		self.myID = myID&#13;
+		while 1:&#13;
+			try:&#13;
+				work_item = workQueue.get(block=False)&#13;
+			except Queue.Empty:&#13;
+				"""&#13;
+				The queue is empty, but it may only be temporarily empty or it may&#13;
+				be empty but other worker threads are still running&#13;
+				"""&#13;
+				if (0 not in spinlockProducerThread):&#13;
+					spinlockConsumerThread[myID] = 1&#13;
+					sys.exit()&#13;
+			else:&#13;
+				ProcessWork(work_item)&#13;
+&#13;
+if __name__ == '__main__':&#13;
+&#13;
+	spinlockProducerThread = [0] * number_of_producer_threads&#13;
+&#13;
+	spinlockConsumerThread = [0] * number_of_consumer_threads&#13;
+&#13;
+	workQueue = Queue.Queue()  &#13;
+&#13;
+	for i in range(number_of_producer_threads):&#13;
+		try:&#13;
+			thread.start_new_thread(ProducerThread, (i,))&#13;
+		except thread.error, e:&#13;
+			myID = i&#13;
+			spinlockProducerThread[myID] = 1&#13;
+			print "ProducerThread thread creation failed"&#13;
+			print e&#13;
+&#13;
+	for i in range(number_of_consumer_threads):&#13;
+		try:&#13;
+			thread.start_new_thread(ThreadWorkerFreescan, (i,))&#13;
+		except thread.error, e:&#13;
+			myID = i&#13;
+			spinlockConsumerThread[myID] = 1&#13;
+			print "ConsumerThread thread creation failed"&#13;
+			print e&#13;
+&#13;
+	while (0 in spinlockProducerThread or 0 in spinlockConsumerThread):&#13;
+		time.sleep(1)&#13;
+		pass</pre>
+</td>
+</tr></tbody></table><p>[PROFILE]</p>
+<p><span class="amp-wp-inline-61cd676b7bd65a074cc1d867fbbea1de"><a href="http://docs.python.org/library/profile.html">http://docs.python.org/library/profile.html</a></span></p>
+<p>[Mike C. Fletcher]</p>
+<p>Mike C. Fletcher (<a href="http://www.vrplumber.com/" target="_blank">http://www.vrplumber.com</a>)</p>
+<p>[GPROF2DOT]</p>
+<p><a href="http://code.google.com/p/jrfonseca/wiki/Gprof2Dot">http://code.google.com/p/jrfonseca/wiki/Gprof2Dot</a></p>
+<p>[PROFILE]</p>
+<p><a href="http://docs.python.org/library/profile.html">http://docs.python.org/library/profile.html</a></p>
+<p>[DIS]</p>
+<p><a href="http://docs.python.org/library/dis.html">http://docs.python.org/library/dis.html</a></p>
+<p>[LOCKING HIERARCHY]</p>
+<p><a href="http://www.ddj.com/architect/204801163">http://www.ddj.com/architect/204801163</a></p>
+<p>[PYTHON AND C]</p>
+<p><a href="http://docs.python.org/extending/extending.html">http://docs.python.org/extending/extending.html</a></p>
+<p>[SCIPY]</p>
+<p><a href="http://www.scipy.org/">http://www.scipy.org/</a></p>
+<div id="_mcePaste" class="amp-wp-inline-1e75e0c5c1c72efeb09c14908ed6fea1">class ProducerThread:<br/>
+def __init__(self, myID):<br/>
+self.myID = myID<br/>
+while 1:<br/>
+work_todo = GetWorkFromDB()<br/>
+for work_item in work_todo:<br/>
+workQueue.put(work_item)<br/>
+break<br/>
+spinlockProducerThread[myID] = 1<br/>
+sys.exit()class ConsumerThread:<br/>
+def __init__(self, myID):<br/>
+self.myID = myID<br/>
+while 1:<br/>
+try:<br/>
+work_item = workQueue.get(block=False)<br/>
+except Queue.Empty:<br/>
+“””<br/>
+The queue is empty, but it may only be temporarily empty or it may<br/>
+be empty but other worker threads are still running<br/>
+“””<br/>
+if (0 not in spinlockProducerThread):<br/>
+spinlockConsumerThread[myID] = 1<br/>
+sys.exit()<br/>
+else:<br/>
+ProcessWork(work_item)
+<p>if __name__ == ‘__main__’:</p>
+<p>spinlockProducerThread = [0] * number_of_producer_threads</p>
+<p>spinlockConsumerThread = [0] * number_of_consumer_threads</p>
+<p>workQueue = Queue.Queue()</p>
+<p>for i in range(number_of_producer_threads):<br/>
+try:<br/>
+thread.start_new_thread(ProducerThread, (i,))<br/>
+except thread.error, e:<br/>
+myID = i<br/>
+spinlockProducerThread[myID] = 1<br/>
+print “ProducerThread thread creation failed”<br/>
+print e</p>
+<p>for i in range(number_of_consumer_threads):<br/>
+try:<br/>
+thread.start_new_thread(ThreadWorkerFreescan, (i,))<br/>
+except thread.error, e:<br/>
+myID = i<br/>
+spinlockConsumerThread[myID] = 1<br/>
+print “ConsumerThread thread creation failed”<br/>
+print e</p>
+<p>while (0 in spinlockProducerThread or 0 in spinlockConsumerThread):<br/>
+time.sleep(1)<br/>
+pass</p>
+</div>
+</div>
+<footer class="amp-wp-article-footer">
+<div class="amp-wp-meta amp-wp-tax-category">
+Categories: <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a> </div>
+<div class="amp-wp-meta amp-wp-tax-tag">
+Tags: <a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/python-2/" rel="tag">python</a> </div>
+<div class="amp-wp-meta amp-wp-comments-link">
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/#respond">
+Leave a Comment </a>
+</div>
+</footer>
+</article>
+<footer class="amp-wp-footer">
+<div>
+<h2>Kurt Seifried</h2>
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+</p>
+<a href="#top" class="back-to-top">Back to top</a>
+</div>
+</footer>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;host=kurt.seifried.org&#038;ref=DOCUMENT_REFERRER&#038;amp=1&#038;blog=86342&#038;v=wpcom&#038;tz=-7&#038;user_id=0&#038;post=61&#038;subd=kurtseifried"></amp-pixel>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;v=wpcom-no-pv&#038;crypt=UE40eW5QN0p8M2Y%2FRE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V%2BZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVBRjJ2SXw2VHdNNCU%2FNEpFXz1BLGxlbi1tLUZ1XUttSnYueD9dbHo4MV8sW1I0eXhJdWh4S35hUk8sUzlMdGkvUG0zfnp8LlZPaTZFLGk5SEotMF9ZTSt1VGdDJn5UUFp4ODZ1"></amp-pixel>
+</body>
+</html>

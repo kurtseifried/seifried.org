@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 9.0 Securing files and directories with various WWW servers</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>9.0 Securing files and directories with various WWW servers</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#94ffe1e6e0d4e7f1fdf2e6fdf1f0bafbe6f3"><span class="__cf_email__" data-cfemail="7a110f080e3a091f131c08131f1e5415081d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Often times most users simply want to secure access to a
+certain set of directories or files on their website. Fortunately
+most web servers provide this capability with reasonably easy to
+use tools. </p>
+<p><strong>9.1 Apache based</strong></p>
+<p>Apache supports a wide variety of authentication methods,
+several of which can be considered &quot;standard&quot; and are
+typically included in vendor packages of Apache. You can assign
+security to files and directories with Apache, the configuration
+for this is either done in the central httpd.conf file or in the
+defined &quot;AccessFileName&quot;. For example to make
+&quot;.htaccess&quot; files your access file you would add the
+following to httpd.conf:</p>
+<blockquote>
+<pre>AccessFileName .htaccess</pre>
+</blockquote>
+<p>And in order to prevent people from downloading these files
+you would add the following to your httpd.conf:</p>
+<blockquote>
+<pre>&lt;Files ~ &quot;^\.ht&quot;&gt;
+    Order allow,deny
+    Deny from all
+&lt;/Files&gt;</pre>
+</blockquote>
+<p>This means that any file starting with &quot;.ht&quot; (i.e.
+.htaccess, .htpasswd, .htgroup, .htfoobar) will not be sent if a
+client requests it. </p>
+<p>You will then need to configure Apache to allow for specific
+features, using the &quot;AllowOverride&quot; directive within a
+&quot;&lt;Directory&quot;&gt; configuration section. Typically
+the safest thing to do is define a &quot;&lt;Directory
+/&gt;&quot; that disables everything and then enable features as
+needed on a per directory basis. For example to allow .htaccess
+files in /var/www/secure-area:</p>
+<blockquote>
+<pre>&lt;Directory /var/www/&gt;
+	AllowOverride AuthConfig
+	Order allow,deny
+	Allow from all
+&lt;/Directory&gt;</pre>
+</blockquote>
+<p>If your .htaccess file does not work and
+&quot;AccessFileName&quot; is defined then this is probably the
+problem. </p>
+<p>To enable password authentication you need to create a
+.htaccess file, and a password file minimally, you can also use a
+groups file which allows you to have a large centralized password
+file for multiple directories with different access requirements.
+Into your .htaccess file you will need to put an AuthUserFile
+directive (the password file), AuthName directive (the name of
+this restricted area), the AuthType (i.e. basic or digest,
+typically basic is used), and a require directive (i.e. what
+conditions someone must meet to gain access). You can also
+optionally place a Order directive if you need to create a more
+complex authentication requirement (more on this later). </p>
+<p>To create a basic password file for apache you use the
+&quot;htpasswd&quot; command, the basic options are
+&quot;-c&quot; to create a new file, and &quot;-m&quot;,
+&quot;-d&quot; and &quot;-s&quot; to specify the encryption
+method (MD5, Crypt and SHA1 respectively). You can also use
+&quot;-b&quot; to specify the password instead of entering it
+when prompted, this is useful for importing large numbers of
+users. So to create a basic .htpassword file you would:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ec9e838398ac9e838398">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> www]$ htpasswd -c .htpassword joesmith
+New password: 
+Re-type new password: 
+Adding password for user joesmith</pre>
+</blockquote>
+<p>Using the password &quot;test&quot; and the default encryption
+method of Crypt we would end up with a .htpassword file that
+looks like:</p>
+<blockquote>
+<pre>joesmith:Dw0yWEhkXNT/U</pre>
+</blockquote>
+<p>So, to password protect a directory, using the file
+&quot;.htpasswords&quot; as the passwords file you would
+minimally need:</p>
+<blockquote>
+<p>AuthUserFile .htpasswd<br>
+AuthName example01<br>
+AuthType Basic<br>
+require valid-user</p>
+</blockquote>
+<p>So when someone tries to access the directory the .htaccess
+file is placed in they would be prompted for a username and
+password, they would need to enter the username
+&quot;joesmith&quot; and the password &quot;test&quot; to gain
+access. </p>
+<p>The next step would be to use the groups capability, this is
+useful if you have several directories you want to protect with a
+variety of different policies, i.e. the group &quot;sales&quot;
+has access to the sales directory, and the group
+&quot;marketing&quot; has access to the marketing directory. </p>
+<p>In the directory &quot;/wwwroot/sales/&quot; you would place
+an .htaccess file with the following:</p>
+<blockquote>
+<pre>AuthUserFile /wwwroot/.htpassword
+AuthGroupFile /wwwroot/.htgroup
+AuthName sales-area
+AuthType Basic
+require valid-user
+require group sales</pre>
+</blockquote>
+<p>In the directory &quot;/wwwroot/marketing/&quot; you would
+place an .htaccess file with the following:</p>
+<blockquote>
+<pre>AuthUserFile /wwwroot/.htpassword
+AuthGroupFile /wwwroot/.htgroup
+AuthName marketing-area
+AuthType Basic
+require valid-user
+require group marketing</pre>
+</blockquote>
+<p>You would then need to add users to the /wwwroot/.htpassword
+file, for something like:</p>
+<blockquote>
+<pre>janedoe:BBQ3KOR1fNBDU
+bobmarley:PpP/7iZvLWJiw
+joesmith:BRJ3YT11fYbcs
+sysadmin:BvQpL.pb1xH0w</pre>
+</blockquote>
+<p>And the groups file would look like:</p>
+<blockquote>
+<pre>sales:janedoe,bobmarley,sysadmin
+marketing:joesmith,sysadmin</pre>
+</blockquote>
+<p>Note that a user can belong to multiple groups. In this case
+the users &quot;janedoe&quot; ,&quot;bobmarley&quot; and
+&quot;sysadmin&quot; would be allowed into marketing, and the
+users &quot;joesmith&quot; and &quot;sysadmin&quot; would be
+allowed into sales. </p>
+<p>Flat text files such as the above examples are easy to start
+out with, however if you have many users and groups they will
+quickly become very slow, and to solve this problem you can use
+dbm files. </p>
+<p>Please see the following URL for more on dbm authentication:</p>
+<p><a href="http://www.apacheweek.com/features/dbmauth">http://www.apacheweek.com/features/dbmauth</a>
+</p>
+<p>For these two authentication methods to work you should make
+sure that the following lines (or something similar) are in your
+httpd.conf file:</p>
+<blockquote>
+<pre>LoadModule auth_module        modules/mod_auth.so
+LoadModule anon_auth_module   modules/mod_auth_anon.so
+LoadModule db_auth_module     modules/mod_auth_db.so
+AddModule mod_auth.c
+AddModule mod_auth_anon.c
+AddModule mod_auth_db.c</pre>
+</blockquote>
+<p><a href="http://www.apacheweek.com/features/userauth">http://www.apacheweek.com/features/userauth</a>
+<br>
+<a href="http://www.apacheweek.com/features/dbmauth">http://www.apacheweek.com/features/dbmauth</a></p>
+<p><strong>9.1.1 Apache-SSL</strong></p>
+<p>See main Apache section. </p>
+<p><strong>9.1.2 Apache mod-ssl</strong></p>
+<p>See main Apache section. </p>
+<p><strong>9.1.3 Raven</strong></p>
+<p>See main Apache section. </p>
+<p><strong>9.1.4 Red Hat Secure Server</strong></p>
+<p>See main Apache section. </p>
+<p><strong>9.1.5 Stronghold</strong></p>
+<p>See main Apache section. </p>
+<p><a href="http://www.c2.net/products/sh3/">http://www.c2.net/products/sh3/</a>
+</p>
+<p>Stronghold was purchased by Red Hat.</p>
+<p><strong>9.2 Netscape</strong></p>
+<p>To be added.</p>
+<p><strong>9.2.1 Netscape Enterprise</strong></p>
+<p>To be added.</p>
+<p><strong>9.3 Roxen</strong></p>
+<p>To be added.</p>
+<p><strong>9.4 Zeus</strong></p>
+<p>To be added.</p>
+<p><strong>9.5 Novell</strong></p>
+<p>To be added.</p>
+<p><strong>9.6 IBM Websphere</strong></p>
+<p>See main Apache section. </p>
+<p><strong>9.7 Volera</strong></p>
+<p>To be added.</p>
+<p><strong>9.8 Squid</strong></p>
+<p>To be added.</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-8.html">Back</a> | <a href="section-10.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

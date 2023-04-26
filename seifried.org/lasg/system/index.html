@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Physical and console security</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Physical and console security</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#e289979096a291878b84908b8786cc8d9085"><span class="__cf_email__" data-cfemail="acc7d9ded8ecdfc9c5cadec5c9c882c3decb">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>While the majority of random and remote attacks come in over
+the network physical and console security are important factors.
+In a perfect world every machine would be physically secure with
+access to the console (i.e. keyboard, reset switch and monitor)
+tightly controlled. Unfortunately this is not a perfect world it
+is rare to find a physically secure machine outside of a server
+room. </p>
+<p>&nbsp;</p>
+<h2><a name="Physical-security">Physical security</a></h2>
+<p>Remember that an attacker may not want to break into your
+desktop machine or network, they may be looking for a quick way
+to make $200, and stealing a desktop computer is one way to do
+that. All systems should be securely fastened to something with a
+cable system, or locked in an equipment cage if possible. Case
+locks should be used when possible to slow attackers down (thefts
+of ram and CPU's are becoming increasingly popular). Some
+systems, like Apple G4&#146;s, when cable locked cannot be
+opened, if you need machines for public areas features like this
+are ideal. For secure rooms make sure that the walls go beyond
+the false ceiling, and below the raised floor, large vents should
+also be covered with bars if possible. Monitoring the room with
+CCTV and possibly requiring a remote person to &quot;buzz&quot;
+you in (in addition to a lock, keypad or other access control
+device) is recommended. </p>
+<p>With enough time and physical access an attacker will be able
+to gain access to the system, several methods of attack include:</p>
+<ul>
+<li>Rebooting the system from other media such as floppy
+disk, CD-ROM, external SCSI drives and so on</li>
+<li>Removing the case, and removing the BIOS battery to get
+around any BIOS restrictions</li>
+<li>Using a default BIOS password to gain access to the BIOS</li>
+<li>Rebooting the system and passing boot arguments to LILO</li>
+<li>Installing physical monitoring devices such as KeyGhost</li>
+<li>Stealing the system&#146;s disk(s)</li>
+<li>Unplug the server, or turn the power bar off (a very
+effective DoS), if done several times this can lead to
+filesystem corruption. </li>
+</ul>
+<p>These are just a few of many possible attacks. The primary
+goal is to stop them where possible, and failing that slow them
+down so that hopefully someone will notice the attacker tearing
+apart a system in someone&#146;s office. The installation of
+monitoring devices is becoming especially worrisome, as they are
+now available for purchase online for less then $100. An attacker
+can easily log all keystrokes for a long time period before the
+attacker comes back to retrieve them. Periodic physical
+inspections (in teams of two) of user machines for items like
+KeyGhost, modems are so on are a good idea. </p>
+<p>Gaining access to office buildings is often trivial. While
+working for the government there was no access control to the
+building itself from 8 A.M. until 5 P.M. (after 5 P.M. a security
+guard forced you to sign in). Worse yet the building had a back
+entrance that was not monitored. If you were to enter at 4:30
+P.M., hide in a bathroom for an hour or two (crouched on top of a
+toilet reading the latest Linux Journal) you could easily spend
+several hours fiddling with desktop systems and leave at your
+convenience without being seen by anyone. Cleaning staff also
+never questioned me when I stayed late (and conversely I never
+questioned them), you should train staff to approach people they
+do not recognize and ask them politely if they need assistance or
+are lost. While access to buildings cannot often be controlled
+effectively (to many entrances / different tenants / etc.) you
+can control access to your floor, a locked door with a CCTV
+monitoring it after hours is often a good deterrent. </p>
+<p>&quot;Practical Unix and Internet Security&quot; from O'Reilly
+covers physical problems as well and is definitely worth buying. </p>
+<p>&nbsp;</p>
+<h2><a name="Console-security">Console security</a></h2>
+<p>With physical access to most machines you can simply reboot
+the system and ask it nicely to launch into single user mode, or
+tell it to use /bin/sh for init. You can enter the BIOS and tell
+the machine to boot from a floppy, doing a quick end run around
+most security. Alternatively you can simply enter the bios,
+disable the IDE controllers, put a password on the BIOS,
+rendering the machine largely unusable.</p>
+<p>&nbsp;</p>
+<h3>BIOS / Open Firmware security</h3>
+<p>Assuming the attacker does not steal the entire machine the
+first thing that they will usually try is to reboot the system
+and either boot from a floppy disk (or other removable media). If
+they can do this then any standard file protection is useless,
+the attacker declares themselves to be root, mounts the
+filesystem and gains complete access to it. </p>
+<p>To secure a x86 BIOS you typically enter it by hitting
+&quot;delete&quot; or a function key during the boot process, the
+actual name and location of the BIOS password varies
+significantly, look for &quot;security&quot; or
+&quot;maintenance&quot;. There are usually different levels of
+password protections, on some motherboards you can disable the
+keyboard until a password is typed in (the BIOS intercepts and
+blocks input until it sees the password entered on the keyboard),
+on others it only prevents accessing the BIOS. Generally speaking
+you want to block access to the BIOS, and lock the boot sequence
+to the first internal storage device (i.e. the first IDE disk or
+SCSI). </p>
+<p>Even if you do everything right there are still some ways for
+an attacker to subvert the boot process. Many older BIOS&#146;s
+have universal passwords, generally speaking this practice has
+declined with modern systems, but you may wish to inquire with
+the vendor. Another potential problem to be aware of is that many
+add-on IDE and SCSI controller cards have their own BIOS, from
+which you can check the status of attached devices, choose a boot
+device, and in some cases format attached media. Many high-end
+network cards also allow you to control the boot sequence,
+letting you boot from the network instead of a local disk. This
+is why physical security is critical for servers. Other
+techniques include disabling the floppy drive so that attackers
+or insiders cannot copy information to floppy and take it
+outside. You may also wish to disable the serial ports in users
+machines so that they cannot attach modems, most modern computers
+use PS/2 keyboard and mice, so there is very little reason for a
+serial port in any case (plus they eat up IRQ's). Same goes for
+the parallel port, allowing users to print in a fashion that
+bypasses your network, or giving them the chance to attach an
+external CD-ROM burner or harddrive can decrease security
+greatly. As you can see this is an extension of the policy of
+least privilege and can decrease risks considerably, as well as
+making network maintenance easier (less IRQ conflicts, etc.).
+There are of course programs to get the BIOS password from a
+computer, one is available <a href="http://www.cgsecurity.org/">http://www.cgsecurity.org/</a>,
+it is available for DOS and Linux.</p>
+<p>If you decide to secure the BIOS&#146;s on systems you should
+audit them once in a while if possible, simply reboot the machine
+and try to boot off of a floppy disk or get into the BIOS. If you
+can then you know someone has changed settings on the system, and
+while there may be a simple explanation (a careless technician
+for example) it may also be your first warning that an attack has
+occurred. There are several programs for Linux that allow an
+attacker with root access to gain the BIOS password, while this
+is a rather moot point it does bear mentioning (if an attacker
+has gained root access they can already do pretty much anything).
+</p>
+<p>To secure a Sparc or UltraSparc boot prom send a break during
+boot-up, hit stop-a, and you should be presented with the ok&gt;
+prompt. Setting your password is a simple matter of using the
+password command and typing the password in twice. You will then
+want to set the security-mode, using &quot;setenv&quot; from the
+default of none to command at the very least, and full if you are
+security conscious (warning, you will need the password to boot
+the machine). </p>
+<p>&nbsp;</p>
+<blockquote>
+<pre>ok
+ok <strong>password</strong>
+ok New password (only first 8 chars are used):<strong>*****</strong>
+ok Retype new password: <strong>*****</strong>
+ok
+ok <strong>setenv security-mode </strong><em><strong>full</strong></em>
+ok</pre>
+</blockquote>
+<p>&nbsp;</p>
+<p>You can also set &quot;security-mode&quot; to
+&quot;command&quot; which will require the password to access the
+open firmware but is less strict then &quot;full&quot;. Do not
+lose this password, especially if you set the security-mode to
+full, as you may need to replace the PROM to recover the system.
+You can wipe the password by setting &quot;security-mode&quot; to
+&quot;none&quot;. </p>
+<p>Unfortunately if you are using Apple hardware you cannot
+secure the boot process in any meaningful manner. While booting
+if the user holds down the command-option-P-R keys it will wipe
+any settings that exist, there is no way to avoid this. About the
+only security related option you can set is whether the machine
+automatically reboots or not, this is useful for servers to
+prevent a remote attacker from changing the kernel for example
+(which require a system reboot). Hold down the command-option-O-F
+keys to access the OpenFirmware and from there you need to:</p>
+<blockquote>
+<pre>go&gt; <strong>setenv auto-boot? False</strong></pre>
+</blockquote>
+<p>However because a local attacker can easily flush the settings
+there is no inherent security. If you need to use Apple systems
+as servers then it is highly advisable to lock them in a cabinet
+of some sort. As workstations in a public area your best solution
+is to automate the reloading of the OS to speed recover time.</p>
+<p>&nbsp;</p>
+<h3>LILO security</h3>
+<p>LILO is the Linux boot loader, it handles all the nitty gritty
+tasks of getting the kernel into memory and bootstrapping them
+machine into something that resembles a useful computing device.
+LILO handles many things, from telling the kernel to look for
+multiple network cards to how much memory there is (assuming
+Linux won&#146;t detect how much your system has). There are
+several options you can pass to LILO to bypass most any account
+security or console security. </p>
+<p>Booting Linux into single user mode with (assuming the label
+is &quot;linux&quot;):</p>
+<blockquote>
+<pre><strong>linux single</strong></pre>
+</blockquote>
+<p>This will dump you into a root level command prompt on many
+systems. From there you can simply add a new users with UID 0,
+format the disks or copy Trojan&#146;ed binaries off a floppy
+disk. One way many vendors deal with this is by using sulogin,
+single user login, which prompts for root&#146;s password before
+letting you on. This will prevent people from accessing single
+user mode and getting directly to a root prompt however there is
+a another attack. You can specify which program will be used to
+init the system, instead of the default init you can use a
+command shell:</p>
+<blockquote>
+<pre><strong>init=/bin/sh</strong></pre>
+</blockquote>
+<p>Which will present you with a root prompt. The best way to
+defeat this and the single mode problem are to secure LILO and
+prevent the passing of boot arguments without a password. Many
+people argue that this somehow inhibits normal use of the system,
+however there should be no need normally for the user booting the
+system to pass LILO arguments (if an argument is needed at boot
+time it should be put into lilo.conf permanently). Generally
+speaking the only time you will need to pass LILO arguments is
+when something on the system breaks, at which point it&#146;s
+probably wise to send out a technician who knows the password to
+fix the system. </p>
+<p>To secure LILO you must set a password, and use the restricted
+keyword. You can also set security on a per image basis, or on
+LILO as a whole. If you set security on a per image basis you
+will be able to tell LILO which image you wish to boot without
+needing a password, but you will not be able to pass the kernel
+arguments such as &quot;single&quot;. If you set security on LILO
+as a whole then you will only be able to boot to the default
+image, specifying a different image will require the password.</p>
+<blockquote>
+<pre>boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=50
+message=/boot/message
+linear
+default=linux
+
+password=thisisapassword
+restricted
+
+image=/boot/vmlinuz-2.2.18
+	label=linux
+	read-only
+	root=/dev/hda1
+
+image=/boot/vmlinuz-2.2.17
+	label=linux-old
+	read-only
+	root=/dev/hda1</pre>
+</blockquote>
+<p>This can be cumbersome, however it does prevent attackers from
+booting a different image. </p>
+<blockquote>
+<pre>boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=50
+message=/boot/message
+linear
+default=linux
+
+image=/boot/vmlinuz-2.2.18
+	label=linux
+	read-only
+	root=/dev/hda1
+	password=thisisapassword
+	restricted
+
+image=/boot/vmlinuz-2.2.17
+	label=linux-old
+	read-only
+	root=/dev/hda1
+	password=thisisapassword
+	restricted</pre>
+</blockquote>
+<p>The above example will prevent attackers from messing with the
+&quot;linux&quot; and &quot;linux-old&quot; image, however if
+they need to boot the old kernel (because a driver is broken, or
+SMP support doesn&#146;t work quite right) then they will not
+need the password to do so.</p>
+<p>Depending on the level of security you want you can either
+restrict and password protect all of LILO, or just the individual
+images. In any event if you are deploying workstations or servers
+you should use one to prevent users from breaking into systems in
+less than 10 seconds. While things like sulogin will prevent a
+user from getting a root prompt if they enter single user mode
+the attacker can always use &quot;init=/bin/sh&quot;.</p>
+<p>One minor security measure you can take to secure the
+lilo.conf file is to set it immutable, using the
+&#147;chattr&#148; command. To set the file immutable simply run
+the following command as root:</p>
+<blockquote>
+<pre><strong>chattr +i /sbin/lilo.conf</strong></pre>
+</blockquote>
+<p>and this will prevent any changes (accidental or otherwise) to
+the lilo.conf file. If you wish to modify the lilo.conf file you
+will need to unset the immutable flag run the following command
+as root:</p>
+<blockquote>
+<pre><strong>chattr -i /sbin/lilo.conf</strong></pre>
+</blockquote>
+<p>only the root user has access to the immutable flag.</p>
+<p>&nbsp;</p>
+<h3>Grub security</h3>
+<p>Grub is the default boot loader in Debian, Mandrake and
+possibly Red Hat 7.2. More on this to come.</p>
+<p>&nbsp;</p>
+<h3>Rebooting the system</h3>
+<p>If possible you should make rebooting the system more
+difficult, by default almost all Linux distributions have
+ctrl-alt-del enabled so that it reboots the machines. However,
+unlike Windows, this is not necessary. In Linux you can easily
+control the behavior of ctrl-alt-del, simply by editing the
+/etc/inittab file:</p>
+<pre>ca::ctrlaltdel:/sbin/shutdown -t3 -r now</pre>
+<p>You may wish to disable it entirely (simply comment it out
+with a #) or modify the command issued. Minimally you can create
+a bash script such as:</p>
+<blockquote>
+<pre>#!/bin/bash
+#
+# This script emails a message to root and then shuts 
+# down the system after a 5 second delay
+#
+/bin/date | /bin/mail &#150;s &quot;ctrl-alt-del used&quot; root
+/bin/sleep 5s
+/sbin/shutdown -t3 -r now</pre>
+</blockquote>
+<p>&nbsp;</p>
+<p>Now every time someone hits ctrl-alt-del you will have an
+email message in root&#146;s account logging it. You can also
+send that email to another system (i.e. to <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1d6f7272695d78657c706d717833726f7a">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>). If
+you do this you may wish to introduce a small delay between the
+mail command and the shutdown command to ensure the email gets
+out before the mail system is turned off. Of course an attacker
+can always hit the reset switch, power button, unplug the system,
+or trip the breakers for an entire floor of computers. If the
+system is in a locked cabinet however this is quite a bit more
+conspicuous then simply using a three finger salute
+(ctrl-alt-del) to reboot the system.</p>
+<p>&nbsp;</p>
+<h2><a name="Summary">Summary</a></h2>
+<p>An attacker with physical access to the console, or worse yet
+the hardware itself has many potential avenues of attack they can
+pursue. Worse yet if their goal is to simply deny use of service,
+or damage the software and hardware doing so is trivial. Flipping
+the power off and on during the boot process will often result in
+drive corruption, or they can simply pour a glass of water into
+the power supply. Locking servers up in secure rooms is critical,
+a competitor can easily afford to pay a janitor several thousand
+dollars to turn a server off, and pour pop into the power supply,
+resulting in a dead server when staff turns it back on.
+Workstations are typically more vulnerable as they are in
+accessible areas, but hopefully they are interchangeable with
+another workstation, with all data being stored on servers. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 5/1/2002</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#42293730360231272b24302b27266c2d3025"><span class="__cf_email__" data-cfemail="ddb6a8afa99daeb8b4bbafb4b8b9f3b2afba">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

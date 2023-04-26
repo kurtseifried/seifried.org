@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	
+	>
+<channel>
+	<title>Comments on: Python Performance Part 1</title>
+	<atom:link href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org/2010/05/31/python-performance-part-1/</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Sun, 09 Oct 2016 20:01:28 +0000</lastBuildDate>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+	<item>
+		<title>By: Python Performance &#8211; work in progress</title>
+		<link>http://kurt.seifried.org/2010/05/31/python-performance-part-1/#comment-4693</link>
+		<dc:creator><![CDATA[Python Performance &#8211; work in progress]]></dc:creator>
+		<pubDate>Thu, 07 Apr 2016 20:01:34 +0000</pubDate>
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=55#comment-4693</guid>
+		<description><![CDATA[[&#8230;] I recently ran into some performance issues while testing a python program that scans multiple logs simultaneously. While search for the culprit(s) of the bad performance, I stumbled upon a blog series about python performance. [&#8230;]]]></description>
+		<content:encoded><![CDATA[<p>[&#8230;] I recently ran into some performance issues while testing a python program that scans multiple logs simultaneously. While search for the culprit(s) of the bad performance, I stumbled upon a blog series about python performance. [&#8230;]</p>
+]]></content:encoded>
+	</item>
+	<item>
+		<title>By: Alexey Lavrenuke (@Direvius)</title>
+		<link>http://kurt.seifried.org/2010/05/31/python-performance-part-1/#comment-640</link>
+		<dc:creator><![CDATA[Alexey Lavrenuke (@Direvius)]]></dc:creator>
+		<pubDate>Mon, 16 Sep 2013 10:28:30 +0000</pubDate>
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=55#comment-640</guid>
+		<description><![CDATA[&quot;Implementing queues from scratch in other languages such as C or Java is an incredibly complex task&quot; -- why implement a queue from scratch? BlockingDeque and BlockingQueue solve the problem. And they are in the standard Java library. And GIL is not an advantage at all.]]></description>
+		<content:encoded><![CDATA[<p>&#8220;Implementing queues from scratch in other languages such as C or Java is an incredibly complex task&#8221; &#8212; why implement a queue from scratch? BlockingDeque and BlockingQueue solve the problem. And they are in the standard Java library. And GIL is not an advantage at all.</p>
+]]></content:encoded>
+	</item>
+	<item>
+		<title>By: Lens Hood</title>
+		<link>http://kurt.seifried.org/2010/05/31/python-performance-part-1/#comment-182</link>
+		<dc:creator><![CDATA[Lens Hood]]></dc:creator>
+		<pubDate>Fri, 28 Jan 2011 07:07:50 +0000</pubDate>
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=55#comment-182</guid>
+		<description><![CDATA[:*: I am really thankful to this topic because it really gives great information &quot;-`]]></description>
+		<content:encoded><![CDATA[<p>:*: I am really thankful to this topic because it really gives great information &#8220;-`</p>
+]]></content:encoded>
+	</item>
+	<item>
+		<title>By: kurtseifried</title>
+		<link>http://kurt.seifried.org/2010/05/31/python-performance-part-1/#comment-45</link>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+		<pubDate>Tue, 01 Jun 2010 20:20:35 +0000</pubDate>
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=55#comment-45</guid>
+		<description><![CDATA[Yes, the point was to specifically show that you need to somehow keep the main thread running (if it exits, everything gets killed).]]></description>
+		<content:encoded><![CDATA[<p>Yes, the point was to specifically show that you need to somehow keep the main thread running (if it exits, everything gets killed).</p>
+]]></content:encoded>
+	</item>
+	<item>
+		<title>By: s7v7nislands</title>
+		<link>http://kurt.seifried.org/2010/05/31/python-performance-part-1/#comment-44</link>
+		<dc:creator><![CDATA[s7v7nislands]]></dc:creator>
+		<pubDate>Tue, 01 Jun 2010 09:17:52 +0000</pubDate>
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=55#comment-44</guid>
+		<description><![CDATA[I test the no join version using python 2.6.5 in gentoo, It just like join version.
+
+in python doc:
+The entire Python program exits when no alive non-daemon threads are left.
+
+so you need calll t.setDaemon(True) before t.start(), the no join version will exit like you say.
+
+sorry for poor english.]]></description>
+		<content:encoded><![CDATA[<p>I test the no join version using python 2.6.5 in gentoo, It just like join version.</p>
+<p>in python doc:<br />
+The entire Python program exits when no alive non-daemon threads are left.</p>
+<p>so you need calll t.setDaemon(True) before t.start(), the no join version will exit like you say.</p>
+<p>sorry for poor english.</p>
+]]></content:encoded>
+	</item>
+</channel>
+</rss>

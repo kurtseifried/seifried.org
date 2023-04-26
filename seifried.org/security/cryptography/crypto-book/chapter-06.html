@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 6 - Which cryptographic software to use?</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 6 - Which cryptographic software to use?</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#95fee0e7e1d5e6f0fcf3e7fcf0f1bbfae7f2"><span class="__cf_email__" data-cfemail="b3d8c6c1c7f3c0d6dad5c1dad6d79ddcc1d4">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<p>So now that you want to keep your secrets secret, and be able
+to prove to others that you actually sent that message, where do
+you get the software to actually do it? Clicking on the package
+name will take you to that package in appendix A (which tells you
+where and how to get it). Click on the keyword &quot;Chapter
+XX&quot; and that will take you to the chapter where the subject
+is covered. If there is an operating system I missed that I get
+sufficient requests for I will add it in (for example VMS), and
+if there is a product I have not included that is worthwhile
+please tell me. </p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top" rowspan="2" width="12%">OS / Task</td>
+<td valign="top" rowspan="2" width="12%">Email Encryption</td>
+<td valign="top" rowspan="2" width="12%">File Encryption</td>
+<td valign="top" rowspan="2" width="12%">Drive Encryption</td>
+<td valign="top" colspan="2" width="13%">Network
+Encryption</td>
+<td valign="top" rowspan="2" width="13%">Encrypted WWW
+browsers</td>
+<td valign="top" rowspan="2" width="13%">Encrypted email
+retrieval</td>
+</tr>
+<tr>
+<td valign="top" width="12%">IPSec</td>
+<td valign="top" width="12%">Other</td>
+</tr>
+<tr>
+<td valign="top" width="12%">Windows 95/98</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#INFOSEC Products">INFOSEC Products</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#BestCrypt">BestCrypt</a>, <a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#Scramdisk">Scramdisk</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#SafeNet-Soft-PK">SafeNet/Soft-PK</a>,
+<a href="appendix-a.html#F-Secure-VPN+">F-Secure VPN+</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#F-Secure-SSH-Client">F-Secure SSH</a>,
+<a href="appendix-a.html#OpenSSH">OpenSSH</a>, <a href="appendix-a.html#NSH">NSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a>, <a href="appendix-a.html#Opera-browser">Opera</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">NT 4.0 Wkstn</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#INFOSEC Products">INFOSEC Products</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#BestCrypt">BestCrypt</a>, <a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#Scramdisk">Scramdisk</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#SafeNet-Soft-PK">SafeNet/Soft-PK</a>,
+<a href="appendix-a.html#F-Secure-VPN+">F-Secure VPN+</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#F-Secure-SSH-Client">F-Secure SSH</a>,
+<a href="appendix-a.html#OpenSSH">OpenSSH</a>, <a href="appendix-a.html#NSH">NSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a>, <a href="appendix-a.html#Opera-browser">Opera</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">NT 4.0 Server</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#INFOSEC Products">INFOSEC Products</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#BestCrypt">BestCrypt</a>, <a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#Scramdisk">Scramdisk</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#SafeNet-Soft-PK">SafeNet/Soft-PK</a>,
+<a href="appendix-a.html#F-Secure-VPN+">F-Secure VPN+</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#F-Secure-SSH-Client">F-Secure SSH</a>,
+<a href="appendix-a.html#OpenSSH">OpenSSH</a>, <a href="appendix-a.html#NSH">NSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a>, <a href="appendix-a.html#Opera-browser">Opera</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">Windows 2000</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#BestCrypt">BestCrypt</a>, <a href="appendix-a.html#PGP-International">PGP</a></td>
+<td valign="top" width="13%">Built in, <a href="appendix-a.html#PGP-International">PGP</a></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a>, <a href="appendix-a.html#Opera-browser">Opera</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">Linux</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#BestCrypt">BestCrypt</a>, <a href="appendix-a.html#PPDD">PPDD</a></td>
+<td valign="top" width="13%">Freeswan</td>
+<td valign="top" width="13%"><a href="appendix-a.html#OpenSSH">OpenSSH</a>, <a href="appendix-a.html#NSH">NSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">OpenBSD</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%">Built in swap partition
+encryption</td>
+<td valign="top" width="13%">Built in (has photuris in
+addition to pluto)</td>
+<td valign="top" width="13%"><a href="appendix-a.html#OpenSSH">OpenSSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">NetBSD</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="13%">KAME</td>
+<td valign="top" width="13%"><a href="appendix-a.html#OpenSSH">OpenSSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">FreeBSD</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="13%">KAME</td>
+<td valign="top" width="13%"><a href="appendix-a.html#OpenSSH">OpenSSH</a>, <a href="appendix-a.html#NSH">NSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">Solaris</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#GnuPG">GnuPG</a></td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="13%">Solaris SunScreen</td>
+<td valign="top" width="13%"><a href="appendix-a.html#OpenSSH">OpenSSH</a>, <a href="appendix-a.html#NSH">NSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">MacOS 9.x</td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a>, <a href="appendix-a.html#VeriSign-Digital-ID">Verisign
+Digital ID</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a></td>
+<td valign="top" width="12%"><a href="appendix-a.html#PGP-International">PGP</a></td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%"><a href="appendix-a.html#F-Secure-SSH-Client">F-Secure SSH</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Internet-Explorer">MSIE</a>, <a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+<td valign="top" width="13%"><a href="appendix-a.html#Netscape-browser">Netscape</a></td>
+</tr>
+<tr>
+<td valign="top" width="12%">MacOS 10.x</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="12%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+<td valign="top" width="13%">&nbsp;</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-05.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-07.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

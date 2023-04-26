@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Firewalling in Linux</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Firewalling </h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#3d56484f497d4e58545b4f54585913524f5a"><span class="__cf_email__" data-cfemail="a7ccd2d5d3e7d4c2cec1d5cec2c389c8d5c0">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Firewalling is the practice of filtering network traffic,
+typically at the point where your network connects to another
+(e.g. the Internet, a customers LAN, etc.) network, that may be
+untrusted (in the case of the Internet) or perhaps even trusted
+(another floor of your building). Like firewalls in a large
+building, a network firewall can prevent and even block the
+spread of an attack if one segment is compromised successfully,
+like their namesake firewalls can stop your network from being
+further compromised.&nbsp;There is a good FAQ on Internet
+firewalls at: <a href="http://www.interhack.net/pubs/fwfaq/">http://www.interhack.net/pubs/fwfaq/</a>.
+A list of port numbers and what they are is available <a href="http://seifried.org/security/ports/">here at seifried.org</a>.</p>
+<p>&nbsp;</p>
+<h2>Firewall software for Linux</h2>
+<p>Linux has gone through a series of firewalls. The most recent
+is IPTables (sometimes referred to as NETFILTER), preceding that
+was ipchains, and preceding this was ipfwadm, as well there are a
+number of other firewalls such as IPF and SINUS firewall (some of
+which only work on 2.0 and 2.2 series kernels so are largely
+obsolete). I would recommend using a 2.4 kernel with IPTables if
+possible since it offers stateful packet inspection, which makes
+firewalling protocols such as DNS and FTP properly a lot easier.
+Linux also supports IPMASQ (IP Masquerading) as part of it's
+firewall capabilities, an advanced form of NAT (Network Address
+Translation). IPMASQ allows you to hook up a network of computers
+to the Internet but proxy their connections at the IP level. Thus
+all traffic appears to be coming and going to one machine (the
+Linux IPMASQ box) which affords a high degree of protection to
+the internal network. As an added bonus the clients on the
+internal network require NO proxy configuration; as long as the
+Linux IPMASQ server is configured correctly, and the clients use
+it as their default gateway, things will work quite well.</p>
+<p>Both ipchains and ipfwadm provide the following basic
+capabilities:</p>
+<ul type="disc">
+<li>blocking/passing of data based on source/destination IP
+address and port</li>
+<li>masquerading of connections based on source/destination
+IP address and port</li>
+</ul>
+<p>In addition to which ipchains supports:</p>
+<ul type="disc">
+<li>port forwarding</li>
+<li>creation of chains, for more intricate rules and
+conditions, speedier rule parsing and easier management</li>
+<li>quality of service (QOS) routing, useful on low speed
+connections or otherwise saturated connections</li>
+<li>specification of IP/port/interface as well as inverse
+specification (using the !, i.e. &quot;everything
+but&quot;)</li>
+</ul>
+<p>The Firewall-HOWTO and &quot;man &lt;command&gt;&quot;
+(ipchains, ipfwadm or IPTables) page both cover in great detail
+the mechanics for setting up rules, but don't really cover the
+strategy for firewalling safely. Your first basic choice (well
+actually it's not so basic) to make is whether to go with default
+deny or default allow policies, followed by which services and
+hosts you wish to allow and block.</p>
+<p>When deciding policy you should ideally choose a policy that
+will default to denying everything unless specifically allowed
+through (that is if there is a failure it will hopefully be
+minimized via default policies) or a policy that allows
+everything and blocks certain services/hosts. I typically use a
+policy of default denial as it can accommodate mistakes and
+changes more safely then a policy that defaults to allowing data
+through.&nbsp;</p>
+<p>Case in point, you have a server secured via firewalling,
+currently running Apache, you install WU-FTPD on it for internal
+use (so people can upload files) at 3 am, you forget to change
+the firewall rules. If you have chosen a policy of default
+allowal, anyone on the Internet can access the ftp server, and
+silly you, you installed an old version which allowed someone to
+compromise the machine. If on the other hand you go with a policy
+of default denial, they would not have access to the ftp server,
+and neither would your users, but you would find out quite
+quickly. Annoyed users are much easier to appease then fixing a
+network that has been compromised.</p>
+<p>&nbsp;</p>
+<h2><a href="firewalling-concepts.html">Firewall concepts</a></h2>
+<p>Some of the problems with firewalling and what you can do
+ensure they don't affect you to much. </p>
+<p>&nbsp;</p>
+<h2><a href="iptables.html">IPTables</a></h2>
+<p>Firewalling for Linux 2.4 and 2.5. Provides stateful filtering
+unlike IPChains and IPFWADM. Combined with Linux advanced routing
+you can do many interesting and several downright bizarre things.
+</p>
+<p>&nbsp;</p>
+<h2><a href="ipchains.html">IPChains</a></h2>
+<p>Firewalling for Linux 2.2 and present in 2.4 for backwards
+compatibility as well. Does not provide stateful filtering, but
+provides chains, making it easier to manage then ipfwadm.</p>
+<p>&nbsp;</p>
+<h2><a href="ipfwadm.html">IPFWADM</a></h2>
+<p>Firewalling for Linux 2.0, no longer present. Not recommended.
+</p>
+<p>&nbsp;</p>
+<h2>Firewall piercing</h2>
+<p>Sometimes you will be stuck behind a firewall that is not
+properly set up, or otherwise stopping you from accessing data
+you need to. Other times users will simply want to climb over any
+walls you put on the network, and the best way to defend is to
+understand the attack. There is actually a mini-HOWTO on this; <a href="http://www.linuxdoc.org/HOWTO/mini/Firewall-Piercing.html">http://www.linuxdoc.org/HOWTO/mini/Firewall-Piercing.html</a>.
+In addition to this is an add-on for the IP Masquerading code
+that allows certain types of VPN's through, you can get it at: <a href="ftp://ftp.rubyriver.com/pub/jhardin/masquerade/ip_masq_vpn.html">ftp://ftp.rubyriver.com/pub/jhardin/masquerade/ip_masq_vpn.html</a>.
+</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 27/9/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#7d16080f093d0e18141b0f14181953120f1a"><span class="__cf_email__" data-cfemail="c1aab4b3b581b2a4a8a7b3a8a4a5efaeb3a6">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

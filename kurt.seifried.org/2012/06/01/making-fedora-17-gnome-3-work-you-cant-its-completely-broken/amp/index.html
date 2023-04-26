@@ -1,0 +1,102 @@
+<!doctype html>
+<html amp lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+ 
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely broken"/>
+<meta property="og:url" content="http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/"/>
+<meta property="og:description" content="Update (June 6, 2012): Gnome 3 is actually a LOT more broken than I previously thought. I have since found more problems that basically make it near impossible to configure sanely, if at all. So to…"/>
+<meta property="article:published_time" content="2012-06-02T04:49:32+00:00"/>
+<meta property="article:modified_time" content="2013-06-18T02:32:00+00:00"/>
+<meta property="og:site_name" content="Kurt Seifried"/>
+<meta property="og:image" content="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:site" content="@wordpressdotcom"/>
+<meta name="twitter:image" content="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=240"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom"/>
+<title>Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely broken &#8211; Kurt Seifried</title>
+<link rel="canonical" href="http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/"/>
+<script src="https://cdn.ampproject.org/v0.js" async></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:400,400italic,700,700italic">
+<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"BlogPosting","mainEntityOfPage":"http:\/\/kurt.seifried.org\/2012\/06\/01\/making-fedora-17-gnome-3-work-you-cant-its-completely-broken\/","publisher":{"@type":"Organization","name":"Kurt Seifried","logo":{"@type":"ImageObject","url":"https:\/\/s2.wp.com\/i\/favicons\/apple-touch-icon-60x60.png","width":60,"height":60}},"headline":"Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely broken","datePublished":"2012-06-01T22:49:32+00:00","dateModified":"2013-06-17T20:32:00+00:00","author":{"@type":"Person","name":"kurtseifried"},"image":{"@type":"ImageObject","url":"https:\/\/kurtseifried.files.wordpress.com\/2012\/06\/tint2-autostart.png","width":450,"height":360}}</script>
+<style amp-custom>.alignright{float:right;}.alignleft{float:left;}.aligncenter{display:block;margin-left:auto;margin-right:auto;}.amp-wp-enforced-sizes{max-width:100%;margin:0 auto;}.amp-wp-unknown-size img{object-fit:contain;}.amp-wp-content,.amp-wp-title-bar div{margin:0 auto;max-width:450px;}html{background:#0a89c0;}body{background:#fff;color:#353535;font-family:'Merriweather','Times New Roman',Times,Serif;font-weight:300;line-height:1.75em;}p,ol,ul,figure{margin:0 0 1em;padding:0;}a,a:visited{color:#0a89c0;}a:hover,a:active,a:focus{color:#353535;}blockquote{color:#353535;background:rgba(127,127,127,.125);border-left:2px solid #0a89c0;margin:8px 0 24px 0;padding:16px;}blockquote p:last-child{margin-bottom:0;}.amp-wp-meta,.amp-wp-header div,.amp-wp-title,.wp-caption-text,.amp-wp-tax-category,.amp-wp-tax-tag,.amp-wp-comments-link,.amp-wp-footer p,.back-to-top{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen-Sans","Ubuntu","Cantarell","Helvetica Neue",sans-serif;}.amp-wp-header{background-color:#0a89c0;}.amp-wp-header div{color:#fff;font-size:1em;font-weight:400;margin:0 auto;max-width:calc(840px - 32px);padding:.875em 16px;position:relative;}.amp-wp-header a{color:#fff;text-decoration:none;}.amp-wp-header .amp-wp-site-icon{background-color:#fff;border:1px solid #fff;border-radius:50%;position:absolute;right:18px;top:10px;}.amp-wp-article{color:#353535;font-weight:400;margin:1.5em auto;max-width:840px;overflow-wrap:break-word;word-wrap:break-word;}.amp-wp-article-header{align-items:center;align-content:stretch;display:flex;flex-wrap:wrap;justify-content:space-between;margin:1.5em 16px 1.5em;}.amp-wp-title{color:#353535;display:block;flex:1 0 100%;font-weight:900;margin:0 0 .625em;width:100%;}.amp-wp-meta{color:#696969;display:inline-block;flex:2 1 50%;font-size:.875em;line-height:1.5em;margin:0;padding:0;}.amp-wp-article-header .amp-wp-meta:last-of-type{text-align:right;}.amp-wp-article-header .amp-wp-meta:first-of-type{text-align:left;}.amp-wp-byline amp-img,.amp-wp-byline .amp-wp-author{display:inline-block;vertical-align:middle;}.amp-wp-byline amp-img{border:1px solid #0a89c0;border-radius:50%;position:relative;margin-right:6px;}.amp-wp-posted-on{text-align:right;}.amp-wp-article-featured-image{margin:0 0 1em;}.amp-wp-article-featured-image amp-img{margin:0 auto;}.amp-wp-article-featured-image.wp-caption .wp-caption-text{margin:0 18px;}.amp-wp-article-content{margin:0 16px;}.amp-wp-article-content ul,.amp-wp-article-content ol{margin-left:1em;}.amp-wp-article-content amp-img{margin:0 auto;}.amp-wp-article-content amp-img.alignright{margin:0 0 1em 16px;}.amp-wp-article-content amp-img.alignleft{margin:0 16px 1em 0;}.wp-caption{padding:0;}.wp-caption.alignleft{margin-right:16px;}.wp-caption.alignright{margin-left:16px;}.wp-caption .wp-caption-text{border-bottom:1px solid #c2c2c2;color:#696969;font-size:.875em;line-height:1.5em;margin:0;padding:.66em 10px .75em;}amp-carousel{background:#c2c2c2;margin:0 -16px 1.5em;}amp-iframe,amp-youtube,amp-instagram,amp-vine{background:#c2c2c2;margin:0 -16px 1.5em;}.amp-wp-article-content amp-carousel amp-img{border:none;}amp-carousel>amp-img>img{object-fit:contain;}.amp-wp-iframe-placeholder{background:#c2c2c2 url(http://s2.wp.com/wp-content/plugins/amp/assets/images/placeholder-icon.png) no-repeat center 40%;background-size:48px 48px;min-height:48px;}.amp-wp-article-footer .amp-wp-meta{display:block;}.amp-wp-tax-category,.amp-wp-tax-tag{color:#696969;font-size:.875em;line-height:1.5em;margin:1.5em 16px;}.amp-wp-comments-link{color:#696969;font-size:.875em;line-height:1.5em;text-align:center;margin:2.25em 0 1.5em;}.amp-wp-comments-link a{border-style:solid;border-color:#c2c2c2;border-width:1px 1px 2px;border-radius:4px;background-color:transparent;color:#0a89c0;cursor:pointer;display:block;font-size:14px;font-weight:600;line-height:18px;margin:0 auto;max-width:200px;padding:11px 16px;text-decoration:none;width:50%;-webkit-transition:background-color 0.2s ease;transition:background-color 0.2s ease;}.amp-wp-footer{border-top:1px solid #c2c2c2;margin:calc(1.5em - 1px) 0 0;}.amp-wp-footer div{margin:0 auto;max-width:calc(840px - 32px);padding:1.25em 16px 1.25em;position:relative;}.amp-wp-footer h2{font-size:1em;line-height:1.375em;margin:0 0 .5em;}.amp-wp-footer p{color:#696969;font-size:.8em;line-height:1.5em;margin:0 85px 0 0;}.amp-wp-footer a{text-decoration:none;}.back-to-top{bottom:1.275em;font-size:.8em;font-weight:600;line-height:2em;position:absolute;right:16px;}.amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c{padding-left:30px;}</style>
+</head>
+<body class="">
+<header id="#top" class="amp-wp-header">
+<div>
+<a href="http://kurt.seifried.org">
+Kurt Seifried </a>
+</div>
+</header>
+<article class="amp-wp-article">
+<header class="amp-wp-article-header">
+<h1 class="amp-wp-title">Making Fedora 17 + Gnome 3 work &#8211; you can&#8217;t, it&#8217;s completely broken</h1>
+<div class="amp-wp-meta amp-wp-byline">
+<amp-img src="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=24&#038;d=identicon&#038;r=g" width="24" height="24" layout="fixed"></amp-img>
+<span class="amp-wp-author author vcard">kurtseifried</span>
+</div>
+<div class="amp-wp-meta amp-wp-posted-on">
+<time datetime="2012-06-01T22:49:32+00:00">
+5 years ago </time>
+</div>
+</header>
+<div class="amp-wp-article-content">
+<h2>Update (June 6, 2012): Gnome 3 is actually a LOT more broken than I previously thought. I have since found more problems that basically make it near impossible to configure sanely, if at all.</h2>
+<p>So to put it bluntly the Gnome 3 changes suck if you use more than one application at a time and especially if you use more than one monitor as well. Having to move the mouse over to the top left constantly to show windows/applications so you can bring another window to the front or launch an application. I typically have 5-10 (sometimes 20) xterms open (most SSH’ed in to remote hosts), at least two web browser (Firefox and Chrome, more if I have a lot of tabs open so I can actually read the titles on the tabs, a not uncommon occurrence), my mail client, and my IRC client at a bare minimum.</p>
+<p>In other words the Fedora 17 + Gnome 3 defaults completely suck for me (and I suspect many others).</p>
+<h2>Step 1) getting my minimize and maximize buttons back:</h2>
+<p>You’ll need the UI tweak tool:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">yum install gnome-tweak-tool</pre>
+<p>and then run it and go to “Shell” and then pick the “Arrangement of buttons on the titlebar” and select “All”:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png"><amp-img class="aligncenter size-full wp-image-195 amp-wp-enforced-sizes" alt="" src="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=450&amp;h=359" width="450" height="359" srcset="http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=450&amp;h=359 450w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=150&amp;h=120 150w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png?w=300&amp;h=240 300w, http://kurtseifried.files.wordpress.com/2012/06/gnome-tweak-tool-min-max-close.png 642w" sizes="(min-width: 450px) 450px, 100vw"></amp-img></a></p>
+<p>which will put them on the right hand side ala Windows / Gnome 2</p>
+<h2>Step 2) getting a taskbar</h2>
+<p>I like the taskbar, most of us have been using the taskbar since Win95, and in my case since OS/2 (yeah, that was an interesting dead end OS), and most versions of Linux copied it early on because, well, it works quite well.</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">yum install tint2</pre>
+<p>and then have it autostart, run the gnome-session-properties program:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">gnome-session-properties</pre>
+<p>and add it in:</p>
+<p><a href="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png"><amp-img class="aligncenter size-full wp-image-193 amp-wp-enforced-sizes" alt="" src="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=450&amp;h=360" width="450" height="360" srcset="http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=450&amp;h=360 450w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=150&amp;h=120 150w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png?w=300&amp;h=240 300w, http://kurtseifried.files.wordpress.com/2012/06/tint2-autostart.png 610w" sizes="(min-width: 450px) 450px, 100vw"></amp-img></a></p>
+<h2>Step 3) A dock bar for launching programs</h2>
+<p>Being able to launch applications quickly is kind of useful. A dock bar with icons is about as good as it gets.</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">yum install gnome-shell-extension-dock.noarch</pre>
+<p>and then .. I’m not sure, I logged out and back in and Gnome failed to load. Removing the dock extension appears to have addressed it. sigh. The good news is that Fedora 16 will be supported for another 6 months.</p>
+<h2>Added June 6, 2012:</h2>
+<h2>Step 4) Customizing icon launch properties</h2>
+<p>So I also need some of my icons to have customized command line options. Usually this is easy, you right click, and change the properties of the icon such as the “command” or “execute” line. For example if you want to launch the Google Chrome web browser with Kerberos 5 support you need something like:</p>
+<pre class="amp-wp-inline-b23396c58eeb6bcaa5afda2d06dc4f4c">google-chrome --auth-server-whitelist="*.example.com"</pre>
+<p>So doing this should be easy right, simply choose icon properties… hrmm.. that isn’t available. Just “New Window” and “Add to favorites”. Ok, maybe there is an application to do this, aha, “alacarte” which is “a graphical menu editor that lets you edit, add, and delete menu entries.” This should be perfect, just install it:</p>
+<p>yum install alacarte</p>
+<p>and run it. Nope, it’s broken “ImportError: No module named gmenu”. Now Debian has a package called “python-gmenu” which is “an implementation of the freedesktop menu specification for GNOME”, but there doesn’t appear to be such a package for Fedora.</p>
+<p>Worse, the alacarte program has been broken, since August of 2011: <a href="https://bugzilla.redhat.com/show_bug.cgi?id=734442">https://bugzilla.redhat.com/show_bug.cgi?id=734442</a> so I wouldn’t exactly hold my breath.</p>
+<p>So if you want to customize an icon to include command line options you’ll need to copy the icon file data into your home directory and edit it by hand, this is best described at <a href="http://superuser.com/questions/304271/commandline-options-in-gnome-3-launchers">http://superuser.com/questions/304271/commandline-options-in-gnome-3-launchers</a> and the short version is:</p>
+<p>copy the file from /usr/share/applications/ to ~/.local/share/applications/ and modify the “Exec=” line.</p>
+</div>
+<footer class="amp-wp-article-footer">
+<div class="amp-wp-meta amp-wp-tax-category">
+Categories: <a href="http://kurt.seifried.org/category/uncategorized/" rel="category tag">Uncategorized</a> </div>
+<div class="amp-wp-meta amp-wp-tax-tag">
+Tags: <a href="http://kurt.seifried.org/tag/gnome3/" rel="tag">gnome3</a>, <a href="http://kurt.seifried.org/tag/usability/" rel="tag">usability</a> </div>
+<div class="amp-wp-meta amp-wp-comments-link">
+<a href="http://kurt.seifried.org/2012/06/01/making-fedora-17-gnome-3-work-you-cant-its-completely-broken/#respond">
+Leave a Comment </a>
+</div>
+</footer>
+</article>
+<footer class="amp-wp-footer">
+<div>
+<h2>Kurt Seifried</h2>
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+</p>
+<a href="#top" class="back-to-top">Back to top</a>
+</div>
+</footer>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;host=kurt.seifried.org&#038;ref=DOCUMENT_REFERRER&#038;amp=1&#038;blog=86342&#038;v=wpcom&#038;tz=-7&#038;user_id=0&#038;post=191&#038;subd=kurtseifried"></amp-pixel>
+<amp-pixel src="https://pixel.wp.com/b.gif?rand=RANDOM&#038;v=wpcom-no-pv&#038;crypt=UE40eW5QN0p8M2Y%2FRE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlSTFFR3FyWV8vNWlURCVDWHdySjh8XVMzP1V%2BZlNZQS9uUHRpTSZuOEhqXTVCOUFDRGpkKzhLSWVuRmVbWF9mb2t2JTgmM2VlJixbflh0YytEQlBlRGR2T0JFNkdveUNrXz9rMlhybFs%2FWVtmYkxZZHUzOVosYS1ET1QsNGxYZU1nVGhqW0QvRWFWTEtqVC1KOXQ%2FVUI9SFgwajZS"></amp-pixel>
+</body>
+</html>

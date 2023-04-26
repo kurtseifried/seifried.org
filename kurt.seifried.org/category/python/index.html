@@ -1,0 +1,1042 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Python | Kurt Seifried</title>
+<link rel="pingback" href="http://kurt.seifried.org/xmlrpc.php"/>
+<script src='https://r-login.wordpress.com/remote-login.php?action=js&amp;host=kurt.seifried.org&amp;id=86342&amp;t=1480695501&amp;back=http%3A%2F%2Fkurt.seifried.org%2Fcategory%2Fpython%2F' type="text/javascript"></script>
+<script type="text/javascript">
+		/* <![CDATA[ */
+			if ( 'function' === typeof WPRemoteLogin ) {
+				document.cookie = "wordpress_test_cookie=test; path=/";
+				if ( document.cookie.match( /(;|^)\s*wordpress_test_cookie\=/ ) ) {
+					WPRemoteLogin();
+				}
+			}
+		/* ]]> */
+		</script>
+<link rel='dns-prefetch' href='//s2.wp.com'/>
+<link rel='dns-prefetch' href='//s0.wp.com'/>
+<link rel='dns-prefetch' href='//kurtseifried.wordpress.com'/>
+<link rel='dns-prefetch' href='//s1.wp.com'/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Feed" href="http://kurt.seifried.org/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Comments Feed" href="http://kurt.seifried.org/comments/feed/"/>
+<link rel="alternate" type="application/rss+xml" title="Kurt Seifried &raquo; Python Category Feed" href="http://kurt.seifried.org/category/python/feed/"/>
+<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1473172720h&ver=4.6.1-RC1-38499"}};
+			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">img.wp-smiley,img.emoji{display:inline!important;border:none!important;box-shadow:none!important;height:1em!important;width:1em!important;margin:0 .07em!important;vertical-align:-0.1em!important;background:none!important;padding:0!important;}</style>
+<link rel='stylesheet' id='all-css-0-1' href='https://s0.wp.com/_static/??-eJx9jUEOAiEMRS8kNphRVsazADYOA2UaCpl4e0HjSjOb5vfnvXzYWPk1V8wVqClO7RGyQAoRBRasbH1U7+/oRQ7wH/drwd4T2zoIwnuwmJA6tqcRX77WiHPf2p3ZuNPKOS4oovql0EjVuQ/9ep8auDmIzZXgI0h9Jhzgja56mrTRZ2NOywvlj2BK' type='text/css' media='all'/>
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='kubrick-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/kubrick/ie.css?m=1273203575h&#038;ver=4.6.1-RC1-38499' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJx9i8sKgCAQAH8oWwSjOkTfYmLLhrrig34/u0Rdus3ADBAELmQ45Ad6k3MHZxRNig0FfBXRVaTWoGXh2OhCHD4idqcp/a3Jbo6xIUKrXnpPq1+kGmalplGq4wKxyTcd' type='text/css' media='all'/>
+<link rel='stylesheet' id='print-css-3-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h' type='text/css' media='print'/>
+<link rel='stylesheet' id='all-css-4-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/actionbar/actionbar.css,/wp-content/themes/h4/global.css?m=1479929846j' type='text/css' media='all'/>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFzt0KwjAMBeAXsiv+Tb0Qn6WrcaQuaW1Shz69HeiFMBQCgZyPQ+yYDLIfyhnEhjq3AvnxXk2Qhf0FDGGfnUJDyB/sIyuwTpZihwOYIpBdX2+16BJnXIqiBCIVzaTfLyHfEca/LIAm568mg+Bzaj3Rcblp2+1qfdjtwws0V1vd'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://kurtseifried.wordpress.com/xmlrpc.php?rsd"/>
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"/>
+<meta name="generator" content="WordPress.com"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="icon" type="image/x-icon" href="https://s2.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48"/>
+<link rel="apple-touch-icon-precomposed" href="https://s0.wp.com/i/webclip.png"/>
+<link rel='openid.server' href='http://kurtseifried.wordpress.com/?openidserver=1'/>
+<link rel='openid.delegate' href='http://kurtseifried.wordpress.com/'/>
+<link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried"/>
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com"/>
+<style type='text/css'><!--
+body { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbgcolor.gif"); }
+#page { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickbg.gif") repeat-y top; border: none; }
+#header { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickheader.gif") no-repeat bottom center; }
+#footer { background: url("https://s0.wp.com/wp-content/themes/pub/kubrick/images/kubrickfooter.gif") no-repeat bottom; border: none;}
+#header { margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px; }
+#headerimg { margin: 7px 9px 0; height: 192px; width: 740px; }
+#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: ; }
+#headerimg h1 a, #headerimg .description { display:  }
+
+	--></style><meta name="application-name" content="Kurt Seifried"/><meta name="msapplication-window" content="width=device-width;height=device-height"/><meta name="msapplication-tooltip" content="Just another blog from just another guy (kurt@seifried.org)"/><meta name="msapplication-task" content="name=Subscribe;action-uri=http://kurt.seifried.org/feed/;icon-uri=https://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico"/><meta name="title" content="Posts about Python on Kurt Seifried"/>
+<meta name="description" content="Posts about Python written by kurtseifried"/>
+<style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body class="archive category category-python category-832 mp6 customizer-styles-applied highlander-enabled highlander-light">
+<div id="page">
+<div id="header">
+<div id="headerimg" onclick=" location.href='http://kurt.seifried.org';" style="cursor: pointer;">
+<h1><a href="http://kurt.seifried.org/">Kurt Seifried</a></h1>
+<div class="description">Just another blog from just another guy (<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="c3a8b6b1b783b0a6aaa5b1aaa6a7edacb1a4">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>)</div>
+</div>
+</div>
+<hr/>
+<div id="content" class="narrowcolumn">
+<h2 class="pagetitle">Archive for the &#8216;Python&#8217; Category</h2>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+<div class="post-66 post type-post status-publish format-standard hentry category-python tag-beanstalk tag-json tag-memcache tag-performance tag-pyton">
+<h3 id="post-66"><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/" rel="bookmark">Python Performance Part&nbsp;4</a></h3>
+<small>May 31, 2010</small>
+<div class="entry">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/">Python Performance Part 1</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/">Python Performance Part 2</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/">Python Performance Part 3</a><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/"><br/>
+</a></p>
+<p>In part one I covered a basic introduction to threads and the producer-consumer pattern. In part two I covered some (unfortunately common) pathological cases where threading in Python can make things much worse. In part three I covered how to profile and measure performance within your code and some strategies to address them. Finally I covered a more advanced producer-consumer pattern that uses a spinlocks and a locking hierarchy. Now in part four we&#8217;re going to explore how you can escape a single core using Python and distribute your application across multiple CPU&#8217;s and multiple systems. I&#8217;m also going to cover a few of the more common strategies and tools for distributing applications and work loads across multiple systems. I have a lot of ground to cover so I will be unable to go in depth with detailed code examples/etc., however the Python documentation includes excellent examples which I will reference.</p>
+<p><strong>Escaping the core – multiprocessing</strong></p>
+<p>So as you have probably learned by now the GIL giveth (easy threading) and the GIL taketh (you can only run threaded code on one CPU core). Oddly enough the Python developers were not too happy about this either, so in Python 2.6 they introduced the &#8220;multiprocessing&#8221; module [MULTIPROCESSING]. The multiprocessing module provides a very similar set of primitives as the &#8220;thread&#8221; and &#8220;threading&#8221; modules. You get a process class which allows you to spawn multiple processes, a queue class which allows you to create queues that can be accessed from multiple processes, pipes that allow for bi-directional and uni-directional communications, locking, and shared memory in the form of values and arrays. You also get a manager which allows you to control a server process and pools which allow you to create and control multiple processes. Using this you can extend the consumer-producer pattern to multiple processes running across multiple CPU cores on multiple systems.</p>
+<p>A quick note on subprocess[SUBPROCESS], this is primarily designed for executing external scripts and programs (e.g. ping, traceroute, whois, etc.) that are not written in Python. You can launch programs and scripts and talk to their stdin/stdout which is great for non python programs but extremely limited when compared to the multiprocessing module.</p>
+<p><strong>Inter-process communication</strong></p>
+<p>One major advantage of using the multiprocessing module is that inter-process communication mechanisms provided. You have several options; pipes (pipe()), locks (lock()), shared memory (Value() and Array()) and the server process (Manager()). The shared memory facilities provided by multiprocessing such as Value() and Array() are relatively fast since they are implemented as a shared memory structure, but of course by definition (shared memory space) they cannot be shared between processes running on different systems. If you want to share Python objects (such as variables, arrays, etc.) across processes running on separate servers you can use Manager() to create a server process that will hold and share the Python objects.</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="116"></col>
+<col width="148"></col>
+<col width="202"></col>
+<col width="155"></col>
+<tbody>
+<tr valign="TOP">
+<td width="116">Facility</td>
+<td width="148">Provides</td>
+<td width="202">Pros</td>
+<td width="155">Cons</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Lock()</td>
+<td width="148">locks</td>
+<td width="202">Provides locking for operations that are not thread or multiple process safe</td>
+<td width="155">Limited to single system</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Queue()</td>
+<td width="148">Work queues</td>
+<td width="202">Fast, good for sharing work</td>
+<td width="155">Limited to single system</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Pipe()</td>
+<td width="148">Bi-directional and uni-directional communication pipes</td>
+<td width="202">Simple, send() and recv(), you can pass pretty much anything through it (variables, arrays, etc.)</td>
+<td width="155">Not completely safe, each end of pipe must be accessed one at a time only</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Shared memory</td>
+<td width="148">Value() and Array()</td>
+<td width="202">Very fast</td>
+<td width="155">Limited to single system, limited to standard values and arrays (no other Python objects)</td>
+</tr>
+<tr valign="TOP">
+<td width="116">Manager()</td>
+<td width="148">list, dict, Namespace, Lock, RLock, Semaphore, BoundedSemaphore, Condition, Event, Queue, Value and Array</td>
+<td width="202">Very flexible, provides everything, works across multiple processes and systems</td>
+<td width="155">Slower than shared memory</td>
+</tr>
+</tbody>
+</table>
+<p>One of the more common patterns for designing communication capabilities into a program that uses multiple processes is to use a single control process which then has a bi-directional pipe to each worker processes allowing it to communicate with them. Now if you want to communicate across processes running on separate system you will need some external communications method such as xmlrpclib or asynchat (to name two possibilities). Like many open source projects one of the problems in Python is that you have numerous options that can lead to mental overload. My advice is that you list out what you need (i.e. do you need to pass the data through firewalls/etc, in which case something like xmlrpclib that can use HTTP as a transport may be a good idea) and go with the simplest option (which you may have to replace anyways).</p>
+<p><strong>Inter-process signals</strong></p>
+<p>Python provides a signal() module that gives you the ability to send signals, unfortunately there are some issues with handling signals in Python. You cannot intentionally block signals in Python, meaning that you can&#8217;t take a critical code section and tell it to ignore signals while it is running (ensuring that the code finishes executing) thus it is possible for critical code to only partially execute before yielding the GIL lock and another thread is run, which means you may need to think about transactions and methods ensure that partially completed tasks do not cause problems should another thread be executed. As well only the main thread can set a new signal handler, a common design pattern in Python is to have the main thread loop and handle signals while it spawns of child threads that do the actual work.</p>
+<p><strong>Pyro – Python Remote Objects</strong></p>
+<p>One disadvantage of using the Manager() module to provide communication between different systems is that it is somewhat limited. Although it provides a basic level of security (in the form of an authkey) it doesn&#8217;t appear to provide anything beyond that. Pyro[PYRO] supports SSL encrypted communications but most importantly it provides greater flexibility with objects and types and also includes some important capabilities like automatic reconnection in case a connection drops. Pyro also provides a name service so you can register objects and easily share them and an event service which is similar to queues but can be used for many to many communications, however it does not guarantee delivery of messages which can be a problem.</p>
+<p><strong>Beanstalkd message queue – sharing messages (and work)</strong></p>
+<p>Now one of my favorite pieces of software. One reason is that the beanstalkd [BEANSTALKD] server binary itself is around 59k. I like small and simple code since it generally has fewer bugs and other surprises. Beanstalkd provides a distributed work queue, you can put jobs in, take them out, bury them (they are essentially hidden until you pull them back out, a great way to put problematic jobs out of the way for a human to inspect later) and create multiple tubes, essentially unique queues (a single beanstalkd server can handle multiple related or unrelated queues). The major downside to beanstalkd is that it doesn&#8217;t provide any encryption of network traffic or authentication capabilities, so any client with access to a running instance of a beanstalkd server will have access to all the queues in that running instance. This can be gotten around by wrapping beanstalkd in SSL (using stunnel or a similar service) to secure communications and limiting access to beanstalkd queues based on either IP address or by requiring SSL client authentication. The beanstalkc [BEANSTALKC] Python client provides a very stable client for beanstalkd and also importantly has excellent documentation.</p>
+<p><strong>Formatting messages and work – pickle and JSON</strong></p>
+<p>So assuming you are not using the Python Value(), Array(), Pipe() or Manager() or something like Pyro (all of which support native Python objects) to communicate between processes you will need to format your data so that it can be passed around. If you need to pass an actual Python object such as a class (as opposed to a variable) then you will need to pickle() [PICKLE] it, which will serialize the object. Python pickle() supports several protocols for pickling objects, the first of which is text based (protocol 0) and is extremely useful if you need to pass an object over a text based protocol such as HTTP. The other two protocols are binary in nature.</p>
+<p>If however you merely need to pass data and variables around you can use JSON instead of pickling. I really, really like JSON [JSON] because the specification is simple (it fits on one page) and it is human readable (so debugging it is simple, you can print and read the messages directly). Two Python libraries for JSON are available (simplejson and pyson), and as of Python 2.6 the JSON encoder (called &#8220;json&#8221;) is included.</p>
+<p><strong>Caching – increase speed and decrease workload</strong></p>
+<p>Of course if you can do work in advance, or do work once and keep the answer for later use again you will be able to significantly speed up your application. The real trick to caching an answer or a result is to know what to cache, whether or not caching it will improve things (to make it worthwhile) and finally how to expire answers (assuming this needs to be done). For example if you display photos online and want to display a thumbnail image you can create it when the image is uploaded, meaning that when someone asks to view it the thumbnail will be available almost immediately, the downside being that you potentially store thumbnails that are never requested by anyone. Alternatively you can generate the thumbnail as needed and keep the thumbnail for later use, you run don&#8217;t store thumbnails that are never asked for, but it will take longer for the system to display the thumbnail the first time it is requested (since it must be generated). Either way you also need to decide how long to keep the thumbnail image for; forever, or do you expire it at some point? The answer to these types of questions varies hugely of course depending on your data, usage and what is important to you (latency? speed? storage? processing time?). A general rule of thumb is to cache data that is as finished as possible, e.g. rather than caching a database query you can cache the compiled result (such as a piece of a generated web page) to reduce processing time and latency. As for cache expiry you can use tricks such as checking to see if the source data has changed since you last used it, saving you the processing time if it&#8217;s still valid (but not the time needed to get the data). Another strategy is to expire on update, when new data comes in have it trigger an expiry of any cached data based on the old data it has replaced. It should also be noted that some services and servers have built-in caching, e.g. MySQL&#8217;s query cache can be used to cache query results.</p>
+<p><strong>Caching with memcache</strong></p>
+<p>If you need to cache objects then memcache [MEMCACHED] is (usually) the cache for you. It&#8217;s basically an object store that uses a unique key (text string) to locate the object. It keeps objects in memory and does not write them to disk which makes it very fast. One trick is to use some calculable value for the key such as a URL, username, etc. to make it easy to query the cache for an object (and if the object doesn&#8217;t exist or is stale you can then generate a new one). For most sites you can get away with using spare amounts of memory on various servers, although some sites with especially heavy usage will dedicate entire servers to memcached. To access memcached from Python you want python-memached [PYTHON MEMCACHED]. One interesting project that recently came to light is Cachepy which is a caching solution based on Google App Engine. [CACHEPY]</p>
+<p><strong>A note on MySQL</strong></p>
+<p>I can&#8217;t put it any more simply then this: use InnoDB rather than MyISAM most of the time. MyISAM is sometimes faster for reads, but for writes (INSERT/UPDATE/etc.) to a table it can be muchh slower since the entire table must be locked for a write. InnoDB uses row level locking so as long as different rows of data are being updated the writes can occur concurrently rather than sequentially which is a huge advantage.</p>
+<p><strong>A note on PostgreSQL</strong></p>
+<p>The VACUUM FULL command will lock your database table and basically make it perform slower than mud while the VACUUM FULL is running. In other words avoid VACUUM FULL and use AUTOVACUUM, VACUUM, CLUSTER, or a SELECT INTO to copy data to a new table or a TRUNCATE TABLE if you want to clear it out. These options are covered in the PostgreSQL wiki. [VACUUM FULL]</p>
+<p><strong>A note on Google App Engine</strong></p>
+<p>If you want to start playing with large scale Python applications you should definitely check out Google App Engine. [APPENGINE]</p>
+<p><strong>Shared nothing/Sharding and other (potentially complicated) scaling strategies</strong></p>
+<p>My final performance tip is to use shared nothing or sharded data architectures. If you need to do user authentication and allow users to update their account info (in other words you can&#8217;t outsource authentication to something like OpenID) than you will need to store this data somewhere (most likely within a database). So you have a single central database for all user accounts, well that doesn&#8217;t scale to well (especially if you end up with more than one location hosting servers). So you replicate the database, creating multiple slaves with copies of the master so at least servers can get good read performance. But you&#8217;re still stuck with a single master for write operations. So you end up using something like MySQL Cluster which supports multi-master replication (you can write to any of the masters), but you still need to be careful about race conditions.</p>
+<p>However there is a simpler method to spread out the read and write operations on the database. Using a fast hash function or even just a simple &#8220;algorithm&#8221; like all accounts starting with the letters &#8220;A&#8221; through &#8220;E&#8221; are on server 1, &#8220;F&#8221; through &#8220;J&#8221; are on server 2 and so on would allow you to split user accounts up into shards that can be handled by separate servers. Using a hash function is better, if done right you end up with accounts very evenly spread out across the servers (so if a whole bunch of people with accounts starting with the letter &#8220;A&#8221; join up it won&#8217;t mess things up). One such system that implemented this was the Cache Array Routing Protocol (CARP) [CARP], the idea being you could take a URL, hash it and determine which cache server would contain a copy of the data (and if the cache server didn&#8217;t have it then it would go fetch it). The advantage of this is that no communication with a central server (that tracks information location) or every single server (brute force method) is needed to determine which server hosts the information. One important note on sharding: few tools or services implicitly support it, and it can add significant complexity to your system, so use with caution (ideally only if absolutely necessary).</p>
+<p><strong>The future of Python performance &#8211; Unladen Swallow</strong></p>
+<p>So finally we come to the end, or rather the beginning of Python performance. As you may or may not know Google uses Python a lot internally (YouTube is mostly built using Python). Google appears to be in the situation where it is cheaper to re-architect and improve the language they are using rather than to rewrite all their existing code in some faster language. This is ultimately a VERY good thing for us Python users. So what is this &#8220;Unladen Swallow&#8221; [UNLADEN SWALLOW] and what does it do? From the FAQ:</p>
+<p>We want to make Python faster, but we also want to make it easy for large, well-established applications to switch to Unladen Swallow.</p>
+<p>1. Produce a version of Python at least 5x faster than CPython.</p>
+<p>2. Python application performance should be stable.</p>
+<p>3. Maintain source-level compatibility with CPython applications.</p>
+<p>4. Maintain source-level compatibility with CPython extension modules.</p>
+<p>5. We do not want to maintain a Python implementation forever; we view our work as a branch, not a fork.</p>
+<p>The largest aspects of this project are moving Python to a new JIT compiler and using the LLVM [LLVM]. The advantage of moving to the Low Level Virtual Machine (LLVM) is that it creates very fast code and any improvements made to the LLVM will result in improvements to Python. Additionally Unladen Swallow is looking at improving startup time (which can be slow due to imports) and speeding up regular expressions to name a few other aspects. Finally one of the bigger goals was to remove the GIL, the idea being that a single Python process with multiple threads would then be able to use multiple CPU cores with no hassle, but as it turns out this is more complicated than expected so I guess we may have to wait a while for this.</p>
+<p>Some more articles on performance:</p>
+<p><a href="http://wiki.python.org/moin/PythonSpeed/PerformanceTips">http://wiki.python.org/moin/PythonSpeed/PerformanceTips</a></p>
+<p><a href="http://www.kegel.com/c10k.html">http://www.kegel.com/c10k.html</a> &#8211; the ten thousand client connection problem</p>
+<p><a href="http://ajbrown.org/blog/2008/11/05/micro-optimize-your-time-not-your-code/">http://ajbrown.org/blog/2008/11/05/micro-optimize-your-time-not-your-code/</a></p>
+<p><a href="http://stackoverflow.com/questions/110259/python-memory-profiler">http://stackoverflow.com/questions/110259/python-memory-profiler</a> &#8211; Python memory profiler</p>
+<p><a href="http://dbshards.com/database-sharding-blog/">http://dbshards.com/database-sharding-blog/</a> &#8211; Sharding Blog</p>
+<p><a href="http://sites.google.com/site/io/building-scalable-web-applications-with-google-app-engine">http://sites.google.com/site/io/building-scalable-web-applications-with-google-app-engine</a> &#8211; Building scalable web applications with Google App Engine</p>
+<p><a href="http://highscalability.com/">http://highscalability.com/</a> &#8211; High Scalability blog</p>
+<p><a href="http://wiki.python.org/moin/ParallelProcessing">http://wiki.python.org/moin/ParallelProcessing</a> &#8211; Parallel Processing and Multiprocessing in Python</p>
+<p>[MULTIPROCESSING]</p>
+<p><a href="http://docs.python.org/library/multiprocessing.html">http://docs.python.org/library/multiprocessing.html</a></p>
+<p>[SUBPROCESS]</p>
+<p><a href="http://docs.python.org/library/subprocess.html">http://docs.python.org/library/subprocess.html</a></p>
+<p>[PYRO]</p>
+<p><a href="http://pyro.sourceforge.net/">http://pyro.sourceforge.net/</a></p>
+<p>[BEANSTALKD]</p>
+<p><a href="http://kr.github.com/beanstalkd/">http://kr.github.com/beanstalkd/</a></p>
+<p>[BEANSTALKC]</p>
+<p><a href="http://github.com/earl/beanstalkc">http://github.com/earl/beanstalkc</a></p>
+<p>[PICKLE]</p>
+<p><a href="http://docs.python.org/library/pickle.html">http://docs.python.org/library/pickle.html</a></p>
+<p>[JSON]</p>
+<p><a href="http://www.json.org/">http://www.json.org/</a></p>
+<p>[MEMCACHED]</p>
+<p><a href="http://memcached.org/">http://memcached.org/</a></p>
+<p>[PYTHON MEMCACHED]</p>
+<p><a href="http://www.tummy.com/Community/software/python-memcached/">http://www.tummy.com/Community/software/python-memcached/</a></p>
+<p>[CACHEPY]</p>
+<p><a href="http://appengine-cookbook.appspot.com/recipe/cachepy-faster-than-memcache-and-unlimited-quota/">http://appengine-cookbook.appspot.com/recipe/cachepy-faster-than-memcache-and-unlimited-quota/</a></p>
+<p>[VACUUM FULL]</p>
+<p><a href="http://wiki.postgresql.org/wiki/VACUUM_FULL">http://wiki.postgresql.org/wiki/VACUUM_FULL</a></p>
+<p>[APPENGINE]</p>
+<p><a href="http://code.google.com/appengine/">http://code.google.com/appengine/</a></p>
+<p>[CARP]</p>
+<p><a href="http://en.wikipedia.org/wiki/Cache_Array_Routing_Protocol">http://en.wikipedia.org/wiki/Cache_Array_Routing_Protocol</a></p>
+<p>[PYSHARDS]</p>
+<p><a href="http://code.google.com/p/pyshards/wiki/Pyshards">http://code.google.com/p/pyshards/wiki/Pyshards</a></p>
+<p>[UNLADEN SWALLOW]</p>
+<p><a href="http://code.google.com/p/unladen-swallow/">http://code.google.com/p/unladen-swallow/</a></p>
+<p>[LLVM]</p>
+<p><a href="http://llvm.org/">http://llvm.org/</a></p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/beanstalk/" rel="tag">beanstalk</a>, <a href="http://kurt.seifried.org/tag/json/" rel="tag">json</a>, <a href="http://kurt.seifried.org/tag/memcache/" rel="tag">memcache</a>, <a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/pyton/" rel="tag">pyton</a><br/> Posted in <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a> | <a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/#comments">2 Comments &#187;</a></p>
+</div>
+<div class="post-61 post type-post status-publish format-standard hentry category-python tag-performance tag-python-2">
+<h3 id="post-61"><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/" rel="bookmark">Python Performance Part&nbsp;3</a></h3>
+<small>May 31, 2010</small>
+<div class="entry">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/">Python Performance Part 1</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/">Python Performance Part 2</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/">Python Performance Part 4</a></p>
+<p>In part one I covered a basic introduction to threads and the producer-consumer pattern. In part two I covered the Global Interpreter Lock (GIL) and some of the more pathological behavior it can cause. Now we&#8217;re going to go over how to profile code and how to instrument code so you can measure the performance of it so you can know with some certainty if the code actually needs to be fixed (and how it can be fixed). Finally we&#8217;ll go over some significant ways in which we can improve our handling of the producer-consumer pattern that will be more efficient and reliable.</p>
+<p><strong>Profiling vs. Performance measurement</strong></p>
+<p>Profiling and performance measurement are closely related but there is a difference. Profiling will generally give you every a lot of detail: function returns and exception events and since Python supports deterministic profiling it will do so with an extremely high degree of accuracy. The output of Python profiling is staggering, every single detail, the number of calls (ncalls), total time (tottime), per call time (tottime divided by ncalls), cumulative time (including sub calls/etc. for a function, cumtime) and the filename and line number and function called (filename:lineno(function)). In other words everything (this is one advantage of using an interpreted language). For most of us profiling should be used once the code has been written (premature optimization and all that) and used a bit (testing or otherwise). Performance measurement tends to be coarse grained, for example adding hooks that record how long a database operation takes to return or how long it takes to generate a web page in total. As well you can insert performance measuring code into your application and use it to continuously monitor system state/health (i.e. average DB query time over the last 5 minutes, etc.) and alert you if a problem occurs which is something that profiling is not really suited for.</p>
+<p><strong>Profiling Python code</strong></p>
+<p>Python provides two main profilers: &#8220;profile&#8221; and &#8220;cProfile&#8221; [PROFILE](a third one, &#8220;hotshot&#8221; has been deprecated and may be removed in the next version of Python according to the documentation). &#8220;profile&#8221; and &#8220;cProfile&#8221; are essentially identical with respect to usage, however the &#8220;cPython&#8221; module (written in C) is much faster and won&#8217;t slow your code down significantly. The &#8220;profile&#8221; module will slow your code down significantly, but as it is written in Python it can easily be modified or extended should you need to. Because Python is an interpreted language the interpreter is active during code execution, you don&#8217;t need to add instrumented code as it is already present.</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7">
+<col width="664"/>
+<tbody>
+<tr>
+<td valign="TOP" width="664">A simple example of profiling</td>
+</tr>
+<tr>
+<td valign="TOP" width="664">
+<pre>&gt;&gt;&gt; def count():
+...     n = 100000
+...     while n &gt; 0:
+...             n -= 1
+...
+&gt;&gt;&gt; import cProfile
+&gt;&gt;&gt; cProfile.run('count()', 'countprof')
+&gt;&gt;&gt; import pstats
+&gt;&gt;&gt; p = pstats.Stats('countprof')
+&gt;&gt;&gt; print p
+&lt;pstats.Stats instance at 0x254fb48&gt;
+&gt;&gt;&gt; p.print_stats()
+Mon Jan  4 00:19:11 2010    countprof
+
+ 3 function calls in 0.012 CPU seconds
+
+ Random listing order was used
+
+ ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+ 1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+ 1    0.000    0.000    0.012    0.012 &lt;string&gt;:1(&lt;module&gt;)
+ 1    0.012    0.012    0.012    0.012 &lt;stdin&gt;:1(count)</pre>
+</td>
+</tr>
+</tbody>
+</table>
+<p>An excellent video covering this is available from Mike Fletcher [Mike C. Fletcher]</p>
+<p><span style="text-decoration:underline;"><a href="http://us.pycon.org/2009/conference/schedule/event/15/">http://us.pycon.org/2009/conference/schedule/event/15/</a></span></p>
+<p>What we can take away from this and other sources appears to be:</p>
+<ol>
+<li>You need to be able to properly measure performance before you profile code (luckily Python makes this trivial)</li>
+<li>Save your profiling results so you can compare things before and after (in other words did your optimization actually help)</li>
+<li>Check your algorithms; a stupid algorithm will always be slow</li>
+<li>Find function calls that are used often or are slow (and thus where you should start looking at first)</li>
+<li>Look for operations or results that can be pooled (i.e. using a single database query with a JOIN statement instead of multiple queries to get a collection of data)</li>
+<li>Look for operations that can be cached (keep your results around if you will use them again)</li>
+<li>Anytime you rely upon external code (especially opaque or closed source code) you are very much at the mercy of someone else</li>
+<li>Anytime you rely upon an external service (a database, reading or writing a file from the local system, getting a web page, etc.) you are very much at the mercy of someone else (in other words watch out for IO which may show up as lots of time spent sleeping)</li>
+<li>Only optimize one thing at a time unless you are incredibly brave</li>
+<li>Profiling threaded code can be problematic on multi-threaded or multiprocessor code</li>
+</ol>
+<p>Of course I could be wrong. One last note, you can convert all this information into nice dot graphs using Gprof2Dot [GPROF2DOT].</p>
+<p><strong>Using cProfile</strong></p>
+<p>Using cProfile is easy; you import it as a module and then run code using it as a wrapper:</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7">
+<col width="325"/>
+<col width="325"/>
+<tbody>
+<tr valign="TOP">
+<td width="325">
+<pre><span style="font-family:Courier New,monospace;"><span style="font-size:x-small;">import cProfile </span></span><span style="font-family:Courier New,monospace;"><span style="font-size:x-small;"><span style="font-family:Courier New,monospace;"><span style="font-size:x-small;">cProfile.run('foo()', 'foo_profile')</span></span></span></span></pre>
+<p>&nbsp;</td>
+<td width="325"></td>
+</tr>
+</tbody>
+</table>
+<p>This will execute the function foo() and output the data from the profile run to the file foo_profile. This is great if you just want to profile a specific class or function within your program. Alternatively if you want to profile the entire program you can use cProfile to execute the Python program in question and profile the entire thing:</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7">
+<col width="664"/>
+<tbody>
+<tr>
+<td valign="TOP" width="664">
+<pre># /usr/lib64/python2.6/cProfile.py -o base64-profile /usr/lib64/python2.6/base64.py /etc/resolv.conf
+# python
+
+&gt;&gt;&gt; import pstats
+&gt;&gt;&gt; p = pstats.Stats('base64-profile')
+&gt;&gt;&gt; p.print_stats()
+Tue Jan  5 02:37:04 2010    test-output.1
+
+ 282 function calls in 0.008 CPU seconds
+
+ Random listing order was used
+
+ ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+ 2    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/getopt.py:16(&lt;module&gt;)
+ 1    0.000    0.000    0.002    0.002 /usr/lib64/python2.6/base64.py:3(&lt;module&gt;)
+ 4    0.000    0.000    0.000    0.000 {method 'read' of 'file' objects}
+ 1    0.000    0.000    0.000    0.000 {open}
+ 3    0.000    0.000    0.000    0.000 {len}
+ 1    0.006    0.006    0.008    0.008 {execfile}
+ 256    0.000    0.000    0.000    0.000 {chr}
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/getopt.py:39(GetoptError)
+ 2    0.000    0.000    0.000    0.000 {binascii.b2a_base64}
+ 1    0.000    0.000    0.008    0.008 &lt;string&gt;:1(&lt;module&gt;)
+ 1    0.001    0.001    0.001    0.001 /usr/lib64/python2.6/base64.py:326(test)
+ 2    0.000    0.000    0.000    0.000 {method 'write' of 'file' objects}
+ 1    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}
+ 1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/base64.py:285(encode)
+ 1    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+ 1    0.000    0.000    0.000    0.000 {range}
+ 1    0.000    0.000    0.000    0.000 /usr/lib64/python2.6/getopt.py:52(getopt)
+
+&lt;pstats.Stats instance at 0x7fad1e6c1ab8&gt;</pre>
+</td>
+</tr>
+</tbody>
+</table>
+<p>As you can see I ran the file /etc/resolv.conf through the Python base64 encode/decode utility. The first obvious thing to jump out is heavy use of the &#8220;chr()&#8221; function. This function returns a string one character at a time but appears to be extremely efficient (virtually no CPU time was used). The only thing that really appears to have taken any time is the execfile() function which parses a file. As you can imagine a Python application of any real size will generate a lot of output. Use of cPython is covered in detail in <a href="http://docs.python.org/library/profile.html" rel="nofollow">http://docs.python.org/library/profile.html</a></p>
+<p><strong>Measuring Python code performance </strong></p>
+<p>There&#8217;s a couple of ways to measure Python code execution, the most accurate for small amounts is the timeit.Timer() function. You basically wrap your function in this and it reports how long things took to run, it can also takes a repeat command, so for operations that are relatively fast you can run them a few thousand (or million times) to get an idea of how long they take. This module is generally best used when testing algorithms or other short pieces of code since it won&#8217;t give details of where things are being slow (just an overall picture).</p>
+<p>But what about instrumenting code for long term monitoring, or measuring the speed of external software and services such as database queries? Some strategies here include simply using the time.time() method to get the current time at the start and end of the code you are interested in, subtract the two and you get the elapsed time. This allows you to wrap a call to a database; if the query takes more than say 5 seconds you can send a warning of some sort (log an alert, send an email, etc.). If you are processing database entries you can log the primary key and the start time when you start processing the entity, once done processing (possibly after shoving it through several work queues/etc.) you log the finish time, and ideally log these results.</p>
+<p><strong>A note on long term performance monitoring</strong></p>
+<p>A major advantage of architecting in performance monitoring is that you can generate long term stats regarding your code, application and environment. Things like how long database queries take, swap the disks for solid stats disks and see if or what a difference it makes, network latency/speed issues, etc. My advice would be to measure the performance of external libraries and services since profiling won&#8217;t really address this. I would also measure the overall performance of things (how long from page request to page generation, or page generation and writing of back end data, etc.). Especially if you are splitting work up using work queues profiling won&#8217;t help since you can&#8217;t track the processing of a specific message/request/etc. within that context easily.</p>
+<p>Additionally if you do this by using function decorators you can simply create a timing function and wrap your database query class or whatever function it is you want to monitor without having to modify your code significantly.</p>
+<p><strong>Disassembling Python code</strong></p>
+<p>I thought I should add a quick note on disassembling Python code (so you can find out approximately how many ticks it is). In some cases where you suspect a computation or a task is causing a lot of context switching you may wish to look at modifying the sys.setcheckinterval() and increasing it. But of course simply twiddling the knobs until you get a better result is probably not the easiest way to accomplish this. Using the dis[DIS] module you can disassemble code, see &#8220;The trouble with ticks&#8221; in the second part of this series for an example. You may be lucky and find that setting the sys.setcheckinterval() helps (e.g. if you computation takes 120 ticks and it can now complete in one run rather than being interrupted) but I would urge extreme caution as it may have unintended side effects that are difficult to track down.</p>
+<p><strong>Shared resources, locking and performance</strong></p>
+<p>So what happens if you profile or time your code in testing and find that it is reasonably fast; but when you run it in a multi-threaded or multi-process environment you find your code crawls to a stand still or takes far more time than it should? Chances are you have some form of shared resource or locking, that when run in small trials doesn&#8217;t create contention, but when run in production does. The best manner to deal with this is of course to avoid having any resources that require locking or can&#8217;t easily be shared. Additionally I have found that the less shared resources, locking and other synchronization issues I have to deal with, the fewer bugs and I create (imagine that). The two best ways to deal with this are to profile and monitor your code, code that spends a lot of time sleeping may be waiting on a shared lock, and if something takes to long to run (such as a database query) you may have an external resource that doesn&#8217;t share well (i.e. a MySQL MyISAM table that forces table level locking for inserts can really kill performance when you have multiple INSERT or UPDATE statements happening at the same time).</p>
+<p><strong>Mapping critical code sections</strong></p>
+<p>If you must have shared resources you want to minimize their impact as much as possible, identify the minimal amount of code that needs to hold a lock on a shared resource and only wrap that code with the lock. One note: if your critical code relies on external code or services all bets are off (you hold a lock, then do a DB query and the DB query is very slow or fails or whatever you are out of luck and your application will grind to a halt). Look for code that establishes a lock using locking primitives such as acquire() and release() or threading.lock() and multiprocessing.Lock(). Additionally any databases you connect to may use table level locking, thus if one thread or process is running an INSERT or an UPDATE no other thread or process will be able to. You also want to ensure there are no concurrent deadlocks (i.e. thread #1 holds lock A while waiting to acquire lock B and thread #2 is holding lock B and waiting to acquire lock A, neither one gives up their lock and neither one can move forwards). If you must have multiple locks I would strongly suggest using locking hierarchies (e.g. always lock A and then lock B so no deadlock can occur); there are several excellent articles available on this topic. [LOCKING HIERARCHY]</p>
+<p><strong>A note on external C libraries</strong></p>
+<p>According to some sources Python is generally capable of running at around 10-20% of the speed of a compiled C program for the same algorithm (due to interpreter overhead, etc.). Generally speaking this won&#8217;t be a significant problem since many applications are IO bound (networks, disks, etc.) and modern CPU&#8217;s are quite fast. But what happens when you start pegging the CPU because of computation being done in Python? Again there is good news here, Guido van Rossum comes from a scientific computing (a.k.a. number crunching) background and this is one of the first things Python was designed to handle. You can (with relative ease) write C or C++ code and use it to extend Python code[PYTHON AND C]. This has already been done with a number of core modules, as mentioned above the cProfile and profile extensions accomplish the same work but as cPython is written in C it runs much faster. If you need to do heavy computation you will want to check out SciPy which is written largely in C and NumPy which is quite fast. [SCIPY]</p>
+<p><strong>An Extension to the Advanced Threading pattern &#8211; spinlocks</strong></p>
+<p>Normally we would use the thread.join() method but in this case we need a little more flexibility. The use of a spinlock (the thread simply spins, checking the lock repeatedly and once the lock releases it then continues doing whatever it is supposed to).</p>
+<p>One of the main problems with the producer-consumer pattern is starvation. What if the producer can&#8217;t go fast enough to feed the workers and the workers have to wait for work? This in and of itself is not an insurmountable problem, however when combined with the fact that we want the Python script to run and exit in a timely manner (i.e. when all the work is done) and not before it is done how do we avoid a starvation situation triggering an early end of the program? The simplest method is to use a lock hierarchy, we have the producer establish a spinlock that it unlocks once it is done feeding data into the queue. The consumers also set a spinlock, if they notice that the queue is empty they can then check the producer spinlock, if this is not set then they know it is a simple starvation problem and that they should keep rechecking the queue until there is more work. However if they check the producer spinlock and it is set as done then they know that there is no more work to be done and they can also exit. One of the simpler ways this can be done is to create an array for each pool of threads (i.e. one for producers and one for consumers). Use the thread ID as the key and a value of 0 or 1 to indicate if the thread is done or not, then you can simply use something like &#8220;while (0 in spinlockProducerThread)&#8221; to see if any threads are still running. Ultimately this pattern can also be applied to the main thread, we simply have the main thread spawn off the producer and consumer threads and then spin until all the locks are released, indicating that all the work is done and the threads are finished. Additionally this allows us to have threads exit when they are done (i.e. once the producer thread has pushed all the work into the queue there is no reason to leave it running, because the spinlock is external we can exit, unlike if we were to use the thread.join() method). This pattern also works really well if you have multiple levels of producers and consumers, i.e. a chain of modules that downloads a web page, processes the content within it, then creates something based on the content and so on. This pattern also lends itself to distributed systems, by taking the locking mechanism and making it external to the running code (for example by using a database table as a shared blackboard to communicate) allows multiple systems to join, do work and then leave (allowing you to dynamically allocate resources).</p>
+<table width="680" border="1" cellspacing="0" cellpadding="7">
+<col width="664"/>
+<tbody>
+<tr>
+<td valign="TOP" width="664">web_get_producer_consumer_basic_pattern.py (outline of code)</td>
+</tr>
+<tr>
+<td valign="TOP" width="664">
+<pre>class ProducerThread:
+	def __init__(self, myID):
+		self.myID = myID
+		while 1:
+			work_todo = GetWorkFromDB()
+			for work_item in work_todo:
+				workQueue.put(work_item)
+			break
+		spinlockProducerThread[myID] = 1
+		sys.exit()
+
+class ConsumerThread:
+	def __init__(self, myID):
+		self.myID = myID
+		while 1:
+			try:
+				work_item = workQueue.get(block=False)
+			except Queue.Empty:
+				"""
+				The queue is empty, but it may only be temporarily empty or it may
+				be empty but other worker threads are still running
+				"""
+				if (0 not in spinlockProducerThread):
+					spinlockConsumerThread[myID] = 1
+					sys.exit()
+			else:
+				ProcessWork(work_item)
+
+if __name__ == '__main__':
+
+	spinlockProducerThread = [0] * number_of_producer_threads
+
+	spinlockConsumerThread = [0] * number_of_consumer_threads
+
+	workQueue = Queue.Queue()  
+
+	for i in range(number_of_producer_threads):
+		try:
+			thread.start_new_thread(ProducerThread, (i,))
+		except thread.error, e:
+			myID = i
+			spinlockProducerThread[myID] = 1
+			print "ProducerThread thread creation failed"
+			print e
+
+	for i in range(number_of_consumer_threads):
+		try:
+			thread.start_new_thread(ThreadWorkerFreescan, (i,))
+		except thread.error, e:
+			myID = i
+			spinlockConsumerThread[myID] = 1
+			print "ConsumerThread thread creation failed"
+			print e
+
+	while (0 in spinlockProducerThread or 0 in spinlockConsumerThread):
+		time.sleep(1)
+		pass</pre>
+</td>
+</tr>
+</tbody>
+</table>
+<p>[PROFILE]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/profile.html">http://docs.python.org/library/profile.html</a></span></p>
+<p>[Mike C. Fletcher]</p>
+<p>Mike C. Fletcher (<a href="http://www.vrplumber.com/" target="_blank">http://www.vrplumber.com</a>)</p>
+<p>[GPROF2DOT]</p>
+<p><a href="http://code.google.com/p/jrfonseca/wiki/Gprof2Dot">http://code.google.com/p/jrfonseca/wiki/Gprof2Dot</a></p>
+<p>[PROFILE]</p>
+<p><a href="http://docs.python.org/library/profile.html">http://docs.python.org/library/profile.html</a></p>
+<p>[DIS]</p>
+<p><a href="http://docs.python.org/library/dis.html">http://docs.python.org/library/dis.html</a></p>
+<p>[LOCKING HIERARCHY]</p>
+<p><a href="http://www.ddj.com/architect/204801163">http://www.ddj.com/architect/204801163</a></p>
+<p>[PYTHON AND C]</p>
+<p><a href="http://docs.python.org/extending/extending.html">http://docs.python.org/extending/extending.html</a></p>
+<p>[SCIPY]</p>
+<p><a href="http://www.scipy.org/">http://www.scipy.org/</a></p>
+<div id="_mcePaste" style="position:absolute;left:-10000px;top:3397px;width:1px;height:1px;overflow:hidden;">class ProducerThread:<br/>
+def __init__(self, myID):<br/>
+self.myID = myID<br/>
+while 1:<br/>
+work_todo = GetWorkFromDB()<br/>
+for work_item in work_todo:<br/>
+workQueue.put(work_item)<br/>
+break<br/>
+spinlockProducerThread[myID] = 1<br/>
+sys.exit()class ConsumerThread:<br/>
+def __init__(self, myID):<br/>
+self.myID = myID<br/>
+while 1:<br/>
+try:<br/>
+work_item = workQueue.get(block=False)<br/>
+except Queue.Empty:<br/>
+&#8220;&#8221;&#8221;<br/>
+The queue is empty, but it may only be temporarily empty or it may<br/>
+be empty but other worker threads are still running<br/>
+&#8220;&#8221;&#8221;<br/>
+if (0 not in spinlockProducerThread):<br/>
+spinlockConsumerThread[myID] = 1<br/>
+sys.exit()<br/>
+else:<br/>
+ProcessWork(work_item)</p>
+<p>if __name__ == &#8216;__main__&#8217;:</p>
+<p>spinlockProducerThread = [0] * number_of_producer_threads</p>
+<p>spinlockConsumerThread = [0] * number_of_consumer_threads</p>
+<p>workQueue = Queue.Queue()</p>
+<p>for i in range(number_of_producer_threads):<br/>
+try:<br/>
+thread.start_new_thread(ProducerThread, (i,))<br/>
+except thread.error, e:<br/>
+myID = i<br/>
+spinlockProducerThread[myID] = 1<br/>
+print &#8220;ProducerThread thread creation failed&#8221;<br/>
+print e</p>
+<p>for i in range(number_of_consumer_threads):<br/>
+try:<br/>
+thread.start_new_thread(ThreadWorkerFreescan, (i,))<br/>
+except thread.error, e:<br/>
+myID = i<br/>
+spinlockConsumerThread[myID] = 1<br/>
+print &#8220;ConsumerThread thread creation failed&#8221;<br/>
+print e</p>
+<p>while (0 in spinlockProducerThread or 0 in spinlockConsumerThread):<br/>
+time.sleep(1)<br/>
+pass</p>
+</div>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/python-2/" rel="tag">python</a><br/> Posted in <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a> | <a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="post-57 post type-post status-publish format-standard hentry category-python tag-performance tag-python-2">
+<h3 id="post-57"><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/" rel="bookmark">Python Performance Part&nbsp;2</a></h3>
+<small>May 31, 2010</small>
+<div class="entry">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/">Python Performance Part 1</a><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/"></a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/">Python Performance Part 3</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/">Python Performance Part 4</a></p>
+<p>In part one I covered a basic introduction to threads and the producer-consumer pattern. Now in part two I&#8217;m going to cover some (unfortunately common) pathological cases where threading in Python can make things much worse.</p>
+<p><strong>An example of when threading makes things worse</strong></p>
+<p>So last week we covered basic Python threading strategies and work queues, so if you have a program and want to speed it up simply thread it and it&#8217;ll run faster, right? Wrong. For certain types of workloads and computation using threading in Python will make things worse (in some cases much worse).</p>
+<p>Take for example a simplified program (courtesy of David Beazley[David Beazley]) that does some number crunching (e.g. counting from a large number down to zero) several times. This eliminates a lot of variables (memory, disk IO, network IO, etc.) and should run very quickly on any modern CPU. If we want to count down from the large number twice it should take about as long to do it sequentially as in parallel since our problem is CPU bound right?</p>
+<p>Let&#8217;s try it:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="325"></col>
+<col width="325"></col>
+<tbody>
+<tr valign="TOP">
+<td width="325">count_sequential.py</td>
+<td width="325"></td>
+</tr>
+<tr valign="TOP">
+<td width="325">
+<pre>#!/usr/bin/env python
+import time
+
+def count(n):
+ while n &gt; 0:
+ n -= 1
+
+start_time = time.time()
+count(100000000)
+count(100000000)
+stop_time = time.time()
+elapsed_time = stop_time - start_time
+print elapsed_time
+</pre>
+</td>
+<td width="325"># a very simple count down function# start time</p>
+<p># stop time</p>
+<p># elapsed time (roughly)</td>
+</tr>
+</tbody>
+</table>
+<p>On my machine with three runs I got run times of 17.37, 17.10 and 17.34 seconds which is pretty consistent.</p>
+<p>And the threaded version:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="325"></col>
+<col width="325"></col>
+<tbody>
+<tr valign="TOP">
+<td width="325">count_threaded.py</td>
+<td width="325"></td>
+</tr>
+<tr valign="TOP">
+<td width="325">
+<pre>#!/usr/bin/env python
+import time
+from threading import Thread
+
+def count(n):
+ while n &gt; 0:
+ n -= 1
+
+start_time = time.time()
+t1 = Thread(target=count,args=(100000000,))
+t1.start()
+t2 = Thread(target=count,args=(100000000,))
+t2.start()
+t1.join(); t2.join() 
+stop_time = time.time()
+elapsed_time = stop_time - start_time
+print elapsed_time
+</pre>
+</td>
+<td width="325"></td>
+</tr>
+</tbody>
+</table>
+<p>On my machine with three runs I got run times of 23.14, 23.11 and 23.51 seconds which is pretty consistent as well. It is also quite a bit slower than the sequential version of this program (roughly 33% slower than the sequential version!). In the case of David Beazley he reports the threaded version almost taking twice as long on his system. Much like David Beazley I also tried running the threaded version of the Python code on a single CPU, in the case of Linux you can use the &#8220;taskset&#8221; command to bind a program to a particular CPU. I also got the same results he did (roughly speaking), one a single CPU the threaded version of the counting program took only 19.15, 19.38 and 19.29 seconds.</p>
+<p>So we have two rather interesting questions: Why does the sequential version of the program take so much less time, and why does the threaded version run faster on a single CPU then when it runs across multiple CPU cores?</p>
+<p><strong>Why threading doesn&#8217;t always work as expected – the GIL</strong></p>
+<p>This unexpected behavior is caused by the Global Interpreter Lock (GIL):</p>
+<blockquote><p><em>A </em><em><strong>Global Interpreter Lock</strong></em><em> (</em><em><strong>GIL</strong></em><em>) is a </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Mutual_exclusion"><em>mutual exclusion</em></a></span><em> </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Lock_%28computer_science%29"><em>lock</em></a></span><em> held by a </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Programming_language"><em>programming language</em></a></span><em> </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Interpreter_%28computing%29"><em>interpreter</em></a></span><em> </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Thread_%28computer_science%29"><em>thread</em></a></span><em> to avoid sharing code that is not </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Thread-safe"><em>thread-safe</em></a></span><em> with other threads. There is always one GIL for one interpreter </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Process_%28computing%29"><em>process</em></a></span><em>.</em></p>
+<p><em>Usage of a Global Interpreter Lock in a language effectively limits </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Concurrency_%28computer_science%29"><em>concurrency</em></a></span><em> of a single interpreter process with multiple threads &#8212; there is no or very little increase in speed when running the process on a </em><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Multiprocessor"><em>multiprocessor</em></a></span><em> machine. Due to signaling with a CPU-bound thread, it can cause a significant slowdown, even on single processors.</em></p></blockquote>
+<p>This is largely what makes threaded programming in Python easy (you have no real worries about concurrency since only one thread at a time runs), and also what can make it challenging for performance (since only one thread at a time runs). The last sentence also offers an explanation as to why out sequential code is running faster than the threaded code: &#8220;<em>Due to signaling with a CPU-bound thread, it can cause a significant slowdown</em>&#8221; or in English: the time needed to constantly swap between the threads (even on an efficient system like Linux) is noticeable (and only gets worse with larger numbers of threads). But why does Python swap CPU intensive tasks so much?</p>
+<p>When running a thread the Python GIL is held until one of several things happens: the thread completes running, the thread goes into an IO operation or 100 ticks are reached. The first case is simple, a thread can call sys.exit() and kill itself off, this of course is the end of things and the GIL is yielded back. The second case is also simple, if a thread blocks for an IO bound operation (disk, network, etc.) and it is put to sleep (chances are the IO will take time anyways so no point waiting idly by), it yields the GIL and another thread is given a chance to run. The third case is a little more nuanced. For starters what exactly is a tick? A tick is basically an interpreter instruction. By limiting the number of ticks a thread can run a CPU bound task that doesn&#8217;t want to exit or isn&#8217;t going to do IO won&#8217;t end up hogging the CPU. The number of ticks a thread is allowed to use before being stopped can be controlled by the sys.setcheckinterval() parameter which can be set on the fly. The most important thing to remember is that ticks are NOT time constrained.</p>
+<p>If all of the above seems rather complicated there is a good reason for it. Python internally doesn&#8217;t really handle the specific scheduling of threads; it leaves this up to the operating system. The rational for this is simple: the Python developers feel that reinventing the wheel (handling thread scheduling) is probably not the best way to go since modern operating systems have spent a significant amount of time and energy on getting threads to run efficiently and quickly (especially Linux). So internally Python essentially uses a form of cooperative multi tasking (the thread yields the CPU when it exits, blocks on IO or hits the tick limit).</p>
+<p><strong>The trouble with ticks</strong></p>
+<p>So if a tick isn&#8217;t time constrained what&#8217;s the worst that can happen? Some CPU instructions take very little time to run, and conversely some take a very long time to run. The following program is very simple:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="325"></col>
+<col width="325"></col>
+<tbody>
+<tr valign="TOP">
+<td width="325">
+<pre>#!/usr/bin/env python
+
+def bigtick():
+ nums = xrange(100000000)
+ -1 in nums</pre>
+</td>
+<td width="325"></td>
+</tr>
+</tbody>
+</table>
+<p>Which when disassembled (more on this later) it turns out to consist of:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="374"></col>
+<col width="275"></col>
+<tbody>
+<tr valign="TOP">
+<td width="374">
+<pre>&gt;&gt;&gt; dis.dis(bigtick)
+ 2           0 LOAD_GLOBAL              0 (xrange)
+ 3 LOAD_CONST               1 (100000000)
+ 6 CALL_FUNCTION            1
+ 9 STORE_FAST               0 (nums)
+
+ 3          12 LOAD_CONST               2 (-1)
+ 15 LOAD_FAST                0 (nums)
+ 18 COMPARE_OP               6 (in)
+ 21 POP_TOP             
+ 22 LOAD_CONST               0 (None)
+ 25 RETURN_VALUE        
+</pre>
+</td>
+<td width="275"></td>
+</tr>
+</tbody>
+</table>
+<p>As you can see it&#8217;s about 25 instructions, much less than the 100 limit imposed by default. So what happens when we run this? Well not much of anything, but it does take a while (about 4 seconds on my machine). Much to slow, let&#8217;s hit ctrl-c and get out of it.</p>
+<p>As you may have noticed hitting ctrl-c doesn&#8217;t work, the program runs till it&#8217;s done, taking it&#8217;s own sweet time. Why is this? While the child thread is running it basically blocks on signals sent to it. Just imagine what happens if you have 10 children threads running code like this (now we&#8217;re deep into pathological behavior-land).</p>
+<p><strong>Working with the GIL</strong></p>
+<p>So how can we deal with some of this odd and downright bad behavior by the GIL? The first trick is to minimize the number of threads you are using. Because the operating system controls which thread is executed it may execute a thread that has nothing to do (i.e. is still blocking on IO), meaning you pay (computationally speaking) for a thread swap, the (short) execution time of a thread that doesn&#8217;t do anything and then the task swap to another thread (hopefully one that does some actual work). Or worse you have a thread holding a shared lock, but it is waiting on something (e.g. a database write to complete) before it yields the lock. You can end up with threads being run that can&#8217;t do anything, leaving your computer spinning until the thread holding the lock is run and eventually completes, freeing the lock. Having threads sitting idly by will generally reduce performance (but of course if you get surges or spikes in work having a spare pool of threads can be a very good thing.</p>
+<p>As for a way of dealing with the signal handling problem the best advice I can find is to have the main thread handle signals and spawn of child threads that do the actual work (in other words have the main program run threads and then passively loop while the children threads work). This way the main thread won&#8217;t be working on something when a signal arrives resulting in the signal being ignored.</p>
+<p>Like any performance advice I suggest you take it with a grain of salt and first measure your performance, identify any issues and then fix them (which is covered in the third article).</p>
+<p><strong>Appendix</strong></p>
+<p>[David Beazley]</p>
+<p><span style="text-decoration:underline;"><a href="http://www.dabeaz.com/python/GIL.pdf">http://www.dabeaz.com/python/GIL.pdf</a></span></p>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/python-2/" rel="tag">python</a><br/> Posted in <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a> | <a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/#respond">Leave a Comment &#187;</a></p>
+</div>
+<div class="post-55 post type-post status-publish format-standard hentry category-python tag-performance tag-python-2">
+<h3 id="post-55"><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/" rel="bookmark">Python Performance Part&nbsp;1</a></h3>
+<small>May 31, 2010</small>
+<div class="entry">
+<p><a href="http://kurt.seifried.org/2010/05/31/python-performance-part-2/">Python Performance Part 2</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-3/">Python Performance Part 3</a><br/>
+<a href="http://kurt.seifried.org/2010/05/31/python-performance-part-4/">Python Performance Part 4</a></p>
+<p>If you&#8217;ve been programming in Python chances are you have run into a situation where your code takes a lot longer to run than it probably should, and if you haven&#8217;t used Python I&#8217;m going to show you how easy it ease to write high performance and scalable code that will run fast.</p>
+<p>These articles do not cover why you should use Python (it&#8217;s cool, it ships standard on every Linux distribution, all the kids at Google use it, etc.). These articles will specifically cover how you can speed up Python performance (parallelization, code profiling, performance measuring, etc.) and include code examples (for brevity I will use pseudo code for some of the longer examples). I will also cover some Python internals so that you will understand why speeding up code doesn&#8217;t always work as expected (and what you can do about this). Please note that older versions of Python (e.g. 2.4.3 as shipped with Red Hat Enterprise and CentOS) do not support some of the things discussed in these articles. The reference platform used for this article is Fedora 12 (Python 2.6.4, Beanstalkd 1.4.2, memcached 1.4.4 and MySQL 5.1.41 basically).</p>
+<p><strong>A (super) quick introduction to Python threading</strong></p>
+<p>You have two basic modules that provide threading capabilities in Python. The first (and oldest) module is &#8220;thread&#8221; [THREAD] which provides low-level primitives such as creating a thread, exiting and some lock primitives so you can use shared resources safely. You don&#8217;t want to use this module for reasons I will shortly explain. The second module is &#8220;threading&#8221; [THREADING] and it builds upon the low level primitives (similar to SocketServer, HTTPServer, etc.) provided by &#8220;thread&#8221;. In Python the main program runs as a single thread, from this thread you can create additional child threads (these run within the same process space and thus have shared memory). The main trick is that you need the main thread to keep running while the children threads are doing their thing, if the main thread exits than all the child threads get killed off unceremoniously, potentially leaving a mess. This is why you don&#8217;t want to use &#8220;thread&#8221;, as you will need to create your own spinlock to hold the main thread open while the children threads run. With the &#8220;threading&#8221; module the system provides the join() method which &#8220;blocks the calling thread until the thread whose join() method is called is terminated.&#8221;</p>
+<p>It should be noted that in many cases the main thread will continue running until threads started using the threading Thread.start() are done but there are no guarantees so I strongly suggest you use the join() method or create your own spinlock (especially if using older versions of Python).</p>
+<p><strong>Basic Threading Pattern</strong></p>
+<p>The basic threading pattern in Python (and most languages) is to take a bunch of work and split it up among different threads (insightful, yes?). The idea is that instead of doing things sequentially (one at a time) you do them in parallel (more than one at a time). For many tasks this works well, especially if the tasks are largely bound by IO (Input and Output) delays (especially for network related stuff).</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="404"></col>
+<col width="245"></col>
+<tbody>
+<tr valign="TOP">
+<td width="404">web_get_parallel.py – (no join())</td>
+<td width="245">Comment</td>
+</tr>
+<tr valign="TOP">
+<td width="404"><!--[if gte mso 9]&gt;  Normal 0   false false false        MicrosoftInternetExplorer4  &lt;![endif]--><!--[if gte mso 9]&gt;   &lt;![endif]--></p>
+<pre>#!/usr/bin/env python
+import urllib2
+from threading import Thread
+hosts = ["http://lwn.net/", "http://seifried.org/", "http://google.com/"]
+
+def getURL(URL):
+    urllib2.urlopen(URL)
+    print "got URL: " + URL
+
+for item in hosts:
+    t = Thread(target=getURL, args=(item,))
+    t.start()
+</pre>
+</td>
+<td width="245"># list of web pages to get# define a get URL function# loop through the list of URLs# define a thread</p>
+<p># start the thread</td>
+</tr>
+</tbody>
+</table>
+<p>But is this really faster than doing the work sequentially?</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="404"></col>
+<col width="245"></col>
+<tbody>
+<tr valign="TOP">
+<td width="404">web_get_sequential.py</td>
+<td width="245">Comment</td>
+</tr>
+<tr valign="TOP">
+<td width="404"><!--[if gte mso 9]&gt;  Normal 0   false false false        MicrosoftInternetExplorer4  &lt;![endif]--><!--[if gte mso 9]&gt;   &lt;![endif]--></p>
+<pre>#!/usr/bin/env python
+import urllib2
+hosts = ["http://lwn.net/", "http://seifried.org/", "http://google.com/"]
+
+def getURL(URL):
+    urllib2.urlopen(URL)
+    print "got URL: " + URL
+
+for item in hosts:
+    urllib2.urlopen(item)
+    print "got URL: " + URL
+</pre>
+</td>
+<td width="245"># list of web pages to get# define a get URL function# loop through the list of URLs# get the URL</td>
+</tr>
+</tbody>
+</table>
+<p>So based on this the parallel threaded example (not using join()) takes about a 0.5 seconds according to the UNIX &#8220;time&#8221; command, and the sequential version takes 6 seconds. This is obviously not right, assuming the sequential one takes about the same amount of time to get each URL (best case) then the parallel version should take 2 seconds (6/3 = 2).</p>
+<p>So why is it only taking 0.5 seconds? Probably because the main thread exited before the children are done running (which means we didn&#8217;t finish our work). So let&#8217;s fix that:</p>
+<table border="1" cellspacing="0" cellpadding="7" width="680">
+<col width="404"></col>
+<col width="245"></col>
+<tbody>
+<tr valign="TOP">
+<td width="404">web_get_parallel.py (with join())</td>
+<td width="245">Comment</td>
+</tr>
+<tr valign="TOP">
+<td width="404">
+<pre>#!/usr/bin/env python
+import urllib2
+from threading import Thread
+thread_list = []
+hosts = ["http://lwn.net/", "http://seifried.org/", "http://google.com/"]
+
+def getURL(URL):
+    urllib2.urlopen(URL)
+    print "got URL: " + URL
+
+for item in hosts:
+    t = Thread(target=getURL, args=(item,))
+    t.start()
+    thread_list.append(t)
+
+for thread in thread_list:
+    thread.join()
+</pre>
+</td>
+<td width="245"># list of web pages to get# define a get URL function# loop through the list of URLs# define a thread</p>
+<p># start the thread</p>
+<p># loop through the list of threads</p>
+<p># join each thread</td>
+</tr>
+</tbody>
+</table>
+<p>Great, the code now takes about 2.5 seconds, and we are actually getting the web pages correctly! As you can see this is a significant speed, taking only as long as the slowest web page (probably my site), and the sequential example taking the time it takes to get all the pages in total (we&#8217;ll cover how to measure performance properly later in this series).</p>
+<p><strong>Why Threading Helps Performance</strong></p>
+<p>The reason that we get such a significant speed up in this case is that the program is spending the majority of its time waiting for the remote web servers to respond with web pages that it has requested and about 1% (in other words not very much) of the time is spent creating and sending those requests. When a python thread does something IO related (reading or writing a file, sending a network request, waiting for a response, etc.) it essentially goes to sleep, at which point a different thread is given a chance to execute (so instead of simply waiting around the program can do other work as well). Additionally because threads share memory space the program won&#8217;t use much more memory (whereas if you split the work between different processes each one would have it&#8217;s own memory leading to much duplication). A final advantage of memory sharing is that variables and objects can be accessed by multiple threads; there is no need to engineer inter-process communications (although with the multiprocessing module this is trivial, more on this later in the fourth article of this series).</p>
+<p>But what happens if we have a much larger workload (instead of 3 domains to get we have 3 million) and a much more complex workload (we have to get the web pages, extract data from them and process the data for example). If we try to start up 3 million threads to handle each domain individually I can pretty much guarantee you are not going to increase performance.</p>
+<p><strong>Advanced Threading pattern</strong></p>
+<p>So starting up one thread per task is probably not the most optimal way to go, especially if the workload is large or if it varies. But how can we efficiently divvy up the workload among a (possibly indeterminate) number of threads? Taking the total number of things to do and dividing by the number of threads and then assigning that many things to each thread is not optimal. What if one thread gets saddled with URL&#8217;s that all take much longer than average to download? We are then left with one thread still running while the rest are finished their work and waiting idly. Also the amount of work may not be known in advance, or we want to be able to add more work. We may be reading URL&#8217;s from a database or a file and not know in advance how many we have.</p>
+<p>This is where Python work queues come in [WORKQUEUE]. A work queue provides a way to handle and share multiple objects, you put items into a queue and then retrieve them, the queue ensures that objects are entered correctly and removed correctly (so with multiple threads accessing a queue you don&#8217;t need to worry about locking and so on, you simply write to the queue or read from it and it works). Queues in Python can be FIFO (first in, first out, think of a pipe), LIFO (last in first out, think of a stack) and priority based (you can assign priorities to objects and then make sure that higher priority items are processed before lower priority items and so on).</p>
+<p>Queue syntax is very simple: you create a queue, then you put objects into it and get objects out of it. This allows you to use the producer/consumer pattern [Producer-consumer problem]. The following example has a producer thread that reads the URL entries into a queue, and a group of worker threads that pull an item from the queue, process it and then repeat until the queue is empty at which time they exit. In order to ensure that the main thread runs for a long enough time to let the producer and consumer child threads finish their work we&#8217;ll simply use the thread.join() method to hold the main thread open until all the children have exited.</p>
+<table border="1" cellspacing="0" cellpadding="4" width="665">
+<col width="435"></col>
+<col width="212"></col>
+<tbody>
+<tr valign="TOP">
+<td width="435">web_get_producer_consumer_basic_pattern.py</td>
+<td width="212"></td>
+</tr>
+<tr valign="TOP">
+<td width="435">
+<pre>#!/usr/bin/env python
+
+import urllib2
+import sys
+import Queue
+from threading import Thread
+
+host_list = ["http://lwn.net/", "http://seifried.org/", "http://google.com/", "http://yahoo.com/", "http://gmail.com/"]
+
+thread_list = []
+URL_work_queue = Queue.Queue()
+number_of_consumer_threads = 3
+
+def putURL(URL_list):
+    for URL_item in URL_list:
+        URL_work_queue.put(URL_item)
+
+def getURL(thread_id):
+    while 1:
+        try:
+            URL_toget = URL_work_queue.get(block=False)
+        except Queue.Empty:
+            print "thread exiting, id: " + str(thread_id)
+            sys.exit()
+        urllib2.urlopen(URL_toget)
+        print "got URL: " + URL_toget
+
+# fill the queue with work and block until we are done filling the queue
+
+producer_thread = Thread(target=putURL, args=(host_list,))
+producer_thread.start()
+producer_thread.join()
+
+# we can now start consumers
+
+for i in range(number_of_consumer_threads):    
+    t = Thread(target=getURL, args=(i,))
+    t.start()
+    thread_list.append(t)
+
+for thread in thread_list:
+    thread.join()
+</pre>
+</td>
+<td width="212"></td>
+</tr>
+</tbody>
+</table>
+<p>This pattern is efficient and can easily be extended to have multiple sets of threads and queues connecting them. Generally speaking I try to break the work tasks up into computationally intensive pieces (such as parsing a web page for content) and IO intensive tasks (such as requesting a web page or reading or writing a file). This allows tasks that do not require a lot of computation to quickly yield the GIL lock (more on this in the next article) allowing another thread to run (you want to do IO, especially network IO in parallel as much as possible since it is so slow). If we were to download the web page and process it within the same thread for example we would be limiting the number of simultaneous downloads since we&#8217;d be processing web pages when we could also be downloading them.</p>
+<p>Now as for code quality the above code has a number of significant problems (mostly architecturally but one or two implementation-wise) that will be addressed in the later articles of this series.</p>
+<p><strong>Work Queues</strong></p>
+<p>As you can see work queues provide an ideal mechanism for linking pools of threads. Implementing queues from scratch in other languages such as C or Java is an incredibly complex task, what if two threads try to write to the queue at the same time, how do you sure that two separate objects are created properly, or if multiple threads are reading from the queue how do you ensure that objects are handed out properly? The good news is that in Python due to its providing low level primitives like threads and queues, and the Global Interpreter Lock (GIL) you really don&#8217;t have to care or spend much time making sure you get it right since it&#8217;s built in.</p>
+<p><strong>Appendix</strong></p>
+<p>[THREAD]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/thread.html">http://docs.python.org/library/thread.html</a></span></p>
+<p>[THREADING]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/threading.html">http://docs.python.org/library/threading.html</a></span></p>
+<p>[WORKQUEUE ]</p>
+<p><span style="text-decoration:underline;"><a href="http://docs.python.org/library/queue.html">http://docs.python.org/library/queue.html</a></span></p>
+<p>[Producer-consumer problem]</p>
+<p><span style="text-decoration:underline;"><a href="http://en.wikipedia.org/wiki/Producer-consumer_problem">http://en.wikipedia.org/wiki/Producer-consumer_problem</a></span></p>
+<div id="_mcePaste" style="position:absolute;left:-10000px;top:532px;width:1px;height:1px;overflow:hidden;"><!--[if gte mso 9]&gt;  Normal 0   false false false        MicrosoftInternetExplorer4  &lt;![endif]--><!--[if gte mso 9]&gt;   &lt;![endif]--> <!--[if gte mso 10]&gt; &lt;!   /* Style Definitions */  table.MsoNormalTable 	{mso-style-name:&quot;Table Normal&quot;; 	mso-tstyle-rowband-size:0; 	mso-tstyle-colband-size:0; 	mso-style-noshow:yes; 	mso-style-parent:&quot;&quot;; 	mso-padding-alt:0in 5.4pt 0in 5.4pt; 	mso-para-margin:0in; 	mso-para-margin-bottom:.0001pt; 	mso-pagination:widow-orphan; 	font-size:10.0pt; 	font-family:&quot;Times New Roman&quot;; 	mso-ansi-language:#0400; 	mso-fareast-language:#0400; 	mso-bidi-language:#0400;} --> <!--[endif]--></p>
+<p class="TableContents">#!/usr/bin/env python</p>
+<p class="TableContents">import urllib2</p>
+<p class="TableContents">from threading import Thread</p>
+<p class="TableContents">hosts = [&#8220;<a href="http://lwn.net/&#038;#8221" rel="nofollow">http://lwn.net/&#038;#8221</a>;, &#8220;<a href="http://seifried.org/&#038;#8221" rel="nofollow">http://seifried.org/&#038;#8221</a>;, &#8220;<a href="http://google.com/&#8221;%5D" rel="nofollow">http://google.com/&#8221;%5D</a></p>
+<p class="TableContents">
+<p class="TableContents">def getURL(URL):</p>
+<p class="TableContents">urllib2.urlopen(URL)</p>
+<p class="TableContents">print &#8220;got URL: &#8221; + URL</p>
+<p class="TableContents">
+<p class="TableContents">for item in hosts:</p>
+<p class="TableContents">t = Thread(target=getURL, args=(item,))</p>
+<p><span style="font-size:12pt;font-family:&amp;"> t.start()</span></p>
+</div>
+</div>
+<p class="postmetadata">Tags:<a href="http://kurt.seifried.org/tag/performance/" rel="tag">performance</a>, <a href="http://kurt.seifried.org/tag/python-2/" rel="tag">python</a><br/> Posted in <a href="http://kurt.seifried.org/category/python/" rel="category tag">Python</a> | <a href="http://kurt.seifried.org/2010/05/31/python-performance-part-1/#comments">5 Comments &#187;</a></p>
+</div>
+<div class="navigation">
+<div class="alignleft"></div>
+<div class="alignright"></div>
+</div>
+</div>
+<div id="sidebar">
+<ul>
+<li id="blog_subscription-3" class="widget widget_blog_subscription"><h2 class="widgettitle"><label for="subscribe-field">Email Subscription</label></h2>
+<form action="https://subscribe.wordpress.com" method="post" accept-charset="utf-8" id="subscribe-blog">
+<p>Enter your email address to subscribe to this blog and receive notifications of new posts by email.</p>
+<p>Join 14 other followers</p>
+<p><input type="text" name="email" style="width: 95%; padding: 1px 2px" placeholder="Enter your email address" value="" id="subscribe-field"/></p>
+<p>
+<input type="hidden" name="action" value="subscribe"/>
+<input type="hidden" name="blog_id" value="86342"/>
+<input type="hidden" name="source" value="http://kurt.seifried.org/category/python/"/>
+<input type="hidden" name="sub-type" value="widget"/>
+<input type="hidden" name="redirect_fragment" value="blog_subscription-3"/>
+<input type="hidden" id="_wpnonce" name="_wpnonce" value="321560f319"/> <input type="submit" value="Sign me up!"/>
+</p>
+</form>
+</li>
+<li id="wp_tag_cloud-2" class="widget wp_widget_tag_cloud"><h2 class="widgettitle">Tag Cloud</h2>
+<div style="overflow:hidden"><a href='http://kurt.seifried.org/tag/ami/' class='tag-link-126820 tag-link-position-1' title='1 topic' style='font-size: 8pt;'>ami</a>
+<a href='http://kurt.seifried.org/tag/auditing/' class='tag-link-84847 tag-link-position-2' title='1 topic' style='font-size: 8pt;'>auditing</a>
+<a href='http://kurt.seifried.org/tag/aws/' class='tag-link-144203 tag-link-position-3' title='2 topics' style='font-size: 13.25pt;'>aws</a>
+<a href='http://kurt.seifried.org/tag/beanstalk/' class='tag-link-1980937 tag-link-position-4' title='1 topic' style='font-size: 8pt;'>beanstalk</a>
+<a href='http://kurt.seifried.org/tag/bing/' class='tag-link-34399 tag-link-position-5' title='1 topic' style='font-size: 8pt;'>bing</a>
+<a href='http://kurt.seifried.org/tag/bitcoin/' class='tag-link-36507086 tag-link-position-6' title='1 topic' style='font-size: 8pt;'>bitcoin</a>
+<a href='http://kurt.seifried.org/tag/ca/' class='tag-link-23572 tag-link-position-7' title='1 topic' style='font-size: 8pt;'>ca</a>
+<a href='http://kurt.seifried.org/tag/chrome/' class='tag-link-367314 tag-link-position-8' title='1 topic' style='font-size: 8pt;'>chrome</a>
+<a href='http://kurt.seifried.org/tag/currency/' class='tag-link-123802 tag-link-position-9' title='1 topic' style='font-size: 8pt;'>currency</a>
+<a href='http://kurt.seifried.org/tag/dsk/' class='tag-link-435979 tag-link-position-10' title='1 topic' style='font-size: 8pt;'>dsk</a>
+<a href='http://kurt.seifried.org/tag/ebs/' class='tag-link-412792 tag-link-position-11' title='1 topic' style='font-size: 8pt;'>ebs</a>
+<a href='http://kurt.seifried.org/tag/ec2/' class='tag-link-315451 tag-link-position-12' title='1 topic' style='font-size: 8pt;'>ec2</a>
+<a href='http://kurt.seifried.org/tag/economics/' class='tag-link-657 tag-link-position-13' title='1 topic' style='font-size: 8pt;'>economics</a>
+<a href='http://kurt.seifried.org/tag/fedora/' class='tag-link-611 tag-link-position-14' title='1 topic' style='font-size: 8pt;'>Fedora</a>
+<a href='http://kurt.seifried.org/tag/gnome3/' class='tag-link-8792038 tag-link-position-15' title='1 topic' style='font-size: 8pt;'>gnome3</a>
+<a href='http://kurt.seifried.org/tag/hardware-2/' class='tag-link-9285985 tag-link-position-16' title='1 topic' style='font-size: 8pt;'>hardware</a>
+<a href='http://kurt.seifried.org/tag/hbr/' class='tag-link-564713 tag-link-position-17' title='1 topic' style='font-size: 8pt;'>hbr</a>
+<a href='http://kurt.seifried.org/tag/infosec/' class='tag-link-52624 tag-link-position-18' title='4 topics' style='font-size: 19.666666666667pt;'>infosec</a>
+<a href='http://kurt.seifried.org/tag/ipv6/' class='tag-link-10414 tag-link-position-19' title='2 topics' style='font-size: 13.25pt;'>ipv6</a>
+<a href='http://kurt.seifried.org/tag/iscsi/' class='tag-link-42965 tag-link-position-20' title='1 topic' style='font-size: 8pt;'>iscsi</a>
+<a href='http://kurt.seifried.org/tag/iscsi-target/' class='tag-link-6470038 tag-link-position-21' title='1 topic' style='font-size: 8pt;'>iscsi target</a>
+<a href='http://kurt.seifried.org/tag/json/' class='tag-link-72721 tag-link-position-22' title='1 topic' style='font-size: 8pt;'>json</a>
+<a href='http://kurt.seifried.org/tag/kerberos/' class='tag-link-649626 tag-link-position-23' title='1 topic' style='font-size: 8pt;'>kerberos</a>
+<a href='http://kurt.seifried.org/tag/memcache/' class='tag-link-2404263 tag-link-position-24' title='1 topic' style='font-size: 8pt;'>memcache</a>
+<a href='http://kurt.seifried.org/tag/microsoft/' class='tag-link-637 tag-link-position-25' title='1 topic' style='font-size: 8pt;'>microsoft</a>
+<a href='http://kurt.seifried.org/tag/openbsd/' class='tag-link-15262 tag-link-position-26' title='3 topics' style='font-size: 16.75pt;'>openbsd</a>
+<a href='http://kurt.seifried.org/tag/performance/' class='tag-link-1930 tag-link-position-27' title='5 topics' style='font-size: 22pt;'>performance</a>
+<a href='http://kurt.seifried.org/tag/programming/' class='tag-link-196 tag-link-position-28' title='2 topics' style='font-size: 13.25pt;'>programming</a>
+<a href='http://kurt.seifried.org/tag/python-2/' class='tag-link-27143169 tag-link-position-29' title='3 topics' style='font-size: 16.75pt;'>python</a>
+<a href='http://kurt.seifried.org/tag/pyton/' class='tag-link-3933214 tag-link-position-30' title='1 topic' style='font-size: 8pt;'>pyton</a>
+<a href='http://kurt.seifried.org/tag/sanitizing/' class='tag-link-2249863 tag-link-position-31' title='1 topic' style='font-size: 8pt;'>sanitizing</a>
+<a href='http://kurt.seifried.org/tag/security/' class='tag-link-801 tag-link-position-32' title='5 topics' style='font-size: 22pt;'>security</a>
+<a href='http://kurt.seifried.org/tag/selinux/' class='tag-link-1093416 tag-link-position-33' title='2 topics' style='font-size: 13.25pt;'>SELinux</a>
+<a href='http://kurt.seifried.org/tag/sendmail/' class='tag-link-151536 tag-link-position-34' title='1 topic' style='font-size: 8pt;'>sendmail</a>
+<a href='http://kurt.seifried.org/tag/simulators/' class='tag-link-24955 tag-link-position-35' title='1 topic' style='font-size: 8pt;'>simulators</a>
+<a href='http://kurt.seifried.org/tag/smuggling/' class='tag-link-303838 tag-link-position-36' title='1 topic' style='font-size: 8pt;'>smuggling</a>
+<a href='http://kurt.seifried.org/tag/spam/' class='tag-link-652 tag-link-position-37' title='3 topics' style='font-size: 16.75pt;'>spam</a>
+<a href='http://kurt.seifried.org/tag/ssd/' class='tag-link-248864 tag-link-position-38' title='1 topic' style='font-size: 8pt;'>ssd</a>
+<a href='http://kurt.seifried.org/tag/ssl/' class='tag-link-58302 tag-link-position-39' title='1 topic' style='font-size: 8pt;'>ssl</a>
+<a href='http://kurt.seifried.org/tag/storage/' class='tag-link-3386 tag-link-position-40' title='1 topic' style='font-size: 8pt;'>storage</a>
+<a href='http://kurt.seifried.org/tag/tablet/' class='tag-link-7939 tag-link-position-41' title='1 topic' style='font-size: 8pt;'>tablet</a>
+<a href='http://kurt.seifried.org/tag/testing/' class='tag-link-12 tag-link-position-42' title='1 topic' style='font-size: 8pt;'>testing</a>
+<a href='http://kurt.seifried.org/tag/tmp/' class='tag-link-71355 tag-link-position-43' title='1 topic' style='font-size: 8pt;'>tmp</a>
+<a href='http://kurt.seifried.org/tag/usability/' class='tag-link-753 tag-link-position-44' title='1 topic' style='font-size: 8pt;'>usability</a>
+<a href='http://kurt.seifried.org/tag/vmware/' class='tag-link-38600 tag-link-position-45' title='1 topic' style='font-size: 8pt;'>vmware</a>
+<a href='http://kurt.seifried.org/tag/webpad/' class='tag-link-1523589 tag-link-position-46' title='1 topic' style='font-size: 8pt;'>webpad</a>
+<a href='http://kurt.seifried.org/tag/wordpress/' class='tag-link-33 tag-link-position-47' title='1 topic' style='font-size: 8pt;'>Wordpress</a>
+<a href='http://kurt.seifried.org/tag/wp-super-cache/' class='tag-link-4732947 tag-link-position-48' title='1 topic' style='font-size: 8pt;'>WP-Super-Cache</a></div></li>
+<li id="pages-3" class="widget widget_pages"><h2 class="widgettitle">Pages</h2>
+<ul>
+<li class="page_item page-item-2"><a href="http://kurt.seifried.org/about/">About</a></li>
+<li class="page_item page-item-162"><a href="http://kurt.seifried.org/free-cloud-services/">Free cloud services</a></li>
+<li class="page_item page-item-302"><a href="http://kurt.seifried.org/gov-cloud-standards/">Gov Cloud Standards</a></li>
+<li class="page_item page-item-277"><a href="http://kurt.seifried.org/license-for-content-on-this-site/">License for content on this&nbsp;site</a></li>
+<li class="page_item page-item-115"><a href="http://kurt.seifried.org/linux-cloud-software-and-projects/">Linux Cloud Software and&nbsp;Projects</a></li>
+<li class="page_item page-item-96"><a href="http://kurt.seifried.org/professional-writing-samples/">Professional Writing Samples</a></li>
+<li class="page_item page-item-102"><a href="http://kurt.seifried.org/python-programming/">Python Programming</a></li>
+<li class="page_item page-item-254"><a href="http://kurt.seifried.org/ruby-ruby-on-rails-programming/">Ruby / Ruby on Rails&nbsp;Programming</a></li>
+<li class="page_item page-item-247"><a href="http://kurt.seifried.org/worth-reading/">Worth Reading</a></li>
+<li class="page_item page-item-176"><a href="http://kurt.seifried.org/worth-watching/">Worth Watching</a></li>
+</ul>
+</li>
+<li id="categories-2" class="widget widget_categories"><h2 class="widgettitle">Categories</h2>
+<ul>
+<li class="cat-item cat-item-79"><a href="http://kurt.seifried.org/category/hardware/">Hardware</a>
+</li>
+<li class="cat-item cat-item-15230"><a href="http://kurt.seifried.org/category/information-security/" title="Information Security">Information Security</a>
+</li>
+<li class="cat-item cat-item-3374"><a href="http://kurt.seifried.org/category/kids/">kids</a>
+</li>
+<li class="cat-item cat-item-610"><a href="http://kurt.seifried.org/category/linux/">Linux</a>
+</li>
+<li class="cat-item cat-item-832 current-cat"><a href="http://kurt.seifried.org/category/python/">Python</a>
+</li>
+<li class="cat-item cat-item-1"><a href="http://kurt.seifried.org/category/uncategorized/">Uncategorized</a>
+</li>
+</ul>
+</li>
+<li id="rss_links-3" class="widget widget_rss_links"><h2 class="widgettitle">RSS Feed</h2>
+<ul><li><a href="http://kurt.seifried.org/feed/" title="Subscribe to Posts">RSS - Posts</a></li></ul>
+</li>
+<li id="meta" class="widget widget_kubrick_meta"> <h2 class="widgettitle">Meta</h2>
+<ul>
+<li><a href="https://wordpress.com/start?ref=wplogin">Register</a></li> <li><a href="https://kurtseifried.wordpress.com/wp-login.php">Log in</a></li>
+<li><a href="http://validator.w3.org/check/referer" title="This page validates as XHTML 1.0 Transitional">Valid <abbr title="eXtensible HyperText Markup Language">XHTML</abbr></a></li>
+<li><a href="http://gmpg.org/xfn/"><abbr title="XHTML Friends Network">XFN</abbr></a></li>
+<li><a href="https://wordpress.com/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.com</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<hr/>
+<div id="footer">
+<p>
+<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+<br/><a href="http://kurt.seifried.org/feed/">Entries (RSS)</a> and <a href="http://kurt.seifried.org/comments/feed/">Comments (RSS)</a>. </p>
+</div>
+</div>
+ 
+<div style="display:none">
+</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var actionbardata = {"siteID":"86342","siteName":"Kurt Seifried","siteURL":"http:\/\/kurt.seifried.org","icon":"<img alt='' src='https:\/\/s1.wp.com\/i\/void.gif' class='avatar avatar-36' height='36' width='36' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/kubrick","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-4%2F","themeURL":"","xhrURL":"http:\/\/kurt.seifried.org\/wp-admin\/admin-ajax.php","nonce":"c5d9519be6","isSingular":"","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"321560f319\" \/>","referer":"http:\/\/kurt.seifried.org\/category\/python\/","canFollow":"1","statusMessage":"","customizeLink":"https:\/\/kurtseifried.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fkurtseifried.wordpress.com%2Fcategory%2Fpython%2F","i18n":{"view":"View Site","follow":"Follow","following":"Following","edit":"Edit","login":"Log In","signup":"Sign Up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Kubrick","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editFollows":"Manage Sites I Follow","editSubs":"Manage Subscriptions","viewReader":"View Site in the Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/kurtseifried.wordpress.com\/wp-login.php?redirect_to=http%3A%2F%2Fkurt.seifried.org%2F2010%2F05%2F31%2Fpython-performance-part-4%2F\">Log in now.<\/a>"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://s1.wp.com/_static/??-eJx9jEEOwiAQRS8kjqamdWM8C8KkDsKAM1A9vnTTuOru5f+XB59iXOaKXCEoeFzIYfkegx7g70rNlNhmYoVIL1R4N2z4tOwjyo5sfSI2DyuQrFaUTiYvKEK+R7Ztr+AqZV4LG3X7nm7nyzQOw3WcTuEH0yxJEw=='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script> <script>
+			var _comscore = _comscore || [];
+			_comscore.push({
+				c1: "2",
+				c2: "7518284"
+			});
+			(function() {
+				var s = document.createElement("script"),
+					el = document.getElementsByTagName("script")[0];
+				s.async = true;
+				s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+				el.parentNode.insertBefore(s, el);
+			})();
+		</script>
+<noscript>
+<p class="robots-nocontent"><img src="http://b.scorecardresearch.com/p?c1=2&c2=7518284&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1" alt="" style="display:none;" width="1" height="1"/></p>
+</noscript><script src="//stats.wp.com/w.js?55" type="text/javascript" async defer></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'86342','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'86342','v':'wpcom','tz':'-7','user_id':'0','subd':'kurtseifried'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1LVmwrVi5vQS5fVFtfdHBbPyw1VXIrU3hWLHhmcmw0bWUwNiVnR3N1V2dDZTM4MGFxVndRQl1HNkJtOEQ0dVBbbk9jP2g4T29lWFFNL1JxLTBRMVBJR09NTGdzXz04YlElWHd0VnZXLitYNDE1enBwZGJ8eDB0MkxQNXdWLzM2V3xDfHoyaXlYbCxydzNodnZ8UGhSQWlQTn5uJj9vTWhkM2VCTi96UC5DcXZlRCU3TUpUVm1LOSU2S1NNJTBYVUxySj9DN1poSCUxckpyVDNRVndFNlpQekdRa1NdTW9VbTNBajJEUHQ1a3NWLEM4eGs3Wm1ld0lhJVlBUCZKPStoLG8seDIxdUV0NE5IdC9lc0lZP1hTfExvNmtNNEU5SWM4a1pEeg=='}]);
+_stq.push([ 'clickTrackerInit', '86342', '0' ]);
+	</script>
+<noscript><img src="http://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt=""/></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script></body>
+</html>

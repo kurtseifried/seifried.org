@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="CREATED" content="20011030;16061786">
+<meta name="CHANGEDBY" content="Kurt Seifried">
+<meta name="CHANGED" content="20011030;16075371">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Linux / Red Hat 7.2 Sendmail configuration</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Red Hat Linux 7.2 Sendmail configuration</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#375c4245437744525e51455e525319584550"><span class="__cf_email__" data-cfemail="f69d838482b685939f90849f9392d8998491">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>This has got to be one of the worst and best features about
+Red Hat Linux 7.2. My first major complaint would be the lack of
+Postfix. Not only did they fail to ship it on the CD, they failed
+to include it in anything like powertools online. To make matters
+worse the Postfix RPM from 7.1 does not work properly as it
+expects older libraries, although you should be able to get it
+working with some effort. But instead of doing all that I thought
+I would give Sendmail a chance, I haven't used it in
+approximately 2-3 years, and it has been audited (very few remote
+root hacks in the last few months, although there were some local
+root hacks). There are several significant problems with the
+default sendmail configuration and scripts that manage it. </p>
+<p>&nbsp;</p>
+<h2>Getting sendmail to listen to things other then itself
+(localhost)</h2>
+<p>This is a nice &quot;secureity feature&quot; but horribly
+documented (i.e. not at all) and non trivial to fix. By default
+Red Hat 7.2's sendmail installation only listens on 127.0.0.1. It
+can receive mail sent locally on the system (i.e. pine) and it
+can send out mail, but if you want to send mail through it or
+recieve mail from other systems it will not work by default. You
+can tell if it is doing this by issuing a netstat command:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="2b5944445f6b584e595d4e59">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> mail]# netstat -vatn
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      </pre>
+</blockquote>
+<p>After looking through several files I discovered how to fix
+it:</p>
+<p>First you need to edit /etc/mail/sendmail.mc, find the
+following section:</p>
+<blockquote>
+<pre>dnl This changes sendmail to only listen on the loopback device 127.0.0.1
+dnl and not on any other network devices. Comment this out if you want
+dnl to accept email over the network.
+DAEMON_OPTIONS(`Port=smtp,Addr=127.0.0.1, Name=MTA')</pre>
+</blockquote>
+<p>You will need to comment out the like with DAEMON_OPTIONS,
+using &quot;dnl&quot; at the begining of the line:</p>
+<blockquote>
+<pre>dnl This changes sendmail to only listen on the loopback device 127.0.0.1
+dnl and not on any other network devices. Comment this out if you want
+dnl to accept email over the network.
+dnl DAEMON_OPTIONS(`Port=smtp,Addr=127.0.0.1, Name=MTA')</pre>
+</blockquote>
+<p>You will then need to rebuild the file:</p>
+<blockquote>
+<pre>m4 /etc/mail/sendmail.mc &gt; /etc/sendmail.cf</pre>
+</blockquote>
+<p>Once you have done this sendmail will listen on all IP address
+on the system:</p>
+<blockquote>
+<pre>[<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="a1d3ceced5e1d2c4d3d7c4d3">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> mail]# netstat -vatn
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      </pre>
+</blockquote>
+<p>And you can recieve mail from others, and send mail from your
+clients. </p>
+<p>&nbsp;</p>
+<h2>Configuring sendmail and rebuilding the configuration
+database files</h2>
+<p>So you've got sendmail listening, and you've configured your
+access table, and restarted sendmail, but still cannot send mail.
+Do not worry, you've probably edited the access file correctly,
+the default script to handle sendmail is broken. Normally when
+you start sendmail with the script that is responsible,
+/etc/rc.d/init.d/sendmail, it will automatically rebuild the
+databases if they do not exist. This script does not work
+properly by default and I reccomend modifying it. Find the
+following section in /etc/rc.d/init.d/sendmail:</p>
+<blockquote>
+<pre>echo -n $&quot;Starting $prog: &quot;
+/usr/bin/newaliases &gt; /dev/null 2&gt;&amp;1
+if test -x /usr/bin/make -a -f /etc/mail/Makefile ; then
+&nbsp; make -C /etc/mail -q
+else
+&nbsp; for i in virtusertable access domaintable mailertable ; do
+&nbsp;&nbsp;&nbsp; if [ -f /etc/mail/$i ] ; then
+makemap hash /etc/mail/$i &lt; /etc/mail/$i
+&nbsp;&nbsp;&nbsp; fi
+&nbsp; done
+fi</pre>
+</blockquote>
+<p>This section should rebuild the databases files if they do not
+exist, and if they do it leaves them alone if there is a Makefile
+present in /etc/mail. If this file is not present it builds the
+files and replaces the existing database files (so they are not
+preserved). I prefer to rebuild databases by default, if your
+site is large enough that this rebuild takes significant time do
+not do this and do it manually. Modifying the section so that it
+looks like this will force a rebuild of the configuraiton
+databases each time you start or restart sendmail:</p>
+<blockquote>
+<pre>        echo -n $&quot;Starting $prog: &quot;
+        /usr/bin/newaliases &gt; /dev/null 2&gt;&amp;1
+        cd /etc/mail
+        rm -f *.db
+        make</pre>
+</blockquote>
+<p>You must remove the &quot;-q&quot; option on make or it will
+not work (the option should only suppress messages, but for some
+reasons with the &quot;-q&quot; option make does not work at
+all). I also reccomend removing the &quot;else&quot; clause that
+manually rebuilds the files, as it is no longer needed. The
+Makefile in /etc/mail should look like:</p>
+<blockquote>
+<pre> These could be used by sendmail, but are not part of the default install.
+# To use them you will have to generate your own sendmail.cf with
+#  FEATURE('whatever')
+#
+POSSIBLE += $(shell test -f bitdomain     &amp;&amp; echo     bitdomain.db)
+POSSIBLE += $(shell test -f uudomain      &amp;&amp; echo      uudomain.db)
+POSSIBLE += $(shell test -f genericstable &amp;&amp; echo genericstable.db)
+
+
+all: ${POSSIBLE} virtusertable.db access.db domaintable.db mailertable.db
+
+virtusertable.db : virtusertable
+        @makemap -f hash $@ &lt; $&lt;
+
+userdb.db : userdb
+        @makemap -f hash $@ &lt; $&lt;
+
+%.db : %
+        @makemap hash $@ &lt; $&lt;
+
+clean:
+        @rm -f *.db *~</pre>
+</blockquote>
+<p>And sendmail should be working like it is supposed to. </p>
+<p>&nbsp;</p>
+<h2>Configuring the sendmail access file</h2>
+<p>This file is probably the most critical file for sendmail
+security after keeping sendmail up to date. Rules consist of an
+IP address or a network block, a domain name, or an email
+address. The main targets for the rules are &quot;OK&quot;,
+&quot;RELAY&quot;, &quot;REJECT&quot; and &quot;DISCARD&quot;,
+and the secondary targets are any RFC821 compliant message, or
+RFC 1893 compliant. Chances are you will only use the primary
+targets and not the secondary. To quote the documentation:</p>
+<blockquote>
+<pre>OK              Accept mail even if other rules in the
+                running ruleset would reject it, for example,
+                if the domain name is unresolvable.
+RELAY           Accept mail addressed to the indicated domain or
+                received from the indicated domain for relaying
+                through your SMTP server.  RELAY also serves as
+                an implicit OK for the other checks.
+REJECT          Reject the sender or recipient with a general
+                purpose message.
+DISCARD         Discard the message completely using the
+                $#discard mailer.  If it is used in check_compat,
+                it affects only the designated recipient, not
+                the whole message as it does in all other cases.
+                This should only be used if really necessary.
+### any text    where ### is an RFC 821 compliant error code and
+                &quot;any text&quot; is a message to return for the command.
+                The string should be quoted to avoid surprises,
+                e.g., sendmail may remove spaces otherwise.
+ERROR:### any text
+                as above, but useful to mark error messages as such.
+ERROR:D.S.N:### any text
+                where D.S.N is an RFC 1893 compliant error code
+                and the rest as above.</pre>
+</blockquote>
+<p>The rules can be in the form:</p>
+<blockquote>
+<pre>127.0.0.1		OK
+10.2.0			RELAY
+spam.com		DISCARD
+annoying.org		REJECT
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="b2d0ddc1c1f2d0dbd5d4dbc0df9cd1dddf">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>	OK
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1b686b7a765b73746f767a727735787476">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>	REJECT</pre>
+</blockquote>
+<p>I reccomend using DISCARD with known spammers, if you REJECT
+messages you will simply use up outgoing bandwidth. Spammers do
+not really care if the message gets through or not, and they do
+not bother to clean their lists to make sure names and domains
+are active. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 31/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

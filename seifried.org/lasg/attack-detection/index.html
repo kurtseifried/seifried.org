@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Attack detection</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Attack detection</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#02697770764271676b64706b67662c6d7065"><span class="__cf_email__" data-cfemail="e9829c9b9da99a8c808f9b808c8dc7869b8e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>No matter how good your security is you it can be compromised.
+That is why it is so important to have various forms of attack
+detection present, so that when an incident happens you are
+alerted to it as soon as possible (and not when you start getting
+complaints from other sites).</p>
+<p>&nbsp;</p>
+<h2>Baselines</h2>
+<p>One major oversight made by a lot of people when securing
+their machines is that they forget to create a baseline of the
+system, that is a profile of the system, its usage of resources,
+and so on in normal operation. For example something as simple as
+a &quot;netstat -a -n &gt; netstat-output&quot; can give you a
+reference to latter check against and see if any ports are open
+that should not be. Memory usage and disk usage are also good
+things to keep an eye on. A sudden surge in memory usage could
+result in the system being starved of resources. Likewise for
+disk usage. It might be a user accident, a malicious user, or a
+worm program that has compromised your system and is now scanning
+other systems. Various tools exist to measure memory and disk
+usage: vmstat, free, df, du, all of which are covered by their
+respective man pages.</p>
+<p>At the very minimum make a full system backup, and regularly
+backup config files and log files, this can also help you
+pinpoint when an intrusion occurred (user account
+&quot;rewt&quot; was added before the April 4th backup, but isn't
+in the March 20th backup). Once a system is compromised typically
+a &quot;rootkit&quot; is installed, these consist of trojaned
+binaries, and are near impossible to remove safely, you are
+better of formatting the disk and starting from scratch. There is
+of course a notable exception to this rule, if you were diligent
+and used file/directory integrity tools such as L5 you will be
+able to pinpoint the affected files easily and deal with them.</p>
+<p>There are also a variety of tools that do not quite fit under
+the headings here, but are aimed at attack detection. One is the
+Linux Intrusion Detection System (LIDS) project, <a href="../kernel/index.html#LIDS">more information is listed here</a>.</p>
+<p>&nbsp;</p>
+<h2>File system monitoring</h2>
+<p>So you've secured your machines, and done all the things that
+needed to be done. So how do you make sure it's actually doing
+what it is supposed to do, or prove to someone that it is as
+secure as you say it is? Well you conduct an audit. This can be
+as simple as reviewing the installed software, configuration
+files and other settings, or as complex as putting together or
+hiring a tiger team (or ethical hackers, or whatever buzzword(s)
+you prefer) to actively try and penetrate your security. If they
+can't then you did your job well (or they suck), and if they do
+get in, you know what needs to be fixed (this is also a good
+method to show the CIO that security is not a one shot affair, it
+is a constant battle). One thing almost all attackers do is
+modify system files, once you detect a break in, how do you know
+which files are ok and which are not? Short of a complete
+reinstall the only way to be sure (and even then it's not always
+100%) is to use software to create signatures of files that
+cannot be forged so you can compare them later on.</p>
+<p>&nbsp;</p>
+<h3>Tripwire</h3>
+<p>Tripwire is no longer a open source tool. I have absolutely NO
+problems with commercial software. However, when you expect me to
+rely on a program to provide security, when I (nor anyone else
+really) can not view the source (it is available under some
+special license agreement, probably an NDA) I must decline.
+Tripwire costs approximately $70 for Linux, and is only available
+as an RPM package aimed at Red Hat Linux (tripwire is $500 for
+other operating systems). I feel this is rather on the high side
+for a piece of software that can easily be replaced with
+alternatives such as L5 or Gog&amp;Magog. Tripwire is available <a href="http://www.tripwiresecurity.com/">http://www.tripwiresecurity.com/</a>.
+There is also the &quot;classic&quot; version available <a href="http://www.tripwire.org/">http://www.tripwire.org/</a>.
+</p>
+<p>&nbsp;</p>
+<h3>AIDE</h3>
+<p>AIDE is a tripwire replacement that attempts to be better then
+tripwire. It is GPL licensed which makes it somewhat more
+desirable then tripwire from a trust point of view. It supports
+several hashing algorithms, and you can download <a href="http://www.cs.tut.fi/~rammer/aide.html">http://www.cs.tut.fi/~rammer/aide.html</a>.</p>
+<p>&nbsp;</p>
+<h3>ViperDB&nbsp;</h3>
+<p>ViperDB checks setuid/setgid programs and folders and can
+notify you (via syslog) of any changes or reset their permissions
+and ownership to what they should be. ViperDB creates a series of
+databases (flat text files actually) in the directory root, i.e.:
+/etc/.ViperDB might contain:</p>
+<pre>/etc/login.defs,1180,-,root,rw-,root,r--,r--,Apr,15,18:03
+/etc/minicom.users,1048,-,root,rw-,root,r--,r--,Mar,21,19:11
+/etc/CORBA,1024,d,root,rwx,root,r-x,r-x,Jun,14,16:51
+/etc/X11,1024,d,root,rwx,root,r-x,r-x,Jun,14,23:05
+/etc/cron.d,1024,d,root,rwx,root,r-x,r-x,Apr,14,17:09</pre>
+<p>Unfortunately ViperDB doesn&#146;t seem to handle sub
+directories, so you will have to add them to the viperdb.ini file
+with something like:</p>
+<pre>find /etc/ -type d &gt;&gt; /usr/local/etc/viperdb.ini</pre>
+<p>viperdb.pl has 3 options, -init (creates a set of databases),
+-check (checks files against databases, sends any messages to
+syslog, and then recreates the databases) and &#150;checkstrict
+(checks files against databases, resets permissions if necessary,
+sends any messages to syslog, and then recreates the databases).
+What this means is if you use &#150;check, you will get a warning
+that say /etc/passwd is now world writeable, and since it
+recreates the databases the next time you run viperdb you will
+NOT get a warning. I would advise running viperdb is
+&#150;checkstrict mode only, and make sure you run viperdb with
+the &#150;init option after manipulating any file / folder
+permissions in protected directories. ViperDB is available <a href="http://www.resentment.org/projects/viperdb/">http://www.resentment.org/projects/viperdb/</a>.
+</p>
+<p>&nbsp;</p>
+<h3>Pikt</h3>
+<p>Pikt is an extremely interesting tool, it is actually more of
+a scripting language aimed at system administration then a simple
+program. Pikt allows you to do things such as killing off idle
+user processes, enforcing mail quotas, monitor the system for
+suspicious usage patterns (off hours, etc), and much more. About
+the only problem with Pikt will be a steep learning tools, as it
+uses it&#146;s own scripting language, but ultimately I think
+mastering this language will pay off if you have many systems to
+administer (especially since Pikt runs on Solaris, Linux and
+FreeBSD currently). Pikt is available <a href="http://pikt.uchicago.edu/pikt/">http://pikt.uchicago.edu/pikt/</a>.</p>
+<p>&nbsp;</p>
+<h2>Backups</h2>
+<p>Something people forget about, but you can compare the current
+files to old backups, many backup formats (Tape, floppy, CDR,
+etc.) can be made read only, so a backup of a newly installed
+system provides a good benchmark to compare things to. The
+utility &#147;diff&#148; and &#147;cmp&#148; can be used to
+compare files against each other. <a href="../backups/index.html">See
+the backup section</a> for a full listing of free and commercial
+software.</p>
+<p>&nbsp;</p>
+<h2>Network monitoring / attack detection</h2>
+<p>If the last section has you worried you should be. There are
+however many defenses, active and passive against those types of
+attacks. The best ways to combat network scans are keep software
+up to date, only run what is needed, and heavily restrict the
+rest through the use of firewalls and other mechanisms.&nbsp;</p>
+<p>Luckily in Linux these tools are free and easily available,
+again I will only cover open source tools, since the idea of a
+proprietary firewall/etc is rather worrying. The first line of
+defense should be a robust firewall, followed by packet filters
+on all Internet accessible machines, liberal use of TCP-WRAPPERS,
+logging and more importantly automated software to examine the
+logs for you (it is unfeasible for an administrator to read log
+files nowadays).&nbsp;</p>
+<p>&nbsp;</p>
+<h3>DTK</h3>
+<p>The Deception ToolKit is a set of programs that emulate well
+known services in order to provide a false set of readings to
+attackers. The hope is to confuse and slow down attackers by
+leading them to false conclusions, you can download DTK from <a href="http://all.net/dtk/">http://all.net/dtk/</a>.</p>
+<p>&nbsp;</p>
+<h3>Psionic TriSentry - PortSentry, HostSentry and LogSentry</h3>
+<p>Psionic TriSentry consists of three components, PortSentry,
+HostSentry and LogSentry. PortSentry detects and logs port scans,
+including stealthy scans (basically anything nmap can do it
+should be able to detect). Psionic PortSentry can be configured
+to block the offending machine (in my opinion a bad idea as it
+could be used for a denial of service attack on legitimate
+hosts), making completion of a port scan difficult. As this tool
+is in beta I would recommend against using it, however with some
+age it should mature into a solid and useful tool. HostSentry
+spots local anomolous behaviour in user accounts, and reports
+situations that fall outside of normal parameters (i.e. Bob from
+accounting logging in at 2 AM on a Sunday). The last component is
+LogSentry, essentially a log file monitoring applications which
+will alert you if it spots strange problems. TriSentry is
+available <a href="http://www.psionic.com/products/">http://www.psionic.com/products/</a>.</p>
+<p>&nbsp;</p>
+<h3>scanlogd</h3>
+<p>scanlogd monitors network packets and if a threshold is
+exceeded it logs the packets. You can get it at: <a href="http://www.openwall.com/scanlogd/">http://www.openwall.com/scanlogd/</a>.</p>
+<p>&nbsp;</p>
+<h3>Firewalls</h3>
+<p>Most firewalls support logging of data, and ipfwadm/ipchains
+are no exception, using the -l switch you get a syslog entry for
+each packet, using automated filters (Perl is good for this) you
+can detect trends/hostile attempts and so on. Since most
+firewalls (UNIX based, and Cisco in any case) log via the syslog
+facility, you can easily centralize all your firewall packet
+logging on a single host (with a lot of harddrive space
+hopefully).</p>
+<p>&nbsp;</p>
+<h3>TCP-WRAPPERS</h3>
+<p>Wietse's TCP-WRAPPERS allow you to restrict connections to
+various services based on IP address and so forth, but even more
+importantly it allows you to configure a response, you can have
+it email you, finger the offending machine, and so on (use with
+caution however). TCP_WRAPPERS comes standard with most
+distributions and is available <a href="ftp://ftp.porcupine.org/pub/security/">ftp://ftp.porcupine.org/pub/security/</a>.</p>
+<p>&nbsp;</p>
+<h2>Intrusion Detection Papers</h2>
+<p>FAQ: Network Intrusion Detection Systems, an excellent FAQ
+that covers all the major (and many minor) issues with IDS
+systems. Available <a href="http://www.robertgraham.com/pubs/network-intrusion-detection.html">http://www.robertgraham.com/pubs/network-intrusion-detection.html</a>.</p>
+<p>&nbsp;</p>
+<h2>Dealing with attacks</h2>
+<p>So you've done your homework, you installed tripwire, DTK, and
+so on. Now what do you do when your pager starts going off at 3am
+and tells you that someone just made changes on the primary NIS
+server? Dealing with an attack depends on several factors, is the
+attack in progress? Did you discover your company plan being sent
+out by the mail server to a Hotmail address? Did you get called
+in to find a cluster of dead servers? What are your priorities?
+Restoring service? Ensuring confidential data is safe?
+Prosecuting the attacker(s)? Several things to keep in mind:</p>
+<ul>
+<li>Response from the admin will depend heavily on the
+environment they are in. The attacker may have
+compromised the administrative accounts, so sending email
+may not work.</li>
+<li>Most sites usually don't want to report attacks
+(successful or not) due to the potential embarrassment
+and related public relations problems.</li>
+<li>Most quick attacks, denial of service attacks and the
+like are spoofed. Tracking down the real attacker is very
+difficult and resource intensive.</li>
+<li>Even if all goes well there is a chance law enforcement
+will seize your equipment as evidence, and hold it, not
+something to be taken lightly.</li>
+<li>Do you know how the attacker got in (i.e. NFR recorded
+it), if so you might just want to plug the holes and go
+on.</li>
+<li>Try not to ignore attacks, but at the same time there are
+many people running garbage attacks in an effort to waste
+administrators time and energy (and possibly distract
+them from more subtle attacks).</li>
+</ul>
+<p>Also before you deal with an attack, you should consult your
+company policy. If you don't have one consult your manager, the
+legal department, etc. It's also a good idea to have a game plan
+to deal with attacks (i.e., the mail server is first priority,
+checking fileservers is number two, who do you notify, etc) this
+will prevent a lot of problems when it happens (be prepared). The
+O'Reilly book <a href="http://www.ora.com/catalog/puis/">&#147;Practical
+Unix and Internet Security&#148;</a> covers this topic in great
+detail so I&#146;m not going to rehash it. Go buy the book. There
+is also &quot;Incident response&quot; from O'Reilly, you should
+probably read it, it's quite good.</p>
+<p>An excellent whitepaper on this is also available, see <a href="../appendices/index.html">Appendix D</a>, &#147;How to
+Handle and Identify Network Probes&#148;.</p>
+<p>&nbsp;</p>
+<h2>Packet sniffers</h2>
+<p>Packet sniffing is the practice of capturing network data not
+destined for your machine, typically for the purpose of viewing
+confidential/sensitive traffic such as telnet sessions or people
+reading their email. Unfortunately there is no real reliable way
+to detect a packet sniffer since it is mostly a passive activity,
+however by utilizing network switches and fiber optic backbones
+(which are very difficult to tap) you can minimize the threat.
+There is also a tool called AntiSniff, that probes network
+devices and sees if their response indicates an interface in
+promiscuous mode. These tools are also invaluable if your network
+is under attack and you want to see what is going on. There is an
+excellent FAQ on sniffing <a href="http://www.robertgraham.com/pubs/sniffing-faq.html">http://www.robertgraham.com/pubs/sniffing-faq.html</a>.</p>
+<p>&nbsp;</p>
+<h3>Snort</h3>
+<p>Snort is the king of packet sniffers now. It can also be used
+to detect various attacks. It can watch for activity such as
+Queso TCP-IP fingerprinting scans, Nmap scans, and the like.
+Snort is available <a href="http://www.snort.org/">http://www.snort.org/</a>.</p>
+<p>&nbsp;</p>
+<h3>tcpdump</h3>
+<p>The granddaddy of packet sniffers for Linux, this tool has
+existed as long as I can remember, and is of primary use for
+debugging network problems. It is not very configurable and lacks
+advanced features of newer packet sniffers, but it can be useful.
+Most distributions ships with tcpdump.</p>
+<p>&nbsp;</p>
+<h3>Ethereal</h3>
+<p>A nice looking network protocol analyzer (a.k.a., a souped up
+sniffer) with an interface very similar to NT&#146;s network
+monitor. It allows easy viewing of data payloads for most network
+protocols (tftp, http, Netbios, etc). It is based on GTK, thus
+meaning you will probably have to be running gnome to use it. I
+haven't tested it yet (but intend to). It is available <a href="http://www.ethereal.com/">http://www.ethereal.com/</a>.
+Ethereal can also be used to open trace files from other
+software.</p>
+<p>&nbsp;</p>
+<h3>SPY</h3>
+<p>SPY is an advanced multi protocol sniffer that runs on various
+platforms. You can get it <a href="http://www.gromeck.de/Spy/">http://www.gromeck.de/Spy/</a>.</p>
+<p>&nbsp;</p>
+<h3>Other sniffers</h3>
+<p>There are a variety of packet sniffers for Linux, based on the
+libpcap library among others, here is a short list:</p>
+<p>Numerous other packet sniffers are available <a href="http://freshmeat.net/search/?site=Freshmeat&amp;q=packet+sniff&amp;section=projects">http://freshmeat.net/search/?site=Freshmeat&amp;q=packet+sniff&amp;section=projects</a>.
+</p>
+<p>&nbsp;</p>
+<h2>Packet sniffer detection</h2>
+<p>In theory most operating systems leave tell tale signs when
+packet sniffing (that is to say their network interfaces respond
+in certain, non standard ways to network traffic). If the
+attacker is not to savvy, or is using a compromised machine then
+chances are you can detect them. On the other hand if they are
+using a specially built cable, or induction ring there is no
+chance of detecting them unless you trace every physical piece of
+network cable and check what is plugged into it. </p>
+<p>&nbsp;</p>
+<h3>AntiSniff</h3>
+<p>As mentioned before AntiSniff i a tool that probes network
+devices to try and see if they are running in promiscuous mode,
+as opposed to normal modes of operation. It is supposedly
+effective, and will work against most sniffers. You can get it <a href="http://www.securitysoftwaretech.com/antisniff/">http://www.securitysoftwaretech.com/antisniff/</a>.
+AntiSniff has not been maintained in over a year. </p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../index.html">Back</a></p>
+<p>Last updated on 7/5/2002</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#23485651576350464a45514a46470d4c5144"><span class="__cf_email__" data-cfemail="5d36282f291d2e38343b2f34383973322f3a">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

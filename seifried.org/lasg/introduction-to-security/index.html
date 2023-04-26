@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Introduction to security</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Introduction to computer security</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#33584641477340565a55415a56571d5c4154"><span class="__cf_email__" data-cfemail="2e455b5c5a6e5d4b47485c474b4a00415c49">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>What is computer security?</h2>
+<p>Security is risk management. - unknown</p>
+<p>&quot;A computer is secure if you can depend on it and it's
+software to behave as you expect&quot; - Practical UNIX and
+Internet Security</p>
+<p>Security is: availability, consistency, access control, data
+confidentiality, authentication. - <a href="http://www.sun.com/security/overview.html">http://www.sun.com/security/overview.html</a>
+</p>
+<p>&quot;The principal objective of computer security is to
+protect and assure the confidentiality, integrity, and
+availability of automated information systems and the data they
+contain.&quot; - <a href="http://csrc.nist.gov/publications/secpubs/cslaw.txt">http://csrc.nist.gov/publications/secpubs/cslaw.txt</a>
+</p>
+<p>There are numerous definitions for &quot;computer
+security&quot;, and most of them are correct. Essentially
+computer security means enforcement of usage policies, this must
+be done since people and software have flaws that can result in
+accidents, but also because someone may want to steal your
+information, use your resources inappropriately or simply deny
+you the use of your resources. </p>
+<p>&nbsp;</p>
+<h2>Security Policy</h2>
+<p>A security policy is an expression of your organizations
+security goals. Security goals will vary greatly by organization,
+for example a software vendor is typically more concerned about
+the confidentiality and integrity of their source code anything
+else, while a pornographic website is probably more concerned
+about processing credit cards online. There is an immense amount
+of security technology available, from software and hardware to
+specific techniques and implementations. You cannot properly
+implement the technology without a solid idea of what your goals
+are. Do home users connecting to the office need to use VPN
+software? If your security policy states that all file and print
+transfers must either be encrypted or sent across a
+&quot;trusted&quot; network then the answer is probably yes. What
+authentication methods are acceptable for services that can be
+reached from the Internet? Do you require strong passwords,
+tokens, biometric authentication, or some combination? The data
+you collect from remote sites, is it more important that this
+data is collected, or is it more important that this data remain
+secret? Data that is remote weather telemetry is probably not as
+sensitive as credit card numbers. </p>
+<p>Some security policies will need to be exceptionally broad and
+general, for example the security policy for JANET, the academic
+backbone network for England states:</p>
+<blockquote>
+<h5>Monitoring and Enforcement </h5>
+<p>19. It follows from the policy of cascaded responsibility
+backed up by written site agreements, that there must be some
+method for UKERNA to enforce the possible disconnection
+envisaged by the AUP, and to provide full access and
+assistance to law enforcement agencies where necessary. </p>
+<p>20. The JANET-CERT has therefore been given the
+responsibility (in conjunction with UKERNA) to </p>
+<ul>
+<li>Monitor use of the network, as far as is possible
+while respecting privacy, either in response to
+information about a specific threat, or generally
+because of a perceived situation </li>
+<li>Require a primary site, through its nominated
+contact, to rectify any omission in its duty of
+responsibility </li>
+<li>Where a site is unable or unwilling to co-operate,
+report the issue to UKERNA and initiate the procedure
+for achieving an emergency disconnection </li>
+<li>Obtain evidence and pass on information as necessary
+in order to assist an investigation by a law
+enforcement agency </li>
+<li>Provide support and co-ordination for investigations
+into breaches of security </li>
+</ul>
+</blockquote>
+<p>On the other hand a security policiy can be fine grained:</p>
+<blockquote>
+<p>All internal email must be encrypted with PGP or GnuPG
+using a key of at least 1024 bits that is signed by an
+authorized signing entity. </p>
+</blockquote>
+<p>Generally speaking the more detailed and technology oriented a
+security policy is the harder it will be to follow and keep up to
+date. The actuall technical details of implementing a security
+policy should be seperated from it. Keeping a seperate set of
+best practices or an actually &quot;implementation of security
+policy&quot; document is a better idea then rolling it all into
+the security policy. </p>
+<p>&nbsp;</p>
+<h2>Acceptable Use Policy</h2>
+<p>Another component of computer security is an AUP (Acceptable
+Use Policy). This is a document that sates what a user of your
+resources may or may not do with them. Typically it is part of a
+contract and is signed at the time when the services are
+purchased. Many acceptable use policies generally forbid actions
+that are illegal, potentially annoying to other people (and hence
+likely to cause problems for the provider inthe form of
+complaints) or are controversial (such as pornography). Other
+standard clauses include &quot;this notice may change at any time
+without warning&quot; and &quot;we can terminate your service (or
+fire you) at any time without warning if you violate this policy.
+Generally speaking the majority of AUP's are reasonable and will
+not be a problem for normal users. These are a good compliment to
+a security policy as they set out in concret terms what a user is
+or is not allowed to do, and as they are often part of a contract
+it allows a provider to enforce their security policy when a user
+attempts to violate it or has violated it. </p>
+<p>&nbsp;</p>
+<h2>Privacy Policy</h2>
+<p>Privacy policies are interesting in that they are supposed to
+prevent an organization 9typically a company) from violating some
+aspects of a user's security (specifically the confidentiality of
+their information). Unfortunately the majority of privacy
+policies contain clauses like &quot;this policy may change at any
+time without warning&quot; or are simply discarded when a company
+decides to profit off of a user's information (such as name,
+address, credit card details, purchase history, etc.). </p>
+<p>&nbsp;</p>
+<h2>Security is a process </h2>
+<p>You only need to make one mistake or leave one flaw available
+for an attacker to get in. This of course means that most sites
+will eventually be broken into. Witness the effects of Code Red,
+an Nimda, both of which were hugely succesful exploiting well
+known and long solved vulnerabilities in the Microsoft IIS
+server. Regularily apply patches (after testing them). Regularly
+scan your network for open ports. Regularly scan your servers
+with intrusion testing software such as Nessus. Audit file
+permissions and make sure there are no unexpected setuid or
+setgid binaries. </p>
+<p>&nbsp;</p>
+<h2>Defense in depth</h2>
+<p>All technical security measures will eventually fail or be
+vulnerable to an attacker. This is why you must have multiple
+layers of protection. Firewalls are not enough, you may
+accidently forget a rule or leave yourself exposed while
+reinitializing a ruleset, use tcp_wrappers to restrict access to
+services as well where possible. Restrict which users can access
+these services, especially if only a few users need access.
+Encrypt traffic where possible so that attackers cannot easily
+snoop usernames and passwords or hijack sessions. Since security
+measures will fail you also need a strong audit and logging
+process so that you can later find out what went wrong and how
+bad it is. </p>
+<p>&nbsp;</p>
+<h2>Technical problems</h2>
+<p>These are just a handful of thousands of specific technical
+problems facing security administrators. </p>
+<p>&nbsp;</p>
+<h3>Network Connectivity</h3>
+<p>One of the biggest security challenges is the increase in
+network connectivity. If you have a machine that is not connected
+to any other machines an attacker will generally need to gain
+physical access. This of course greatly narrows down the number
+of attackers. However with everything connected to the Internet
+there are over 100 million people that can potentially get into
+your machine.</p>
+<p>&nbsp;</p>
+<h3>Insecure defaults</h3>
+<p>This is one of the problems that has caused no end of security
+problems since day one. Vendors typically ship their operating
+systems with insecure defaults (i.e. finger, telnet, ftp, etc.)
+meaning that administrators must expend a lot of effort to close
+security problems before they can even start to pro-actively
+secure their systems and networks. </p>
+<p>&nbsp;</p>
+<h3>Legitimate access vs.s a break in</h3>
+<p>Because you must grant legitimate users access to resources
+there is always the potential for attackers to gain access.
+Attacker can guess authentication credentials (i.e. weak
+passwords), steal them (password sniffing), exploit flaws in the
+server itself and so on.</p>
+<p>&nbsp;</p>
+<h3>Minimizing access and privilege</h3>
+<p>When possible restrict access. If you do not need to run
+fingerd turn it off and remove it. An attacker cannot exploit
+fingerd if it isn't present. Keep users off of servers if
+possible, if they need shell accounts for some reason setup a
+separate system and partition it off from the rest of your
+network. Lock down workstations where possible, set BIOS
+passwords, secure the boot sequence, do not give them
+administrative access.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 1/10/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#cca7b9beb88cbfa9a5aabea5a9a8e2a3beab"><span class="__cf_email__" data-cfemail="a2c9d7d0d6e2d1c7cbc4d0cbc7c68ccdd0c5">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

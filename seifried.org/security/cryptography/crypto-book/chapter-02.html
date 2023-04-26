@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Chapter 2 - Cryptography - the simple explanation</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Chapter 2 - Cryptography - the simple explanation</h1>
+<p>&nbsp;</p>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#03687671774370666a65716a66672d6c7164"><span class="__cf_email__" data-cfemail="a9c2dcdbdde9daccc0cfdbc0cccd87c6dbce">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried</p>
+<hr>
+<p>&nbsp;</p>
+<p>One of the simplest examples of cryptography is the Caesar
+cipher. You have a pre-arranged code for switching letters in the
+alphabet, which you use to encipher your message. For example
+using the following code:</p>
+<table border="1" cellpadding="2" width="100%">
+<tr>
+<td align="center" width="3%">A</td>
+<td align="center" width="3%">B</td>
+<td align="center" width="3%">C</td>
+<td align="center" width="3%">D</td>
+<td align="center" width="4%">E</td>
+<td align="center" width="4%">F</td>
+<td align="center" width="4%">G</td>
+<td align="center" width="4%">H</td>
+<td align="center" width="4%">I</td>
+<td align="center" width="4%">J</td>
+<td align="center" width="4%">K</td>
+<td align="center" width="4%">L</td>
+<td align="center" width="4%">M</td>
+<td align="center" width="4%">N</td>
+<td align="center" width="4%">O</td>
+<td align="center" width="4%">P</td>
+<td align="center" width="4%">Q</td>
+<td align="center" width="4%">R</td>
+<td align="center" width="4%">S</td>
+<td align="center" width="4%">T</td>
+<td align="center" width="4%">U</td>
+<td align="center" width="4%">V</td>
+<td align="center" width="4%">W</td>
+<td align="center" width="4%">X</td>
+<td align="center" width="4%">Y</td>
+<td align="center" width="4%">Z</td>
+</tr>
+<tr>
+<td align="center" width="3%">Q</td>
+<td align="center" width="3%">A</td>
+<td align="center" width="3%">Z</td>
+<td align="center" width="3%">W</td>
+<td align="center" width="4%">S</td>
+<td align="center" width="4%">X</td>
+<td align="center" width="4%">E</td>
+<td align="center" width="4%">D</td>
+<td align="center" width="4%">C</td>
+<td align="center" width="4%">R</td>
+<td align="center" width="4%">F</td>
+<td align="center" width="4%">V</td>
+<td align="center" width="4%">T</td>
+<td align="center" width="4%">G</td>
+<td align="center" width="4%">B</td>
+<td align="center" width="4%">Y</td>
+<td align="center" width="4%">H</td>
+<td align="center" width="4%">N</td>
+<td align="center" width="4%">U</td>
+<td align="center" width="4%">J</td>
+<td align="center" width="4%">M</td>
+<td align="center" width="4%">I</td>
+<td align="center" width="4%">K</td>
+<td align="center" width="4%">O</td>
+<td align="center" width="4%">L</td>
+<td align="center" width="4%">P</td>
+</tr>
+</table>
+<p>So if your message were:</p>
+<p>meet me at six</p>
+<p>The text you are ciphering would be turned into a stream of
+letters without spaces:</p>
+<p>MEETMEATSIX</p>
+<p>And the corresponding ciphertext would be:</p>
+<p>TSSJTSQJUCO</p>
+<p>This is of course an extremely weak cipher, cryptographic
+analysis of a large amount of text would be absurdly simple for
+several reasons:</p>
+<p>1) the cipher does not change, the substitution is very simple</p>
+<p>2) the frequency of letters in the English language (and any
+language for that matter) can be compared to this, in English the
+most common letter is &quot;e&quot;, if you had a large amount of
+text enciphered with this method you could simply analyze the
+frequencies, and easily get some of the more common letters like
+e, t, r, s and so on.</p>
+<p>For a more detailed description of cryptography see the next
+section.</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="chapter-01.html">Back</a> | <a href="index.html">TOC</a> | <a href="chapter-03.html">Forwards</a>]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

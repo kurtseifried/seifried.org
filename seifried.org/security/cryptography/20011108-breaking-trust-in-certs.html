@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Title Here</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Ending trust in certificates</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#1e756b6c6a5e6d7b77786c777b7a30716c79"><span class="__cf_email__" data-cfemail="8de6f8fff9cdfee8e4ebffe4e8e9a3e2ffea">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>For a while now I've been writing articles about SSL,
+outlining various problems, and why SSL in general is a poor
+solution that should be improved (before we start doing things
+like online voting, yikes). The whole premise of certificates is
+that multiple parties trust a central certificate authority (CA),
+so when Alice wants to talk to Bob they can verify each others
+certificates through the CA, in theory proving that they are
+actually taking to the person that they claim to be. This CA has
+a very important job, especially so with the use of X.509
+certificates (currently the most common for SSL, smartcards and
+so on). Unlike PGP or GnuPG for example where you can have
+multiple entities sign a certificate (such as your mother, your
+boss, the post office, etc.) with X.509 you are limited to one
+only. Because X.509 certificates can only be signed by one entity
+you ultimately have to place all your trust in the entity that
+signed it. </p>
+<p>Chances are any CA that is setup to sign certificates will
+sign a lot of certificates, once they have built the
+infrastructure it essentially costs them nothing to sign
+certifications. In fact the only major cost for signing a
+certificate would be verifying that the end party asking for a
+signed certificate is indeed who they claim to be. Verisign (who
+owns Thawte, among other companies) now has the majority of the
+market (the last number is saw was over 95%), and they have made
+at least one extremely large mistake. In January of this year
+they issued two certificates to &quot;Microsoft
+Corporation&quot;, unfortunately the person that got these
+certificates did not work for Microsoft. To quote the security
+bulletin issued by Microsoft:</p>
+<blockquote>
+<p>The certificates could be used to sign programs, ActiveX
+controls, Office macros, and other executable content. Of
+these, signed ActiveX controls and Office macros would pose
+the greatest risk, because the attack scenarios involving
+them would be the most straightforward. Both ActiveX controls
+and Word documents can be delivered via either web pages or
+HTML mails. ActiveX controls can be automatically invoked via
+script, and Word documents can be automatically opened via
+script unless the user has applied the Office Document Open
+Confirmation Tool. </p>
+</blockquote>
+<p>Now this is a pretty bad situation. But things get worse:</p>
+<blockquote>
+<p>Verisign has revoked the certificates, and they are listed
+in Verisign&#146;s current Certificate Revocation List (CRL).
+However, because Verisign&#146;s code-signing certificates do
+not specify a CRL Distribution Point (CDP), it is not
+possible for any browser&#146;s CRL-checking mechanism to
+download the Verisign CRL and use it. Microsoft is developing
+an update that rectifies this problem. The update package
+includes a CRL containing the two certificates, and an
+installable revocation handler that consults the CRL on the
+local machine, rather than attempting to use the CDP
+mechanism. </p>
+</blockquote>
+<p>Oh dear. The sad part is even if Verisign had included a CDP
+field in the certificate it wouldn't have mattered much since
+Microsoft doesn't support certificate revocation very well yet.</p>
+<p>See, certificates sometimes need to be revoked, perhaps your
+laptop gets stolen, you accidentally expose it, or someone that
+had access to it is fired and you don't completely trust them.
+This is supposed to be achieved through a &quot;Certificate
+Revocation List&quot;, basically a list of certificates that have
+been revoked which is signed by the CA (so an attacker can't
+issue a fake revocation). Well this is all fine and dandy in
+theory but there are significant problems:</p>
+<ol type="1" start="1">
+<li>In each certificate there needs to be a field telling you
+where to look for the revocation, the CDP, as yet there
+are no large central repositories available for public
+use, and only a handful (or less) of vendors that even
+bother to put the field in their certificates (Baltimore
+Entrust is the only I know of).</li>
+<li>CA's need to create massive, redundant and extremely
+secure CDP's (having one server just won't do it). The
+response time for checking if a certificate is revoked or
+not needs to be very fast (even if you only check once a
+day).</li>
+<li>People need to turn on &quot;check for certificate
+revocation&quot; in their SSL enabled software (web
+browsers, operating system, email clients, etc.).</li>
+</ol>
+<p>None of these problems can be easily solved, there are
+hundreds of thousands of certificates floating around with no
+easy way to find where a certificate's revocation can be found,
+many of these certificates have reasonably short life span, but
+not all of them. In future hopefully all vendors will issue
+certificates with CDP fields, however this hasn't happened yet
+and isn't likely to happen anytime soon. The CA's then need to
+build massive infrastructures to run their CDP's and support
+CRL's properly, however this costs real money, so I doubt any
+CA's will be doing this soon (if ever). Once the CDP's and CRL's
+are built and available users then need to use them, turning on
+&quot;check for certificate revocation&quot; in all their
+software (it is unlikely vendors will turn this on by default). </p>
+<p>Why am I being so pessimistic? Simply put users will not
+demand these features. CA's will perpetuate the myth that
+certificates can be trusted and are suitable for use in business
+transactions, contracts and so on. Most software vendors have not
+even provided the capabilities, until recently if at all to check
+for revoked certificates, so even with CA's adding CDP fields it
+won't help much until people are using software capable of
+utilizing it. Between software vendors and CA's I don't think the
+situation is likely to improve anytime soon (if at all). </p>
+<p>&nbsp;</p>
+<p><a href="http://www.baltimore.com/devzone/pki/">http://www.baltimore.com/devzone/pki/</a>
+- excellent information on PKI, CA&quot;s, CRL's, CDP's, etc.</p>
+<p><a href="http://www.counterpane.com/pki-risks.html">http://www.counterpane.com/pki-risks.html</a>
+- Ten risks of PKI</p>
+<p><a href="http://www.microsoft.com/technet/security/bulletin/MS01-017.asp">http://www.microsoft.com/technet/security/bulletin/MS01-017.asp</a>
+- Microsoft's security bulletin</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 8/11/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

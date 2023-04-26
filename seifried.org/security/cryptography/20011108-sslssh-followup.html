@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="rating" content="General">
+<meta name="ROBOTS" content="ALL">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Title Here</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>The End of SSL and SSH? Follow-up.</h1>
+<p>&nbsp;</p>
+<p>by <a href="/cdn-cgi/l/email-protection#5f2c3a36392d363a3b1f2c3a3c2a2d362b262f302d2b3e33713c3032">Kurt Seifried</a>
+for <a href="http://www.securityportal.com/">http://www.securityportal.com/</a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>The original article: <a href="20011108-end-of-ssl-ssh.html">The
+end of SSL and SSH?</a></p>
+<p>&nbsp;</p>
+<p><strong>December 22 2000 - </strong>Well, I certainly managed
+to kick over a hornet's next with my article &quot;The End of SSL
+and SSH?&quot;. There were quite a few points I did not cover in
+the article, many I did not think of, and some I trimmed. This
+article will cover the reaction to SSL and SSH being
+&quot;dead&quot;, as well as numerous implementation issues I did
+not cover. The real issue is that technology cannot solve
+problems completely. Anytime you put a new solution in you breed
+new problems. This of course assumes you installed and are
+maintaining the new solution correctly in the first place.
+Vendors ships SSL and SSH, you turn it on, it works.
+Unfortunately most people feel that they are then done and move
+on to other problems, this is far from the truth. Both SSL and
+SSH have numerous avenues an attacker can take, many of these
+rely on the end user to make the right decision or have a secure
+system, meaning a user can shoot themselves in the foot with
+incredible ease. Pretty much any cryptographic
+&quot;solution&quot; requires a degree of maintenance and
+continued attention.</p>
+<p>&nbsp;</p>
+<h2>SSL</h2>
+<p>Vendors ship server software such as SSL enabled web servers
+but do little to make sure that users create certificates
+properly or store them properly. While almost all webservers
+support PEM (Privacy Enhanced Mail) encoded certificates
+relatively few people use them since you must enter a passphrase
+every time you start the server, making it impractical for many
+such as virtual web hosting companies with dozens, hundreds or
+even thousands of sites. These certificates can also be retrieved
+from the memory of the server, this was found to be quite a bit
+easier then originally thought. On the client side we have web
+browsers with over a hundred certificates (I counted the root
+certificates in Internet Explorer 5.5 and it came to 120 root
+certificates). If any one of these certificates is compromised an
+attacker would be able to create and sign certificates for any
+name they wished to, making setup of fake sites trivial.
+Attackers can easily present users with a new root certificate
+and many users would inadvertently install, again allowing an
+attacker to create arbitrary certificates. You can also modify
+the certificate store with relative ease, since Windows 9x has no
+file or registry permissions and the default settings in NT are
+quite promiscuous this is relatively easy. The number of
+potential paths an attacker can take to get a root certificate
+into a users webbrowser are numerous and generally speaking quite
+weak, most depend on the user to make the right decision, or have
+secured their system properly, something that is relatively rare.
+</p>
+<p>If an attacker manages to break into a server that uses SSL to
+secure services they can steal the certificate. If the
+certificate is PEM encoded they will need to find the passphrase,
+this can range from trivial to difficult in the extreme. They can
+then use the certificate to setup a service that looks identical
+to the original, with some DNS poisoning they can direct users
+towards it. Now a good administrator is supposed to to notice
+this and issue a certificate revocation. There is only one tiny
+problem with this scenario. I have yet to see any web browser or
+SSL enabled piece of software that checked for certificate
+revocation by default, if they have the option it is usually
+disabled by default. The reasons for this are many, the primary
+one being that a piece of client software that checks for
+revocation constantly will be slower and this of course will
+annoy users.</p>
+<p>Darren Reed <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="402136212c2f2e00030f0f0d02136e010e156e0504156e0115">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> points out that:</p>
+<blockquote>
+<p>For Netscape there is a built-in MIME type that cannot be
+disabled which invokes the root CA installation code.&nbsp;
+10:1 most people would click &quot;ok&quot; to install a root
+CA if so prompted from a random web site. Now that's without
+even doing anything nasty.</p>
+</blockquote>
+<p>Even ignoring all these problems the simple fact is that SSL
+certificates only identify the server to the user, they do not
+authenticate it. This is a subtle but incredibly important
+difference. My online bank is at tdbank.ca, td.ca on the other
+hand is owned by someone else and banktd.ca is still free. I know
+for example that www.openssl.org is the &quot;official&quot; site
+for OpenSSL, but what about www.openssl.de? Shouldn't that be the
+official site for OpenSSL translated into German? Well it turns
+out that it isn't. Do you trust every single root certificate in
+your webbrowser software? Have you even heard of &quot;IPS
+SERVIDORES&quot; (ips.es), &quot;Saunalahden Serveri CA&quot;
+(saunalahti.fi) or &quot;SERVICIOS DE CERTIFICACION -
+A.N.C.&quot; (correo.com.uy)? I sure as heck haven't.</p>
+<p>Of course an attacker can simply prevent you from ever making
+it to the real web site, say you are shopping at example.org,
+generally speaking the only part that would be SSL protected is
+the actual order submission, meaning an attacker can do a man in
+the middle attack and host a fake example.org web site. When you
+hit submit to place your order they would simply direct it to
+either a non secure site or their own secure site.</p>
+<p>&nbsp;</p>
+<h2>SSH</h2>
+<p>Drop 300 and fire for effect!</p>
+<p>Now to deal with SSH. One huge SSH problem that someone
+pointed out (lost your email address, sorry) is that very few
+people expire their SSH keys. Another friend of mine pointed out
+that to minimize the pain of different SSH keys on hosts the
+local university copies keys between servers, in a way this makes
+sense for ease of use, but has horrific security consequences.
+SSH keys can last forever if you want, and the key itself has no
+real binding to the host it resides on. Expiring and replacing
+keys is difficult as it would look exactly like a man in the
+middle attack to end users, &quot;Host key has changed,
+blahblahblah&quot;. Implementing a PKI in SSH would negate many
+of the benefits SSH offers, like ease of deployment since you
+don't have to worry about setting up a key structure, just
+individual keys. However something that could improve it would be
+to use authentication protocols such as SRP or Kerberos that
+offer a number of benefits. With Kerberos for example the server
+authenticates itself to the client as well as the client to the
+server, thus making man in the middle much harder to execute. SSH
+also does not protect the key beyond file permissions, and has no
+key revocation mechanism. If an attacker were to break into a
+system and managed to retrieve the keys they would then be able
+to execute a man in the middle with extreme ease. To make matters
+worse the admin would have to somehow inform users (via email?
+memo? phone?) that the keys had been compromised, there is no way
+to do a key revocation. Contacting all the users for a large
+installation (such as a university) would be painful to say the
+least. Then there is the issue of protecting the known_hosts file
+in UNIX, often times user directories are mounted via NFS, savvy
+attackers could be able to modify the known_hosts file in transit
+(like when your local ssh client requests it) allowing them to
+execute a man in the middle attack successfully. This could be
+somewhat mitigated by populating machines with a known_hosts file
+in /etc however the maintenance and distribution of such a file
+would be non trivial. </p>
+<p>To make matters worse here are the messages that SecureCRT ( a
+popular SSH client for Windows gives:</p>
+<p>New key:</p>
+<blockquote>
+<p>The remote host (foo.example.org) has not been registered.<br>
+Do you want to accept this key?<br>
+Cancel | Accept Once | Accept &amp; Save</p>
+</blockquote>
+<p>Changed key:</p>
+<blockquote>
+<p>The key you received from foo.example.org conflicts with
+the previously registered key. <br>
+Do you want to accept this key?<br>
+Cancel | Accept Once | Accept &amp; Save</p>
+</blockquote>
+<p>No reason or explanation is given, unless the user has been
+educated chances are they will simply accept they new or changed
+key and go on with their work. Programs should flash, beep and
+make the user aware of potentially bad things, the error message
+for a changed key should be more like:</p>
+<blockquote>
+<p>The key you received from foo.example.org is different
+then the previously registered key. <br>
+This may be due to an updated key on the server, or an attack
+trying to subvert your ssh connection. <br>
+You should contact your network help desk or system
+administrator immediately and clarify the situation.</p>
+</blockquote>
+<p>Programs should not make it easy for a user to let an attacker
+execute an attack successfully. Remember, once an attacker gets
+on to the system with a shell chances are they can gain
+administrative access, meaning you will have a server to rebuild.</p>
+<p>&nbsp;</p>
+<h2>SRP / Kerberos and others</h2>
+<p>There are a number of protocols well suited to authentication.
+Kerberos allows users to authenticate themselves to a server, and
+vice versa based on a shared secret (usually the password).
+Microsoft has recently started using Kerberos (with some
+&quot;enhancements&quot;), letting you connect to Win2K servers
+and then use things like IPSec in a reasonably secure manner.
+Other ZKP (Zero Knowledge Protocols) protocols such as SRP allow
+you to prove your identity to a server without ever sending any
+sensitive data (like your password) over the network.
+Implementing Kerberos, SRP or other ZKP protocols into SSH would
+make man in the middle attacks more difficult. Unfortunately
+these systems do not apply to SSL much since most SSL
+transactions are www based and the user has no way of pre sharing
+a secret with the merchant. </p>
+<p>&nbsp;</p>
+<h2>PGP / GnuPG</h2>
+<p>Many people pointed out PGP and GnuPG as being potential
+add-on solutions. You can PGP / GnuPG sign SSH keys and
+distribute them, well except for the small problem that very few
+users have PGP or GnuPG capable mail programs and even fewer know
+how to use them properly. Plus they would then have to take these
+keys and import them into their known_hosts file (which even if
+done correctly doesn't guarantee security). I would not classify
+the use of PGP / GnuPG to &quot;add security&quot; to SSH or SSL
+as a valid solution. There are also some nasty security problems
+in older version of PGP and GnuPG that could allow an attacker to
+subvert messages and keys.</p>
+<p>&nbsp;</p>
+<h2>DNSSEC / IPSec</h2>
+<p>This is something I mentioned as being a potential solution. I
+phrased it badly, what I was aiming to get across was that the
+use of DNSSEC could help prevent man in the middle attacks.
+Currently DNS is completely insecure. DNS spoofing is a trivial
+matter for attackers and most clients rely heavily on DNS (how
+many people put the IP address of a server in the connection
+setting, instead using the name?). If DNSSEC were properly
+implemented and DNS servers were properly secured DNS spoofing
+would be more difficult, obviously it has a long ways to go.
+Widespread usage of IPSec would make man in the middle attacks
+harder as well, hijacking TCP sessions would be a non trivial
+exercise and most fail. However IPSec requires some form of
+authentication, this can be achieved with a PKI (such as DNSSEC)
+or shared secrets (such as Microsoft's Kerberos), obviously we
+are a long ways from widespread opportunistic IPSec usage,
+however in many environments IPSec can be deployed and would
+help. Deploying it properly and maintaining it is left as an
+exercise to the reader.</p>
+<p>&nbsp;</p>
+<h2>Social issues</h2>
+<p>Many attacks come from internal sources, the difficulty in
+gaining some sort of access is negated by the simple fact that
+the attacker already has legitimate access. Even if the
+technology works properly the end user must still be educated and
+security conscious as many attacks will ultimately end up
+targeting the user (often the weakest link). Security protocols
+and software are far from being the robust fail safe (as opposed
+to fail open) systems that we seem to think they are. Good
+security should be hard to disable or misuse, for example door
+locks are extremely simple to use, locking a door is a simple act
+and testing that it is locked is simple (I always try to turn my
+door handle once I have locked it when leaving the apartment).
+Security software should aim for this level of ease of user and
+safety.</p>
+<p>&nbsp;</p>
+<p><strong>Reference URL's:</strong></p>
+<p>&nbsp;</p>
+<p><a href="http://www.cert.dfn.de/infoserv/dsb/dsb-2000-02.html">http://www.cert.dfn.de/infoserv/dsb/dsb-2000-02.html</a>
+- Unzureichender Schutz der X.509v3-Zertifikate in Browsern</p>
+<p><a href="http://www.nlnetlabs.nl/">http://www.nlnetlabs.nl/</a>
+- DNSSEC papers</p>
+<p><a href="http://www.apacheweek.com/issues/00-12-22">http://www.apacheweek.com/issues/00-12-22</a>
+- Using certificate revocation in Apache</p>
+<p><a href="http://www.bell-labs.com/user/philmac/pak.html">http://www.bell-labs.com/user/philmac/pak.html</a>
+- PAK</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 8/11/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

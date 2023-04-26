@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>ec2 &#8211; Kurt Seifried</title>
+	<atom:link href="http://kurt.seifried.org/tag/ec2/feed/" rel="self" type="application/rss+xml" />
+	<link>http://kurt.seifried.org</link>
+	<description>Just another blog from just another guy (kurt@seifried.org)</description>
+	<lastBuildDate>Fri, 02 Dec 2016 16:18:42 +0000</lastBuildDate>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.com/</generator>
+<cloud domain='kurt.seifried.org' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
+<image>
+		<url>http://s2.wp.com/i/buttonw-com.png</url>
+		<title>ec2 &#8211; Kurt Seifried</title>
+		<link>http://kurt.seifried.org</link>
+	</image>
+	<atom:link rel="search" type="application/opensearchdescription+xml" href="http://kurt.seifried.org/osd.xml" title="Kurt Seifried" />
+	<atom:link rel='hub' href='http://kurt.seifried.org/?pushpress=hub'/>
+	<item>
+		<title>Getting Amazon AWS EC2 API Tools working properly</title>
+		<link>http://kurt.seifried.org/2010/12/08/getting-amazone-aws-ec2-api-tools-working-properly/</link>
+		<comments>http://kurt.seifried.org/2010/12/08/getting-amazone-aws-ec2-api-tools-working-properly/#respond</comments>
+		<pubDate>Wed, 08 Dec 2010 11:31:47 +0000</pubDate>
+		<dc:creator><![CDATA[kurtseifried]]></dc:creator>
+				<category><![CDATA[Linux]]></category>
+		<category><![CDATA[aws]]></category>
+		<category><![CDATA[ec2]]></category>
+
+		<guid isPermaLink="false">http://kurt.seifried.org/?p=82</guid>
+		<description><![CDATA[a) First remove all hints of Java from your system (libgcj, openjdk, etc.). Use &#8220;whereis java&#8221; and &#8220;locate java&#8221; and &#8220;rpm -qf /some/random/thing/java&#8221; to expunge your system. b) Install JDK from Sun/Oracle (http://www.java.com/en/download/installed.jsp?detect=jre&#38;try=1) c) install ruby (&#8220;yum install ruby&#8221;) d) download EC2 API tools (http://aws.amazon.com/developertools/351?_encoding=UTF8&#38;jiveRedirect=1) , unpack, copy the bin and libs directories into /opt/ec2/ [&#8230;]<img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=82&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></description>
+				<content:encoded><![CDATA[<p>a) First remove all hints of Java from your system (libgcj, openjdk, etc.). Use &#8220;whereis java&#8221; and &#8220;locate java&#8221; and &#8220;rpm -qf /some/random/thing/java&#8221; to expunge your system.</p>
+<p>b) Install JDK from Sun/Oracle (<a href="http://www.java.com/en/download/installed.jsp?detect=jre&amp;try=1">http://www.java.com/en/download/installed.jsp?detect=jre&amp;try=1</a>)</p>
+<p>c) install ruby (&#8220;yum install ruby&#8221;)</p>
+<p>d) download EC2 API tools (<a href="http://aws.amazon.com/developertools/351?_encoding=UTF8&amp;jiveRedirect=1">http://aws.amazon.com/developertools/351?_encoding=UTF8&amp;jiveRedirect=1</a>) , unpack, copy the bin and libs directories into /opt/ec2/ or wherever you want</p>
+<p>e) create and download a certificate pair from the AWS management interface</p>
+<p>f) export stuff:</p>
+<p>export JAVA_HOME=/usr/</p>
+<p>export EC2_CERT=/root/cert.pem</p>
+<p>export EC2_PRIVATE_KEY=/root/pk.pem</p>
+<p>export EC2_HOME=/opt/ec2/</p><br />  <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/kurtseifried.wordpress.com/82/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/kurtseifried.wordpress.com/82/" /></a> <img alt="" border="0" src="http://pixel.wp.com/b.gif?host=kurt.seifried.org&#038;blog=86342&#038;post=82&#038;subd=kurtseifried&#038;ref=&#038;feed=1" width="1" height="1" />]]></content:encoded>
+			<wfw:commentRss>http://kurt.seifried.org/2010/12/08/getting-amazone-aws-ec2-api-tools-working-properly/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+	
+		<media:content url="http://2.gravatar.com/avatar/8b588344181b6098f508e9741ac36e0e?s=96&#38;d=identicon&#38;r=G" medium="image">
+			<media:title type="html">kurtseifried</media:title>
+		</media:content>
+	</item>
+	</channel>
+</rss>

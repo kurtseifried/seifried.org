@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Products / ImmunixOS 7.0</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>ImmunixOS 7 - Secure Linux</h1>
+<p>&nbsp;</p>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a9c2dcdbdde9daccc0cfdbc0cccd87c6dbce"><span class="__cf_email__" data-cfemail="32594740467241575b54405b57561c5d4055">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>There are basically two established Linux distributions with a
+serious bent on security, ImmunixOS and NSA's SELinux. They both
+have released working, mature code that you can get ahold of and
+use. There are possibly other projects, but to the best of my
+knowledge none are shipping code right now. </p>
+<p>The NSA's SELinux is extremely powerful as far as configuring
+security to a very granular level goes. However, for most people
+and applications, this level of security is overkill (and there
+are some significant performance hits as well). </p>
+<p>ImmunixOS is aimed at making Linux more robust and improving
+its survivability in the face of new security flaws. ImmunixOS
+also has a much gentler learning curve than the NSA's SELinux,
+and addresses issues that NSA SELinux does not.</p>
+<p>&nbsp;</p>
+<h2>SubDomain</h2>
+<p>SubDomain is a kernel module that mediates system calls such
+as open, and blocks access to other's that are classified as
+&quot;dangerous&quot; (mknod, etc.). The other part is a small
+program that administers it, loading and removing configurations.
+SubDomain allows you to configure which files a process is
+allowed to access, how it is allowed to access them (read / write
+/ execute), and allows you to manipulate what child processes are
+allowed to do.</p>
+<p>Currently there are a couple of methods to achieve the task
+that is vastly simplified with SubDomain.</p>
+<p>If you run the program &quot;Bind&quot; (a DNS server) as a
+non-root user, and only give it write access to the directories
+it needs, it would still be able to write to the /tmp directory,
+and read the /etc/passwd file, which has to be world readable.
+The alternative would be to use ACL's and something akin to NT's
+&quot;no access&quot; permission, which, when applied to every
+single file that Bind did not require, would allow you to tightly
+control access. This, however, would be very difficult to
+maintain and configure and chances are that you would forget
+something, or later add something and forget to exclude it.</p>
+<p>With SubDomain you simply give named access to the files it
+needs, and that is all it can access.</p>
+<p>&nbsp;</p>
+<h3>How to use SubDomain</h3>
+<p>Load the kernel module (subdomain.o) and then create a
+SubDomain configuration file, for example the following file is
+for XNTPD, which must run as root since it adjusts the system
+clock, and uses UDP for data transfer making it easy to blind
+spoof the server. The following configuration allows XNTPD to
+read the configuration files and libraries it requires, all it is
+allowed to write to is the drift file (used at boot time to reset
+the clock), &quot;/dev/null&quot;, &quot;/dev/log&quot; (for
+logging) and to &quot;/tmp&quot;, for temporary files. Even if
+someone exploited this program and gained full access they would
+not be able to spawn off a root shell or run any useful commands
+for example, all an attacker could do is toast the drift file and
+potentially fill up any partition the /etc directory is on, flood
+the log file, or attempt to exploit another program that uses
+/tmp, however this makes life for the attacker significantly
+harder than just being able to spawn off a bash shell. </p>
+<blockquote>
+<pre>  # XNTPD xntp3-5.93-13
+
+  /usr/sbin/xntpd 
+  {
+    /etc/ntp/drift rw
+    /etc/ntp/keys r
+    /etc/ntp.conf r
+    /etc/nsswitch.conf r
+    /etc/ld.so.cache r
+    /etc/protocols r
+    /etc/resolv.conf r
+    /etc/host.conf r
+    /etc/hosts r
+    /etc/localtime r
+    /lib/ld-2.1.2.so r
+    /lib/libc-2.1.2.so r
+    /lib/libdl-2.1.2.so r
+    /lib/libnss_nis-2.1.2.so r
+    /lib/libnss_files-2.1.2.so r
+    /lib/libnss_nisplus-2.1.2.so r
+    /lib/libnsl-2.1.2.so r
+    /lib/libnss_dns-2.1.2.so r
+    /lib/libresolv-2.1.2.so r
+    /dev/null rw
+    /dev/log w
+    /tmp* rw
+  }
+</pre>
+</blockquote>
+<p>An attacker could potentially write something to /tmp and then
+exploit another program that suffers a problem exploitable
+through /tmp, however they would not be able to simply run the
+program from the access they had gained through Bind. This
+software significantly complicates life for attackers as they
+must exploit multiple holes, and if all your network programs are
+SubDomain'ed properly then a remote attacker will have a very
+difficult time spawning off a shell and getting real access.
+Additionally, depending on how much logging you have turned on,
+you will see a huge number of error messages in syslog as the
+application attempts to access files it is not allowed to (hint:
+XNTPD shouldn't try to run /bin/bash). This type of thing is
+easily automated. </p>
+<p>You can also specify what subprocesses are allowed to do. For
+example, you may have a cgi program that takes in data through a
+web interface and then spawns off another program which actually
+sanitizes and uses the data. This way your web cgi does not need
+any real access, it simply handles some data, which is then
+passed to a trusted program (that you have hopefully audited),
+and through SubDomain granted access to /etc/password for
+example.</p>
+<p>&nbsp;</p>
+<h3>A Perfect Example</h3>
+<p>Recently on BugTraq there was an advisory for some software,
+specifically a CGI program built in Perl that reported back to
+the company that sold it, and had a back door put in
+intentionally by the author, supposedly allowing him to shut down
+your cgi if you pirated it, or format your hard drive. Access to
+this backdoor was granted through a secret string of text given
+to the cgi program. Needless to say this string was found quite
+quickly, allowing people to exploit sites using the cgi program.
+If you had been running this cgi program with a good SubDomain
+configuration, damage would have been minimized should someone
+have used it to try to attack your site. They would not have been
+able to execute any programs of note, nor read or write files
+like /etc/passwd. Again, processing your log files regularly and
+looking for SubDomain violations will provide you with early
+warning, and a good idea of what is wrong (i.e. are they only
+trying to read files, or run commands as well).</p>
+<h3>Q and A on SubDomain</h3>
+<p>Crispin Cowan is the chief architect of SubDomain, and CTO at
+WireX Communications.</p>
+<p><b>Kurt:</b> What is the target market for SubDomain?</p>
+<p><b>Crispin:</b> SubDomain is a major plank in the Immunix
+security-hardened Linux system. So broadly speaking, if you are
+interested in the security of your Internet servers, SubDomain
+and Immunix help you &quot;immunize&quot; them. More
+specifically, SubDomain is especially effective at protecting a
+host system from exploitable bugs in vulnerable software that may
+have been installed on a server, making SubDomain particularly
+attractive for defending Internet servers. This is especially
+true for Internet web servers, where the major threat is buggy
+CGI/Perl code. SubDomain confinement of these flakey CGI scripts
+protects the rest of the web server from attempts to exploit bugs
+in the CGI code. </p>
+<p><b>Kurt:</b> When will SubDomain be available?</p>
+<p><b>Crispin:</b> We hope to have an Immunix SDK out by June 1.
+The Immunix SDK would include tools for writing SubDomain
+profiles. </p>
+<p><b>Kurt:</b> What will the license for SubDomain be? Will
+private individuals/companies be able to use it on their servers?</p>
+<p><b>Crispin:</b> We're going to roll our own license. While we
+have not yet thought up a catchy name for it :-) here's a list of
+what you can do with SubDomain for free: </p>
+<ul>
+<li>Download it. </li>
+<li>Use it on your server, even if it is a commercial server.
+<ul>
+<li>If it is a commercial server (e.g. <a href="http://www.microsoft.com">http://www.Microsoft.com/</a>)
+then we require you to display a &quot;Powered by
+Immunix&quot; logo somewhere on the site's home
+page. </li>
+</ul>
+</li>
+<li>Develop profiles for it for use on your server. </li>
+<li>Distribute SubDomain profiles along with your software. </li>
+</ul>
+<p>On the other hand, we will have certain licensing fees for
+these kinds of things: </p>
+<ul>
+<li>Full source code access </li>
+<li>Reselling it for money </li>
+<li>Including SubDomain in a product for sale <ul>
+<li>If you would like to include SubDomain in a
+commercial product, contact <a href="/cdn-cgi/l/email-protection#80f3e1ece5f3c0f7e9f2e5f8aee3efed"><span class="__cf_email__" data-cfemail="d3a0b2bfb6a093a4baa1b6abfdb0bcbe">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+for licensing information.</li>
+</ul>
+</li>
+<li>Commercial hosting services <ul>
+<li>If it's a value-add that you offer Immunized
+servers to your customers, we will charge a
+licensing fee.</li>
+</ul>
+</li>
+</ul>
+<p><b>Kurt:</b> What do you see as the main benefit of SubDomain?</p>
+<p><b>Crispin:</b> The main benefit of SubDomain is the ability
+to run potentially vulnerable software on your server in relative
+safety. You can think of it as a flexible chroot on steroids.
+Like chroot, a SubDomain'ed program is prevented from accessing
+unintended parts of your server, e.g. the Web server and its CGIs
+can't access the mail server's files. Unlike chroot, a SubDomain
+profile can grant controlled access to other parts of the system
+that you want to. If you want to chroot two programs, you have to
+decide whether they are in the same jail where they are at each
+other's mercy, or separate jails where they cannot communicate at
+all. With SubDomain, you can put them in separate jails, but
+still provide them with a controlled interface. </p>
+<p><b>Kurt:</b> What do you see as the main drawback of
+SubDomain?</p>
+<p><b>Crispin:</b> The biggest drawback is that, unlike
+StackGuard, SubDomain protection is not totally automatic.
+Someone who understands the program has to create the profile
+that describes the files it can access. The tools in the Immunix
+SDK will help you do that, but you still have to run the program
+through a sufficient test suite to touch all the files that it
+will need to touch. </p>
+<p>Addressing this problem is part of why we're giving out
+freebie copies of SubDomain to individuals. Our hope is that some
+people will find it useful, and will write SubDomain profiles for
+their server programs. These profiles can be included in an RPM
+so that they land in /etc/subdomain.conf. This is harmless on
+non-SubDomain kernels, and safely confines the program on
+SubDomain kernels.</p>
+<h3>SubDomain summary</h3>
+<p>Between Crispin Cowan's past work on StackGuard and the simple
+fact I used SubDomain for about a month in testing and now for
+almost a month in production (on a 2.2.14 kernel, Red Hat
+system), I am pretty much convinced as to it's effectiveness. The
+part I really love is it's brute simplicity. You patch and
+recompile your kernel (something almost all administrators do for
+other reasons anyway), reboot, download/create some SubDomain
+profiles, and load them. That's it, no mucking about with your
+software, system setup or other things. If you want to update
+software that is SubDomain'ed, simply do so. Most times your
+SubDomain profile won't even require any changes. It's also great
+because it can be used to control software that runs as root,
+something chroot does not accomplish effectively. About the only
+thing I don't like is that SubDomain is not OpenSource. However,
+the source code can be licensed, and Crispin does have a pretty
+solid track record security wise. The subdomain.o kernel module
+is only a few thousand lines of code, and under 24k compiled,
+simplicity and ease of auditing is a major bonus (to contrast,
+SGI's security patches for Linux are about 3MB's of source code
+and growing, while they do a lot of things, they are a lot more
+complex and difficult to configure). SubDomain addresses a large
+number of widespread problems in a very simple and effective
+fashion, I like that.</p>
+<p>&nbsp;</p>
+<h2>StackGuard</h2>
+<p>This is one of the more widely used components of ImmunixOS,
+having been around for several years and being freely available.
+StackGuard is a set of compiler patches. When you compile
+software using a StackGuard-enabled GCC, it will help prevent
+some types of stack smashing attacks (a.k.a. buffer overflows).
+To quote the StackGuard page:</p>
+<blockquote>
+<p>StackGuard detects and defeats stack smashing attacks by
+protecting the return address on the stack from being
+altered.&nbsp; StackGuard places a &quot;canary&quot; word
+next to the return address when a function is called.&nbsp;
+If the canary word has been altered when the function
+returns, then a stack smashing attack has been attempted, and
+the program responds by emitting an intruder alert into
+syslog, and then halts. </p>
+<p>For it to be effective, the attacker must not be able to
+&quot;spoof&quot; the canary word by embedding the value for
+the canary word in the attack string.&nbsp; StackGuard offers
+a range of techniques to prevent canary spoofing: </p>
+<ul>
+<li><b>Random canaries</b>:&nbsp; the canary word value
+is chosen at random at the time the program
+execs.&nbsp; Thus the attacker cannot learn the
+canary value prior to the program start by searching
+the executable image.&nbsp; The random value is taken
+from <tt>/dev/urandom</tt> if available, and created
+by hashing the time of day if <tt>/dev/urandom</tt>
+is not supported. </li>
+<li><b>Null canary</b>: the canary word is
+&quot;null&quot;, i.e. <tt>0x00000000</tt>. Since
+most string operations that are exploited by stack
+smashing attacks terminate on null, the attacker
+cannot easily spoof a series of nulls into the middle
+of the string.&nbsp; This mechanism was originally
+proposed by &quot;der Mouse&quot; in Bugtraq. </li>
+<li><b>Terminator canary</b>: not all string operations
+are terminated by null, e.g. <tt>gets()</tt>
+terminates on new line or end-of-file (represented as
+-1).&nbsp; The terminator canary is a combination of
+Null, CR, LF, and -1 (<tt>0xFF</tt>) which should
+terminate most string operations. </li>
+</ul>
+</blockquote>
+<p>While it won't stop all of them, StackGuard does make life
+significantly more difficult for an attacker. This software is
+available by default, and the majority of ImmunixOS software is
+compiled using this, resulting in fewer successful attacks. </p>
+<p>&nbsp;</p>
+<h2>FormatGuard</h2>
+<p>FormatGuard is a relatively new entry to ImmunixOS, but like
+StackGuard most users will not realize its existence, and many
+administrators will probably not notice either. </p>
+<p>FormatGuard addresses a relatively recent (well known for less
+than a year) problem in a number of common system calls.
+Basically, if you took user input without properly validating or
+filtering it (always a bad idea), it was possible for an attacker
+to insert malicious characters that could be used to elevate
+privileges in more than a few programs (WU-FTPD for example). </p>
+<p>As fixing every call to printf(), syslog() and so on is nearly
+impossible, the WireX folks decided to fix the system calls
+themselves (or at least make them appreciably safer). Thus was
+FormatGuard born, It's basically a wrapper around these unsafe
+calls, so that you can use software that probably hasn't been
+properly audited and not worry as much. Like StackGuard, it makes
+life quite a bit harder for attackers.</p>
+<p>&nbsp;</p>
+<h2>RaceGuard/CryptoMark</h2>
+<p>Last but not least, we have RaceGuard and CryptoMark. As far
+as I know, neither has been released yet. However, RaceGuard is
+planned for the next release of ImmunixOS. Crispin Cowan (CTO at
+WireX) had this to say:</p>
+<blockquote>
+<p>It's a kernel enhancement that makes mktemp (and
+hand-rolled variations) safe to use.&nbsp; In the StackGuard
+tradition, it detects attempts to race the victim suid root
+program in progress, and (optionally) either refuses the
+killer open() call, or kills the victim process.&nbsp; I've
+been running it on my laptop for a month, and there's a few
+teething problems, but it basically works.&nbsp; It will be
+in Immunix 7.1.</p>
+</blockquote>
+<p>CryptoMark is a sort of tripwire-style program, except that it
+operates in real time (remarkably similar to SecureExe in
+description). If it is released and works as advertised, it will
+not only prevent Trojans from running, but will help prevent
+users from running unauthorized programs.</p>
+<p>&nbsp;</p>
+<h2>Summary</h2>
+<p>It's a pity that only WireX and the NSA have decided to put
+real effort into making more secure Linux kernels and
+distributions. With the vast majority of vendors taking a very
+reactive security stance, most users are left out in the cold
+between the time a problem is found and when a vendor ships a
+fix.</p>
+<p>With programs like ImmunixOS, you actually have a chance of
+surviving the attack. If it's a buffer overflow StackGuard might
+stop it; or the attacker will not be able to do as much damage if
+SubDomain is properly set up. </p>
+<p>I doubt large vendors will make the effort, because when it
+comes right down to it, the majority of computer users will
+complain about security, but spend money on products with more
+features even if they are less secure.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="http://immunix.org/">http://immunix.org/</a> -
+ImmunixOS</p>
+<p><a href="http://www.wirex.com/">http://www.wirex.com/</a> -
+WireX, makers of ImmunixOS</p>
+<p><a href="http://www.nsa.gov/selinux/">http://www.nsa.gov/selinux/</a>
+- Security-Enhanced Linux</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

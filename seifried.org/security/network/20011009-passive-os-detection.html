@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Network / passive OS detection and source ports</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Passive OS Detection and Source Ports</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#e48f919690a497818d82968d8180ca8b9683"><span class="__cf_email__" data-cfemail="42293730360231272b24302b27266c2d3025">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Passive OS detection is an increasingly useful technique.
+People want to generate statistics on who's connecting to their
+machines, and administrators want to determine what is attacking
+them. The beauty of passive OS detection is that avoiding or
+faking it out takes a reasonable amount of work and expertise,
+and most won't bother. There are a variety of packet fields that
+can be used to identify the remote OS; TTL field, window size,
+don't fragment and so on. This is largely due to the fact that
+while TCP/IP stacks are interoperable, there are major variations
+in the way they handle various details that are set in the packet
+headers.</p>
+<p>Last week I covered Linux, and more specifically its default
+behavior in relation to the ports it uses for the source of
+outgoing connections. This raised an interesting question: Can I
+reliably detect what the remote OS is, based solely on the source
+port of the connection? </p>
+<p>The default behavior of Linux with respect to local ports is
+extremely predictable. Within the kernel there is a setting for
+the local port range:</p>
+<blockquote>
+<pre>/usr/src/linux/net/ipv4/tcp_ipv4.c</pre>
+<pre>/*
+* This array holds the first and last local port number.
+* For high-usage systems, use sysctl to change this to
+* 32768-61000
+*/
+int sysctl_local_port_range[2] = { 1024, 4999 };</pre>
+</blockquote>
+<p>If you wish to change this behavior, you can change the kernel
+source code, or modify the local port range via the proc
+interface:</p>
+<blockquote>
+<pre>echo 6000 8000 &gt; /proc/sys/net/ipv4/ip_local_port_range </pre>
+</blockquote>
+<p>It increments by one for each outgoing connection. IP-MASQ'ed
+connections are handled similarly, starting at 61000, and
+incrementing steadily.</p>
+<p>Windows 9x and NT 4.0 behave very similarly, starting
+connections with port 1024 and steadily incrementing it by one
+for each outgoing connection. I was not able to find anything in
+the registry or the MS knowledge base, so I assume - to assume is
+all I can do - that it is hard coded into the OS somewhere. As
+far as I can tell there is no way to modify this. (If there is, I
+would love to know about it.) Solaris 8.0 on an Ultrasparc seems
+to start around port 32860. I suspect it starts somewhere around
+half of 65535 (hard to nail down exactly), and it steadily
+increments by one. </p>
+<p>If you get a connection from a port near 1024 (your average
+client won't initiate more than a few hundred connections an
+hour), you cannot be sure if it is Linux or a Microsoft platform,
+or can you? You can drastically increase the confidence of your
+tests by observing other portions of the packet. According to a
+page by Lance Spitzner, Windows sets the TTL on packets to 32 or
+128, and Linux uses 64. Considering how few people modify this
+default behavior, it is a reasonably sure way to tell the
+difference between Linux and Windows. Also, if you look at the
+window size - the sliding TCP/IP window - Windows 9x and NT use
+the second smallest window size on average (HP Jet Direct uses a
+smaller window). Linux uses a much larger window size. With all
+the various differences between TCP/IP stacks, you can be near
+100% of what OS a packet originated from - assuming the remote
+machine hasn't been significantly modified. And doing so is
+relatively inexpensive, computationally. </p>
+<p>Additionally, you can use active OS detection techniques. The
+way in which operating systems respond to various IP packet
+options, ICMP packets and so on, results in an almost guaranteed
+correct identification of the remote end. As an extension of
+passive fingerprinting, for TCP connections, you would be able to
+send arbitrary packets to the remote end, which would most likely
+not be firewalled, since they appear to be part of a legitimate
+connection. What is more, these packets could be injected by a
+machine other than the server handling the connection. (Although
+tricky, this wouldn't be impossible.)</p>
+<p>So, what does this mean for administrators trying to defend
+their networks? Well, if you want to, you can reliably identify
+the OS that is connecting to your machines, without the remote
+end knowing that this is happening. This will allow for an extra
+layer of defenses. By allowing only Windows-based machines to
+connect to your exchange server, for example, you would
+potentially block attackers using Unix platforms, as is common
+nowadays. There doesn't even need to be any integration on the
+host server. Using various &quot;features&quot; - flaws,
+depending on your point of view - there are several tools that
+can be used to kill TCP connections on a local LAN. Perhaps
+something for the Snort/Arachnids people to work on (using
+Sniffit or HUNT). </p>
+<p>Network security is constantly evolving, and new nooks and
+crannies are being discovered every day. Sometimes these
+&quot;features&quot; can be used in new and unintended ways, and
+while I wouldn't recommend betting the farm on securing your
+network with passive OS fingerprinting and TCP connection
+killing, it might be a useful security addition for some
+networks. That, and using things in unintended ways, can result
+in unexpected problems; on the other hand, it can also be fun.</p>
+<p>&nbsp;</p>
+<p><strong>Reference links:</strong></p>
+<p><a href="http://www.enteract.com/~lspitz/finger.html" target="_blank">http://www.enteract.com/~lspitz/finger.html</a> -
+Passive Fingerprinting</p>
+<p><a href="http://www.subterrain.net/projects/siphon/" target="_blank">http://www.subterrain.net/projects/siphon/</a> -
+Siphon</p>
+<p><a href="http://siden.sourceforge.net/" target="_blank">http://siden.sourceforge.net/</a>
+- Siden lets you simulate network probes and is useful for
+testing</p>
+<p><a href="http://lin.fsid.cvut.cz/~kra/index.html" target="_blank">http://lin.fsid.cvut.cz/~kra/index.html</a> -
+HUNT Project - kill local TCP connections and more</p>
+<p><a href="http://www.snort.org/" target="_blank">http://www.snort.org/</a>
+- A great packet sniffer/Network Intrusion Detection System</p>
+<p><a href="http://whitehats.com/ids/ids.html" target="_blank">http://whitehats.com/ids/ids.html</a>
+- Arachnids, a set of IDS signatures for use in conjunction with
+Snort</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 9/10/2001</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

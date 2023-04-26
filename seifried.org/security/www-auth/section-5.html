@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security / WWW Authentication / 5.0 User tracking methods</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>5.0 User tracking methods</h1>
+<p>By: Kurt Seifried, <a href="/cdn-cgi/l/email-protection#e68d939492a695838f80948f8382c8899481"><span class="__cf_email__" data-cfemail="dbb0aea9af9ba8beb2bda9b2bebff5b4a9bc">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried, 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Authenticating users varies in difficulty, but is only the
+first step for many web based projects that require user
+authentication. Chances are the user's interaction with the
+system will involve more then one transaction (i.e. they will
+&quot;login&quot; to the system, check their email, maybe post a
+message to a board, and then ask for some protected information).
+You do not want the user to have to authenticate each time they
+try to access something, you want them to authenticate at the
+beginning of the session, and once the session is over you want
+them to re-authenticate the next time they access the system. So
+you need some way to keep track of the individual user (simply
+using the IP they come from or similar methods is not enough),
+and you need some way of keeping track of the session (once they
+get up and leave their computer you do not want someone else to
+be able to use their credentials). </p>
+<p><strong>5.1 Cookies</strong></p>
+<p>Cookies are a method of storing data on the users computer,
+the server creates the cookies, and send it to the browser.
+Cookies can be permanent (stored on the users hard drive,
+sometimes with no expiry date) or session cookies (stored in
+memory, gone once the browser is closed). There are some problems
+with cookies however, many security conscious users will disable
+them, or delete them periodically (a variety of software to
+manage cookies stored on your machine exists).</p>
+<p><a href="http://www.netscape.com/newsref/std/cookie_spec.html">http://www.netscape.com/newsref/std/cookie_spec.html</a></p>
+<p>There are some tools available to view and modify cookies on
+the client end. Once of these is HTTPClient which is a java http
+client library with many features, including the ability to view
+cookies (both session and stored). It is available under the LGPL
+license.</p>
+<p><a href="http://www.innovation.ch/java/HTTPClient/">http://www.innovation.ch/java/HTTPClient/</a>
+</p>
+<p><strong>5.1.1 Stored cookies</strong></p>
+<p>Cookies can be stored on the users harddrive, allowing them to
+be persistent (assuming they don't get deleted). This is
+typically used by organizations with a low security requirement,
+and is typically used more for tracking users then actual
+authentication (although some sites like Hotmail, Microsoft MCP
+site, etc. use it for authentication). Generally speaking this
+method is a bad idea since anyone with access to the computer can
+simply go to the website and be automatically authenticated, as
+well the cookies could be copied off of the system and used on
+another system to gain access. If you have any sort of real
+security requirement then I would advise against using these. If
+however you simply want to authenticate users for tracking people
+(like many online newspapers) then they are acceptable.</p>
+<p><strong>5.1.2 Session cookies</strong></p>
+<p>Cookies can also be stored in memory for the length of the
+session (i.e. until the users turns the www browser off). This is
+much safer then storing them on the users harddrive, and you
+still retain all the capabilities of cookies. Simply authenticate
+the user and create a cookie that is unique, and give it to them.
+Store that cookies unique data on the server (in a flat text file
+or database, if you use a networked database multiple servers can
+accept an authenticated user, allowing you to do easy load
+balancing), and simply request the cookie from the user each time
+they attempt to do a transaction that requires authentication. By
+storing the cookie data, time it was issued, and last time it was
+used you can easily enforce a session limit (of say 30 minutes),
+and an inactivity timeout (of say 5 minutes) which greatly
+decreases the likelihood of someone using that persons
+credentials (because they left for lunch and forgot to turn their
+web browser off). You can also add a &quot;logout&quot; function
+that flushes the cookie data from the server (although training
+users to do this can be difficult). Several web servers include
+software modules to assist in this (so you don't need to
+completely reinvent the wheel).</p>
+<p><strong>5.2 X.509 certificates</strong></p>
+<p>By their very nature X.509 certificates usually contain data
+on the owner (the public key and data are typically signed by a
+third party, such as Verisign or Thawte). If you trust the
+singing party (i.e. it might be your internal Certificate
+Authority) then you can use the information contained with the
+certificate as the users identifier and simply have them
+authenticate for each transaction (for smartcards however this
+may require them to type a password in each time, but if the
+certificate is stored on the machine (BAD IDEA) then you can
+simply access it). Generally speaking if you are using smartcards
+you will probably want to use some other method for keeping track
+of the user (such as cookies or URL). </p>
+<p><strong>5.3 HTTP header based authentication (HTTP auth)</strong></p>
+<p>Using HTTP authentication (i.e. http header based
+authentication) generally saves the data used during the session
+so the user is not required to constantly login in every time
+they view a page. These are accessible as environmental variables
+to the CGI script typically, so are very easy to use for other
+types of authentication. You can easily use HTTP based header
+authentication across multiple servers (the data source is
+typically a text file or a database file). HTTP header
+authentication data is cached in the browser session so the user
+isn't constantly required to reauthenticate, however this means
+that if the users then leaves the browser running (even if they
+go to another site) someone else could go back to the site, and
+would be authenticated (since the credentials are stored in
+memory). MSIE can also permanently store the username and
+password, many users will be tempted to do this (which makes
+their life easier). You can disable this in the browser, and
+there are tags you can place in the webpage to prevent it, see
+section 6.1.2. Since HTTP is stateless the server has no idea
+whether you have &quot;left&quot; the site or not, you might
+browse a site, leave your browser open for 5 days, then go back
+to the site, your username and password would be automatically
+sent. This is especially dangerous if you access the site from an
+Internet kiosk, in many cases you cannot shutdown the browser
+running on these systems. Also because the authentication happens
+at the webserver level and not a CGI it is harder to track what
+is going on without monitoring log files or some other solution.
+For high security applications, or applications that will be used
+by non-savvy computer users some timeout method should be
+combined with the authentication to log out &quot;stale&quot;
+sessions.</p>
+<p><strong>5.4 Unique URL's</strong></p>
+<p>One effective method to track users that is completely browser
+independent (i.e. all browsers support it no matter what) is to
+use unique URL's. </p>
+<p><strong>5.4.1 Appending data to the URL</strong></p>
+<p>Simple tag on a unique string of data to the URL, and store
+that string in a database along with the time it was issued and
+last used (basically similar in concept to cookies). This is a
+somewhat trickier method, but it is supported by all web browsers
+which is a definite advantage. One site that makes heavy usage of
+this is www.sun.com, go to it and click any button, you will end
+up with a URL like:</p>
+<blockquote>
+<pre>http://www.sun.com/products-n-solutions/;$sessionid$ONWF1PQACGLERAMUVFZE3NQ</pre>
+</blockquote>
+<p>which is probably unique (I haven't actually bothered to
+analyze it). Simply store the string in a database and you can
+enforce maximum session length, and idle timeouts. You can also
+add a &quot;logout&quot; function that flushes the unique data
+from the server (although training users to do this can be
+difficult). Several web servers include software modules to
+assist in this (so you don't need to completely reinvent the
+wheel).</p>
+<p><strong>5.4.2 DNS names</strong></p>
+<p>Another technique is to use a unique DNS names. Simply use a
+wild card for the DNS domain, for example with Bind:</p>
+<blockquote>
+<pre>*.www-server.example.org	IN	A	10.1.2.3</pre>
+</blockquote>
+<p>Any DNS request (such as
+nsjw73judnhsi8u.www-server.example.org or
+45.www-server.example.org) will end up at the IP 127.0.0.1. You
+would of course need to configure your web server appropriately,
+either making the default site the one used, or use a modified
+web server that accepts *.www-server.example.org and serves it a
+specific site (i.e. co-hosting multiple sites using this
+technique is potentially difficult). You can then have the web
+server hand the DNS name to the script or you can query the web
+client for the appropriate environmental variable. As always an
+attacker can easily modify this data, so do not trust it
+implicitly. </p>
+<p><strong>5.5 HTTP_REFERRER</strong></p>
+<p>Another method of tracking a user is to use the HTTP_REFERRER
+environmental variable once they have authenticated. I have only
+seen a few sites doing this, but it is effective, simply specify
+that the user must come from a certain page (like login.html).
+This method is somewhat useful if you use &quot;unique&quot;
+URL's, however if the URL are pretty standard it is really only
+useful for restricting a set of pages to certain users, and not
+very helpful for tracking actual individual users. Since you need
+to do CGI programming and use &quot;unique&quot; URL's to make
+use of this technique you may as well store the data in a
+database and access it there. </p>
+<p><strong>5.6 Hidden form fields and other HTML code</strong></p>
+<p>Another method that is universally supported by browsers and
+requires no special configuration is the use of hidden form
+fields. The major problem with this is the caching of webpages
+(although you can set HTTP headers that tell the browser not to
+cache). It is similar in concept to using cookies, you can hand
+the user some information that you can later retrieve, using
+hidden form fields (this is the technique my ISP uses to view
+your configuration webpages for email and so forth). Simply hand
+back a unique string, store it in a database, and you can enforce
+a maximum session, and/or an idle timeout (so you don't have to
+worry as much about someone using the client when the user walks
+away). You can also add a &quot;logout&quot; function that
+flushes the unique data from the server (although training users
+to do this can be difficult).</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p align="center">[ <a href="index.html">Index</a> | <a href="section-4.html">Back</a> | <a href="section-6.html">Next</a>
+]</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>File / print servers</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#670c1215132714020e01150e020349081500"><span class="__cf_email__" data-cfemail="0b607e797f4b786e626d79626e6f2564796c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<h2><a name="Overview">Overview</a></h2>
+<p>There are many ways to share resources over a LAN. Your main
+concern will be what the client side is running since most server
+operating systems (especially Linux) support almost all types of
+clients (UNIX, Windows, MAC, Novell, etc.). You will also need to
+take into account the type of files you are sharing, are they
+simply data files, work documents, source code, network boot
+files, or?</p>
+<h2><a name="Network booting">Network booting</a></h2>
+<h2><a href="tftp.html">tftp</a>&nbsp;</h2>
+<p>tftp is used by everything from X windows terminals to Cisco
+routers when booting to get their initial boot files and
+configuration data.</p>
+<h2><a name="UNIX file sharing">UNIX file sharing</a></h2>
+<h2><a href="nfs.html">NFS</a></h2>
+<p>NFS is the most universal method of file sharing supported by
+UNIX in general. Almost every UNIX OS (Linux, *BSD, Sun, etc.)
+supports NFS. There are also commercial NFS clients and servers
+for Windows. NFS is ideal for sharing out user home directories
+and other real time&quot; filesystems.</p>
+<h2><a href="rsync.html">rsync</a></h2>
+<p>rsync is the ideal method for synchronizing large amounts of
+data that isn't time critical (i.e. for ftp site mirroring). It
+uses an extremely efficient algorithm to find files that are
+newer (or gone), and then retrieves them, it also has several
+nice security features.</p>
+<h2><a name="Printing under Linux">Printing under Linux</a></h2>
+<p>There are a variety of print daemons for Linux but they
+generally emulate lpd (the original).</p>
+<h2><a href="printing.html#lpd">lpd</a></h2>
+<p>lpd is the age-old line printer daemons (when all you ever
+printed was text) which allows for the usage and sharing of
+printers.&nbsp;</p>
+<h2><a href="printing.html#CUPS"><b>CUPS</b></a></h2>
+<p>Common UNIX Printing System (CUPS), is GPL licensed and
+version 1.0 just came out. CUPS is available from: <a href="http://www.cups.org/">http://www.cups.org/</a>.&nbsp;</p>
+<h2><a href="printing.html#LPRng">LPRng</a></h2>
+<p>LPR next generation, an alternative to the stock LPR.</p>
+<h2><a href="printing.html>pdq</a></h2>
+
+<h2><a name="Windows file and print sharing">Windows file and
+print sharing</a></h2>
+
+<h2><a href="samba.html">Samba</a></h2>
+
+<p>SMB (server message block) is the current windows file sharing
+protocol. Samba does an incredible job of providing all the
+services required to properly share windows files (such as
+Primary and Backup Domain Controller services). You can also
+provide windows access to printers through Samba, and using
+smbclient access Windows printers.</p>
+
+<h2><a name="General file sharing">General file sharing</a></h2>
+
+<p>There are also a number of generic file sharing methods that
+support multiple types of clients and servers.</p>
+
+<h2><a name="Coda">Coda</a></h2>
+
+<p>An advanced network filesystem, not very fun to implement. <a
+href="http://www.coda.cs.cmu.edu/">http://www.coda.cs.cmu.edu/</a>.</p>
+
+<h2><a name="Drall">Drall</a>&nbsp;</h2>
+
+<p>An https-based system for sharing files among machines
+securely. You can get it from: <a
+href="http://www.edlund.org/hacks/drall/index.html">http://www.edlund.org/hacks/drall/index.html</a>.
+</p>
+
+<h2><a href="afs.html">AFS</a></h2>
+
+<p>A high end, commercial file sharing protocol suitable for
+large installations with high security and performance
+requirements.</p>
+
+<h2><a name="Source code sharing">Source code sharing</a></h2>
+
+<h2><a href="cvs.html">CVS</a></h2>
+
+<p>CVS is used to centrally maintain source code in a repository,
+and to allow people to make modifications, with an emphasis on
+the ability to roll back changes, get an old &quot;snapshot&quot;
+and so on. It is very popular for large software projects.</p>
+
+<p><a href="../index.html">Back</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>Last updated on 31/8/2001</p>
+
+<p>Copyright Kurt Seifried 2001 <a
+href="/cdn-cgi/l/email-protection#d8b3adaaac98abbdb1beaab1bdbcf6b7aabf"><span class="__cf_email__" data-cfemail="c9a2bcbbbd89baaca0afbba0acade7a6bbae">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

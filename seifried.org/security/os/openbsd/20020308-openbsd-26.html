@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - OpenBSD 2.6 - New Features</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>OpenBSD 2.6 - New Features</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#53382621271320363a35213a36377d3c2134"><span class="__cf_email__" data-cfemail="670c1215132714020e01150e020349081500">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>
+</p>
+<hr>
+<p>&nbsp;</p>
+<p>Well it's been a few months, and a new release of OpenBSD is
+out (since December 1st 1999 actually) and I thought it was high
+time I covered some of the new features and improvements. For
+those of you unfamiliar with OpenBSD it is a flavor of UNIX based
+on BSD, with one main goal in mind. Security. The entire purpose
+of OpenBSD is to provide a fast, stable, and above all, secure
+computing platform. </p>
+<h5>OpenSSH</h5>
+<p>The most noticeable change in OpenBSD 2.6 is probably the
+addition of OpenSSH. OpenSSH is SSH with all the proprietary
+components ripped out, a lot of bug fixes, and the encryption is
+all done externally via OpenSSL. OpenSSH ships with 2.6 and is
+part of the default install, but due to the RSA patent in the US
+the OpenSSL components are not available on the CD-ROM, so you
+will need to download this from an OpenBSD ftp site (they could
+have included OpenSSL on the CD-ROM, but then they would need to
+produce one for the US, and one for international use, and there
+would be other possible legal problems as well, so they opted not
+to). During the install however you will be prompted to install
+it, first which version (US or international) and then for the
+method (FTP, HTTP, CDROM, etc), and then for the location. You
+can of course install it later on with:</p>
+<pre>#pkg_add -v ftp://ftp.openbsd.org/pub/OpenBSD/2.6/packages/i386/ssl26.tar.gz</pre>
+<p>or if you are in the USA:</p>
+<pre>#pkg_add -v ftp://ftp.openbsd.org/pub/OpenBSD/2.6/packages/i386/sslUSA26.tar.gz</pre>
+<p>By default OpenSSH is enabled, so as soon as you install the
+SSL package and reboot it will work. SKey support is also
+available now for OpenSSH.</p>
+<p><strong>Why OpenSSH matters:</strong></p>
+<p>OpenBSD is the first Open Source operating system to ship
+something like ssh that is not encumbered by licensing issues
+(although there are patent issues, you can use RSAREF in the US).
+This means people can easily login to and administer OpenBSD
+systems in a secure manner with very little additional setup
+required (as compared to say, deploying IPSec). </p>
+<h5>Apache</h5>
+<p>Another improvement is the use of DSO's (Dynamic Shared
+Object's) in Apache, which is a very similar concept to shared
+libraries typical of UNIX platforms. DSO's allow you to add in
+support for third party software (such as SSL) without having to
+recompile the Apache software. This allows for a much greater
+degree of flexibility, not only in adding support for new things,
+but upgrading them (instead of recompiling all of Apache you
+compile a now DSO and restart Apache). The primary disadvantage
+of DSO's is that some platforms do not support them properly, and
+on some supported platforms DSO's will slow the server down a
+bit. Generally speaking however the gains made in ease of use,
+deployment of software, and so on outweigh any minor performance
+problems. </p>
+<p><strong>Why DSO matters:</strong></p>
+<p>It makes the deployment of a secure web server far easier (and
+other features like perl_mod). Also if there is a bug in one of
+the DSO's you only need to replace it and restart Apache (as
+opposed to recompiling everything).</p>
+<h5>Driver updates</h5>
+<p>This goes without saying as a good thing. OpenBSD has
+historically lagged behind systems like Linux and Windows for
+driver support, which is a good thing in my opinion. Linux and
+Windows support a lot of BAD hardware (i.e. estimates run as high
+as 70% that NT crashes are due to bad drivers and software
+problems), OpenBSD tends to support the better quality hardware,
+because that is what the developers want. However OpenBSD has
+also lacked support for some very popular hardware (especially in
+the area of sound cards), so with the release of 2.6 a lot of
+drivers have been added, and others improved.</p>
+<p><strong>Why better drivers matter:</strong></p>
+<p>Bad drivers can cause crashes and other stability problems. I
+also want to use the soundcard on my new Sony VAIO laptop.</p>
+<h5>Secure by default</h5>
+<p>Well I lied a bit on this one, OpenBSD has been &quot;secure
+by default&quot; for a while. What does this mean? Well a default
+install of OpenBSD should (in theory) be completely secure
+against network attacks. The only services turned on by default
+are OpenSSH, portmap, and some services in inetd, all of which
+have been audited extensively and are relatively risk free. The
+OpenBSD philosophy (as I understand it) is to make the system as
+secure as possible, which would mean in most operating systems
+disabling damn near everything. But in the case of OpenBSD this
+is not necessary, the services that are on by default have been
+heavily audited, and deemed &quot;safe&quot;, and as such are
+enabled (plus they give a basic level of functionality required
+by many people). If a user wants to do something
+&quot;insecure&quot; (like say install an IMAP server) they are
+on their own, you will need to get the ports collection, compile
+and install an IMAP server, and then add configuration lines in
+inetd.conf for it. If you want to do something deemed
+&quot;safe&quot;, such as install the OpenBSD ftp daemon all you
+need to do is uncomment the line for it in inetd.conf, and add an
+ftp user (this is covered in the OpenBSD FAQ).</p>
+<p><strong>Why &quot;secure by default matters&quot;:</strong></p>
+<p>You can install OpenBSD and be reasonably confident there are
+no exploitable holes. You can enable certain things (like FTP, or
+DNS) with a high level of confidence that it won't bite you later
+on (in the form of someone remotely exploiting it and getting
+root on your box). If you want to do &quot;insecure&quot; things,
+you will be forced to learn a little bit about how to do it
+(correctly or otherwise). </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p><a href="https://https.openbsd.org/cgi-bin/order">https://https.openbsd.org/cgi-bin/order</a>
+- order form for OpenBSD CD's and paraphernalia</p>
+<p><a href="http://www.openbsd.org/faq/">http://www.openbsd.org/faq/</a>
+- OpenBSD FAQ</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 15/2/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

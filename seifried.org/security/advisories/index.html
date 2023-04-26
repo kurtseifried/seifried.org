@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / Advisories</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<table border="0" cellpadding="2" width="100%">
+<tr>
+<td valign="top" colspan="2"><h1>Security advisories</h1>
+<p>Created by Kurt Seifried, <a href="/cdn-cgi/l/email-protection#e08b959294a09385898692898584ce8f9287"><span class="__cf_email__" data-cfemail="33584641477340565a55415a56571d5c4154">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a> </p>
+</td>
+</tr>
+<tr>
+<td valign="top"><ul type="disc">
+<li><a href="http://seifried.org/security/advisories/">Advisories</a></li>
+<li><a href="http://seifried.org/security/anti-virus/">Anti-virus</a></li>
+<li><a href="http://seifried.org/security/articles/">Articles</a></li>
+<li><a href="http://seifried.org/security/basic/">Basic
+security</a></li>
+<li><a href="http://seifried.org/security/best-practices/">Best
+practices</a></li>
+<li><a href="http://seifried.org/security/books/">Books</a></li>
+<li><a href="http://seifried.org/security/cryptography/">Cryptography</a></li>
+<li><a href="http://seifried.org/security/ids/">Intrusion
+Detection</a></li>
+<li><a href="http://seifried.org/security/keys/">Encryption
+keys</a></li>
+<li><a href="http://seifried.org/security/network/">Network</a></li>
+<li><a href="http://seifried.org/security/os/">Operating
+system</a></li>
+<li><a href="http://seifried.org/security/policy/">Policy</a></li>
+<li><a href="http://seifried.org/security/ports/">Ports</a></li>
+<li><a href="http://seifried.org/security/products/">Products</a></li>
+<li><a href="http://seifried.org/security/social/">Social</a></li>
+<li><a href="http://seifried.org/security/technical/">Technical</a></li>
+<li><a href="http://seifried.org/security/weekly-column/">Weekly
+column</a></li>
+<li><a href="http://seifried.org/security/www-auth/">WWW
+authentication</a></li>
+<li><a href="http://seifried.org/security/">Main page</a></li>
+</ul>
+</td>
+<td valign="top">
+<P><A HREF="kssa-010.html">KSSA-010 - MS-DOS Reserved Device Name Vulnerability In Symantec Norton Anti-Virus</a> - Multiple antivirus products, such as Symantec Norton AntiVirus 9.05.15 fail to properly access and scan files and directories that use reserved MS-DOS device names. </p>
+<P><A HREF="kssa-005.html">KSSA-005 - MS-DOS Reserved Device Name Vulnerability In Sophos Anti-Virus</a> - Multiple antivirus products, such as Sophos Small Business Suite antivirus fail to properly access and scan files and directories that use reserved MS-DOS device names. Sophos Small Business Suite antivirus on access scanner can also fail in some situations, allowing viruses to replicate. </p>
+<P><a href="kssa-004.html">KSSA-004 - Linux iSCSI leaves password exposed in world readable configuration file </a> -
+The Cisco iSCSI implementation leaves the configuration file "/etc/iscsi.conf" world readable by default, potentially exposing passwords used to access iSCSI resources.</P>
+<P><a href="kssa-003.html">KSSA-003 -
+Multiple windows file wiping utilities do not properly
+wipe data with NTFS file systems.</a> - In the NTFS file
+system a facility exists to bind additional data to a
+file or directory, called an alternate data stream
+[url1][url2]. These alternate data streams cannot be be
+removed, unless the parent file or directory is
+destroyed. Unfortunately most file wiping utilities only
+deal with the primary data stream and do not wipe the
+alternate data streams, thus leaving data intact. </P>
+<blockquote>
+<p>An off site translation into spanish is also
+available, I have no idea if it is correct or not <a href="http://www.kriptopolis.com/net/article.php?sid=352">http://www.kriptopolis.com/net/article.php?sid=352</a>
+- Muchas utilidades para borrado seguro de ficheros
+en Windows no destruyen adecuadamente los datos en
+sistemas de ficheros NTFS. </p>
+</blockquote>
+<p><a href="kssa-002.html">KSSA-002 - Red Hat 7.2 GnuPG
+signed RPM verification fails on distribution files</a> -
+An attacker can create RPM's that will not appear any
+different from the real ones, as they do not need to be
+signed. Finding the MD5 sums of the files in trusted
+locations is very difficult (I cannot find any lists). </p>
+<p><a href="kssa-001.html">KSSA-001 - RPM PGP/GnuPG
+verification bug</a> - under certain circumstances an
+attacker can get arbitrary packages installed on a system
+even if the administrator checks the cryptographic
+signatures to ensure they are vendor signed. The fix is
+very simply.</p>
+<hr>
+<p>Last updated 21/1/2002</p>
+<p>Copyright Kurt Seifried 2001</p>
+</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

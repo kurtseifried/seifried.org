@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Network services - NFS</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#046f7176704477616d62766d61602a6b7663"><span class="__cf_email__" data-cfemail="761d0304023605131f10041f131258190411">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<p>&nbsp;</p>
+<p>NFS stands for Network File System and is just that, it is a
+good way to distribute filesystems, read only and read/write,
+while maintaining a degree of security and control assuming your
+network is enclosed and secure. NFS is primarily meant for use in
+a high bandwidth environment (i.e., a LAN) where security risks
+are not high, or the information being shared is not sensitive
+(i.e., a small trusted LAN behind a firewall exchanging CAD/CAM
+diagrams, or a large university lab using nfs to mount /usr/. If
+you need a high level of security, such as encrypting data
+between hosts, NFS is not the best choice. I personally use it at
+across my internal LAN (this machine has 2 interfaces, guess
+which one is heavily firewalled), to share file systems
+containing rpm's, this website, etc. Safer alternatives include
+SAMBA (free) and now IBM is porting AFS to Linux (costly, but AFS
+is a sweet piece of code).</p>
+<p>NFS has a few rudimentary security controls. The first one
+would be firewalling; using NFS across a large, slow, public
+network like the Internet just isn't a good idea in any case, so
+firewall off port 2049, UDP. Since NFS runs as a set of daemons,
+TCP_WRAPPERS are of no use unless NFS is compiled to support
+them. The config file for NFS actually has quite a few
+directives, the bulk of which deal with user id and group id
+settings (map everyone to nobody, perhaps map all the engineering
+clients to 'engineer', etc, etc) but no real mechanisms for
+authentication (your client can claim to be UID 0, this is why
+root's id is squashed by default to nobody). NFS read-only
+exports are pretty safe, you only have to worry about the wrong
+people getting a look at your info (if it is sensitive) and or
+creating a denial of service attack (say you have a directory
+world readable/etc for sharing kernel source, and some gomer
+starts sucking down data like crazy...).&nbsp;</p>
+<p>Writeable exports are a whole other ball game, and should be
+used with extreme caution, since the only 'authentication' is
+based on IP/hostname (both easily spoofable), and UID (you to can
+run Linux and be UID 0). Bounce a client down with a DOS attack,
+grab their IP, mount the writeable share and go to town. You say
+&quot;but they'd have to know the IP and UID&quot;, packet
+sniffing is not rocket science folks, nor is 'showmount'.</p>
+<p>So, how do we go about securing NFS? The first is to firewall
+it, especially if the machine is multi-homed, with an interface
+connected to a publicly accessible network (the Internet, the
+student lab, etc.). If you plan to run NFS over a publicly
+accessible network it better be read only, and you will be far
+better off with a different product then NFS.&nbsp;</p>
+<p>The second and most interesting part is the /etc/exports file.
+This controls what you allow clients to do, and how they do it.</p>
+<p>A sample exports file:</p>
+<pre>#
+# Allow a workstation to edit web content
+/www 10.0.0.11(rw,no_root_squash)
+#
+# Another share to allow a user to edit a web site
+/www/www.example.org 10.0.0.202(rw,no_root_squash)
+#
+# Public ftp directory
+/home/ftp *.example.org(ro,all_squash)</pre>
+<p>The structure of the exports file is pretty simple, directory
+you wish to export, client (always use IP&#146;s, hostnames can
+easily be faked), and any options. The client can be a single IP
+(10.0.0.1), hostname (gomer.example.org), a subnet
+(10.0.0.0/255.255.255.0), or a wildcard (*.example.org). Some of
+the more interesting (and useful) directives for the exports file
+are:<br>
+secure - the nfs session must originate from a privileged port,
+i.e. root HAS to<br>
+be the one trying to mount the dir. This is useful if the server
+you are&nbsp;<br>
+exporting to is secured well.</p>
+<p>ro - a good one, Read Only, enough said.<br>
+noaccess - used to cut off access, i.e. export /home/ but do a
+noaccess on /home/root<br>
+root_squash - squashes root's UID to the anonymous user UID/GID
+(usually 'nobody'), very useful if you are exporting dirs to
+servers with admins you do not 100% trust (root can almost always
+read any file.... HINT)<br>
+no_root_squash - useful if you want to go mucking about in
+exported dirs as root to fix things (like permissions on your www
+site)<br>
+squash_uids and squash_gids - squash certain UID(s) or GID(s) to
+the anonymous user, in Red Hat a good example would be 500-10000
+(by default Red Hat starts adding users and groups at 500),
+allowing any users with lower UID's (i.e. special accounts) to
+access special things.<br>
+all_squash - a good one, all privileges are revoked basically and
+everyone is a guest.<br>
+anonuid and anongid - specifically set the UID / GID of the
+anonymous user (you might want something special like 'anonnfs').</p>
+<p>The man exports page is actually quite good.</p>
+<p>Beyond this there isn't much you can do to secure NFS apart
+from ripping it out and putting some other product in (like AFS,
+Coda, etc). NFS is relatively robust, almost every flavor of UNIX
+supports it, and it is usually easy to setup, work with and
+maintain. It's also 'old faithful', been around a long time. Just
+check &quot;Practical Unix and Internet Security&quot;, they also
+state in bold not to use NFS if security is a real issue.</p>
+<p>NFS should be restricted from the outside world, it runs on
+port 2049, udp, as well as using RPC which runs on port 111,
+udp/tcp, and makes use of mountd which runs on port 635, udp.
+Replace the 2049 with 111, and 635 udp and tcp to secure those
+services (again the best idea is a blanket rule to deny ports 1
+to 1024, or better yet a default policy of denial).</p>
+<pre>ipfwadm -I -a accept -P udp -S 10.0.0.0/8 -D 0.0.0.0/0 2049
+ipfwadm -I -a accept -P udp -S some.trusted.host -D 0.0.0.0/0 2049
+ipfwadm -I -a deny -P udp -S 0.0.0.0/0 -D 0.0.0.0/0 2049</pre>
+<p>or</p>
+<pre>ipchains -A input -p udp -j ACCEPT -s 10.0.0.0/8 -d 0.0.0.0/0 2049
+ipchains -A input -p udp -j ACCEPT -s some.trusted.host -d 0.0.0.0/0 2049
+ipchains -A input -p udp -j DENY -s 0.0.0.0/0 -d 0.0.0.0/0 2049</pre>
+<p><a href="index.html">Back</a></p>
+<p>Last updated on 31/8/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#3d56484f497d4e58545b4f54585913524f5a"><span class="__cf_email__" data-cfemail="a9c2dcdbdde9daccc0cfdbc0cccd87c6dbce">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

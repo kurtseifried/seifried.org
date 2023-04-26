@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="CREATED" content="20011030;16061786">
+<meta name="CHANGEDBY" content="Kurt Seifried">
+<meta name="CHANGED" content="20011030;16075371">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Information security / OS / Linux / Red Hat </title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Red Hat Linux </h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#33584641477340565a55415a56571d5c4154"><span class="__cf_email__" data-cfemail="5e352b2c2a1e2d3b37382c373b3a70312c39">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Having just installed Red Hat 7.2 on a production server I
+feel a certain emotion that I am sure many people share. Red Hat
+7.1 (previous version) was excellent, it had Postfix in the power
+tools, it was a rock solid distro. Red Hat 7.2 isn't bad either,
+I am very happy with the ext3 support, it seamlessly migrated my
+fileserver to it, boot times are much improved sans fsck. However
+the upgrade road has not been free of rocks, potholes and one or
+two completely washed out bridges. </p>
+<p>&nbsp;</p>
+<p><a href="20020701-rh7x-openssh-34.html">Red Hat Linux 7.x
+OpenSSH 3.4 installation and spec file</a></p>
+<blockquote>
+<p><font size="2">Red Hat will not be issuing OpenSSH 3.4
+packages for Red Hat 7.x (can't say that I blame them,
+customer support would be a nightmare). Unfortunately I
+really wanted OpenSSH 3.4 on my server systems (privsep, all
+the bug fixes, etc.). I modifed the Red Hat spec file
+slightly, you will need that, the source RPM from Red hat,
+and the source code for OpenSSH 3.4 portable. &nbsp;I have
+disabled askpass/gnome stuff, this is aimed at servers, not
+clients. &nbsp;</font></p>
+</blockquote>
+<p><a href="20011031-rh72-sendmail.html">Red Hat 7.2 Sendmail
+configuration</a></p>
+<blockquote>
+<p><font size="2">This has got to be one of the worst and
+best features about Red Hat Linux 7.2. My first major
+complaint would be the lack of Postfix. Not only did they
+fail to ship it on the CD, they failed to include it in
+anything like powertools online. To make matters worse the
+Postfix RPM from 7.1 does not work properly as it expects
+older libraries, although you should be able to get it
+working with some effort. But instead of doing all that I
+thought I would give Sendmail a chance, I haven't used it in
+approximately 2-3 years, and it has been audited (very few
+remote root hacks in the last few months, although there were
+some local root hacks). There are several significant
+problems with the default sendmail configuration and scripts
+that manage it. </font></p>
+</blockquote>
+<p><a href="20020614-rh73-imp.html">Red Hat Linux 7.3 IMP and
+HORDE configuration</a></p>
+<blockquote>
+<p><font size="2">This has got to be the worst all around
+configuration hassle I have had in ages. I wanted to install
+and get webmail working. So I install horde and imp, and
+blam, tons of problems. </font></p>
+</blockquote>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated 13/6/2002</p>
+<p>Copyright Kurt Seifried 2001</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE"><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried Information Security - Linux and network encryption</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Linux and network encryption</h1>
+<p>By Kurt Seifried, <a href="/cdn-cgi/l/email-protection#a1d2c4c8c7d3c8c4c5e1d2c4c8c7d3c8c4c58fced3c6"><span class="__cf_email__" data-cfemail="f98a9c909f8b909c9db98a9c909f8b909c9dd7968b9e">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p><b>September 8, 1999 &#150; A</b>nd now for the last in my
+three part mini-series on Linux encryption; network encryption.
+We've covered the basics, and filesystem encryption, however
+these systems are absolutely no good if you log into your server
+via telnet, and then provide the password to mount your encrypted
+home directory. There are also several file encryption systems
+that do not lend themselves well to networking, and many file
+sharing methods that provide no encryption at all. Encrypting the
+data that moves across your network is a simple and effective
+answer (ok, it's probably not simple, but you get the idea).</p>
+<p><b>The basics</b></p>
+<p>There are several levels at which you can encrypt data in a
+network setting, so far we have only dealt with methods at the
+application and presentation layer. That is to say the encryption
+is provided by software and not really integrated with the
+network (TCFS being a notable exception). Encryption can be done
+at almost any layer of the OSI stack, with various benefits and
+drawbacks to each method.</p>
+<table border="2" cellpadding="2" width="100%">
+<tr>
+<td valign="top" width="33%">OSI layer</td>
+<td valign="top" width="33%">Description</td>
+<td valign="top" width="34%">Example</td>
+</tr>
+<tr>
+<td valign="top" width="33%" bgcolor="#00FFFF">Application</td>
+<td valign="top" width="33%">Software program, creates
+the data.</td>
+<td valign="top" width="34%">Email Program</td>
+</tr>
+<tr>
+<td valign="top" width="33%" bgcolor="#00FFFF">Presentation</td>
+<td valign="top" width="33%">Interaction with the OS,
+character set, etc.</td>
+<td valign="top" width="34%">Message data</td>
+</tr>
+<tr>
+<td valign="top" width="33%" bgcolor="#00FF00">Session</td>
+<td valign="top" width="33%">Session setup, logging, etc.</td>
+<td valign="top" width="34%">Sockets, built into the OS
+(SSL).</td>
+</tr>
+<tr>
+<td valign="top" width="33%" bgcolor="#00FF00">Transport</td>
+<td valign="top" width="33%">Actual protocol, insures
+data integrity, etc.</td>
+<td valign="top" width="34%">TCP, built into the OS</td>
+</tr>
+<tr>
+<td valign="top" width="33%">Network</td>
+<td valign="top" width="33%">Routing of data</td>
+<td valign="top" width="34%">IP, a router</td>
+</tr>
+<tr>
+<td valign="top" width="33%" bgcolor="#00FFFF">Datalink</td>
+<td valign="top" width="33%">Node to node communications</td>
+<td valign="top" width="34%">Network card, modem</td>
+</tr>
+<tr>
+<td valign="top" width="33%">Physical</td>
+<td valign="top" width="33%">Physical wire/fiber</td>
+<td valign="top" width="34%">Cat 5, single mode fiber</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<p>For this article we are concerned with network based
+encryption, which typically happens at the session, and / or
+transport layer (green). You typically don't encrypt the network
+(IP) layer as the routers/etc along the path must be able to view
+some data in the packet (like destination). Encryption can also
+be done at the application layer (PGP), presentation (X.509
+integration with Netscape mailer) which was discussed in my
+previous article, or at the datalink layer (modems with
+pre-shared secrets and hardware encryption chips) which are in
+(blue).</p>
+<p><b>Session layer encryption (SSL)</b></p>
+<p>Session layer encryption can be achieved with a variety of
+add-on protocols. The most popular is SSL (Secure Sockets Layer),
+which was originally developed for web based commerce (but like
+any good solution can be used elsewhere). SSL provides
+authentication and encryption, with the use of public key
+encryption and certificates. Like any public key encryption
+technology it is susceptible to man in the middle attacks, which
+are essentially caused by the fact you have to create a secured
+communications channel over an insecure network. To solve this
+SSL supports the use of certificates, which are blocks of
+information about a party (for example a www server certificate
+includes the domain name, issuer, expiry date, and so on) that is
+signed by a trusted third party. This still requires the
+distribution of public keys for the trusted third party, which is
+typically achieved by shipping the keys with the application.
+During the course of negotiating a session on party (say the
+client, a www browser) can ask the other party (say a www server)
+to prove it's identity. In which case the second party would send
+the first party it's digital certificate. This can go both ways,
+you can buy personal certificate from Verisign, and after proving
+who you are, you will be issued a form of digital identification
+that you can use to prove who you are to other people (assuming
+they trust Verisign).&nbsp;</p>
+<p>SSL is relatively easy to implement in applications, there is
+a good set of SSL libraries (OpenSSL) freely available to use.
+For example you can use Slush which is Telnet with SSL support
+built in, and instead of using a username and password to login,
+you use a digital certificate as proof of identification. This
+can also be done with POP, and IMAP servers (Microsoft and
+Netscape both support SSL'ified POP/IMAP out of the box) to
+prevent user's passwords from going across the network in plain
+text.&nbsp;</p>
+<p>SSL also lends itself to PKI (Public Key Infrastructure), and
+is scaleable. For example your company might buy a certificate
+from Verisign so that it in turn can sign certificates for
+departments. These departments could then sign your personal
+certificate and server certificates, so when you communicate with
+another employee or departmental server you can be sure it is who
+it claims to be. Unfortunately the costs of PKI (setup and
+maintenance) are still very high, and certificates are not very
+portable, which has lead to slow acceptance.</p>
+<p>SSL is appropriate when you have many short lived connections
+(www sessions, pop sessions, etc) between parties that are
+unknown to each other. Since SSL supports certificates, assuming
+you trust the issuer of the certificate you can for instance
+browse on <a href="https://www.seifried.org/">https://www.seifried.org/</a>
+(which uses a Thawte site certificate) and be relatively sure you
+are in fact browsing on the real site and not a fake one.</p>
+<p><b>Network layer encryption (IPSec)</b></p>
+<p>Network layer encryption is best done with IPSec (in my
+opinion) but can be done with a variety of other tools. IPSec is
+set to become an industry standard, and is already supported on
+most major platforms (Linux, OpenBSD, Sun, Windows and AIX to
+name a few).&nbsp;Like SSL IPSec supports a variety of different
+encryption algorithms, however the one used in FreeS/WAN (the
+Linux IPSec implementation) is typically 3DES. Currently IPSec
+for Linux (and most other implementations) do not support the use
+of certificates to prove identity, this is a planned feature.
+Despite these drawbacks IPSec is still a viable solution for
+encrypting network traffic.</p>
+<p>To prevent man in the middle attacks you have a pre-shared
+secret between the two (or more) parties participating in that
+IPSec configuration. This secret is usually 256 bits, meaning
+there are 2^256 possible secrets, making a man in the middle
+attack difficult at best. In addition to this the connection can
+be automatically re-keyed (the default being 8 hours). If someone
+manages to break the session key (168 bits for 3DES), they can
+only snoop in on the traffic for that session.&nbsp;</p>
+<p>One major benefit of IPSec is that it is implemented at the
+network layer, which the OS handles, so applications need not be
+aware at all that any encryption is going on. Additionally most
+operating systems support it, there is even a free client for
+Windows 95/98/NT in the form of PGPi. Windows 2000 is listed as
+having IPSec support, but I have not yet tried it so I cannot
+comment much on it.&nbsp;</p>
+<p>IPSec is an ideal solution if you have heavy data traffic
+between several points (currently the lack of certificate support
+makes managing large installations painful). Another widespread
+use of IPSec is for connecting networks to each other over
+insecure network (i.e. the Internet). Simply put a Linux box at
+each location and you can now talk securely.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p>IPSec:<br>
+<a href="http://www.xs4all.nl/~freeswan/">http://www.xs4all.nl/~freeswan/</a><br>
+<a href="http://www.nai.com/asp_set/products/tns/pgp_vpn.asp">http://www.nai.com/asp_set/products/tns/pgp_vpn.asp</a><br>
+<a href="http://www.pgpi.com/">http://www.pgpi.com/</a><br>
+<a href="http://www.ssh.fi/ipsec/">http://www.ssh.fi/ipsec/</a></p>
+<p>SSL Documentation:<br>
+<a href="http://developer.netscape.com/tech/security/ssl/howitworks.html">http://developer.netscape.com/tech/security/ssl/howitworks.html</a><br>
+<a href="http://developer.netscape.com/docs/manuals/security/sslin/index.htm">http://developer.netscape.com/docs/manuals/security/sslin/index.htm</a>&nbsp;<br>
+<a href="http://home.netscape.com/eng/ssl3/ssl-toc.html">http://home.netscape.com/eng/ssl3/ssl-toc.html</a>&nbsp;</p>
+<p>SSL Libraries:<br>
+<a href="http://www.openssl.org/">http://www.openssl.org/</a></p>
+<p>SSL Apps for Linux:<br>
+<a href="ftp://ftp.uni-mainz.de/pub/internet/security/ssl/">ftp://ftp.uni-mainz.de/pub/internet/security/ssl/</a>&nbsp;<br>
+<a href="ftp://ftp.replay.com/pub/replay/linux/">ftp://ftp.replay.com/pub/replay/linux/</a>&nbsp;<br>
+<a href="http://mike.daewoo.com.pl/computer/stunnel/">http://mike.daewoo.com.pl/computer/stunnel/</a>&nbsp;<br>
+<a href="http://violet.ibs.com.au/slush/">http://violet.ibs.com.au/slush/</a></p>
+<p>SSH:<br>
+<a href="http://www.ssh.fi/">http://www.ssh.fi/</a><a href="ftp://ftp.replay.com/pub/replay/linux/"><br>
+ftp://ftp.replay.com/pub/replay/linux/</a></p>
+<p>Other network encryption programs:<br>
+<a href="http://sunsite.auc.dk/vpnd/">http://sunsite.auc.dk/vpnd/<br>
+</a><a href="http://sites.inka.de/~W1011/devel/cipe.html">http://sites.inka.de/~W1011/devel/cipe.html</a><br>
+<a href="http://www.moretonbay.com/vpn/pptp.html">http://www.moretonbay.com/vpn/pptp.html</a><br>
+<a href="http://eclipt.uni-klu.ac.at/projects/est/">http://eclipt.uni-klu.ac.at/projects/est/</a></p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>Last updated 7/7/2002</p>
+<p>Copyright Kurt Seifried 2002</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

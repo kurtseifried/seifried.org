@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+<TITLE>Kurt Seifried - OAG - OpenBSD Administrator's Guide</TITLE>
+<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.1  (Win32)">
+<META NAME="CREATED" CONTENT="20021027;1021651">
+<META NAME="CHANGED" CONTENT="20021027;1034432">
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff">
+<H1>OpenBSD Administrator's Guide</H1>
+<P>Table of contents</P>
+<P>By Kurt Seifried <A HREF="/cdn-cgi/l/email-protection#761d0304023605131f10041f131258190411"><span class="__cf_email__" data-cfemail="5b302e292f1b283e323d29323e3f7534293c">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A>,
+Copyright Kurt Seifried 2002. <A HREF="license.html">License</A> is
+here.</P>
+<HR>
+<H3><A HREF="preface/">Preface</A>
+</H3>
+<P><STRONG>About this book<BR>Acknowledgements<BR>Contacts and
+mailing lists<BR>Typographical conventions<BR>Errata and bugs</STRONG></P>
+<HR>
+<P>Introduction to OpenBSD</P>
+<P>Preparing to install
+</P>
+<P>Basic installation
+</P>
+<P>Advanced installation</P>
+<P>Securing the boot process and console</P>
+<P>Basic commands and concepts</P>
+<P>Basic user management</P>
+<HR>
+<H3><A HREF="basic-limiting-users/">Basic limiting users</A></H3>
+<P><STRONG>Limiting user commands<BR>Restricting access to cron and
+at<BR>Limiting user resources<BR>Monitoring users</STRONG></P>
+<HR>
+<P>Basic system management</P>
+<HR>
+<H3><A HREF="advanced-system-management">Advanced system management</A></H3>
+<P><STRONG>Using a serial console</STRONG></P>
+<HR>
+<P>Basic filesystem management</P>
+<HR>
+<H3><A HREF="advanced-filesystem/">Advanced filesystem management</A></H3>
+<P><STRONG>Making /etc a separate partition</STRONG></P>
+<HR>
+<P>Basic memory management</P>
+<P>Basic network management</P>
+<P>Basic firewalling and NAT</P>
+<P>Advanced firewalling and NAT</P>
+<P>Basic IPSec
+</P>
+<P>Advanced IPSec</P>
+<HR>
+<H3><A HREF="using-ports/">Using ports</A></H3>
+<P><STRONG>Downloading and installing the ports tree<BR>Finding
+things in ports<BR>Building and installing things from
+ports<BR>Installing precompiled packages<BR>Security issues in
+ports<BR>Bandwidth saving techniques for ports</STRONG></P>
+<HR>
+<H3><A HREF="upgrading-openbsd/">Upgrading the Kernel and OS</A></H3>
+<HR>
+<P><BR><BR>
+</P>
+<P>System recovery
+</P>
+<HR>
+<H3><A HREF="basic-linux-conversion/">Basic conversion from Linux</A></H3>
+<P><STRONG>Device names and conventions</STRONG></P>
+<HR>
+<P>Advanced conversion from Linux</P>
+<P>&nbsp;</P>
+<HR>
+<H3><A HREF="common-errors/">Common errors</A></H3>
+<P><STRONG>Boot errors</STRONG></P>
+<HR>
+<H3><A HREF="other-resources/">Other resources</A></H3>
+<P><STRONG>Man pages<BR>Web sites<BR>FAQs and guides<BR>Mailing
+lists<BR>UseNet news</STRONG></P>
+<HR>
+<P><A HREF="../">Back</A></P>
+<P>Last updated on 15/4/2002</P>
+<P>Copyright Kurt Seifried 2002 <A HREF="/cdn-cgi/l/email-protection#4d26383f390d3e28242b3f24282963223f2a"><span class="__cf_email__" data-cfemail="6a011f181e2a190f030c18030f0e4405180d">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></A></P>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></BODY>
+</HTML>

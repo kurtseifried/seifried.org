@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<HEAD><META NAME="ROBOTS" CONTENT="NOARCHIVE">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - Informaiton security / Technical</title>
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0">
+<h1>Postfix</h1>
+<p>Kurt Seifried, <a href="/cdn-cgi/l/email-protection#abc0ded9dfebd8cec2cdd9c2cecf85c4d9cc"><span class="__cf_email__" data-cfemail="caa1bfb8be8ab9afa3acb8a3afaee4a5b8ad">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a>,
+Copyright Kurt Seifried 2001</p>
+<hr>
+<p>&nbsp;</p>
+<p>Most, if not all the readers of this column run a mail server,
+and more then likely it is running Sendmail. In all fairness
+Sendmail is a damn good MTA (Mail Transfer Agent), Eric Allman
+originally wrote it with one main goal in mind: the mail must get
+through. Unfortunately, when Sendmail was originally written
+security wasn't a major concern on the Internet and it shows.
+Sendmail runs almost exclusively as the root user on most
+systems, meaning any flaws are potentially very serious.&nbsp;In
+addition to this Sendmail isn't very good at handling high loads.
+New mailers, such as Postfix, Zmailer, and Qmail are several
+times faster then Sendmail on the same hardware. Until recently
+most of the alternative mailers to Sendmail were not drop-in
+replacements, to replace Sendmail was a painful task, and the new
+software typically behaved differently then Sendmail. Postfix was
+designed from the start to address all these problems.</p>
+<h3>Security</h3>
+<p>Postfix does not run exclusively as root, instead a master
+program (called &quot;master&quot;) runs as root and spawns off
+processes to handle incoming, outgoing and local mail delivery as
+needed. Using a series of modular components, each task is
+handled by a separate program (which makes auditing it easier),
+for example outgoing email is dumped into the queue directory by
+your software, where &quot;pickup&quot; gets it and hands it to
+&quot;cleanup&quot;, which hands it to
+&quot;trivial-rewrite&quot; which handles the headers, and
+finally is given to &quot;smtp&quot; if bound for a foreign
+system. Postfix is also much easier to setup for a chroot'ed
+environment than Sendmail is, simply make a few edits to the
+master.cf file (typically in /etc/postfix) and Postfix will run
+chroot'ed in its defined queue directory (usually
+/var/spool/postfix). It is also possible to set process limits
+for individual portions of postfix, again in the master.cf file.
+You can also easily set which user the Postfix programs run as,
+typically it defaults to &quot;postfix&quot; (a user similar in
+concept to the &quot;nobody&quot; user for apache), which has
+access to certain queue directories. Another major benefit of
+Postfix is the clarity of the configuration files, if you haven't
+yet looked at the guts of a sendmail.cf file I would recommend
+that you don't (O'Reilly has an 800 page book on Sendmail).</p>
+<p>The master.cf file:</p>
+<pre># ==========================================================================
+# service type	private	unpriv	chroot	wakeup	maxproc	command + args
+# (yes) (yes) (yes) (never) (50)
+# ==========================================================================
+smtp	inet	n	-	n	-	-	smtpd
+pickup	fifo	n	n	n	60	1	pickup
+cleanup	unix	-	-	n	-	0	cleanup
+qmgr	fifo	n	-	n	300	1	qmgr
+rewrite	unix	-	-	n	-	-	trivial-rewrite
+bounce	unix	-	-	n	-	0	bounce
+defer	unix	-	-	n	-	0	bounce
+smtp	unix	-	-	n	-	-	smtp
+showq	unix	n	-	n	-	-	showq
+error	unix	-	-	n	-	-	error
+local	unix	-	n	n	-	-	local
+cyrus	unix	-	n	n	-	-	pipe
+	flag=R user=cyrus argv=/usr/cyrus/bin/deliver -e -q -m ${extension} ${user}
+uucp	unix	-	n	n	-	-	pipe
+	flags=F user=uucp argv=uux -r -n -z -a$sender - $nexthop!rmail ($recipient)
+ifmail	unix	-	n	n	-	-	pipe
+	flags=F user=ftn argv=/usr/lib/ifmail/ifmail -r $nexthop ($recipient)</pre>
+<h3>Replacing Sendmail</h3>
+<p>As stated before, replacing Sendmail with another MTA used to
+be a very painful task, many mailers approached the
+&quot;problems&quot; in Sendmail by doing things quite
+differently and require a pretty extensive overhaul of the mail
+system, and a very different set of configuration files. With
+Postfix you can use most of your existing configuration files
+(such as access, aliases, virtusertable, etc.) simply by defining
+them appropriately in the main.cf file. In addition to this
+Postfix behaves like Sendmail, you can invoke it using
+&quot;sendmail&quot;, get a listing of the mailq with
+&quot;mailq&quot;, feed it pretty much the same options and so
+forth. I find a typical Postfix conversion takes around 10
+minutes for most sites (assuming you use an RPM and don't have to
+compile it), and have yet to encounter any major disasters
+(although I have found several small to medium sized
+glitches).&nbsp;</p>
+<h3>New problems</h3>
+<p>Of course replacing one software package with another will
+solve certain problems, and create new ones, to which Postfix is
+no exception. Partly due to it's design as a secure MTA you may
+experience some minor problems with Postfix. The best example is
+email to root, Postfix, by default, does not like to deliver
+email with elevated privileges (necessary to send email to root
+typically). You will need to define an alias for root in the
+aliases file, such as: &quot;root: someuser&quot;. This also
+leads to problems with several mailing list packages, especially
+SmartList, which by default does all sorts of funky things that
+Postfix will not stand for. In any case I would advise switching
+to Majordomo, it is easier to configure and maintain via email
+for owners of mailing lists.</p>
+<h3>Scalability</h3>
+<p>A major issue with Sendmail used to be scalability, and even
+now the default configuration tends to require significant tuning
+to get fast performance. Another issue is sites are starting to
+handle email for 10's of thousands of users on a single server,
+and using flat text files for configuration details such as
+mapping outgoing user email addresses (to make bob appear as from
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="deadbfb2bbad9ebba6bfb3aeb2bbf0b1acb9">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> for example). This file could become several
+hundred thousand lines long in the future and slow the system
+down. Postfix can however be integrated with a database backend
+(currently MySQL is supported) to host it's configuration files,
+which not only scales better but allows you to do things such as
+dynamically blocking email to and from certain sites, and allow
+users to administrate their own accounts more easily (a database
+beats a flat file any day).&nbsp;</p>
+<h3>Licensing</h3>
+<p>The IBM Open Source License is surprisingly liberal. Previous
+versions had a rather ugly termination clause, which prevented
+wide spread acceptance of Postfix, however this has been removed
+and Postfix is now &quot;safe&quot; to use. You can distribute
+the software, develop it, make changes and so forth, the only
+catch being that you must contribute any changes back to IBM
+(rather reasonable since they paid Wietse to develop it).&nbsp;</p>
+<h3>Qmail</h3>
+<p>Some of you are probably wondering why I haven't mentioned
+Qmail yet, or written an article &quot;Qmail - the Sendmail
+replacement&quot;. I have tested Qmail, and used it for a while,
+in general I found (and several sites I communicated with, one
+being a large Linux vendor) Qmail to be very painful to configure
+and maintain. In addition to this the Qmail license is very
+unclear, and doesn't even ship with the software. To quote the
+author: &quot;If you want to distribute modified versions of
+qmail (including ports, no matter how minor the changes are)
+you'll have to get my approval.&quot; This and other issues have
+hindered Qmail's acceptance.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Technical side of Postfix</h2>
+<p>This article was written using Postfix snapshot 20001030.
+Since then several things (like virtual) have changed, making
+some points in this article incorrect.</p>
+<h3><b>Check_recipient_access</b></h3>
+<p>This is probably the best way of restricting incoming email to
+valid email accounts only. Let's assume you have a decent-sized
+corporate LAN based on Windows and are using Exchange server for
+email. Exchange can only validate incoming email based on the
+domain, not the user, and since it will attempt to deliver the
+email for 48 hours, your system can get quickly clogged up - with
+no easy way to clean it out. Place your Exchange server behind a
+firewall so no one on the Internet can connect to it directly,
+and then place a Postfix server on the public side. Add this to
+your main.cf:</p>
+<blockquote>
+<pre>smtpd_sender_restrictions = check_recipient_access
+ hash:/etc/postfix/access-inbound</pre>
+</blockquote>
+<p>Then in your /etc/postfix/access-inbound file, simply put,</p>
+<blockquote>
+<pre><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="780e1914111c0d0b1d0a381d00191508141d56170a1f">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>	OK
+example.org		REJECT</pre>
+</blockquote>
+<p>You will also need to create the hash file. The following
+command will do so:</p>
+<blockquote>
+<pre>postmap /etc/postfix/access</pre>
+</blockquote>
+<p>You could also use the generic access file, but splitting it
+up allows for extremely selective access controls. You can then
+have the mail delivered locally or forwarded to another
+(internal) system. If an email is sent to an email address not
+listed specifically, and the domain is covered by a reject rule,
+the sender will receive an email with an error like,</p>
+<blockquote>
+<pre>The Postfix program
+&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ee9b9d8b9c8f8d8d819b809aae9d9a8b808d86c09d8b87889c878b8ac0819c89">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;: 
+host stench.seifried.org[10.3.0.10] said: 554
+&lt;<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="3e4b4d5b4c5f5d5d514b504a7e4d4a5b505d56104d5b57584c575b5a10514c59">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>&gt;: 
+Recipient address rejected: Access denied</pre>
+</blockquote>
+<p>You can also specify a custom error such as &quot;useraccount
+does not exist.&quot; However, a spammer could theoretically use
+this to build an address list by simply testing all the email
+addresses - those that generate an error message do not exist,
+and those that do not generate one do exist.</p>
+<h3>Virtual</h3>
+<p>This feature can be used as intended, for having virtual users
+(i.e., if you handle multiple domains and more than one wants a
+webmaster@ email address) as well as for protecting internal
+servers. </p>
+<blockquote>
+<pre>virtual_maps = hash:/etc/postfix/virtual</pre>
+</blockquote>
+<p>Then in your /etc/postfix/virtual simply remap email:</p>
+<blockquote>
+<pre><a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="f782849285959895b7928f969a879b92d9988590">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>	<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="bbcec8dec9d9d4d9fbd2d5cfdec9d5dad796d6dad2d795dec3dad6cbd7de95d4c9dc">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="582d2b3d2a3a37183d20393528343d76372a3f">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>	<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="3d484e584f5f527d545349584f535c5110505c54511358455c504d515813524f5a">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="4530362037272c292905203d24283529206b2a3722">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>	<a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="f683859384949f9a9ab69f9882938498979adb9b979f9ad8938e979b869a93d8998491">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+@example.org		bounce-local</pre>
+</blockquote>
+<p>You will also need to create the hash file:</p>
+<blockquote>
+<pre>postmap /etc/postfix/virtual</pre>
+</blockquote>
+<p>If incoming email does not match a virtual user, mapping it is
+sent to another address, in this example a local user called
+&quot;bounce-local.&quot; It may then be blackholed to /dev/null,
+simply bounced (no such user), or sent to an admin email account
+- where it is deleted or forwarded to the correct person, if an
+obvious typo was made in the address, or whatever. You can also
+use a database backend instead of a hash or dbm file. This is
+definitely the way to go for large installations. See man
+virtual(5) for more information. Simply use the same machine as
+the outbound mail server (i.e., smart host) and it will rewrite
+the email addresses outgoing from @internal-mail.example.org to
+@example.org (or whatever you want).</p>
+<h3>Local_recipient_maps</h3>
+<p>This keyword lets you allow only local delivery of email to
+valid users and/or definitions in the aliases map. Thus any email
+bound for a nonexistent user gets bounced immediately with an
+error message saying the user does not exist. This is useful if
+you the postmaster do not want to receive as many error messages.
+Potentially, however, an attacker could use this to find valid
+names (anything valid won't generate an error). This is probably
+most useful for large installations such as ISPs and large
+corporations. An additional consideration would be to use
+relocated_maps. Simply put this in your main.cf:</p>
+<blockquote>
+<pre>local_recipient_maps = $alias_maps unix:passwd.byname</pre>
+</blockquote>
+<p>This will accept any email defined in aliases or for user
+accounts in the password database.</p>
+<h3>Relocated_maps</h3>
+<p>This is an ideal feature for large companies that want to
+remap users without too much trouble. It allows you to specify
+the original email address and the new email address. For
+example, user joebob goes to another ISP instead of forwarding
+all their mail, which results in senders not realizing it has
+changed. They get an error message specifying the new email
+address. This can be used for wholesale domain moves as well.
+Simply add the following to your main.cf:</p>
+<blockquote>
+<pre>relocated_maps = hash:/etc/postfix/relocated</pre>
+</blockquote>
+<p>Then put the email address, username or domain name, followed
+by the email address or domain name, and anyone sending email in
+will get a nice error telling them the new address. See man
+relocated(5) for more information.</p>
+<h3>Blocking Spam</h3>
+<p>This is probably one of the favorite features for
+administrators; under Postfix it is trivial to implement. Simple
+add the following to your main.cf:</p>
+<blockquote>
+<pre>maps_rbl_domains = rbl.maps.vix.com, dul.maps.vix.com </pre>
+</blockquote>
+<p>The rbl is the real-time blackhole list, basically a list of
+known spammers and open relays that spammers use. The dul is the
+dialup list. Generally speaking, you shouldn't be receiving to
+much email <i>directly</i> from dialup users, i.e., people using
+their own servers. However, quite a few legitimate users do set
+up their own email servers for use on dialup links, and blocking
+them inadvertently may be a problem. </p>
+<h3>Database Backends</h3>
+<p>One thing I really love about Postfix is the ability to use
+databases instead of flat text files or hash and dbm files.
+Currently only MySQL is supported, but that is more than
+sufficient for most users. You must first compile in support for
+MySQL. See the &quot;MYSQL_README&quot; file for more information
+on this. Then you simply create a table in the MySQL database of
+usernames, virtual mappings or whatever. The cool thing is, this
+allows for very efficient sharing of configuration files between
+servers; and since you can specify multiple MySQL servers, you
+can replicate the database and avoid a single point of failure as
+well as being able to vary the order the databases are listed in
+on various servers, as a simplistic form of load balancing.</p>
+<p>MySQL has plans to add database replication to its available
+features. For now, you will have to create your own solution,
+such as a simple tool that connects to and updates all the
+databases at once. The configuration is reasonably simple. In
+your main.cf, put something like,</p>
+<blockquote>
+<p><code>alias_maps = mysql:/etc/postfix/mysql-aliases.cf</code>
+</p>
+</blockquote>
+<p>And then in the mysql-aliases.cf, put</p>
+<blockquote>
+<p><code>user = someone<br>
+password = some_password <br>
+dbname = customer_database<br>
+table = mxaliases<br>
+select_field = forw_addr<br>
+where_field = alias<br>
+additional_conditions = and status = 'paid'<br>
+hosts = maildb1.example.org maildbt2.example.org</code> </p>
+</blockquote>
+<p>This would allow you to have a table called
+&quot;mxaliases&quot; in the database called
+&quot;customer_database,&quot; where the field
+&quot;forw_addr&quot; matches and where the &quot;status&quot;
+field is set to &quot;paid&quot; (so you can easily block email
+to customers who don't fork over). The really useful thing is
+that you can easily update configuration files on the fly. As
+soon as it is updated in the database, it's ready to go.
+Additionally, this makes giving users control over their own
+accounts much easier. A Web hosting provider could easily let
+people handle virtual user mappings on their own domain, for
+example, through a cgi interface.</p>
+<h3>TLS</h3>
+<p>Transport Layer Security is to email as SSL is to Web
+browsing. TLS allows you to encrypt email transfers from server
+to server, but more importantly, it allows you to add
+authentication to the mail server. Instead of having to allow
+access based on IP and hostname, you can use usernames and
+passwords. That way people can connect securely from off-site -
+while using dialup on the road - and spammers are not able to use
+you as a relay.</p>
+<p>There is an add-on TLS package for Postfix (see URL at bottom)
+available from Germany. (Germany is very pro-encryption; the
+federal government has even gone so far as to sponsor GnuPG
+development.) TLS is becoming more common now that the RSA patent
+has expired. Red Hat 7.1 ships Postfix configured for TLS out of
+the box.</p>
+<h3>Regular Expressions</h3>
+<p>Postfix supports the use of regular expressions for header
+rewriting and other neat tricks. There's support for basic regex
+(regexp), and support for perl-compatible regular expressions
+(PCRE). The first are simpler. To use them, just put this in your
+main.cf:</p>
+<blockquote>
+<pre>header_checks = regexp:/etc/postfix/header-checks</pre>
+</blockquote>
+<p>And then add rules to your header-checks file; the target can
+be REJECT, OK or a custom error.</p>
+<blockquote>
+<pre>/^Subject: Make money fast/		REJECT
+/^X-Mailer: Microsoft Outlook Express/	REJECT</pre>
+</blockquote>
+<p>See man regexp_table(5) for more information. You can also use
+PCRE by simply specifying pcre: instead of regexp: in your
+main.cf. The rules are basically the same, except that the syntax
+used for pattern matching is a bit more advanced.</p>
+<blockquote>
+<pre>/^friend@(?!my.domain).*$/ 550 Stick this in your pipe $0</pre>
+</blockquote>
+<p>See man pcre_table(5) for more information. </p>
+<h2>Summary</h2>
+<p>Postfix is ideal for large installations, with its database
+backends and extremely tight control of mail delivery.
+Additionally, it supports numerous security features, such as TLS
+and even the ability to specify which users are allowed to send
+mail off-site and which aren't - again, in a very selective
+manner. Qmail has quite a few of these features, but has one
+significant problem: The license makes it extremely difficult to
+distribute in a binary format, which is what most people want.</p>
+<p>Postfix, on the other hand, comes under the IBM Public
+License, which is surprisingly considerate to end users. My real
+favorite is the simplicity of configuration. An average main.cf
+is under 30 lines of configuration directives. Hopefully more
+vendors will start shipping Postfix with their distributions.</p>
+<p>&nbsp;</p>
+<p><b>Reference links:</b></p>
+<p>Postfix: - <a href="http://www.postfix.org/">http://www.postfix.org/</a></p>
+<p>Other Sendmail alternatives:<br>
+<a href="http://www.zmailer.org/">http://www.zmailer.org/</a>
+(GPL)<br>
+<a href="http://www.qmail.org/">http://www.qmail.org/</a>
+(license is unclear)</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="./">Back</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>

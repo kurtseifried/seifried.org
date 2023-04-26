@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Kurt Seifried - LASG / Authentication</title>
+</head>
+<body bgcolor="#FFFFFF">
+<h1>Authentication</h1>
+<p>By Kurt Seifried <a href="/cdn-cgi/l/email-protection#0a617f787e4a796f636c78636f6e2465786d"><span class="__cf_email__" data-cfemail="bcd7c9cec8fccfd9d5daced5d9d892d3cedb">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<hr>
+<p>&nbsp;</p>
+<p>Authentication is typically one of the two main lines of
+defense that systems and networks rely upon, so ensuring that
+your authentication subsystems are implemented correctly is
+important. The majority of Linux systems rely on usernames and
+passwords, while support for tokens, smartcards and other
+authentication systems are available they are still relatively
+rare. On top of this sits PAM, as far as I know all major vendors
+use PAM by default, so understanding how PAM works and using it
+correctly is very important. </p>
+<p>&nbsp;</p>
+<h2>PAM</h2>
+<p>&quot;Pluggable Authentication Modules for Linux is a suite of
+shared libraries that enable the local system administrator to
+choose how applications authenticate users.&quot; Straight from
+the PAM documentation, I don't think I could have said it any
+better. But what does this actually mean? For example; take the
+program &#147;login&#148;, when a user connects to a tty (via a
+serial port or over the network) a program answers the call
+(getty for serial lines, telnet or SSH for network connections)
+and starts up a login program, login then typically requests a
+username, followed by a password, which it checks against the
+/etc/passwd file. This is all fine and dandy until you have a
+spiffy new digital card authentication system and want to use it.
+Well you will have to recompile login (and any other apps that
+will do authentication via the new method) so they support the
+new system. As you can imagine this is quite laborious and prone
+to errors.&nbsp;</p>
+<p>PAM introduces a layer of middleware between the application
+and the actual authentication mechanism. Once a program is
+PAM'ified, any authentication methods PAM supports will be usable
+by the program. In addition to this PAM can handle account, and
+session data which is something normal authentication mechanisms
+don't do very well. For example using PAM you can easily disallow
+login access by normal users between 6pm and 6am, and when they
+do login you can have them authenticate via a retinal scanner. By
+default Red Hat systems are PAM aware, and newer versions of
+Debian are as well (see bellow for a table of PAM&#146;ified
+systems). Thus on a system with PAM support all I have to do to
+implement shadow passwords is convert the password and group
+files; and possibly add one or two lines to some PAM config files
+(if they weren't already added). Essentially, PAM gives you a
+great deal of flexibility when handling user authentication, and
+will support other features in the future such as digital
+signatures with the only requirement being a PAM module or two to
+handle it. This kind of flexibility will be required if Linux is
+to be an enterprise-class operating system. Distributions that do
+not ship as &quot;PAM-aware&quot; can be made so but it requires
+a lot of effort (you must recompile all your programs with PAM
+support, install PAM, etc), it is probably easier to switch
+straight to a PAM'ified distribution if this will be a
+requirement. PAM usually comes with complete documentation, and
+if you are looking for a good overview you go <a href="http://www.sun.com/software/solaris/pam/">http://www.sun.com/software/solaris/pam/</a>.</p>
+<p>Other benefits of a PAM aware system is that you can now make
+use of an NT domain to do your user authentication, meaning you
+can tie Linux workstations into an existing Microsoft based
+network without having to say buy NIS / NIS+ for NT and go
+through the hassle of installing that. As far as I know all
+modern Linux distributions have PAM support and default to it.</p>
+<p>&nbsp;</p>
+<h3>PAM Cryptocard Module</h3>
+<p>A PAM cryptocard module is available <a href="http://projects.jdimedia.nl/index.phtml?ID=crypto&amp;L=&amp;BROW=1&amp;W=1260&amp;H=886">http://projects.jdimedia.nl/index.phtml?ID=crypto&amp;L=&amp;BROW=1&amp;W=1260&amp;H=886</a>.
+Cryptocards are excellent for securing interactive logins since
+they do not require any special equipment on the client end, thus
+you can log in from a cybercafe for example with no fear of your
+password being stolen (since it changes each time you log in).
+Unfortunately Cryptocards tend to be expensive and require some
+user training, I would advise them primarily for installations
+with a higher need of security then &quot;normal&quot; or for
+infrastructure related servers and equipment (i.e. Authentication
+servers). </p>
+<p>&nbsp;</p>
+<h3>Pam Smart Card Module</h3>
+<p>Smartcards can be used to sign and encrypt email as well as
+providing login services. The primary problem with smartcards
+however is that the client station needs a compatible card
+reader, the chances of finding these on a system outside of your
+office are slim indeed. A module to provide PAM support for
+smartcards is available <a href="http://www.linuxnet.com/apps.html">http://www.linuxnet.com/apps.html</a>.</p>
+<p>&nbsp;</p>
+<h3>Pam module for SMB</h3>
+<p>SMB (Server Message Block) is incredibly popular protocol for
+the simple reason Microsoft has choosen to use it as their
+primary protocol for Windows 9x and NT (it is also supported in
+2000). Many sites have existing NT infrastructures, adding Linux
+servers that require their own authentications infrastructure can
+be quite troublesome. Fortunately you can authenticate on Linux
+machines against SMB servers, packages are available <a href="http://rpmfind.net/linux/rpm2html/search.php?query=pam_smb">http://rpmfind.net/linux/rpm2html/search.php?query=pam_smb</a>
+and the primary site is <a href="http://www.csn.ul.ie/~airlied/pam_smb/">http://www.csn.ul.ie/~airlied/pam_smb/</a>.
+You can also install SAMBA on the machine and use this to
+authenticate but for workstations the PAM module is much more
+appropriate. </p>
+<p>&nbsp;</p>
+<h2>Authentication services</h2>
+<p>Authentication services such as NIS and Kerberos are covered
+in the network servers section of the LASG <a href="../network-servers/authentication/">here</a>. Generally
+speaking they are easy to implement client side on modern Linux
+distributions, during install you are often given the choice of
+Kerberos, LDAP or NIS+ passwords and their related settings.
+Setting up the servers however is another matter.</p>
+<p>&nbsp;</p>
+<h2>Passwords&nbsp;</h2>
+<p>In all UNIX-like operating systems there are several
+constants, and one of them is the file /etc/passwd and how it
+works. For user authentication to work properly you need
+(minimally) some sort of file(s) with UID to username mappings,
+GID to groupname mappings, passwords for the users, and other
+misc. info. The problem with this is that everyone needs access
+to the passwd file, every time you do an ls it gets checked, so
+how do you store all those passwords safely, yet keep them world
+readable? For many years the solution has been quite simple and
+effective, simply hash the passwords, and store the hash, when a
+user needs to authenticate take the password they enter it, hash
+it, and if it matches then it was obviously the same password.
+The problem with this is that computing power has grown
+enormously and I can now take a copy of your passwd file, and try
+to brute force it open in a reasonable amount of time (assuming
+you use a poor hash system, or weak passwords). </p>
+<p>&nbsp;</p>
+<h3>Use a better hash</h3>
+<p>Using a hash such as MD5 or blowfish significantly increases
+the amount of computing power needed to execute a brute force
+attack, but there are two large problems with switching from the
+traditional crypt hash. The first is compatibility, if you use
+NIS or NIS+ with systems such as Solaris using a different hash
+then crypt will break authentication, obviously a problem. The
+other problem is that no matter how strong a hash you use poor
+passwords (such as the username or &quot;dog&quot;) will still be
+easily discovered. If possible you should use a better hash, but
+if this is not possible then there is another solution.</p>
+<p>&nbsp;</p>
+<h3>Use shadow passwords</h3>
+<p>User account data is stored in /etc/passwd traditionally, but
+the actual password hashes and related data (password expiry,
+etc.) is stored in /etc/shadow, a file only readable by root.
+Programs that need to check a password can either run as root or
+use a setuid or setgid wrapper program (like PAM provides) to
+check the password, the only way to get access to /etc/shadow
+requires root privileges. There have been problems in past with
+setuid programs that read /etc/shadow leaking information,
+however these are relatively rare (and you are no worse off then
+storing passwords in a world readable location). </p>
+<p>&nbsp;</p>
+<p>Several OS's take the first solution, Linux has implemented
+the second for quite a while now. Because most vendors rely on
+PAM for authentication services, implementing a new
+authentication scheme is relatively simple, all you need to do it
+add a PAM module that understands the new authentication scheme
+and edit the PAM config file for whichever program (say login)
+uses it. Now for an attacker to look at the hashed passwords they
+must go to quite a bit more effort then simply copying the
+/etc/passwd file. </p>
+<p>&nbsp;</p>
+<h2>Cracking passwords</h2>
+<p>In Linux the passwords are stored in a hashed format, however
+this does not make them irretrievable, chances are you cannot
+reverse engineer the password from the resulting hash, however
+you can hash a list of words and compare them. If the results
+match then you have found the password (the chances of a
+different word hashing to the same value as another are slim),
+this is why good passwords are critical, and dictionary based
+words are a terrible idea. Even with a shadow passwords file the
+passwords are still accessible by the root user, and if you have
+improperly written scripts or programs that run as root (say a
+www based CGI script) the password file may be retrieved by
+attackers. The majority of current password cracking software
+also allows running on multiple hosts in parallel to speed things
+up.&nbsp;</p>
+<p>Most modern Linux distributions use MD5 hashed passwords at a
+minimum (notable exceptions are SuSE and Debian which default to
+crypt for backwards compatibility with NIS and the like). In any
+event password crackers will usually catch poor passwords or
+dictionary based passwords quickly. As well on modern systems
+passwords are protected in shadow password files, if an attacker
+has access to this file chances are they have sufficient
+privilege to do other things to compromise the system.</p>
+<p>&nbsp;</p>
+<h3>VCU</h3>
+<p>VCU (Velocity Cracking Utilities) is a windows based programs
+to aid in cracking passwords, &#147;VCU attempts to make the
+cracking of passwords a simple task for computer users of any
+experience level.&#148;. You can download it <a href="http://packetstormsecurity.org/groups/wiltered_fire/NEW/vcu/">http://packetstormsecurity.org/groups/wiltered_fire/NEW/vcu/</a>
+</p>
+<p>&nbsp;</p>
+<h2>Password storage</h2>
+<p>This is something many people don&#146;t think about much. How
+can you securely store passwords? The most obvious method is to
+memorize them, this however has it&#146;s drawbacks, if you
+administer 30 different sites you generally want to have 30
+different passwords, and a good password is 8+ characters in
+length and generally not the easiest thing to remember. This
+leads to many people using the same passwords on several systems
+(come on, admit it). One of the easiest methods is to write
+passwords down. This is usually a BIG NO-NO; you&#146;d be
+surprised what people find lying around, and what they find if
+they are looking for it. A better option is to store passwords in
+an encrypted format, usually electronically on your computer or
+palm pilot, this way you only have to remember one password to
+unlock the rest which you can then use. Something as simple as
+PGP or GnuPG can be used to accomplish this.&nbsp; If you can
+afford it using authentication tokens or smartcards are a good
+way to reduce the number of passwords you must memorize.</p>
+<p>Many of these programs have been found to contain flaws, I
+advise using them with caution.</p>
+<p>&nbsp;</p>
+<h3>Strip</h3>
+<p>Strip is a palm pilot program for storing passwords securely
+and can also be used to generate passwords. It is GNU licensed
+and available <a href="http://www.zetetic.net/products.html">http://www.zetetic.net/products.html</a>.&nbsp;
+The generation function is flawed and should not be used.</p>
+<p>&nbsp;</p>
+<hr>
+<p><a href="../">Back</a></p>
+<p>Last updated on 4/10/2001</p>
+<p>Copyright Kurt Seifried 2001 <a href="/cdn-cgi/l/email-protection#81eaf4f3f5c1f2e4e8e7f3e8e4e5afeef3e6"><span class="__cf_email__" data-cfemail="bdd6c8cfc9fdced8d4dbcfd4d8d993d2cfda">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></a></p>
+<script type="text/javascript">/* <![CDATA[ */(function(d,s,a,i,j,r,l,m,t){try{l=d.getElementsByTagName('a');t=d.createElement('textarea');for(i=0;l.length-i;i++){try{a=l[i].href;s=a.indexOf('/cdn-cgi/l/email-protection');m=a.length;if(a&&s>-1&&m>28){j=28+s;s='';if(j<m){r='0x'+a.substr(j,2)|0;for(j+=2;j<m&&a.charAt(j)!='X';j+=2)s+='%'+('0'+('0x'+a.substr(j,2)^r).toString(16)).slice(-2);j++;s=decodeURIComponent(s)+a.substr(j,m-j)}t.innerHTML=s.replace(/</g,'&lt;').replace(/>/g,'&gt;');l[i].href='mailto:'+t.value}}catch(e){}}}catch(e){}})(document);/* ]]> */</script></body>
+</html>
