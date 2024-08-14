@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Tiler</title>
+<style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        header {
+            width: 100%;
+            padding: 10px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0px 4px 2px -2px gray;
+            z-index: 1;
+            position: sticky;
+            top: 0;
+        }
+        #imageContainer {
+            display: grid;
+            width: 100%;
+            grid-gap: 0;
+            background-color: #ccc;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+<header>
+<input type="file" id="imageUpload" accept="image/*">
+<input type="number" id="gridSize" value="16" min="1" max="100" step="1">
+</header>
+<div id="imageContainer"></div>
+<script>
+        const imageUpload = document.getElementById('imageUpload');
+        const gridSizeInput = document.getElementById('gridSize');
+        const imageContainer = document.getElementById('imageContainer');
+
+        imageUpload.addEventListener('change', handleImage);
+        gridSizeInput.addEventListener('input', () => updateGrid());
+
+        function handleImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    updateGrid(imageUrl);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateGrid(imageUrl) {
+            const gridSize = gridSizeInput.value;
+            imageContainer.innerHTML = '';
+            imageContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+            for (let i = 0; i < gridSize * gridSize; i++) {
+                const img = document.createElement('img');
+                if (imageUrl) {
+                    img.src = imageUrl;
+                } else {
+                    img.style.display = 'none';
+                }
+                imageContainer.appendChild(img);
+            }
+        }
+
+        // Initialize with empty grid
+        updateGrid('');
+    </script>
+</body>
+</html>
