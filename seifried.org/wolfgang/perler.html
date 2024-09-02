@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perler Bead Pattern Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #patternGrid {
+            display: grid;
+            gap: 1px;
+        }
+        .bead {
+            aspect-ratio: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Perler Bead Pattern Generator</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <br><br>
+    <label for="gridWidth">Grid Width:</label>
+    <input type="number" id="gridWidth" min="1" max="100" value="29">
+    <label for="gridHeight">Grid Height:</label>
+    <input type="number" id="gridHeight" min="1" max="100" value="29">
+    <br><br>
+    <button onclick="generatePattern()">Generate Pattern</button>
+    <br><br>
+    <div id="patternGrid"></div>
+
+    <script>
+        function generatePattern() {
+            const file = document.getElementById('imageUpload').files[0];
+            const gridWidth = parseInt(document.getElementById('gridWidth').value);
+            const gridHeight = parseInt(document.getElementById('gridHeight').value);
+
+            if (!file) {
+                alert('Please upload an image.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = gridWidth;
+                    canvas.height = gridHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, gridWidth, gridHeight);
+
+                    const patternGrid = document.getElementById('patternGrid');
+                    patternGrid.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
+                    patternGrid.innerHTML = '';
+
+                    for (let y = 0; y < gridHeight; y++) {
+                        for (let x = 0; x < gridWidth; x++) {
+                            const pixel = ctx.getImageData(x, y, 1, 1).data;
+                            const color = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+                            const bead = document.createElement('div');
+                            bead.className = 'bead';
+                            bead.style.backgroundColor = color;
+                            patternGrid.appendChild(bead);
+                        }
+                    }
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
